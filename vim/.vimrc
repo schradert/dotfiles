@@ -11,5 +11,8 @@ filetype plugin on " load 'runtimepath'/ftplugin.vim'
 filetype indent on " load 'runtimepath'/indent.vim
 
 " autocommands
+let maplocalleader = ","
 autocmd BufWritePre * :normal gg=G
+autocmd FileType vim nnoremap <buffer> <localleader>c I" <esc>
+autocmd FileType python,bash,sh nnoremap <buffer> <localleader>c I# <esc>
 
