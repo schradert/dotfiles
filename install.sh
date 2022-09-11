@@ -35,4 +35,4 @@ sub i=htop o=.config/htop
 sub i=vim/.vimrc
 sub i=ranger o=.config/ranger
 sub i=thefuck o=.config/thefuck
-
+sub i=wtf o=.config/wtf
