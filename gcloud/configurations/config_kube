@@ -1,0 +1,9 @@
+[core]
+account = tristan@climaxfoods.com
+project = climax-beam-test
+disable_usage_reporting = False
+
+[compute]
+zone = us-west1-b
+region = us-west1
+
