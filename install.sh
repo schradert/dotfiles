@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -eux
+
 work_d=$(pwd)
 today=$(date +"%Y%m%d")
 
@@ -13,20 +15,19 @@ sub() {
     local i, o
     local "${@}"
 
-    out="$HOME/$o"
-    backup="$backup_d/$(dirname '$o')"
-    in="$work_d/$i"
-
-    rsync -arvz --ignore-existing --progress $out $backup | tee -a $log_f
-    rsync -arvz --progress $in "$(dirname $out)" | tee -a $log_f
+    [[ -d $i ]] && dir="/"
+    out="${o:-`basename $i`}"
+    rsync -arvz --progress --ignore-existing "$HOME/$out$dir" "$backup_d/$out" | tee -a $log_f
+    rsync -arvz --progress --exclude "**/*.swp" "$work_d/$i$dir" "$HOME/$out" | tee -a $log_f
 }
 
-sub i=zsh/.zshrc o=.zshrc
-sub i=zsh/.zprofile o=.zprofile
-sub i=zsh/.p10k.zsh o=.p10k.zsh
+sub i=zsh/.zshrc
+sub i=zsh/.zprofile
+sub i=zsh/.p10k.zsh
 sub i=zsh/config.d o=.config/zsh/config.d
-sub i=gh/config.yml o=.config/gh/config.yml
-sub i=git/.gitconfig o=.gitconfig
-sub i=glab/aliases.yml o=.config/glab-cli/aliases.yml
-sub i=glab/config.yml o=.config/glab-cli/config.yml
-sub i=htop o=.config
+sub i=gh o=.config/gh
+sub i=git/.gitconfig
+sub i=glab o=.config/glab-cli
+sub i=htop o=.config/htop
+
+
