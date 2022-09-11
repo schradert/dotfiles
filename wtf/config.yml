@@ -1,0 +1,396 @@
+# https://github.com/wtfutil/wtf/tree/master/_sample_configs
+wtf:
+  colors:
+    border:
+      focusable: darkslateblue
+      focused: orange
+      normal: gray
+  grid:
+    columns: [32, 32, 32, 32, 90]
+    rows: [10, 10, 10, 4, 4, 90]
+  refreshInterval: 1
+  mods:
+    clocks_a:
+      enabled: true
+      type: clocks
+      title: "Clocks A"
+      sort: alphabetical
+      refreshInterval: 15
+      colors:
+        rows:
+          even: lightblue
+          odd: white
+      locations:
+        Vancouver: America/Vancouver
+        Toronto: America/Toronto
+      position:
+        top: 0
+        left: 1
+        height: 1
+        width: 1
+    clocks_b:
+      enabled: true
+      type: clocks
+      title: "Clocks B"
+      sort: alphabetical
+      refreshInterval: 15
+      colors:
+        rows:
+          even: lightblue
+          odd: white
+      locations:
+        Paris: Europe/Paris
+        Barcelona: Europe/Madrid
+        Dubai: Asia/Dubai
+      position:
+        top: 0
+        left: 2
+        height: 1
+        width: 1
+    feedreader:
+      enabled: true
+      feeds:
+      - http://feeds.bbci.co.uk/news/rss.xml
+      feedLimit: 10
+      refreshInterval: 14400
+      position:
+        top: 1
+        left: 1
+        width: 2
+        height: 1
+    ipinfo:
+      enabled: true
+      colors:
+        name: lightblue
+        value: white
+      refreshInterval: 150
+      position:
+        top: 2
+        left: 1
+        height: 1
+        width: 1
+    power:
+      enabled: true
+      title: ⚡️
+      refreshInterval: 15
+      position:
+        top: 2
+        left: 2
+        height: 1
+        width: 1
+    textfile:
+      enabled: true
+      filePaths:
+      - "~/Desktop/notes.md"
+      - "~/.config/wtf/config.yml"
+      format: true
+      formatStyle: "dracula"
+      position:
+        top: 5
+        left: 4
+        height: 2
+        width: 1
+      refreshInterval: 15s
+      wrapText: true
+    uptime:
+      enabled: true
+      type: cmdrunner
+      cmd: uptime
+      refreshInterval: 30
+      position:
+        top: 3
+        left: 1
+        height: 1
+        width: 2
+    brew_outdated:
+      enabled: true
+      type: cmdrunner
+      cmd: brew
+      args: [outdated]
+      position:
+        top: 3
+        left: 1
+        width: 2
+        height: 1
+    slack_status:
+      enabled: true
+      type: cmdrunner
+      cmd: slack_status_check.sh
+      title: Slack Status
+      refreshInterval: 30s
+      position:
+        top: 5
+        left: 0
+        height: 3
+        width: 4
+    weather:
+      enabled: true
+      type: cmdrunner
+      cmd: curl
+      args: [wttr.in]
+      refreshInterval: 100s
+      position:
+        top: 0
+        left: 0
+        height: 1
+        width: 2
+    covid:
+      enabled: true
+      colors:
+        label: green
+        text: white
+      countries:
+      - US
+      - BR
+      - UK
+      - IN
+      refreshInterval: 1h
+      position:
+        top: 1
+        left: 2
+        height: 2
+        width: 2
+    bittrex:
+      enabled: true
+      summary:
+        BTC:
+          displayName: Bitcoin
+          market:
+          - LTC
+          - ETH
+      colors:
+        base:
+          name: orange
+          displayName: red
+        market:
+          name: red
+          field: white
+          value: green
+      refreshInterval: 5s
+      position:
+        top: 4
+        left: 2
+        height: 3
+        width: 1
+    docker:
+      enabled: true
+      type: docker
+      labelColor: lightblue
+      refreshInterval: 1s
+      position:
+        top: 0
+        left: 0
+        height: 3
+        width: 3
+    git:
+      enabled: true
+      commitCount: 5
+      commitFormat: "[forestgreen]%h [grey]%cd [white]%s [grey]%an[white]"
+      dateFormat: "%H:%M %d %b %y"
+      repositories:
+      - /Users/tristanschrader/Code/futoffo
+      refreshInterval: 8s
+      position:
+        top: 0
+        left: 3
+        height: 2
+        width: 2
+    gcal:
+      # https://developers.google.com/calendar/api/quickstart/go
+      colors:
+        title: red
+        eventTime: lightblue
+        description: yellow
+        highlights:
+        - [1on1|1\/11, green]
+        - [apple|google|aws, blue]
+        - [interview|meet, magenta]
+        - [lunch, yellow]
+        past: gray
+      calendarReadLevel: reader
+      conflictIcon: 🚨
+      currentIcon: 💥
+      displayResponseStatus: true
+      email: tristan@climaxfoods.com
+      enabled: true
+      eventCount: 15
+      hourFormat: "12"
+      multiCalendar: true
+      secretFile: ~/.config/wtf/gcal/client_secret.json
+      showDeclined: true
+      showEndTime: false
+      timezone: America/Vancouver
+      withLocation: true
+      refreshInterval: 5m
+      position:
+        top: 0
+        left: 0
+        height: 4
+        width: 1
+    hackernews:
+      enabled: true
+      numberOfStories: 10
+      storyType: top
+      refreshInterval: 15m
+      position:
+        top: 4
+        left: 1
+        height: 1
+        width: 2
+    kubernetes:
+      enabled: true
+      title: "Build System"
+      kubeconfig: "/Users/testuser/.kube/config"
+      namespaces:
+      - internal
+      - public
+      - systems
+      objects:
+      - deployments
+      - nodes
+      - pods
+      refreshInterval: 5m
+      position:
+        top: 4
+        left: 1
+        height: 1
+        width: 2
+    resourceusage:
+      cpuCombined: false
+      enabled: true
+      position:
+        top: 1
+        left: 1
+        height: 1
+        width: 1
+      refreshInterval: 1s
+      showCPU: true
+      showMem: true
+      showSwp: true
+    security:
+      enabled: true
+      position:
+        top: 1
+        left: 2
+        height: 1
+        width: 1
+      refreshInterval: 1h
+    spotify:
+      enabled: true
+      colors:
+        label: "green"
+        text: "white"
+      position:
+        top: 1
+        left: 2
+        height: 1
+        width: 1
+      refreshInterval: 0
+    finnhub:
+      apiKey: "your-api-key"
+      symbols:
+      - "AAPL"
+      - "MSFT"
+      - "AMZN"
+      - "FSLY"
+      enabled: true
+      position:
+        top: 0
+        left: 0
+        height: 2
+        width: 2
+      refreshInterval: 5s
+    subreddit:
+      enabled: true
+      numberOfPosts: 10
+      position:
+        top: 4
+        left: 1
+        height: 1
+        width: 2
+      refreshInterval: 15m
+      sortOrder: top
+      subreddit: "news"
+      topTimePeriod: month
+    todo:
+      checkedIcon: "X"
+      colors:
+        checked: gray
+        highlight:
+          fore: "black"
+          back: "orange"
+      enabled: true
+      filename: "todo.yml"
+      position:
+        top: 2
+        left: 2
+        height: 2
+        width: 1
+      refreshInterval: 1h
+    github:
+      apiKey: "" 
+      baseURL: ""
+      customQueries:
+        othersPRs:
+          title: "Others Pull Requests"
+          filter: "is:open is:pr -author:wtfutil"
+      enabled: true
+      enableStatus: true
+      position:
+        top: 2
+        left: 3
+        height: 2
+        width: 2
+      refreshInterval: 5m
+      repositories:
+        - "wtfutil/wtf"
+        - "wtfutil/docs"
+        - "umbrella-corp/wesker-api"
+      uploadURL: ""
+      username: "wtfutil"
+    hibp:
+      accounts:
+      - test@example.com
+      - pwned@gmail.com
+      apiKey: "p0d13*********************************************c3"
+      colors:
+        ok: "green"
+        pwned: "red"
+      enabled: true
+      position:
+        top: 4
+        left: 1
+        height: 1
+        width: 2
+      refreshInterval: 12h
+      since: "2019-06-22"
+    transmission:
+      enabled: true
+      host: "192.168.1.5"
+      password: "passwordpassword"
+      position:
+        top: 4
+        left: 3
+        width: 2
+        height: 1
+      refreshInterval: 3s
+      username: "transmission"
+    gspreadsheets:
+      colors:
+        values: "green"
+      cells:
+        names:
+        - "Cell 1 name"
+        - "Cell 2 name"
+        addresses:
+        - "A1"
+        - "A2"
+      enabled: true
+      position:
+        top: 0
+        left: 0
+        width: 1
+        height: 1
+      refreshInterval: "5m"
+      secretFile: "~/.config/wtf/gspreadsheets/client_secret.json"
+      sheetId: "id_of_google_spreadsheet"
