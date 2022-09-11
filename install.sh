@@ -19,6 +19,7 @@ sub() {
         mkdir -p "$HOME/$out"
         mkdir -p "$backup_d/$out"
     }
+    mkdir -p `dirname "$backup_d/$out"`
 
     rsync -arvz --progress --ignore-existing "$HOME/$out$dir" "$backup_d/$out" | tee -a $log_f
     rsync -arvz --progress --exclude "**/*.swp" "$work_d/$i$dir" "$HOME/$out" | tee -a $log_f
