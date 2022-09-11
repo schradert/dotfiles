@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -eux
-
 work_d=$(pwd)
 today=$(date +"%Y%m%d")
 
@@ -12,11 +10,16 @@ mkdir -p $backup_d
 log_f="$backup_d/run.log"
 
 sub() {
-    local i o
+    local i o dir
     local "${@}"
 
-    [[ -d $i ]] && dir="/"
     out="${o:-`basename $i`}"
+    [[ -d $i ]] && {
+        local dir="/"
+        mkdir -p "$HOME/$out"
+        mkdir -p "$backup_d/$out"
+    }
+
     rsync -arvz --progress --ignore-existing "$HOME/$out$dir" "$backup_d/$out" | tee -a $log_f
     rsync -arvz --progress --exclude "**/*.swp" "$work_d/$i$dir" "$HOME/$out" | tee -a $log_f
 }
