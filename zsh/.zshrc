@@ -2,7 +2,7 @@
 
 # Powerlevel10k (first because instant prompt)
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+    source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 source ~/.p10k.zsh
 
@@ -10,41 +10,41 @@ source ~/.p10k.zsh
 find "$HOME/.config/zsh/config.d" -maxdepth 1 -type f -exec source {} \;
 
 # PLUGINS
-export PATH="/usr/local/bin:$HOME/.config/wtf:$PATH"
+export PATH="$HOME/.local/bin:/usr/local/bin:$HOME/.config/wtf:$PATH"
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="powerlevel10k/powerlevel10k"
 fpath+=($ZSH/custom/plugins/zsh-completions/src)
 plugins=(
-  aliases
-  ansible
-  battery
-  brew
-  colored-man-pages
-  command-not-found
-  common-aliases
-  cp
-  dirhistory
-  docker
-  docker-compose
-  fast-syntax-highlighting
-  gcloud
-  gh
-  git
-  git-auto-fetch
-  git-extra-commands
-  golang
-  iterm2
-  nix-zsh-completions
-  pip
-  poetry
-  python
-  ripgrep
-  rsync
-  terraform
-  tmux
-  vscode
-  zsh-aliases-exa
-  zsh-256color
+    aliases
+    ansible
+    battery
+    brew
+    colored-man-pages
+    command-not-found
+    common-aliases
+    cp
+    dirhistory
+    docker
+    docker-compose
+    fast-syntax-highlighting
+    gcloud
+    gh
+    git
+    git-auto-fetch
+    git-extra-commands
+    golang
+    iterm2
+    nix-zsh-completions
+    pip
+    poetry
+    python
+    ripgrep
+    rsync
+    terraform
+    tmux
+    vscode
+    zsh-aliases-exa
+    zsh-256color
 )
 
 # AUTOSUGGESTIONS
@@ -74,16 +74,16 @@ zstyle ':fzf-tab:*' switch-group ',' '.'
 source ~/.fzf.zsh
 source ~/.fzf-gcloud.plugin.zsh
 plugins+=(
-    fzf
-    fzf-tab
+fzf
+fzf-tab
 )
 bindkey "^R" fzf-history-widget
 
 # KUBERNETES
 plugins+=(
-  helm
-  kubectl
-  operator-sdk
+helm
+kubectl
+operator-sdk
 )
 
 # YOU SHOULD USE
