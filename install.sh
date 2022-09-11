@@ -36,3 +36,6 @@ sub i=vim/.vimrc
 sub i=ranger o=.config/ranger
 sub i=thefuck o=.config/thefuck
 sub i=wtf o=.config/wtf
+sub i=nix/.nix-channels
+sub i=nix/darwin-configuration.nix o=.nixpkgs/darwin-configuration.nix
+
