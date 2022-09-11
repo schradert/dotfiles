@@ -34,4 +34,5 @@ sub i=glab o=.config/glab-cli
 sub i=htop o=.config/htop
 sub i=vim/.vimrc
 sub i=ranger o=.config/ranger
+sub i=thefuck o=.config/thefuck
 
