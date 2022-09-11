@@ -10,3 +10,6 @@ filetype on " load filetype detection
 filetype plugin on " load 'runtimepath'/ftplugin.vim'
 filetype indent on " load 'runtimepath'/indent.vim
 
+" autocommands
+autocmd BufWritePre * :normal gg=G
+
