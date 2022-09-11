@@ -2,6 +2,8 @@
 colorscheme default
 syntax on
 set tabstop=2
+set shiftwidth=4
+set expandtab
 set number " sidebar line numbers
 set ruler " cursor row & column numbers
 set nofoldenable " expand folds by default
@@ -19,6 +21,19 @@ autocmd BufWritePre * :normal gg=G
 autocmd FileType vim nnoremap <buffer> <localleader>c I" <esc>
 autocmd FileType python,bash,sh nnoremap <buffer> <localleader>c I# <esc>
 augroup filetypedetect
-				autocmd BufNewFile,BufRead *.code-workspace setl filetype=json
+    autocmd BufNewFile,BufRead *.code-workspace setl filetype=json
 augroup END
+
+" conquer of completion (github.com/neoclide/coc.nvim)
+let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
+if empty(glob(data_dir . '/autoload/plug.vim'))
+    silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs	https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+call plug#begin()
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neoclide/coc-json', {'tag': '1.6.1'}
+Plug 'fannheyward/coc-marketplace'
+Plug 'tpope/vim-surround'
+call plug#end()
 
