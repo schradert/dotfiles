@@ -32,5 +32,5 @@ sub i=gh o=.config/gh
 sub i=git/.gitconfig
 sub i=glab o=.config/glab-cli
 sub i=htop o=.config/htop
-
+sub i=vim/.vimrc
 
