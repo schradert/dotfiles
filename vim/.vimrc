@@ -11,11 +11,14 @@ set fileencoding=utf-8 " use unicode by default for files
 set fileencodings=ucs-bom,utf8 " support ucs & unicode
 filetype on " load filetype detection
 filetype plugin on " load 'runtimepath'/ftplugin.vim'
-filetype indent on " load 'runtimepath'/indent.vim
+" filetype indent on " load 'runtimepath'/indent.vim
 
 " autocommands
 let maplocalleader = ","
 autocmd BufWritePre * :normal gg=G
 autocmd FileType vim nnoremap <buffer> <localleader>c I" <esc>
 autocmd FileType python,bash,sh nnoremap <buffer> <localleader>c I# <esc>
+augroup filetypedetect
+				autocmd BufNewFile,BufRead *.code-workspace setl filetype=json
+augroup END
 
