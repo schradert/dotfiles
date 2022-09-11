@@ -1,0 +1,12 @@
+[core]
+account = tristan@climaxfoods.com
+project = climax-ai-platform-74163
+
+[compute]
+zone = us-west1-b
+region = us-west1
+
+[artifacts]
+location = us-west1
+repository = docker-repo
+
