@@ -21,8 +21,8 @@ sub() {
     }
     mkdir -p `dirname "$backup_d/$out"`
 
-    rsync -arvz --progress --ignore-existing "$HOME/$out$dir" "$backup_d/$out" | tee -a $log_f
-    rsync -arvz --progress --exclude "**/*.swp" "$work_d/$i$dir" "$HOME/$out" | tee -a $log_f
+    rsync -iarvz --ignore-existing "$HOME/$out$dir" "$backup_d/$out" | egrep "^>" | tee -a $log_f
+    rsync -iarvz --exclude "**/*.swp" "$work_d/$i$dir" "$HOME/$out" | egrep "^>" | tee -a $log_f
 }
 
 sub i=zsh/.zshrc
