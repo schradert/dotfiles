@@ -12,7 +12,7 @@ mkdir -p $backup_d
 log_f="$backup_d/run.log"
 
 sub() {
-    local i, o
+    local i o
     local "${@}"
 
     [[ -d $i ]] && dir="/"
