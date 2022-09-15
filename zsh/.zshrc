@@ -37,6 +37,7 @@ plugins=(
     nix-zsh-completions
     pip
     poetry
+    pyenv
     python
     ripgrep
     rsync
