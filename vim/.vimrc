@@ -32,6 +32,7 @@ if empty(glob(data_dir . '/autoload/plug.vim'))
 endif
 call plug#begin()
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+let g:coc_disable_startup_warning = 1
 Plug 'neoclide/coc-json', {'tag': '1.6.1'}
 Plug 'fannheyward/coc-marketplace'
 Plug 'tpope/vim-surround'
