@@ -1,6 +1,7 @@
 " general
 colorscheme default
 syntax on
+set autoread
 set tabstop=2
 set shiftwidth=4
 set expandtab
