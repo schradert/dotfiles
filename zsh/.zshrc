@@ -102,4 +102,6 @@ source $ZSH/oh-my-zsh.sh
 
 # NIX
 prompt_nix_shell_setup
+export NIX_PATH=$HOME/.nix-defexpr/channels:/nix/var/nix/profiles/per-user/root/channels${NIX_PATH:+:$NIX_PATH}
+
 export PATH=$PATH:/Users/tristanschrader/.spicetify
