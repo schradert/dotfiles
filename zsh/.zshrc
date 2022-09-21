@@ -7,7 +7,7 @@ fi
 source ~/.p10k.zsh
 
 ### MAIN ###
-find "$HOME/.config/zsh/config.d" -maxdepth 1 -type f -exec source {} \;
+source <(cat ~/.config/zsh/config.d/*)
 
 # PLUGINS
 export PATH="$HOME/.local/bin:/usr/local/bin:$HOME/.config/wtf:$PATH"
