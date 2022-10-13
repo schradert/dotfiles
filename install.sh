@@ -39,4 +39,5 @@ sub() {
     sub i=wtf o=.config/wtf
     sub i=nix/.nix-channels
     sub i=nix/darwin-configuration.nix o=.nixpkgs/darwin-configuration.nix
+    sub i=nix/nix.conf o=.config/nix/nix.conf
 
