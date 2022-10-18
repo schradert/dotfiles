@@ -38,5 +38,6 @@ Plug 'neoclide/coc-json', {'tag': '1.6.1'}
 Plug 'fannheyward/coc-marketplace'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-fugitive'
+Plug 'LnL7/vim-nix'
 call plug#end()
 
