@@ -1,43 +1,45 @@
-" general
-colorscheme default
-syntax on
-set autoread
-set tabstop=2
-set shiftwidth=4
-set expandtab
-set number " sidebar line numbers
-set ruler " cursor row & column numbers
-set nofoldenable " expand folds by default
-set nocompatible " don't accommodate vi too much
-set enc=utf-8 " use unicode by default
-set fileencoding=utf-8 " use unicode by default for files
-set fileencodings=ucs-bom,utf8 " support ucs & unicode
-filetype on " load filetype detection
-filetype plugin on " load 'runtimepath'/ftplugin.vim'
-" filetype indent on " load 'runtimepath'/indent.vim
-
-" autocommands
-let maplocalleader = ","
-" autocmd BufWritePre * :normal gg=G
-autocmd FileType vim nnoremap <buffer> <localleader>c I" <esc>
-autocmd FileType python,bash,sh nnoremap <buffer> <localleader>c I# <esc>
-augroup filetypedetect
-    autocmd BufNewFile,BufRead *.code-workspace setl filetype=json
-augroup END
-
-" conquer of completion (github.com/neoclide/coc.nvim)
-let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
-if empty(glob(data_dir . '/autoload/plug.vim'))
-    silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs	https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-endif
+source ~/.vim/preload.vim
 call plug#begin()
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-let g:coc_disable_startup_warning = 1
-Plug 'neoclide/coc-json', {'tag': '1.6.1'}
-Plug 'fannheyward/coc-marketplace'
 Plug 'tpope/vim-surround'
-Plug 'tpope/vim-fugitive'
+Plug 'wincent/terminus'
+Plug 'preservim/tagbar'
+Plug 'mbbill/undotree'
+Plug 'ryanoasis/vim-devicons'
+Plug 'mhinz/vim-startify'
+Plug 'neoclide/coc.nvim', {'branch': 'release', 'tag': '*', 'do': { -> coc#util#install()}}
+Plug 'neoclide/coc-json', {'tag': '1.6.1'}
+Plug 'fannheyward/coc-pyright'
+Plug 'fannheyward/coc-marketplace'
+Plug 'neoclide/coc-vimtex'
+Plug 'neoclide/coc-denite'
+Plug 'josa42/coc-sh'
+Plug 'josa42/coc-docker'
+Plug 'lervag/vimtex'
+Plug 'chrisbra/csv.vim'
 Plug 'LnL7/vim-nix'
+Plug 'neoclide/jsonc.vim'
+if has('nvim')
+  Plug 'Shougo/denite.nvim', {'do': ':UpdateRemotePlugins'}
+else
+  Plug 'Shougo/denite.nvim'
+  Plug 'roxma/nvim-yarp'
+  Plug 'roxma/vim-hug-neovim-rpc'
+endif
+Plug 'vim-ctrlspace/vim-ctrlspace'
+Plug 'gcmt/taboo.vim'
+Plug 'airblade/vim-gitgutter'
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'tpope/vim-fugitive'
+Plug 'rbong/vim-flog'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'edkolev/tmuxline.vim'
+Plug 'farmergreg/vim-lastplace'
+Plug 'dracula/vim', {'as': 'dracula'}
+Plug 'dense-analysis/ale'
+Plug 'preservim/nerdtree'
 call plug#end()
+
+source ~/.vim/nix-supported-settings.vim
+source ~/.vim/nix.vim
 
