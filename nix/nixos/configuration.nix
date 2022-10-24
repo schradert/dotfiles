@@ -3,6 +3,7 @@ let
   inherit (pkgs.lib) attrNames zipAttrsWith id;
   regularUsers = [];
   adminUsers = [ { tristan = "Tristan Schrader"; } ];
+  usePodman = false;
 in {
   imports = [ ./hardware-configuration.nix <home-manager/nixos> ];
 
@@ -16,8 +17,8 @@ in {
 #  };
 
   environment = {
-    environment.pathsToLink = [ "/share/zsh" ];
-    environment.systemPackages = with pkgs; [
+    pathsToLink = [ "/share/zsh" ];
+    systemPackages = with pkgs; [
       aria2  # downloading anything
       bash
       iftop
@@ -45,7 +46,7 @@ in {
       wget
       zip
       zsh
-    ];
+    ] ++ (if usePodman then with pkgs; [ arion docker-client ] else []);
   }; 
   fonts.fonts = with pkgs; [ meslo-lgs-nf ];
   i18n.defaultLocale = "en_US.UTF-8";
@@ -87,7 +88,10 @@ in {
           isNormalUser = true;
           home = "/home/${username}";
           description = fullname;
-          extraGroups = [] ++ (if type == "regular" then [] else [ "wheel" ]);
+          extraGroups = ([]
+          ++ (if type == "regular" then [] else [ "wheel" ])
+          ++ (if usePodman then [ "podman" ] else [ "docker" ])
+          );
           openssh.authorizedKeys.keyFiles = [ "/etc/nixos/${type}-users/${username}.pub" ];
         };
       in
@@ -100,4 +104,19 @@ in {
     enable = true;
     liveRestore = true;
   };
-}
+} //
+(if usePodman then {
+  virtualisation = {
+    docker.enable = false;
+    podman = {
+      enable = true;
+      dockerSocket.enable = true;
+      defaultNetwork.dnsname.enable = true;
+    };
+  };
+} else {
+  virtualisation.docker = {
+    enable = true;
+    liveRestore = true;
+  };
+})
