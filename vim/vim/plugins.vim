@@ -89,3 +89,7 @@ command! -n=? -complete=file -bar Edit :call <SID>OpenFileOrExplorer('<args>')
 " Command-mode abbreviation to replace the :edit Vim command.
 cnoreabbrev e Edit
 
+" VIMSPECTOR (debugging)
+let g:vimspector_install_gadgets = [ 'debugpy' ]
+let g:vimspector_enable_mappings = 'VISUAL_STUDIO'
+let g:vimspector_sign_priority = { 'vimspectorBP': 3 }
