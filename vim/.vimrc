@@ -38,6 +38,7 @@ Plug 'farmergreg/vim-lastplace'
 Plug 'dracula/vim', {'as': 'dracula'}
 Plug 'dense-analysis/ale'
 Plug 'preservim/nerdtree'
+Plug 'puremourning/vimspector'
 call plug#end()
 
 source ~/.vim/nix-supported-settings.vim
