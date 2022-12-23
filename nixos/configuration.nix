@@ -1,25 +1,26 @@
 { config, pkgs, ... }:
 let
   inherit (pkgs.lib) attrNames zipAttrsWith id;
-  regularUsers = [];
-  adminUsers = [ { tristan = "Tristan Schrader"; } ];
+  regularUsers = [ ];
+  adminUsers = [{ tristan = "Tristan Schrader"; }];
   usePodman = false;
-in {
-  imports = [ ./hardware-configuration.nix <home-manager/nixos> ];
+in
+{
+  imports = [ ./hardware-configuration.nix ]; # <home-manager/nixos> ];
 
   boot.loader.efi.efiSysMountPoint = "/boot";
   boot.loader.systemd-boot.enable = true;
-#  boot.loader.grub = {
-#    enable = true;
-#    version = 2;
-#    enableCryptodisk = true;
-#    device = "/dev/sda";
-#  };
+  #  boot.loader.grub = {
+  #    enable = true;
+  #    version = 2;
+  #    enableCryptodisk = true;
+  #    device = "/dev/sda";
+  #  };
 
   environment = {
     pathsToLink = [ "/share/zsh" ];
     systemPackages = with pkgs; [
-      aria2  # downloading anything
+      aria2 # downloading anything
       bash
       iftop
       cachix
@@ -28,11 +29,11 @@ in {
       git
       google-cloud-sdk
       htop
-      imagemagick  # image processor CLI
-      inotify-tools  # easy 'inotify' interface
-      iotop  # process I/O analyzer
-      lsof  # list open files
-      nethogs  # process bandwidth analyzer
+      imagemagick # image processor CLI
+      inotify-tools # easy 'inotify' interface
+      iotop # process I/O analyzer
+      lsof # list open files
+      nethogs # process bandwidth analyzer
       nix-prefetch-scripts
       nmap
       openssl
@@ -46,8 +47,8 @@ in {
       wget
       zip
       zsh
-    ] ++ (if usePodman then with pkgs; [ arion docker-client ] else []);
-  }; 
+    ] ++ (if usePodman then with pkgs; [ arion docker-client ] else [ ]);
+  };
   fonts.fonts = with pkgs; [ meslo-lgs-nf ];
   i18n.defaultLocale = "en_US.UTF-8";
   networking = {
@@ -56,8 +57,8 @@ in {
       allowedTCPPorts = [ 22 ];
     };
     hostName = "server";
-#    networkmanager.enable = true;
-#    wireless.enable = true;
+    #    networkmanager.enable = true;
+    #    wireless.enable = true;
   };
   nix = {
     extraOptions = ''
@@ -66,7 +67,7 @@ in {
     '';
     settings.experimental-features = [ "nix-command" "flakes" ];
   };
-  programs.mosh.enable = true;  # ssh optimized for bad connection
+  programs.mosh.enable = true; # ssh optimized for bad connection
   security.sudo.enable = true;
   services = {
     gnupg.agent = {
@@ -88,15 +89,15 @@ in {
           isNormalUser = true;
           home = "/home/${username}";
           description = fullname;
-          extraGroups = ([]
-          ++ (if type == "regular" then [] else [ "wheel" ])
+          extraGroups = ([ ]
+          ++ (if type == "regular" then [ ] else [ "wheel" ])
           ++ (if usePodman then [ "podman" ] else [ "docker" ])
           );
           openssh.authorizedKeys.keyFiles = [ "/etc/nixos/${type}-users/${username}.pub" ];
         };
       in
-        (zipAttrsWith (mkUser "regular") regularUsers) //
-        (zipAttrsWith (mkUser "admin") adminUsers);
+      (zipAttrsWith (mkUser "regular") regularUsers) //
+      (zipAttrsWith (mkUser "admin") adminUsers);
     mutableUsers = true;
     users.tristan.shell = pkgs.zsh;
   };
