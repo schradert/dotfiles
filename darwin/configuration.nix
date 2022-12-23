@@ -1,6 +1,6 @@
 { config, pkgs, ... }:
 {
-  environment.systemPackages = [];
+  environment.systemPackages = [ ];
   services.nix-daemon.enable = true;
   programs.zsh.enable = true;
   system.stateVersion = 4;
