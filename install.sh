@@ -39,14 +39,10 @@ sub i=ranger o=.config/ranger
 sub i=thefuck o=.config/thefuck
 sub i=wtf o=.config/wtf
 sub i=tmux/.tmux.conf
-sub i=nix/.nix-channels
-sub i=nix/nix o=.config/nix
-sub i=nix/darwin o=.nixpkgs
-sub i=nix/home-manager o=.config/nixpkgs
+sub i=nix/nix.conf o=.config/nix/nix.conf
 sub i=wezterm/.wezterm.lua
+# sub i=nix/.nix-channels
+# sub i=darwin o=.nixpkgs
+# sub i=home-manager o=.config/nixpkgs
 # sub i=nix/nixos o=/etc/nixos
-
-# nix-channel --update
-# darwin-rebuild changelog
-# nix-shell '<home-manager>' -A install
 
