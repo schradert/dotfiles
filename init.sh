@@ -105,6 +105,11 @@ sudo apt install ./debian-ocamlfuse.deb
 rm -f ./debian-ocamlfuse.deb
 # Unmounting
 # fusermount -u /Volumes/GoogleDrive
+#
 
 git config --global pager.branch false
 
+
+# Spicetify
+curl -fsSL https://raw.githubusercontent.com/spicetify/spicetify-cli/master/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/spicetify/spicetify-marketplace/main/resources/install.sh | sh
