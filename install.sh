@@ -43,6 +43,7 @@ sub i=nix/.nix-channels
 sub i=nix/nix o=.config/nix
 sub i=nix/darwin o=.nixpkgs
 sub i=nix/home-manager o=.config/nixpkgs
+sub i=wezterm/.wezterm.lua
 # sub i=nix/nixos o=/etc/nixos
 
 # nix-channel --update
