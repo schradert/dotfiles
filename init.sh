@@ -105,3 +105,6 @@ sudo apt install ./debian-ocamlfuse.deb
 rm -f ./debian-ocamlfuse.deb
 # Unmounting
 # fusermount -u /Volumes/GoogleDrive
+
+git config --global pager.branch false
+
