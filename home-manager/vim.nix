@@ -1,21 +1,5 @@
 pkgs: {
   enable = true;
-  coc = {
-    enable = true;
-    pluginConfig = ''
-      
-    '';
-    settings = {
-        
-    };
-  };
-  withPython3 = true;
-  extraConfig = ''
-    luafile $HOME/.config/nixpkgs/settings.lua
-  '';
-  extraLuaPackages = ps: with ps; [];
-  extraPackages = [];
-  extraPython3Packages = ps: with; [];
   plugins = with pkgs.vimPlugins; [
     ale
     coc-denite
@@ -37,6 +21,7 @@ pkgs: {
     terminus
     tmuxline-vim
     undotree
+    vimspector
     vimtex
     vim-airline
     vim-airline-themes
@@ -49,10 +34,20 @@ pkgs: {
     vim-nix
     vim-startify
     vim-surround
-    # (nvim-treesitter.withPlugins (plugins: pkgs.tree-sitter.allGrammars))
-    # yankring
   ];
-  viAlias = false;
-  vimAlias = false;
-  vimdiffAlias = true;
-}
+  settings = {
+    ignorecase = true;
+    hidden = true;
+    history = 1000;
+    mouse = "a";
+    number = true;
+    shiftwidth = 4;
+    smartcase = true;
+    tabstop = 2;
+    expandtab = true;
+  };
+  extraConfig = ''
+    source ~/.vim/preload.vim
+    source ~/.vim/nix.vim
+  '';
+} 

@@ -1,13 +1,14 @@
-{ pkgs, lib, config, ... }:
+{ config, pkgs, lib, ... }:
 let
   macos = "aarch64-darwin";
   meNeovim = import ./nvim.nix;
   meVim = import ./vim.nix;
   meZsh = import ./zsh.nix;
-in {
+in
+{
   home = rec {
     enableNixpkgsReleaseCheck = true;
-    stateVersion = "22.11";
+    stateVersion = "22.05";
     packages = with pkgs; [
       cheat
       dig
@@ -22,10 +23,6 @@ in {
       tldr
       universal-ctags
     ];
-    username = "tristan";
-    homeDirectory =
-      let prefix = (if pkgs.system == macos then "/Users" else "/home");
-      in "${prefix}/${username}";
   };
   programs = {
     bat.enable = true;
@@ -75,10 +72,10 @@ in {
         {
           plugin = dracula;
           extraConfig = ''
-            set -g @dracula-show-battery false
-            set -g @dracula-show-powerline true
-	          set -g @dracula-refresh-rate 10
-	        '';
+                        set -g @dracula-show-battery false
+                        set -g @dracula-show-powerline true
+            	          set -g @dracula-refresh-rate 10
+            	        '';
         }
       ];
       extraConfig = ''
@@ -93,7 +90,7 @@ in {
   manual.html.enable = true;
   news.display = "show";
 } //
-(if pkgs.system == "aarch64-darwin" then {} else {
+(if pkgs.system == "aarch64-darwin" then { } else {
   services = {
     gpg-agent = {
       enable = true;
