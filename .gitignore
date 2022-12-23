@@ -3,3 +3,5 @@
 
 /vim/.vimrc.jeff
 
+.direnv/
+result
