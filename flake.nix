@@ -34,7 +34,8 @@
       usernames = getAttrs computers "username";
       getHostnameUser = hn: computersIndexed.${hn}.username;
       getHostnameUserDirectory = hn: "${computersIndexed.${hn}.home_d}/${getHostnameUser hn}";
-      readHostDir = hn: s: readDir (/. + "${getHostnameUserDirectory hn}/Code/${s.cwd}");
+      getHostSessionFolder = hn: s: "${getHostnameUserDirectory hn}/Code/${s.path}";
+      readHostDir = hn: s: readDir (/. + (getHostSessionFolder hn s));
       configs = {
         darwin = hostname: darwin.lib.darwinSystem {
           inherit system;
@@ -65,8 +66,8 @@
       cmds.list-windows = hn: s: attrNames (filterAttrs (_: v: v == "directory") (readHostDir hn s));
       cmds.create-session = s: "tmux new-session -d -s ${s.name} -n explore 'ranger'";
       cmds.has-session = s: "tmux list-sessions | grep -q ${s.name}";
-      cmds.create-window = sn: wn: cwd: "tmux new-window -d -n ${wn} -t ${sn}: -c ${cwd}/${wn} 'vim'";
-      cmds.create-windows = s: concatStringsSep "\n" (map (wn: cmds.create-window s.name wn s.cwd) s.windows);
+      cmds.create-window = s: wn: "tmux new-window -d -n ${wn} -t ${s.name}: -c ${s.cwd}/${wn} 'vim'";
+      cmds.create-windows = s: concatStringsSep "\n" (map (wn: cmds.create-window s wn) s.windows);
       cmds.spawn-session = s: "wezterm cli spawn --cwd ${s.cwd} -- tmux attach-session -t ${s.name}";
       cmds.build-session = s: ''
         ${cmds.has-session s} || {
@@ -91,16 +92,17 @@
       };
 
       sessions = [
-        { name = "climax"; cwd = "Work"; }
-        { name = "bunkbed"; cwd = "Personal/bunkbed"; }
-        { name = "vilf"; cwd = "Personal/vilf"; }
-        { name = "dev"; cwd = "Personal/dev"; }
-        { name = "hive"; cwd = "Personal/electrichive"; }
-        { name = "terrace"; cwd = "Personal/terrace"; }
-        { name = "couchers"; cwd = "Personal/couchers"; }
+        { name = "climax"; path = "Work"; }
+        { name = "bunkbed"; path = "Personal/bunkbed"; }
+        { name = "vilf"; path = "Personal/vilf"; }
+        { name = "dev"; path = "Personal/dev"; }
+        { name = "hive"; path = "Personal/electrichive"; }
+        { name = "terrace"; path = "Personal/terrace"; }
+        { name = "couchers"; path = "Personal/couchers"; }
       ];
-      getHostSessionsWithWindows = hn: map (s: s // { windows = cmds.list-windows hn s; }) sessions;
-      getWezmuxCommand = hn: cmds.run-wezmux (getHostSessionsWithWindows hn);
+      getHostSessions = hn:
+        map (s: s // { cwd = getHostSessionFolder hn s; windows = cmds.list-windows hn s; }) sessions;
+      getWezmuxCommand = hn: cmds.run-wezmux (getHostSessions hn);
 
       scripts._wezmux = genAttrs hostnames (hn: bin.write-script "_wezmux_${hn}" (getWezmuxCommand hn));
       scripts.wezmux = bin.write-script "wezmux" ''
