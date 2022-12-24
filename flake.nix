@@ -35,6 +35,7 @@
       getHostnameUser = hn: computersIndexed.${hn}.username;
       getHostnameUserDirectory = hn: "${computersIndexed.${hn}.home_d}/${getHostnameUser hn}";
       getHostSessionFolder = hn: s: "${getHostnameUserDirectory hn}/Code/${s.path}";
+      getPaneName = s: wn: pi: "${s.name}:${wn}.${toString pi}";
       readHostDir = hn: s: readDir (/. + (getHostSessionFolder hn s));
       configs = {
         darwin = hostname: darwin.lib.darwinSystem {
@@ -67,17 +68,32 @@
       cmds.list-windows = hn: s: attrNames (filterAttrs (_: v: v == "directory") (readHostDir hn s));
       cmds.create-session = s: "tmux new-session -d -s ${s.name} -n ${defaultWindow} -c ${s.cwd}";
       cmds.has-session = s: "tmux list-sessions | grep -q ${s.name}";
-      cmds.create-window = s: wn: "tmux new-window -d -n ${wn} -t ${s.name}: -c ${s.cwd}/${wn} 'vim'";
-      cmds.create-windows = s: concatStringsSep "\n" (map (wn: cmds.create-window s wn) s.windows);
-      cmds.spawn-session = s: "wezterm cli spawn --cwd ${s.cwd} -- tmux attach-session -t ${s.name}";
-      cmds.run-pane-cmd = s: wn: pi: cmd: "tmux send-keys -t ${s.name}:${wn}.${toString pi} '${cmd}' Enter";
+      cmds.create-window = s: wn: "tmux new-window -d -n ${wn} -t ${s.name}: -c ${s.cwd}/${wn}";
+      cmds.create-windows = s: concatStringsSep "\n" (map (cmds.create-window s) s.windows);
+      cmds.split-pane = s: pi: flags: wn: "tmux split-window -d -t ${getPaneName s wn pi} ${flags}";
+      cmds.split-panes = s: pi: flags: concatStringsSep "\n" (map (cmds.split-pane s pi flags) s.windows);
+      cmds.rename-tab = s: "rename_wezterm_title ${s.name}";
+      cmds.attach-tab = s: "tmux attach-session -t ${s.name}";
+      cmds.spawn-session = s: "wezterm cli spawn --cwd ${s.cwd}";
+      cmds.run-pane-cmd = s: pi: cmd: wn: "tmux send-keys -t ${getPaneName s wn pi} '${cmd}' Enter";
+      cmds.run-pane-cmds = s: pi: cmd: concatStringsSep "\n" (map (cmds.run-pane-cmd s pi cmd) s.windows);
       cmds.build-session = s: ''
         ${cmds.has-session s} || {
+
+          # Create session default window
           ${cmds.create-session s}
-          ${cmds.run-pane-cmd s defaultWindow 0 "ranger"}
+          ${cmds.run-pane-cmd s 0 "ranger" defaultWindow}
+
+          # Run commands for each project window
           ${cmds.create-windows s}
+          ${cmds.split-panes s 0 "-h"}
+          ${cmds.split-panes s 1 "-v"}
+          ${cmds.run-pane-cmds s 0 "vim"}
+          ${cmds.run-pane-cmds s 2 "tig"}
         }
         ${cmds.spawn-session s}
+        pane_id="$(wezterm cli list | grep ${s.name} | tr -s ' ' | cut -d ' ' -f 4)"
+        wezterm cli send-text --no-paste --pane-id $pane_id "${cmds.rename-tab s} && ${cmds.attach-tab s}"
       '';
       cmds.build-sessions = ss: concatStringsSep "\n" (map cmds.build-session ss);
       cmds.run-wezmux = ss: ''
