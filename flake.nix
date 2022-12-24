@@ -18,7 +18,7 @@
     , nixpkgs
     }: flake-utils.lib.eachDefaultSystem (system:
     let
-      inherit (builtins) attrNames listToAttrs map mapAttrs readDir readFile;
+      inherit (builtins) attrNames listToAttrs map mapAttrs readDir readFile toString;
       getAttrs = l: a: map (s: s.${a}) l;
 
       project = "dotfiles";
@@ -58,20 +58,23 @@
           ];
         };
       };
-      
+
+      defaultWindow = "explore";
       cmds.get-host = ''
         host="$(hostname)"
         host="''${host%.*}"
       '';
       cmds.list-windows = hn: s: attrNames (filterAttrs (_: v: v == "directory") (readHostDir hn s));
-      cmds.create-session = s: "tmux new-session -d -s ${s.name} -n explore -c ${s.cwd} 'ranger'";
+      cmds.create-session = s: "tmux new-session -d -s ${s.name} -n ${defaultWindow} -c ${s.cwd}";
       cmds.has-session = s: "tmux list-sessions | grep -q ${s.name}";
       cmds.create-window = s: wn: "tmux new-window -d -n ${wn} -t ${s.name}: -c ${s.cwd}/${wn} 'vim'";
       cmds.create-windows = s: concatStringsSep "\n" (map (wn: cmds.create-window s wn) s.windows);
       cmds.spawn-session = s: "wezterm cli spawn --cwd ${s.cwd} -- tmux attach-session -t ${s.name}";
+      cmds.run-pane-cmd = s: wn: pi: cmd: "tmux send-keys -t ${s.name}:${wn}.${toString pi} '${cmd}' Enter";
       cmds.build-session = s: ''
         ${cmds.has-session s} || {
           ${cmds.create-session s}
+          ${cmds.run-pane-cmd s defaultWindow 0 "ranger"}
           ${cmds.create-windows s}
         }
         ${cmds.spawn-session s}
