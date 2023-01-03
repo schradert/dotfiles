@@ -41,6 +41,8 @@ sub i=wtf o=.config/wtf
 sub i=tmux/.tmux.conf
 sub i=nix/nix.conf o=.config/nix/nix.conf
 sub i=wezterm/.wezterm.lua
+sub i=yabai/.yabairc
+sub i=skhd/.skhdrc
 # sub i=nix/.nix-channels
 # sub i=darwin o=.nixpkgs
 # sub i=home-manager o=.config/nixpkgs

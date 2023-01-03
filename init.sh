@@ -20,6 +20,8 @@ sudo apt-get install --yes build-essential fontconfig
 
 # Install brew dependencies
 brew install ansible bat cheat darksky-weather direnv exa fzf gh git helm htop hyperfine jq kubernetes-cli lsof navi node operator-sdk ranger rclone ripgrep shellcheck speedtest-cli terraform thefuck tmux virtualenv wget wtfutil xclip zoxide zsh
+brew install koekeishiya/formulae/yabai
+brew install koekeishiya/formulae/skhd
 brew tap homebrew/command-not-found
 /home/linuxbrew/.linuxbrew/opt/fzf/install
 
