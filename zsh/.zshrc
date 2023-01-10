@@ -57,6 +57,9 @@ source $(brew --repository)/Library/Taps/homebrew/homebrew-command-not-found/han
 
 # DIRENV
 eval "$(direnv hook zsh)"
+# We increase the time elapsed to display the annoying direnv warning
+# about long execution time. The default is 5s.
+export DIRENV_WARN_TIMEOUT="10s"
 
 # EMACS
 export PATH="$PATH:$HOME/.emacs.d/bin"
