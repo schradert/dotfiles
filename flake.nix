@@ -75,7 +75,8 @@
       cmds.rename-tab = s: "rename_wezterm_title ${s.name}";
       cmds.attach-tab = s: "tmux attach-session -t ${s.name}";
       cmds.spawn-session = s: "wezterm cli spawn --cwd ${s.cwd}";
-      cmds.run-pane-cmd = s: pi: cmd: wn: "tmux send-keys -t ${getPaneName s wn pi} '${cmd}' Enter";
+      cmds.run-pane-cmd = s: pi: cmd: wn:
+        "tmux send-keys -t ${getPaneName s wn pi} '[[ -d ${s.cwd}/${wn} ]] && cd ${s.cwd}/${wn}; ${cmd}' Enter";
       cmds.run-pane-cmds = s: pi: cmd: concatStringsSep "\n" (map (cmds.run-pane-cmd s pi cmd) s.windows);
       cmds.build-session = s: ''
         ${cmds.has-session s} || {
