@@ -89,6 +89,7 @@
           ${cmds.split-panes s 0 "-h"}
           ${cmds.split-panes s 1 "-v"}
           ${cmds.run-pane-cmds s 0 "vim"}
+          ${cmds.run-pane-cmds s 1 "ranger"}
           ${cmds.run-pane-cmds s 2 "tig"}
         }
         ${cmds.spawn-session s}
