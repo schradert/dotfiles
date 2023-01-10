@@ -59,7 +59,7 @@ source $(brew --repository)/Library/Taps/homebrew/homebrew-command-not-found/han
 eval "$(direnv hook zsh)"
 
 # EMACS
-export PATH="$PATH:$HOME/.emacs.d"
+export PATH="$PATH:$HOME/.emacs.d/bin"
 
 # (THE)FUCK
 eval $(thefuck --alias)
