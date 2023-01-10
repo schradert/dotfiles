@@ -8,9 +8,9 @@ source ~/.p10k.zsh
 
 ### MAIN ###
 source <(cat ~/.config/zsh/config.d/*)
+export PATH="$HOME/.local/bin:/usr/local/bin:$PATH"
 
 # PLUGINS
-export PATH="$HOME/.local/bin:/usr/local/bin:$HOME/.config/wtf:$PATH"
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="powerlevel10k/powerlevel10k"
 fpath+=($ZSH/custom/plugins/zsh-completions/src)
@@ -90,6 +90,12 @@ kubectl
 operator-sdk
 )
 
+# SPICETIFY
+export PATH="$PATH:$HOME/.spicetify"
+
+# WTFUTIL
+export PATH="$PATH:$HOME/.config/wtf"
+
 # YOU SHOULD USE
 export YSU_HARDCORE=1
 export YSU_MESSAGE_POSITION="after"
@@ -107,4 +113,3 @@ source $ZSH/oh-my-zsh.sh
 prompt_nix_shell_setup
 export NIX_PATH=$HOME/.nix-defexpr/channels:/nix/var/nix/profiles/per-user/root/channels${NIX_PATH:+:$NIX_PATH}
 
-export PATH=$PATH:/Users/tristanschrader/.spicetify
