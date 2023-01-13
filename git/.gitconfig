@@ -7,4 +7,5 @@
 				defaultBranch = trunk
 [color]
 				status = always
-
+[push]
+        autoSetupRemote = true
