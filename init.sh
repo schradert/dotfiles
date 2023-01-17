@@ -25,6 +25,8 @@ brew install mmctl
 brew install emacs
 brew install koekeishiya/formulae/yabai
 brew install koekeishiya/formulae/skhd
+brew install --cask kodi
+brew install --cask jellyfin
 brew tap homebrew/command-not-found
 /home/linuxbrew/.linuxbrew/opt/fzf/install
 
