@@ -20,9 +20,9 @@ sudo apt-get install --yes build-essential fontconfig
 
 # Install brew dependencies
 brew install ansible bat cheat darksky-weather direnv exa fzf gh git helm htop hyperfine jq kubernetes-cli lsof navi node operator-sdk ranger rclone ripgrep shellcheck speedtest-cli terraform thefuck tmux virtualenv wget wtfutil xclip zoxide zsh
+# We don't install the mattermost cask because it barely works... Mattermost functionality is supported best in the browser unfortunately
 brew install mmctl
 brew install emacs
-brew install --cask mattermost
 brew install koekeishiya/formulae/yabai
 brew install koekeishiya/formulae/skhd
 brew tap homebrew/command-not-found
