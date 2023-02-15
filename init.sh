@@ -24,6 +24,7 @@ brew install ansible bat cheat darksky-weather direnv exa fzf gh git helm htop h
 brew install mmctl
 brew install java
 brew install emacs
+brew install git-gui
 brew install koekeishiya/formulae/yabai
 brew install koekeishiya/formulae/skhd
 brew install --cask kodi
