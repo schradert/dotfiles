@@ -22,11 +22,13 @@ sudo apt-get install --yes build-essential fontconfig
 brew install ansible bat cheat darksky-weather direnv exa fzf gh git helm htop hyperfine jq kubernetes-cli lsof navi node operator-sdk ranger rclone ripgrep shellcheck speedtest-cli terraform thefuck tmux virtualenv wget wtfutil xclip zoxide zsh
 # We don't install the mattermost cask because it barely works... Mattermost functionality is supported best in the browser unfortunately
 brew install mmctl
+brew install java
 brew install emacs
 brew install koekeishiya/formulae/yabai
 brew install koekeishiya/formulae/skhd
 brew install --cask kodi
 brew install --cask jellyfin
+brew install --cask android-studio
 brew tap homebrew/command-not-found
 /home/linuxbrew/.linuxbrew/opt/fzf/install
 
