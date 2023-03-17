@@ -28,6 +28,7 @@
       computers = [
         { hostname = "Nadjas-Air"; username = "tristanschrader"; home_d = "/Users"; }
         { hostname = "morgenmuffel"; username = "tristanschrader"; home_d = "/Users"; }
+        { hostname = "Daniels-iPhone"; username = "tristanschrader"; home_d = "/Users"; }
       ];
       computersIndexed = listToAttrs (map (c: { name = c.hostname; value = c; }) computers);
       hostnames = attrNames computersIndexed;
