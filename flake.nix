@@ -1,13 +1,15 @@
 {
   description = "System configuration";
   inputs = {
-    darwin.url = "github:lnl7/nix-darwin";
-    devshell.url = "github:numtide/devshell";
-    flake-utils.url = "github:numtide/flake-utils";
-    home-manager.url = "github:nix-community/home-manager";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-22.11";
+    darwin.url = github:lnl7/nix-darwin;
     darwin.inputs.nixpkgs.follows = "nixpkgs";
+    devshell.url = github:numtide/devshell;
+    flake-utils.url = github:numtide/flake-utils;
+    home-manager.url = github:nix-community/home-manager;
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    nixpkgs.url = github:nixos/nixpkgs;
+    nix-doom-emacs.url = github:nix-community/nix-doom-emacs;
+    nix-doom-emacs.inputs.nixpkgs.follows = "nixpkgs";
   };
   outputs =
     inputs@{ self
@@ -16,15 +18,17 @@
     , flake-utils
     , home-manager
     , nixpkgs
+    , ...
     }: flake-utils.lib.eachDefaultSystem (system:
     let
       inherit (builtins) attrNames listToAttrs map mapAttrs readDir readFile toString;
       getAttrs = l: a: map (s: s.${a}) l;
 
       project = "dotfiles";
-      pkgs = import nixpkgs { inherit system; overlays = [ devshell.overlay ]; };
+      pkgs = import nixpkgs { inherit system; overlays = [ devshell.overlays.default ]; };
       inherit (pkgs.lib.attrsets) filterAttrs genAttrs;
       inherit (pkgs.lib.strings) concatStringsSep;
+      devices = attrNames (filterAttrs (_: v: v == "directory") (readDir ./devices));
       computers = [
         { hostname = "Nadjas-Air"; username = "tristanschrader"; home_d = "/Users"; }
         { hostname = "morgenmuffel"; username = "tristanschrader"; home_d = "/Users"; }
@@ -150,18 +154,23 @@
     rec {
       devShell = pkgs.devshell.mkShell {
         name = "${project}-shell";
-        commands = [{ package = "devshell.cli"; }];
         packages = with pkgs; [
           nixpkgs-fmt
         ];
       };
 
       darwinConfigurations = genAttrs hostnames (hn: configs.darwin hn);
-      nixosConfigurations = genAttrs hostnames (_: configs.nixos);
+      nixosConfigurations_ = genAttrs hostnames (_: configs.nixos);
       homeConfigurations = genAttrs usernames (_: configs.home);
       packages = rec {
-        inherit darwinConfigurations nixosConfigurations homeConfigurations;
+        inherit darwinConfigurations homeConfigurations;
         inherit (scripts) install wezmux _wezmux;
+        nixosConfigurations = nixosConfigurations_ // (genAttrs devices (device: nixpkgs.lib.nixosSystem (rec {
+          system = "x86_64-linux";
+          specialArgs = inputs // { inherit system; };
+          modules = [ (./. + "/devices/${device}/configuration.nix") ];
+        })));
+
         default = install;
       };
     }
