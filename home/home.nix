@@ -79,12 +79,7 @@ let
       zoxide.enable = true;
       zsh = import ./zsh.nix { inherit pkgs; };
     };
-    services.emacs = {
-      enable = true;
-      client.enable = true;
-      client.arguments = [ "-c" "-a" "'emacs'" ];
-      defaultEditor = true;
-    };
+    services.emacs = { enable = true; defaultEditor = true; };
     xdg.configFile."glab-cli/config.yml".text = ''
       git_protocol: ssh
       editor: vim

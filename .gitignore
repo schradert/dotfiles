@@ -1,7 +1,4 @@
-*.swp
-/vim/.vimrc.jeff
+*.sw*
 .direnv/
 result
-raycast/exports/
-
 .DS_Store
