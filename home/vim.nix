@@ -1,36 +1,36 @@
 { pkgs }:
 {
   enable = true;
-# defaultEditor = true;
+  # defaultEditor = true;
   plugins = with pkgs.vimPlugins; [
-#   ale
-#   coc-denite
-#   coc-json
-#   coc-pyright
-#   coc-vimtex
-#   csv-vim
-#   ctrlp-vim
-#   denite-nvim
-#   dracula-vim
-#   jsonc-vim
-#   nerdtree
-#   taboo-vim
-#   tagbar
-#   terminus
-#   tmuxline-vim
-#   undotree
-#   vimspector
-#   vimtex
-#   vim-airline
-#   vim-airline-themes
-#   vim-devicons
-#   vim-flog
-#   vim-fugitive
-#   vim-gitgutter
-#   vim-lastplace
-#   vim-nix
-#   vim-startify
-#   vim-surround
+    #   ale
+    #   coc-denite
+    #   coc-json
+    #   coc-pyright
+    #   coc-vimtex
+    #   csv-vim
+    #   ctrlp-vim
+    #   denite-nvim
+    #   dracula-vim
+    #   jsonc-vim
+    #   nerdtree
+    #   taboo-vim
+    #   tagbar
+    #   terminus
+    #   tmuxline-vim
+    #   undotree
+    #   vimspector
+    #   vimtex
+    #   vim-airline
+    #   vim-airline-themes
+    #   vim-devicons
+    #   vim-flog
+    #   vim-fugitive
+    #   vim-gitgutter
+    #   vim-lastplace
+    #   vim-nix
+    #   vim-startify
+    #   vim-surround
   ];
   settings = {
     expandtab = true;
@@ -43,8 +43,8 @@
     smartcase = true;
     tabstop = 2;
   };
-# extraConfig = ''
-#   source vim/preload.vim
-#   source vim/nix.vim
-# '';
+  # extraConfig = ''
+  #   source vim/preload.vim
+  #   source vim/nix.vim
+  # '';
 } 
