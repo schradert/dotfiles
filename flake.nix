@@ -12,24 +12,18 @@
     nix-doom-emacs.inputs.nixpkgs.follows = "nixpkgs";
   };
   outputs =
-    inputs@{ self
+    { self
     , darwin
     , devshell
     , flake-utils
     , home-manager
     , nixpkgs
-    , ...
+    , nix-doom-emacs
     }: flake-utils.lib.eachDefaultSystem (system:
     let
-      inherit (builtins) attrNames readDir;
       project = "dotfiles";
-
-      pkgs = import nixpkgs { inherit system; overlays = [ devshell.overlays.default ]; };
-      inherit (pkgs) writeScriptBin;
-      inherit (pkgs.lib.attrsets) filterAttrs genAttrs;
-
-      devices = attrNames (filterAttrs (_: v: v == "directory") (readDir ./devices));
-      bin.write-script = name: text: (writeScriptBin name text).overrideAttrs (old: {
+      pkgs = import nixpkgs { inherit system; overlays = [ (import overlays) devshell.overlays.default ]; };
+      bin.write-script = name: text: (pkgs.writeScriptBin name text).overrideAttrs (old: {
         buildCommand = "${old.buildCommand}\n patchShebangs $out";
       });
       scripts.install = bin.write-script "install" ''
@@ -57,11 +51,16 @@
 #         ./home/home.nix
         ];
       };
-      packages.nixosConfigurations = genAttrs devices (device: nixpkgs.lib.nixosSystem (rec {
+      packages.nixosConfigurations.sirver = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        specialArgs = inputs // { inherit system; };
-        modules = [ (./. + "/devices/${device}/configuration.nix") ];
-      }));
+        specialArgs = { inherit pkgs nix-doom-emacs home-manager; };
+        modules = [ ./devices/sirver/configuration.nix ];
+      };
+      packages.nixosConfigurations.chilldom = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = { inherit pkgs nix-doom-emacs home-manager; };
+        modules = [ ./devices/chilldom/configuration.nix ];
+      };
       packages.install = scripts.install;
       packages.default = scripts.install;
     }
