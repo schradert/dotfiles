@@ -22,7 +22,7 @@
     }: flake-utils.lib.eachDefaultSystem (system:
     let
       project = "dotfiles";
-      pkgs = import nixpkgs { inherit system; overlays = [ (import overlays) devshell.overlays.default ]; };
+      pkgs = import nixpkgs { inherit system; overlays = (import ./overlays.nix) ++ [ devshell.overlays.default ]; };
       bin.write-script = name: text: (pkgs.writeScriptBin name text).overrideAttrs (old: {
         buildCommand = "${old.buildCommand}\n patchShebangs $out";
       });
