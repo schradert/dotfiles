@@ -1,25 +1,38 @@
-{ pkgs, nix-doom-emacs }:
+{ pkgs, nix-doom-emacs, me ? { packages = []; groups = []; } }:
 let
   tristan.users = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "tty" ];
+    home = "/home/tristan";
+    description = "Tristan Schrader";
+    extraGroups = [ "wheel" "tty" ] ++ me.groups;
     shell = pkgs.zsh;
   };
   tristan.home-manager = { ... }: {
     imports = [ nix-doom-emacs.hmModule ];
     home = {
       stateVersion = "22.11";
-      packages = with pkgs; [
+      packages = (with pkgs; [
         aria2
         cheat
+	cachix
+	file
         dig
+	htop
+	iftop
+	lsof
+	nethogs
+	nmap
+	openssl
+	rclone
         ripgrep
         speedtest-cli
         thefuck
+	tig
         tldr
+	tree
         unzip
         xplr
-      ];
+      ]) ++ me.packages;
     };
     programs = {
       bat.enable = true;
