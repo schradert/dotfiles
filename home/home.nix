@@ -7,7 +7,7 @@ let
     extraGroups = [ "wheel" "tty" ] ++ me.groups;
     shell = pkgs.zsh;
   };
-  tristan.home-manager = { ... }: {
+  tristan.home-manager = {
     imports = [ nix-doom-emacs.hmModule ];
     home = {
       stateVersion = "22.11";
@@ -17,7 +17,7 @@ let
         cachix
         file
         dig
-        htop
+        glab
         iftop
         lsof
         nethogs
@@ -41,10 +41,19 @@ let
       doom-emacs = { enable = true; doomPrivateDir = ./doom.d; };
       exa.enable = true;
       fzf = { enable = true; tmux.enableShellIntegration = true; };
-      gh.enable = true;
-      git = { enable = true; userEmail = "tristanschrader@proton.me"; userName = "Tristan Schrader"; };
+      gh = {
+        enable = true;
+        settings = { editor = "vim"; git_protocol = "ssh"; aliases.co = "pr checkout"; };
+      };
+      git = {
+        enable = true;
+        userEmail = "tristanschrader@proton.me";
+        userName = "Tristan Schrader";
+        extraConfig = { push.autoSetupRemote = true; color.status = "always"; };
+      };
       gpg.enable = true;
       home-manager.enable = true;
+      htop.enable = true;
       jq.enable = true;
       navi.enable = true;
       tmux = {
@@ -66,6 +75,7 @@ let
         ];
       };
       vim = import ./vim.nix { inherit pkgs; };
+      wezterm = import ./wezterm { inherit pkgs; };
       zoxide.enable = true;
       zsh = import ./zsh.nix { inherit pkgs; };
     };
@@ -75,6 +85,18 @@ let
       client.arguments = [ "-c" "-a" "'emacs'" ];
       defaultEditor = true;
     };
+    xdg.configFile."glab-cli/config.yml".text = ''
+      git_protocol: ssh
+      editor: vim
+      browser: firefox
+      glamour_style: dark
+      check_update: true
+      display_hyperlinks: true
+    '';
+    xdg.configFile."glab-cli/aliases.yml".text = ''
+      ci: pipeline ci
+      co: mr checkout
+    '';
   };
 in
 {
