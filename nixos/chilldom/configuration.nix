@@ -1,38 +1,11 @@
-{ config, lib, nixpkgs, home-manager, nix-doom-emacs, system, ... }:
+{ pkgs, nix-doom-emacs, home-manager }:
 let
-  pkgs = import nixpkgs {
-    inherit system;
-    overlays = [
-      (self: super: {
-        tmux = super.tmux.overrideAttrs (_: {
-          version = "unstable-2023-04-06";
-          src = super.fetchFromGitHub {
-            owner = "tmux";
-            repo = "tmux";
-            rev = "b9524f5b72d16bd634fc47ad1a4a9d3240bd4370";
-            sha256 = lib.fakeSha256;
-          };
-        });
-        tmuxPlugins = super.tmuxPlugins // {
-          dracula = super.tmuxPlugins.dracula.overrideAttrs (_: {
-            version = "unstable-2023-04-04";
-            src = super.fetchFromGitHub {
-              owner = "dracula";
-              repo = "tmux";
-              rev = "b346d1030696620154309f71d5b14bc657294a98";
-              sha256 = "89S8LHTx2gYWj+Ejws5f6YRQgoj0rYE7ITtGtZibl30=";
-            };
-          });
-        };
-      })
-    ];
-  };
   me = { packages = with pkgs; [ bitwarden firefox ]; groups = [ "networkmanager" ]; };
 in
 {
   imports = [
-    home-manager.nixosModule
     ./hardware-configuration.nix
+    home-manager.nixosModule
   ];
 
   boot.loader.systemd-boot.enable = true;
