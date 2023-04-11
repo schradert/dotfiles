@@ -1,4 +1,4 @@
-{ pkgs, nix-doom-emacs, me ? { packages = []; groups = []; } }:
+{ pkgs, nix-doom-emacs, me ? { packages = [ ]; groups = [ ]; } }:
 let
   tristan.users = {
     isNormalUser = true;
@@ -14,22 +14,22 @@ let
       packages = (with pkgs; [
         aria2
         cheat
-	cachix
-	file
+        cachix
+        file
         dig
-	htop
-	iftop
-	lsof
-	nethogs
-	nmap
-	openssl
-	rclone
+        htop
+        iftop
+        lsof
+        nethogs
+        nmap
+        openssl
+        rclone
         ripgrep
         speedtest-cli
         thefuck
-	tig
+        tig
         tldr
-	tree
+        tree
         unzip
         xplr
       ]) ++ me.packages;
