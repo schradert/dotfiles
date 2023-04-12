@@ -1,4 +1,4 @@
-{ pkgs, nix-doom-emacs, home-manager }:
+{ pkgs, nix-doom-emacs, home-manager, ... }:
 {
   imports = [
     ./hardware-configuration.nix
@@ -28,4 +28,4 @@
   };
   services.openssh.enable = true;
   virtualisation.libvirtd.enable = true;
-} // (import ../../home/home.nix { inherit pkgs nix-doom-emacs; })
+} // (import ../../home { inherit pkgs nix-doom-emacs; })

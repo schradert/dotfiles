@@ -1,4 +1,4 @@
-{ pkgs, nix-doom-emacs, me ? { packages = [ ]; groups = [ ]; } }:
+{ pkgs, nix-doom-emacs, me ? { packages = [ ]; groups = [ ]; }, ... }:
 let
   tristan.users = {
     isNormalUser = true;
@@ -75,7 +75,7 @@ let
         ];
       };
       vim = import ./vim.nix { inherit pkgs; };
-      wezterm = import ./wezterm { inherit pkgs; };
+#     wezterm = import ./wezterm { inherit pkgs; };
       zoxide.enable = true;
       zsh = import ./zsh.nix { inherit pkgs; };
     };
