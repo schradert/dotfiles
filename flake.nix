@@ -45,21 +45,18 @@
       };
       packages.darwinConfigurations.morgenmuffel = darwin.lib.darwinSystem {
         system = "aarch64-darwin";
-        modules = [
-          ./darwin/configuration.nix
-          home-manager.darwinModules.home-manager
-#         ./home/home.nix
-        ];
+        specialArgs = { inherit pkgs nix-doom-emacs home-manager; };
+        modules = [ ./darwin ];
       };
       packages.nixosConfigurations.sirver = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = { inherit pkgs nix-doom-emacs home-manager; };
-        modules = [ ./devices/sirver/configuration.nix ];
+        modules = [ ./nixos/sirver ];
       };
       packages.nixosConfigurations.chilldom = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = { inherit pkgs nix-doom-emacs home-manager; };
-        modules = [ ./devices/chilldom/configuration.nix ];
+        modules = [ ./nixos/chilldom ];
       };
       packages.install = scripts.install;
       packages.default = scripts.install;
