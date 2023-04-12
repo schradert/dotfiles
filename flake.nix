@@ -12,7 +12,7 @@
     nix-doom-emacs.inputs.nixpkgs.follows = "nixpkgs";
   };
   outputs =
-    { self
+    inputs@{ self
     , darwin
     , devshell
     , flake-utils
@@ -50,7 +50,7 @@
       };
       packages.nixosConfigurations.sirver = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        specialArgs = { inherit pkgs nix-doom-emacs home-manager; };
+        specialArgs = inputs // { inherit pkgs; };
         modules = [ ./nixos/sirver ];
       };
       packages.nixosConfigurations.chilldom = nixpkgs.lib.nixosSystem {
