@@ -1,4 +1,4 @@
-{ pkgs, nix-doom-emacs, home-manager }:
+{ pkgs, nix-doom-emacs, home-manager, ... }:
 let
   me = { packages = with pkgs; [ bitwarden firefox ]; groups = [ "networkmanager" ]; };
 in
@@ -45,4 +45,4 @@ in
     libvirtd.enable = true;
     podman = { enable = true; dockerSocket.enable = true; defaultNetwork.settings.dns_enable = true; };
   };
-} // (import ../../home/home.nix { inherit pkgs nix-doom-emacs me; })
+} // (import ../../home { inherit pkgs nix-doom-emacs me; })
