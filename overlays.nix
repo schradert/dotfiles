@@ -6,8 +6,9 @@
         owner = "tmux";
         repo = "tmux";
         rev = "b9524f5b72d16bd634fc47ad1a4a9d3240bd4370";
-        sha256 = "";
+        sha256 = "7jvmeMipZcNMqFloMuSgPwKowNqWC1J8/++ha6H/D1M=";
       };
+      patches = [];
     });
     tmuxPlugins = super.tmuxPlugins // {
       dracula = super.tmuxPlugins.dracula.overrideAttrs (_: {
