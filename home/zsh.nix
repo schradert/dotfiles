@@ -58,7 +58,7 @@
     }
     {
       name = "powerlevel10k-config";
-      src = pkgs.lib.cleanSource ./p10k-config;
+      src = pkgs.lib.cleanSource ./p10k;
       file = ".p10k.zsh";
     }
     {
@@ -94,7 +94,7 @@
         owner = "unixorn";
         repo = "git-extra-commands";
         rev = "main";
-        sha256 = "cVuTcrDMustURC9IVtuYntZx79s7ekIogWtavu623Ts=";
+        sha256 = "IHnlx5SO51FiOXzdRGoVYp7Uw/nv1bh2DTwo05xL+k0=";
       };
     }
     {
