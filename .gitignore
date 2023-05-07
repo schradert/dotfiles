@@ -1,4 +1,5 @@
 *.sw*
 .direnv/
-result
+/result
+/build/
 .DS_Store
