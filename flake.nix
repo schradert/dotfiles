@@ -12,6 +12,9 @@
     nixpkgs.url = github:nixos/nixpkgs;
     nix-doom-emacs.url = github:nix-community/nix-doom-emacs;
     nix-doom-emacs.inputs.nixpkgs.follows = "nixpkgs";
+    terranix.url = github:terranix/terranix;
+    terranix.inputs.nixpkgs.follows = "nixpkgs";
+    terranix.inputs.flake-utils.follows = "flake-utils";
   };
   outputs =
     inputs@{ self
@@ -21,6 +24,7 @@
     , home-manager
     , nixpkgs
     , nix-doom-emacs
+    , terranix
     }: flake-utils.lib.eachDefaultSystem (system:
     let
       project = "dotfiles";
