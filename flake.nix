@@ -4,6 +4,8 @@
     darwin.url = github:lnl7/nix-darwin;
     darwin.inputs.nixpkgs.follows = "nixpkgs";
     devshell.url = github:numtide/devshell;
+    devshell.inputs.nixpkgs.follows = "nixpkgs";
+    devshell.inputs.flake-utils.follows = "flake-utils";
     flake-utils.url = github:numtide/flake-utils;
     home-manager.url = github:nix-community/home-manager;
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
