@@ -58,11 +58,6 @@ let
       navi.enable = true;
       tmux = {
         enable = true;
-        clock24 = true;
-        historyLimit = 5000;
-        mouse = true;
-        newSession = true;
-        terminal = "screen-256color";
         plugins = with pkgs.tmuxPlugins; [
           {
             plugin = dracula;
