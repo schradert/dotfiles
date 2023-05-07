@@ -28,4 +28,7 @@
   };
   services.openssh.enable = true;
   virtualisation.libvirtd.enable = true;
-} // (import ../../home { inherit pkgs nix-doom-emacs; })
+} // (import ../../home {
+  inherit pkgs nix-doom-emacs;
+  me = { groups = [ "libvirtd" ]; packages = [ ]; };
+})
