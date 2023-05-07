@@ -29,18 +29,10 @@
     let
       project = "dotfiles";
       pkgs = import nixpkgs { inherit system; overlays = (import ./overlays.nix) ++ [ devshell.overlays.default ]; };
-      bin.write-script = name: text: (pkgs.writeScriptBin name text).overrideAttrs (old: {
-        buildCommand = "${old.buildCommand}\n patchShebangs $out";
-      });
-      scripts.install = bin.write-script "install" ''
-        #!/usr/bin/env bash
-        if [[ -e /etc/nixos ]]; then
-          sudo nixos-rebuild test --flake '.#'
-        else
-          nix build .#darwinConfigurations.morgenmuffel.system
-          ./result/sw/bin/darwin-rebuild switch --flake .
-        fi
-      '';
+      shared = import ./lib/shared.nix { inherit pkgs; };
+      inherit (shared.funcs) writeScriptBinFromTemplate;
+      inherit (shared.cmds) bash;
+      install = writeScriptBinFromTemplate "install" ./lib/install.sh { inherit bash; };
     in
     {
       devShell = pkgs.devshell.mkShell {
@@ -64,8 +56,8 @@
         specialArgs = { inherit pkgs nix-doom-emacs home-manager; };
         modules = [ ./nixos/chilldom ];
       };
-      packages.install = scripts.install;
-      packages.default = scripts.install;
+      packages.install = install;
+      packages.default = install;
     }
     );
 }
