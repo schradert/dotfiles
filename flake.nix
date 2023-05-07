@@ -32,15 +32,33 @@
       shared = import ./lib/shared.nix { inherit pkgs; };
       inherit (shared.funcs) writeScriptBinFromTemplate;
       inherit (shared.cmds) bash;
+      tf = rec {
+        config = terranix.lib.terranixConfiguration { inherit system; modules = [ ./infra ]; };
+        cli =
+          let
+            inherit (pkgs.lib) genAttrs;
+            commands = [ "plan" "apply" "destroy" ];
+            args = { inherit bash; terraform = "${pkgs.terraform}/bin/terraform"; };
+            writeCommandScriptBinFromTemplate = command:
+              writeScriptBinFromTemplate "tf.${command}" ./lib/tf-cmd.sh (args // { inherit command; });
+          in
+            genAttrs commands writeCommandScriptBinFromTemplate;
+      };
       install = writeScriptBinFromTemplate "install" ./lib/install.sh { inherit bash; };
     in
     {
       devShell = pkgs.devshell.mkShell {
         name = "${project}-shell";
         packages = with pkgs; [
-          nixpkgs-fmt
+          kubectl
+          kubernetes-helm
+          terraform
         ];
       };
+      packages.config = tf.config;
+      packages.plan = tf.cli.plan;
+      packages.apply = tf.cli.apply;
+      packages.destroy = tf.cli.destroy;
       packages.darwinConfigurations.morgenmuffel = darwin.lib.darwinSystem {
         system = "aarch64-darwin";
         specialArgs = { inherit pkgs nix-doom-emacs home-manager; };
