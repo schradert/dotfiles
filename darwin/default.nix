@@ -1,8 +1,11 @@
-{ config, lib, pkgs, nix-doom-emacs, home-manager }:
+{ config, lib, pkgs, ... }:
 {
-  imports = [ home-manager.darwinModules.home-manager ];
-  environment.systemPackages = [ ];
-  services.nix-daemon.enable = true;
-  programs.zsh.enable = true;
+  imports = [ ];
+
+  time.timeZone = "America/Los_Angeles";
   system.stateVersion = 4;
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
+  environment = { pathsToLink = [ "/share/zsh" ]; shells = [ pkgs.zsh ]; };
+  services.nix-daemon.enable = true;
 }
