@@ -61,8 +61,12 @@
       packages.destroy = tf.cli.destroy;
       packages.darwinConfigurations.morgenmuffel = darwin.lib.darwinSystem {
         system = "aarch64-darwin";
-        specialArgs = { inherit pkgs nix-doom-emacs home-manager; };
-        modules = [ ./darwin ];
+        inputs = { inherit pkgs; };
+        modules = [
+          ./darwin
+          home-manager.darwinModules.home-manager
+#         ({ ... }: import ./home { inherit pkgs nix-doom-emacs; })
+        ];
       };
       packages.nixosConfigurations.sirver = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
