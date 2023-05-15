@@ -1,8 +1,6 @@
 {
   description = "System configuration";
   inputs = {
-    darwin.url = github:lnl7/nix-darwin;
-    darwin.inputs.nixpkgs.follows = "nixpkgs";
     devshell.url = github:numtide/devshell;
     devshell.inputs.nixpkgs.follows = "nixpkgs";
     devshell.inputs.flake-utils.follows = "flake-utils";
@@ -18,7 +16,6 @@
   };
   outputs =
     inputs@{ self
-    , darwin
     , devshell
     , flake-utils
     , home-manager
@@ -59,13 +56,7 @@
       packages.plan = tf.cli.plan;
       packages.apply = tf.cli.apply;
       packages.destroy = tf.cli.destroy;
-      packages.darwinConfigurations.morgenmuffel = darwin.lib.darwinSystem {
-        system = "aarch64-darwin";
-        inputs = { inherit pkgs; };
         modules = [
-          ./darwin
-          home-manager.darwinModules.home-manager
-#         ({ ... }: import ./home { inherit pkgs nix-doom-emacs; })
         ];
       };
       packages.nixosConfigurations.sirver = nixpkgs.lib.nixosSystem {
