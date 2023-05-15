@@ -69,10 +69,8 @@ let
           }
         ];
       };
-      vim = import ./vim.nix { inherit pkgs; };
 #     wezterm = import ./wezterm { inherit pkgs; };
       zoxide.enable = true;
-      zsh = import ./zsh.nix { inherit pkgs; };
     };
     services.emacs = { enable = true; defaultEditor = true; };
     xdg.configFile."glab-cli/config.yml".text = ''
@@ -87,6 +85,8 @@ let
       ci: pipeline ci
       co: mr checkout
     '';
+    vim = import ./vim { inherit pkgs; };
+    zsh = import ./zsh { inherit pkgs; };
   };
 in
 {
