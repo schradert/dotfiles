@@ -60,8 +60,18 @@
       packages.plan = tf.cli.plan;
       packages.apply = tf.cli.apply;
       packages.destroy = tf.cli.destroy;
+      packages.homeConfigurations.tristanschrader = home-manager.lib.homeManagerConfiguration {
+        inherit pkgs;
         modules = [
+          ./home
+          {
+            # We can explore https://github.com/Spotifyd/spotifyd as a spotify client on macOS?
+            # The main one is only supported on x86_64-linux, but spotifyd works on all unix
+            # The spicetify CLI possibly works on any system, so might be able to get it to work on macOS
+            home.extraPackages = with pkgs; [ ranger ];
+          }
         ];
+        extraSpecialArgs = { inherit nix-doom-emacs; };
       };
       packages.nixosConfigurations.sirver = nixpkgs.lib.nixosSystem rec {
         system = "x86_64-linux";
