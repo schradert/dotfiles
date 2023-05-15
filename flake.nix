@@ -25,7 +25,11 @@
     }: flake-utils.lib.eachDefaultSystem (system:
     let
       project = "dotfiles";
-      pkgs = import nixpkgs { inherit system; overlays = (import ./overlays.nix) ++ [ devshell.overlays.default ]; };
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = (import ./overlays.nix) ++ [ devshell.overlays.default ];
+        config.allowUnfreePredicate = pkg: builtins.elem pkg.pname [ "zoom" "discord" "slack" ];
+      };
       shared = import ./lib/shared.nix { inherit pkgs; };
       inherit (shared.funcs) writeScriptBinFromTemplate;
       inherit (shared.cmds) bash;
@@ -84,6 +88,7 @@
             home-manager.users.tristan = import ./home;
             home-manager.useUserPackages = true;
             home-manager.useGlobalPkgs = true;
+            home.extraPackages = with pkgs; [ android-studio ];
           }
         ];
       };
