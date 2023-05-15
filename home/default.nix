@@ -69,7 +69,6 @@ let
           }
         ];
       };
-#     wezterm = import ./wezterm { inherit pkgs; };
       zoxide.enable = true;
     };
     services.emacs = { enable = true; defaultEditor = true; };
@@ -86,6 +85,7 @@ let
       co: mr checkout
     '';
     vim = import ./vim { inherit pkgs; };
+    wezterm = import ./wezterm { inherit pkgs; };
     zsh = import ./zsh { inherit pkgs; };
   };
 in
