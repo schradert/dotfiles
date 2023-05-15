@@ -59,15 +59,33 @@
         modules = [
         ];
       };
-      packages.nixosConfigurations.sirver = nixpkgs.lib.nixosSystem {
+      packages.nixosConfigurations.sirver = nixpkgs.lib.nixosSystem rec {
         system = "x86_64-linux";
-        specialArgs = inputs // { inherit pkgs; };
-        modules = [ ./nixos/sirver ];
+        specialArgs = { inherit pkgs; };
+        modules = [
+          ./nixos/sirver
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.extraSpecialArgs = specialArgs // { inherit nix-doom-emacs; };
+            home-manager.users.tristan = import ./home;
+            home-manager.useUserPackages = true;
+            home-manager.useGlobalPkgs = true;
+          }
+        ];
       };
-      packages.nixosConfigurations.chilldom = nixpkgs.lib.nixosSystem {
+      packages.nixosConfigurations.chilldom = nixpkgs.lib.nixosSystem rec {
         system = "x86_64-linux";
-        specialArgs = { inherit pkgs nix-doom-emacs home-manager; };
-        modules = [ ./nixos/chilldom ];
+        specialArgs = { inherit pkgs; };
+        modules = [
+          ./nixos/chilldom
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.extraSpecialArgs = specialArgs // { inherit nix-doom-emacs; };
+            home-manager.users.tristan = import ./home;
+            home-manager.useUserPackages = true;
+            home-manager.useGlobalPkgs = true;
+          }
+        ];
       };
       packages.install = install;
       packages.default = install;

@@ -1,11 +1,7 @@
-{ pkgs, nix-doom-emacs, home-manager, ... }:
-let
-  me = { packages = with pkgs; [ bitwarden firefox ]; groups = [ "networkmanager" ]; };
-in
+{ config, lib, pkgs, ... }:
 {
   imports = [
     ./hardware-configuration.nix
-    home-manager.nixosModule
   ];
 
   boot.loader.systemd-boot.enable = true;
@@ -41,8 +37,15 @@ in
   };
   security = { polkit.enable = true; pam.enableSSHAgentAuth = true; };
   users.mutableUsers = true;
+  users.users.tristan = {
+    isNormalUser = true;
+    home = "/home/tristan";
+    description = "Tristan Schrader";
+    extraGroups = [ "wheel" "tty" "networkmanager" ];
+    shell = pkgs.zsh;
+  };
   virtualisation = {
     libvirtd.enable = true;
     podman = { enable = true; dockerSocket.enable = true; defaultNetwork.settings.dns_enable = true; };
   };
-} // (import ../../home { inherit pkgs nix-doom-emacs me; })
+}
