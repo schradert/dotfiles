@@ -1,8 +1,7 @@
-{ pkgs, nix-doom-emacs, home-manager, ... }:
+{ config, lib, pkgs, ... }:
 {
   imports = [
     ./hardware-configuration.nix
-    home-manager.nixosModule
   ];
 
   boot.loader.systemd-boot.enable = true;
@@ -27,8 +26,12 @@
     pam.enableSSHAgentAuth = true;
   };
   services.openssh.enable = true;
+  users.users.tristan = {
+    isNormalUser = true;
+    home = "/home/tristan";
+    description = "Tristan Schrader";
+    extraGroups = [ "wheel" "tty" "libvirtd" ];
+    shell = pkgs.zsh;
+  };
   virtualisation.libvirtd.enable = true;
-} // (import ../../home {
-  inherit pkgs nix-doom-emacs;
-  me = { groups = [ "libvirtd" ]; packages = [ ]; };
-})
+}
