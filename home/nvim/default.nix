@@ -1,33 +1,13 @@
-pkgs: {
+{ pkgs }:
+{
   enable = true;
-  coc = {
-    enable = true;
-    pluginConfig = ''
-      
-    '';
-    settings = { };
-  };
   withPython3 = true;
   extraConfig = ''
     luafile $HOME/.config/nixpkgs/settings.lua
   '';
-  extraLuaPackages = ps: with ps; [ ];
-  extraPackages = [ ];
-  extraPython3Packages = ps: with; [ ];
-    plugins = with pkgs.vimPlugins;
-  [
-  ale
-    coc-denite
-    coc-json
-    # coc-marketplace
-    # coc-sh
-    # coc-docker
-    coc-nvim
-    coc-pyright
-    coc-vimtex
+  plugins = with pkgs.vimPlugins; [
     csv-vim
     ctrlp-vim
-    denite-nvim
     dracula-vim
     jsonc-vim
     nerdtree
@@ -39,7 +19,6 @@ pkgs: {
     vimtex
     vim-airline
     vim-airline-themes
-    # vim-ctrlspace
     vim-devicons
     vim-flog
     vim-fugitive
@@ -48,10 +27,8 @@ pkgs: {
     vim-nix
     vim-startify
     vim-surround
-    # (nvim-treesitter.withPlugins (plugins: pkgs.tree-sitter.allGrammars))
-    # yankring
-    ];
-    viAlias = false;
+  ];
+  viAlias = false;
   vimAlias = false;
-  vimdiffAlias = true;
+  vimdiffAlias = false;
 }

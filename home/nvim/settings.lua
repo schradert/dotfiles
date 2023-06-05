@@ -31,8 +31,7 @@ opt.showmatch = true
 opt.showmode = true
 opt.hlsearch = true
 opt.scrolloff = 10
-opt.wildignore = opt.wildignore .. ",*.docx,*.jpg,*.png,*.gif,*.pdf,*.pyc,*.exe,*.img,*.xlsx,*/tmp/*,*.so,*.swp,*.zip"
-
+-- opt.wildignore = opt.wildignore .. ",*.docx,*.jpg,*.png,*.gif,*.pdf,*.pyc,*.exe,*.img,*.xlsx,*/tmp/*,*.so,*.swp,*.zip"
 -- opt.smartindent = true
 -- opt.autoindent = true
 -- opt.clipboard = "unnamedplus"
