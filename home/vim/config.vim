@@ -1,23 +1,30 @@
-" COC
-source ~/.vim/coc.vim
-
-" DENITE (window control)
-autocmd FileType denite call s:denite_my_settings()
-function! s:denite_my_settings() abort
-  nnoremap <silent><buffer><expr> <CR> denite#do_map('do_action')
-  nnoremap <silent><buffer><expr> d denite#do_map('do_action', 'delete')
-  nnoremap <silent><buffer><expr> p denite#do_map('do_action', 'preview')
-  nnoremap <silent><buffer><expr> q denite#do_map('quit')
-  nnoremap <silent><buffer><expr> i denite#do_map('open_filter_buffer')
-  nnoremap <silent><buffer><expr> <Space> denite#do_map('toggle_select').'j'
-endfunction
-
-" CTRLSPACE (control center)
-set showtabline=0  " obviated by vim-ctrlspace
-let g:CtrlSpaceLoadLastWorkspaceOnStart = 1
-let g:CtrlSpaceSaveWorkspaceOnSwitch = 1
-let g:CtrlSpaceSaveWorkspaceOnExit = 1
-hi link CtrlSpaceSearch IncSearch
+syntax enable
+set autoread
+set cmdheight=2 " doubles size of command line
+set updatetime=300 " (default 4000) for smoother updates on write
+set ruler " cursor row & column numbers
+set nofoldenable " expand folds by default
+set nocompatible " don't accommodate vi too much
+set encoding=utf-8 " what's the difference?
+set enc=utf-8 " use unicode by default
+set fileencoding=utf-8 " use unicode by default for files
+set fileencodings=ucs-bom,utf8 " support ucs & unicode
+set nowrap
+set incsearch
+set showcmd
+set showmatch
+set showmode
+set hlsearch
+set scrolloff=10
+set wildignore+=*.docx,*.jpg,*.png,*.gif,*.pdf,*.pyc,*.exe,*.img,*.xlsx,*/tmp/*,*.so,*.swp,*.zip
+filetype on " load filetype detection
+filetype plugin on " load 'runtimepath'/ftplugin.vim'
+let maplocalleader = ","
+augroup filetypedetect
+  autocmd FileType vim nnoremap <buffer> <localleader>c I" <esc>
+  autocmd FileType python,bash,sh nnoremap <buffer> <localleader>c I# <esc>
+  autocmd BufNewFile,BufRead *.code-workspace setl filetype=json
+augroup END
 
 " TABOO (pretty tabs)
 set sessionoptions+=tabpages,globals
@@ -49,12 +56,6 @@ colorscheme dracula
 
 " LASTPLACE (reopening files)
 let g:lastplace_open_folds = 0
-
-" ALE (linting engine)
-let g:ale_linters_explicit = 1
-let g:ale_linters = { 'javascript': ['eslint'] }
-" Add ALE error statuses to 'vim-airline'
-let g:airline#extensions#ale#enabled = 1
 
 " NERDTREE (file browser sidebar)
 " Start NERDTree. If a file is specified, move the cursor to its window.

@@ -3,14 +3,8 @@
   enable = true;
   defaultEditor = true;
   plugins = with pkgs.vimPlugins; [
-    ale
-    coc-denite
-    coc-json
-    coc-pyright
-    coc-vimtex
     csv-vim
     ctrlp-vim
-    denite-nvim
     dracula-vim
     jsonc-vim
     nerdtree
@@ -43,8 +37,5 @@
     smartcase = true;
     tabstop = 2;
   };
-# extraConfig = ''
-#   source vim/preload.vim
-#   source vim/nix.vim
-# '';
+  extraConfig = builtins.readFile ./config.vim;
 } 
