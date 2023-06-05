@@ -1,0 +1,147 @@
+* Basic Configuration
+#+begin_src emacs-lisp
+(setq user-full-name "Tristan Schrader"
+      user-mail-address "tristanschrader@proton.me")
+(map! "C-M-i" #'completion-at-point)
+(setq delete-by-moving-to-trash t
+      trash-directory "~/.Trash")
+(setq doom-theme 'doom-dracula)
+;; (setq doom-font (font-spec :family "Fira Code" :size 14 :weight 'medium))
+#+end_src
+
+* Org-Agenda
+#+begin_src emacs-lisp
+(after! org
+  (setq org-directory '("~/Code/Personal/dev/knowledge/sabedoria"))
+  (setq org-agenda-files '("~/Code/Personal/dev/knowledge/sabedoria/agenda"))
+  (setq org-log-done 'note)
+  (setq org-todo-keywords '((sequence "DRAFTED(d)" "PLANNED(p)" "IN PROGRESS(i)" "ON HOLD(h)" "|" "COMPLETED(c)" "ABANDONED(a)"))))
+
+;; (setq org-agenda-custom-commands
+;;       '(("v" "A better agenda view"
+;;          ((tags "PRIORITY=\"A\""
+;;                 ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+;;                  (org-agenda-overriding-header "High-priority unfinished tasks:")))
+;;           (tags "PRIORITY=\"B\""
+;;                 ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+;;                  (org-agenda-overriding-header "Medium-priority unfinished tasks:")))
+;;           (tags "PRIORITY=\"C\""
+;;                 ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+;;                  (org-agenda-overriding-header "Low-priority unfinished tasks:")))))))
+
+#+end_src
+
+* Org-Roam
+#+begin_src emacs-lisp
+(setq org-roam-capture-templates
+  '(("d" "default" plain
+     "%?"
+     :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+     :unarrowed t)
+    ("l" "programming language" plain
+     "* Characteristics:\n\n- Family: %?\n- Inspired by: \n\n* Reference:\n\n"
+     :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+     :unnarrowed t)))
+#+end_src
+
+* Dired
+#+begin_src emacs-lisp
+(map! :leader
+      (:after dired
+       (:map dired-mode-map
+        :desc "Peep-dired image previews" "d p" #'peep-dired)))
+
+(evil-define-key 'normal dired-mode-map
+  (kbd "h") 'dired-up-directory
+  (kbd "l") 'dired-view-file
+  (kbd "x") 'dired-do-kill-lines)
+#+end_src
+
+* Magit
+** Enable gravatars when viewing commits
+#+begin_src emacs-lisp
+(after! magit
+  (setq magit-revision-show-gravatars '("^Author:     " . "^Commit:     ")))
+#+end_src
+** Enable granular diff-highlights for all hunks
+#+begin_src emacs-lisp
+(after! magit
+  (setq magit-diff-refine-hunk 'all))
+#+end_src
+
+* Tools
+** tree-sitter
+*** enable highlighting in all modes
+#+begin_src emacs-lisp
+(setq +tree-sitter-hl-enabled-modes t)
+#+end_src
+
+* UI
+** window-select
+*** make it a little more visible
+#+begin_src emacs-lisp
+(custom-set-faces!
+  '(aw-leading-char-face
+    :foreground "white" :background "red"
+    :weight bold :height 2.5 :box (:line-width 10 :color "red")))
+#+end_src
+
+* Non-tangled
+** Language hooks
+#+begin_src emacs-lisp :tangle no
+(add-hook 'haskell-mode-hook #'lsp)
+(add-hook 'haskell-literate-mode-hook #'lsp)
+(setq lsp-sourcekit-executable (string-trim (shell-command-to-string "xcrun --find sourcekit-lsp")))
+(add-hook 'swift-mode-hook (lambda () (lsp)))
+(add-hook 'sql-mode-hook 'lsp)
+#+end_src
+** Org-brain
+#+begin_src emacs-lisp :tangle no
+(defvar helm-source-org-roam
+  (helm-make-source "Org-roam" 'helm-source-sync
+    :candidates (mapcar #'car (org-roam--get-title-path-completions))
+    :action (lambda (candidate)
+             (org-roam-find-file candidate nil t))))
+
+(require 'org-brain)
+(defvar helm-source-org-brain
+  (helm-make-source "Org-brain" 'helm-source-sync
+    :candidates (org-brain--all-targets)
+    :action 'helm-brain--actions))
+
+(defun wr/idea ()
+  (interactive)
+  (helm :sources '(helm-source-org-roam
+                   helm-source-org-brain)))
+#+end_src
+** Elfeed
+#+begin_src emacs-lisp :tangle no
+(require 'elfeed)
+
+(defun yt-dl-it (url)
+  "Downloads the URL in an async shell"
+  (let ((default-directory "~/Videos"))
+    (async-shell-command (format "youtube-dl %s" url))))
+
+(defun elfeed-youtube-dl (&optional use-generic-p)
+  "Youtube-DL link"
+  (interactive "P")
+  (let ((entries (elfeed-search-selected)))
+    (cl-loop for entry in entries
+             do (elfeed-untag entry 'unread)
+             when (elfeed-entry-link entry)
+             do (yt-dl-it it))
+    (mapc #'elfeed-search-update-entry entries)
+    (unless (use-region-p) (forward-line))))
+
+(define-key elfeed-search-mode-map (kbd "d") 'elfeed-youtube-dl)
+
+(after! elfeed
+  (setq elfeed-search-filter "@2-weeks-ago +unread"))
+#+end_src
+** Random snippets
+*** Set emacs background transparency
+#+begin_src emacs-lisp :tangle no
+(set-frame-parameter nil 'alpha-background 70) ; For current frame
+(add-to-list 'default-frame-alist '(alpha-background . 70)) ; For all new frames henceforth
+#+end_src
