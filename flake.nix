@@ -4,6 +4,7 @@
     devshell.url = github:numtide/devshell;
     devshell.inputs.nixpkgs.follows = "nixpkgs";
     devshell.inputs.flake-utils.follows = "flake-utils";
+    emacs-overlay.url = github:nix-community/emacs-overlay;
     flake-utils.url = github:numtide/flake-utils;
     home-manager.url = github:nix-community/home-manager;
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
@@ -17,6 +18,7 @@
   outputs =
     inputs@{ self
     , devshell
+    , emacs-overlay
     , flake-utils
     , home-manager
     , nixpkgs
@@ -27,7 +29,10 @@
       project = "dotfiles";
       pkgs = import nixpkgs {
         inherit system;
-        overlays = (import ./overlays.nix) ++ [ devshell.overlays.default ];
+        overlays = (import ./overlays.nix) ++ [
+          devshell.overlays.default
+          emacs-overlay.overlay
+        ];
         config.allowUnfreePredicate = pkg: builtins.elem pkg.pname [ "zoom" "discord" "slack" ];
       };
       shared = import ./lib/shared.nix { inherit pkgs; };
@@ -68,7 +73,7 @@
             # We can explore https://github.com/Spotifyd/spotifyd as a spotify client on macOS?
             # The main one is only supported on x86_64-linux, but spotifyd works on all unix
             # The spicetify CLI possibly works on any system, so might be able to get it to work on macOS
-            home.extraPackages = with pkgs; [ ranger ];
+            home.extraPackages = with pkgs; [ ranger skhd ];
           }
         ];
         extraSpecialArgs = { inherit nix-doom-emacs; };
