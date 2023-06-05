@@ -8,46 +8,47 @@
     expireDuplicatesFirst = true;
     extended = true;
   };
-  sessionVariables = {
+  initExtra = builtins.readFile ./init.zshrc;
+  localVariables = {
     VISUAL = "vim";
     YSU_MESSAGE_POSITION = "after";
     YSU_MODE = "ALL";
     YSU_HARDCORE = 1;
-  };
-  initExtra = ''
-    bindkey '^R' fzf-history-widget
-    prompt_nix_shell_setup
-  '';
-  localVariables = {
+    CPPFLAGS = "-I/opt/homebrew/opt/ruby/include";
+    LDFLAGS = "-L/opt/homebrew/opt/ruby/lib";
     ZSH_AUTOSUGGEST_STRATEGY = [ "history" "completion" ];
+    DIRENV_WARN_TIMEOUT = "10s";
   };
   oh-my-zsh = {
     enable = true;
     plugins = [
       "aliases"
+      "battery"
+      "brew"
       "colored-man-pages"
       "common-aliases"
       "cp"
       "dirhistory"
       "docker"
       "docker-compose"
-      "fast-syntax-highlighting"
       "fzf"
-      "fzf-tab"
       "gcloud"
       "gh"
       "git"
       "git-auto-fetch"
-      "git-extra-commands"
-      "nix-zsh-completions"
+      "golang"
+      "helm"
+      "kubectl"
+      "pip"
+      # TODO: dynamically change python path "poetry" plugin uses
+      # This plugin wants to grab a homebrew path for poetry python, so we'll hold off
+      # including it until I can figure out how to include it without a bad interpreter error.
+      # "poetry"
       "ripgrep"
       "rsync"
+      "terraform"
       "tmux"
       "vscode"
-      "you-should-use"
-      "zsh-aliases-exa"
-      "zsh-autosuggestions"
-      "zsh-256color"
     ];
   };
   plugins = [
@@ -58,7 +59,7 @@
     }
     {
       name = "powerlevel10k-config";
-      src = pkgs.lib.cleanSource ./p10k;
+      src = pkgs.lib.cleanSource ./.;
       file = ".p10k.zsh";
     }
     {
