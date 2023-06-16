@@ -45,10 +45,24 @@
   (kbd "x") 'dired-do-kill-lines)
 
 (after! magit
+  ;; Enable granular diff-highlights for all hunks
+  (setq magit-diff-refine-hunk 'all)
+  ;; Enable gravatars when viewing commits
   (setq magit-revision-show-gravatars '("^Author:     " . "^Commit:     ")))
 
-(after! magit
-  (setq magit-diff-refine-hunk 'all))
+(setq auth-sources '("~/.netrc"))
+
+;; Show pretty symbols
+(add-hook 'code-review-mode-hook #'emojify-mode)
+;; Line wrap in comments
+(setq code-review-fill-column 80)
+;; Show *Code Review* in current workspace (Doom bug)
+(add-hook 'code-review-mode-hook (lambda () (persp-add-buffer (current-buffer))))
+;; Use same passwords used for forge
+(setq code-review-auth-login-marker 'forge)
+;; Jump into code review from a magit-forge PR view
+(after! forge
+    (define-key forge-topic-mode-map (kbd "rr") 'code-review-forge-pr-at-point))
 
 (setq +tree-sitter-hl-enabled-modes t)
 

@@ -164,7 +164,14 @@ let
       enable = true;
       userEmail = "tristanschrader@proton.me";
       userName = "Tristan Schrader";
-      extraConfig = { push.autoSetupRemote = true; color.status = "always"; };
+      extraConfig = {
+        push.autoSetupRemote = true;
+        color.status = "always";
+        github.user = "schradert";
+        gitlab.user = "schrader.tristan";
+        # This is probably how our hosted Gitea repository will look
+        # gitea.git.bunkbed.tech.user = "tristan";
+      };
     };
     gpg.enable = true;
     home-manager.enable = true;
