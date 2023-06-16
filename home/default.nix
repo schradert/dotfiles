@@ -78,6 +78,7 @@ let
       xplr
     ] ++ optionals config.doom.allPackages [
       cargo
+      editorconfig-core-c
       gopls
       gotools
       gomodifytags
@@ -135,23 +136,23 @@ let
     bat.enable = true;
     dircolors.enable = true;
     direnv = { enable = true; nix-direnv.enable = true; };
-    emacs = {
-      enable = true;
-      extraPackages = epkgs: with epkgs; [
-        editorconfig
-        org-roam-ui
-        peep-dired
-        rainbow-mode
-        kurecolor
-        imenu-list
-        org-brain
-        org-ql
-        magit-todos
-        tldr
-        kubernetes
-        kubernetes-evil
-      ];
-    };
+#   emacs = {
+#     enable = true;
+#     extraPackages = epkgs: with epkgs; [
+#       editorconfig
+#       org-roam-ui
+#       peep-dired
+#       rainbow-mode
+#       kurecolor
+#       imenu-list
+#       org-brain
+#       org-ql
+#       magit-todos
+#       tldr
+#       kubernetes
+#       kubernetes-evil
+#     ];
+#   };
     # doom-emacs  = { enable = true; doomPrivateDir = ./doom.d; };
     exa.enable = true;
     fzf = { enable = true; tmux.enableShellIntegration = true; };

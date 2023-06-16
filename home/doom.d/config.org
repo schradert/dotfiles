@@ -1,3 +1,20 @@
+* Extra Packages (on macOS)
+#+begin_src emacs-lisp :tangle packages.el
+(package! editorconfig)
+(package! org-roam-ui)
+(package! peep-dired)
+(package! rainbow-mode)
+(package! kurecolor)
+(package! imenu-list)
+(package! org-brain)
+(package! org-ql)
+;; (package! magit-todos)
+(package! tldr)
+(package! kubernetes)
+(package! kubernetes-evil)
+;; (package! vterm)
+#+end_src
+
 * Basic Configuration
 #+begin_src emacs-lisp
 (setq user-full-name "Tristan Schrader"
