@@ -61,6 +61,13 @@
      :unnarrowed t)))
 #+end_src
 
+* Vterm
+** Keybindings
+#+begin_src emacs-lisp
+(after! vterm
+    (define-key vterm-mode-map (kbd "C-c ESC") #'vterm-send-escape))
+#+end_src
+
 * Dired
 #+begin_src emacs-lisp
 (map! :leader

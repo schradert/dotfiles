@@ -34,6 +34,9 @@
      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
      :unnarrowed t)))
 
+(after! vterm
+    (define-key vterm-mode-map (kbd "C-c ESC") #'vterm-send-escape))
+
 (map! :leader
       (:after dired
        (:map dired-mode-map
