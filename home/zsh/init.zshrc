@@ -9,6 +9,7 @@ export PATH="/Applications/Docker.app/Contents/Resources/bin:$PATH"
 # TODO: only include lines if the tools are being used!
 export PATH="$HOME/.spicetify:$PATH"
 export PATH="$PATH:$HOME/.config/wtf"
+export XDG_CONFIG_HOME="$HOME/.config"
 fpath+=($ZSH/custom/plugins/zsh-completions/src)
 # disable sort when completing `git checkout`
 zstyle ':completion:*:git-checkout:*' sort false
