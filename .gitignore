@@ -4,3 +4,5 @@
 /build/
 .DS_Store
 /home/doom.d/config.el
+/home/doom.d/packages.el
+/home/doom.d/custom.el
