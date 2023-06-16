@@ -158,7 +158,7 @@ let
     fzf = { enable = true; tmux.enableShellIntegration = true; };
     gh = {
       enable = true;
-      settings = { editor = "vim"; git_protocol = "ssh"; aliases.co = "pr checkout"; };
+      settings = { editor = "emacs"; git_protocol = "ssh"; aliases.co = "pr checkout"; };
     };
     git = {
       enable = true;
