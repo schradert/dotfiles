@@ -6,7 +6,7 @@
   ...
 }:
 let
-  inherit (builtins) fetchpatch readFile;
+  inherit (builtins) fetchpatch fetchurl fromJSON readFile;
   inherit (pkgs.stdenv) isDarwin isLinux system;
   inherit (lib) mkForce mkIf mkOption optionals types;
   options.home.extraPackages = mkOption {
@@ -93,7 +93,6 @@ let
       ispell
       isync
       ktlint
-      k9s
       mu
       nil
       nixfmt
@@ -177,6 +176,19 @@ let
     home-manager.enable = true;
     htop.enable = true;
     jq.enable = true;
+    k9s = {
+      enable = true;
+      skin =
+        let
+          inherit (pkgs) runCommand remarshal;
+          path = fetchurl {
+            url = "https://raw.githubusercontent.com/derailed/k9s/5a0a8f12e4cd2137badf8e2063c0ab3e3ff2f5cd/skins/dracula.yml";
+            sha256 = "10is0kb0n6s0hd2lhyszrd6fln6clmhdbaw5faic5vlqg77hbjqs";
+          };
+          command = "remarshal -if yaml -i \"${path}\" -of json -o \"$out\"";
+          jsonOutputDrv = runCommand "from-yaml" { nativeBuildInputs = [ remarshal ]; } command;
+        in fromJSON (readFile jsonOutputDrv);
+    };
     navi.enable = true;
     neovim = import ./nvim { inherit pkgs; };
     tmux = {
