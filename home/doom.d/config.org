@@ -55,6 +55,40 @@
     (kbd "SPC mlI") 'org-super-links-quick-insert-inline-link
     (kbd "SPC mll") 'org-super-links-link
   )
+  (defun mark-as-project ()
+    "This function makes sure that the current heading has
+(1) the tag :project:
+(2) has property COOKIE_DATA set to \"todo recursive\"
+(3) has any TODO keyword and
+(4) a leading progress indicator"
+    (interactive)
+    (org-toggle-tag "project" 'on)
+    (org-set-property "COOKIE_DATA" "todo recursive")
+    (org-back-to-heading t)
+    (let*
+      ((title (nth 4 (org-heading-components)))
+       (keyword (nth 2 (org-heading-components)))
+      )
+      (when (and (bound-and-true-p keyword) (string-prefix-p "[" title))
+        (message "TODO keyword and progress indicator found")
+      )
+      (when (and (not (bound-and-true-p keyword)) (string-prefix-p "[" title))
+        (message "no TODO keyword but progress indicator found")
+        (forward-whitespace 1)
+        (insert "PLANNED ")
+      )
+      (when (and (not (bound-and-true-p keyword)) (not (string-prefix-p "[" title)))
+        (message "no TODO keyword and no progress indicator found")
+        (forward-whitespace 1)
+        (insert "PLANNED [/] ")
+      )
+      (when (and (bound-and-true-p keyword) (not (string-prefix-p "[" title)))
+        (message "TODO keyword but no progress indicator found")
+        (forward-whitespace 2)
+        (insert "[/] ")
+      )
+    )
+  )
 ;; (setq org-agenda-custom-commands
 ;;       '(("v" "A better agenda view"
 ;;          ((tags "PRIORITY=\"A\""
