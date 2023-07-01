@@ -119,8 +119,7 @@
 * Vterm
 ** Keybindings
 #+begin_src emacs-lisp
-(after! vterm
-    (define-key vterm-mode-map (kbd "C-c ESC") #'vterm-send-escape))
+(after! vterm (evil-define-key 'normal vterm-mode-map (kbd "C-c ESC") #'vterm-send-escape))
 #+end_src
 
 * Dired
