@@ -8,11 +8,9 @@
 (package! imenu-list)
 (package! org-brain)
 (package! org-ql)
-;; (package! magit-todos)
 (package! tldr)
 (package! kubernetes)
 (package! kubernetes-evil)
-;; (package! vterm)
 #+end_src
 
 * Basic Configuration
