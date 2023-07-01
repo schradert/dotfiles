@@ -34,6 +34,15 @@
     org-todo-keywords '(
       (sequence "DRAFTED(d)" "PLANNED(p)" "IN-PROGRESS(i)" "ON-HOLD(h)" "|" "COMPLETED(c)" "ABANDONED(a)")
     )
+    org-capture-templates '(
+      ("w" "Work")
+      ("wt" "Work" entry (file "agenda/work.org") "* %?\n" :clock-in t :clock-resume t)
+      ("wm" "Meeting" entry (file "agenda/work.org") "* PLANNED %? :meeting:\n%T\n")
+      ("." "Personal")
+      (".t" "Task" entry (file "agenda/main.org") "* %?\n" :clock-in t :clock-resume t)
+      (".m" "Meeting" entry (file "agenda/main.org") "* PLANNED %? :meeting:\n%T\n")
+      ("b" "Bookmark" entry (file "bookmarks.org") "* %?\n")
+    )
   )
 ;; (setq org-agenda-custom-commands
 ;;       '(("v" "A better agenda view"
