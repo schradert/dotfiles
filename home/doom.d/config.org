@@ -8,6 +8,7 @@
 (package! imenu-list)
 (package! org-brain)
 (package! org-ql)
+(package! org-super-links :recipe (:host github :repo "toshism/org-super-links"))
 (package! tldr)
 (package! kubernetes)
 (package! kubernetes-evil)
@@ -43,6 +44,16 @@
       (".m" "Meeting" entry (file "agenda/main.org") "* PLANNED %? :meeting:\n%T\n")
       ("b" "Bookmark" entry (file "bookmarks.org") "* %?\n")
     )
+    org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id
+    org-super-links-related-into-drawer t
+    org-super-links-link-prefix 'org-super-links-link-prefix-timestamp
+    org-super-links-search-function 'helm-org-ql-org-directory
+  )
+  (evil-define-key 'normal org-mode-map
+    (kbd "SPC mls") 'org-super-links-store-link
+    (kbd "SPC mli") 'org-super-links-insert-link
+    (kbd "SPC mlI") 'org-super-links-quick-insert-inline-link
+    (kbd "SPC mll") 'org-super-links-link
   )
 ;; (setq org-agenda-custom-commands
 ;;       '(("v" "A better agenda view"
