@@ -58,6 +58,7 @@ let
       fd
       file
       glab
+      gyb
       iftop
       libtool
       lsof
