@@ -29,11 +29,12 @@
 * Org-Agenda
 #+begin_src emacs-lisp
 (after! org
-  (setq org-directory '("~/Code/Personal/dev/knowledge/sabedoria"))
-  (setq org-agenda-files '("~/Code/Personal/dev/knowledge/sabedoria/agenda"))
-  (setq org-log-done 'note)
   (setq org-todo-keywords '((sequence "DRAFTED(d)" "PLANNED(p)" "IN PROGRESS(i)" "ON HOLD(h)" "|" "COMPLETED(c)" "ABANDONED(a)"))))
-
+  (setq
+    org-directory "~/Code/Personal/dev/knowledge/sabedoria"
+    org-agenda-files (list (expand-file-name "agenda" org-directory))
+    org-log-done 'note
+  )
 ;; (setq org-agenda-custom-commands
 ;;       '(("v" "A better agenda view"
 ;;          ((tags "PRIORITY=\"A\""
