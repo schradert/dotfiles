@@ -47,6 +47,10 @@
     org-super-links-related-into-drawer t
     org-super-links-link-prefix 'org-super-links-link-prefix-timestamp
     org-super-links-search-function 'helm-org-ql-org-directory
+    org-agenda-skip-scheduled-if-done t
+    org-agenda-skip-deadline-if-done t
+    org-agenda-include-diary t
+    org-agenda-start-day nil
   )
   (evil-define-key 'normal org-mode-map
     (kbd "SPC mls") 'org-super-links-store-link
