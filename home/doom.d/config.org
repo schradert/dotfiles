@@ -170,6 +170,11 @@
 #+begin_src emacs-lisp
 (setq +tree-sitter-hl-enabled-modes t)
 #+end_src
+** lookup
+*** add another websites for quick search
+#+begin_src emacs-lisp
+(add-to-list '+lookup-provider-url-alist '("Wiktionary" . "https://en.wiktionary.org/wiki/%s"))
+#+end_src
 
 * UI
 ** window-select
