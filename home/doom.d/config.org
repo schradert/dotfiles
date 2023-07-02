@@ -8,10 +8,16 @@
 (package! imenu-list)
 (package! org-brain)
 (package! org-ql)
+(package! helm-org-rifle)
+(package! org-edna)
+(package! org-linker :recipe (:host github :repo "toshism/org-linker"))
+(package! org-linker-edna :recipe (:host github :repo "toshism/org-linker-edna"))
 (package! org-super-links :recipe (:host github :repo "toshism/org-super-links"))
+(package! org-timeline)
 (package! tldr)
 (package! kubernetes)
 (package! kubernetes-evil)
+(unpin! code-review)
 #+end_src
 
 * Basic Configuration
