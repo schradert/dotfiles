@@ -44,13 +44,15 @@
       });
     in
     {
-      devShell = pkgs.devshell.mkShell {
+      devShell = pkgs.devshell.mkShell ({ ... }: {
         name = "${project}-shell";
+        commands = [ { name = "x"; command = x; } ];
         packages = with pkgs; [
           kubectl
           kubernetes-helm
           terraform
         ];
+      });
       };
       packages.homeConfigurations.tristanschrader = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
