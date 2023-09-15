@@ -1,9 +1,10 @@
 *.sw*
-.direnv/
-/result
-/build/
 .DS_Store
+/.direnv/
+/conf/secrets/
+/build/
+/result
+/run/
 /src/home/doom.d/config.el
 /src/home/doom.d/packages.el
 /src/home/doom.d/custom.el
-/conf/secrets/
