@@ -45,7 +45,7 @@ shopt -u extglob
 [[ -z $config ]] && { echo "x: ERROR: a deployment config was not specified. aborting ..." 1>&2; exit 1; }
 build_f="${build_f:-$PRJ_ROOT/build/$config.tf.json}"
 build_d="$(dirname "$build_f")"
-work_d="${work_d:-$PRJ_ROOT/configs/$config}"
+work_d="${work_d:-$PRJ_ROOT/run/terraform/$config}"
 work_f="$work_d/config.tf.json"
 secrets_d="$PRJ_ROOT/conf/secrets"
 
