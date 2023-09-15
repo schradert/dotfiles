@@ -14,6 +14,7 @@
     terranix.url = github:terranix/terranix;
     terranix.inputs.nixpkgs.follows = "nixpkgs";
     terranix.inputs.flake-utils.follows = "flake-utils";
+    gke-gcloud-auth-plugin-flake.url = github:christian-blades-cb/gke-gcloud-auth-plugin-nix;
   };
   outputs =
     inputs@{ self
@@ -24,6 +25,7 @@
     , nixpkgs
     , nix-doom-emacs
     , terranix
+    , gke-gcloud-auth-plugin-flake
     }: flake-utils.lib.eachDefaultSystem (system:
     let
       project = "dotfiles";
@@ -32,6 +34,7 @@
         overlays = (import ./overlays.nix) ++ [
           devshell.overlays.default
           emacs-overlay.overlay
+          gke-gcloud-auth-plugin-flake.overlays.default
         ];
         config.allowUnfreePredicate = pkg: builtins.elem pkg.pname [ "zoom" "discord" "slack" ];
       };
@@ -73,7 +76,7 @@
             # We can explore https://github.com/Spotifyd/spotifyd as a spotify client on macOS?
             # The main one is only supported on x86_64-linux, but spotifyd works on all unix
             # The spicetify CLI possibly works on any system, so might be able to get it to work on macOS
-            home.extraPackages = with pkgs; [ ranger skhd ];
+            home.extraPackages = with pkgs; [ ranger skhd element-desktop google-cloud-sdk gke-gcloud-auth-plugin ];
           }
         ];
         extraSpecialArgs = { inherit nix-doom-emacs; };
