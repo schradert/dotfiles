@@ -33,22 +33,15 @@
         ];
         config.allowUnfreePredicate = pkg: builtins.elem pkg.pname [ "zoom" "discord" "slack" ];
       };
-      shared = import ./lib/shared.nix { inherit pkgs; };
-      inherit (shared.funcs) writeScriptBinFromTemplate;
-      inherit (shared.cmds) bash;
-      tf = rec {
-        config = terranix.lib.terranixConfiguration { inherit system pkgs; modules = [ ./infra ]; };
-        cli =
-          let
-            inherit (pkgs.lib) genAttrs;
-            commands = [ "plan" "apply" "destroy" ];
-            args = { inherit bash; terraform = "${pkgs.terraform}/bin/terraform"; };
-            writeCommandScriptBinFromTemplate = command:
-              writeScriptBinFromTemplate "tf.${command}" ./lib/tf-cmd.sh (args // { inherit command; });
-          in
-            genAttrs commands writeCommandScriptBinFromTemplate;
+      x = pkgs.lib.backbone.subTemplateCmds {
+        template = ./bin/x;
+        cmds.bash = "${pkgs.bash}/bin/bash";
+        cmds.terraform = "${pkgs.terraform}/bin/terraform";
       };
-      install = writeScriptBinFromTemplate "install" ./lib/install.sh { inherit bash; };
+      install = pkgs.writeScriptBin "install" (pkgs.lib.backbone.subTemplateCmds {
+        template = ./lib/install.sh;
+        cmds.bash = "${pkgs.bash}/bin/bash";
+      });
     in
     {
       devShell = pkgs.devshell.mkShell {
@@ -59,10 +52,6 @@
           terraform
         ];
       };
-      packages.config = tf.config;
-      packages.plan = tf.cli.plan;
-      packages.apply = tf.cli.apply;
-      packages.destroy = tf.cli.destroy;
       packages.homeConfigurations.tristanschrader = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
         modules = [
