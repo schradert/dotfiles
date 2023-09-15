@@ -36,10 +36,12 @@
   (setq
     org-directory "~/Code/Personal/dev/knowledge/sabedoria"
     org-agenda-files (list (expand-file-name "agenda" org-directory))
-    org-log-done 'note
+    org-log-into-drawer t
     org-todo-keywords '(
-      (sequence "DRAFTED(d)" "PLANNED(p)" "IN-PROGRESS(i)" "ON-HOLD(h)" "|" "COMPLETED(c)" "ABANDONED(a)")
+      (sequence "DRAFTING(d!)" "ACTIVE(a!)" "WAITING(w@)" "|" "COMPLETED(c!)" "REJECTED(r@)")
     )
+    org-columns-default-format "%40ITEM(Task) %TODO %3PRIORITY %17Effort{:} %CLOCKSUM %CLOCKSUM_T %TAGS"
+    org-agenda-columns-add-appointments-to-effort-sum t
     org-capture-templates '(
       ("w" "Work")
       ("wt" "Work" entry (file "agenda/work.org") "* %?\n" :clock-in t :clock-resume t)
