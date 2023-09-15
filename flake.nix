@@ -57,9 +57,11 @@
         inherit system pkgs;
         modules = [
           ./src/infra/firefly.nix
-          {
+          ({ config, ... }: {
+            config.provider.kubernetes = { config_path = "~/.kube/config"; context_name = "k3d-personal-local"; };
+            config.provider.helm = { inherit (config.provider) kubernetes; };
 
-          }
+          })
         ];
       };
       packages.homeConfigurations.tristanschrader = home-manager.lib.homeManagerConfiguration {
