@@ -5,7 +5,7 @@
     emacs-overlay.url = github:nix-community/emacs-overlay;
     flake-utils.url = github:numtide/flake-utils;
     home-manager.url = github:nix-community/home-manager;
-    nixpkgs.url = github:nixos/nixpkgs;
+    nixpkgs.url = github:nixos/nixpkgs/nixos-23.05;
     nix-doom-emacs.url = github:nix-community/nix-doom-emacs;
     terranix.url = github:terranix/terranix;
     gke-gcloud-auth-plugin-flake.url = github:christian-blades-cb/gke-gcloud-auth-plugin-nix;
