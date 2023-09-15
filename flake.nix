@@ -39,7 +39,7 @@
         cmds.terraform = "${pkgs.terraform}/bin/terraform";
       };
       install = pkgs.writeScriptBin "install" (pkgs.lib.backbone.subTemplateCmds {
-        template = ./lib/install.sh;
+        template = ./src/lib/install.sh;
         cmds.bash = "${pkgs.bash}/bin/bash";
       });
     in
@@ -56,7 +56,7 @@
       packages.local = terranix.lib.terranixConfiguration {
         inherit system pkgs;
         modules = [
-          ./src/modules/firefly.nix
+          ./src/infra/firefly.nix
           {
 
           }
@@ -65,7 +65,7 @@
       packages.homeConfigurations.tristanschrader = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
         modules = [
-          ./home
+          ./src/home
           {
             # We can explore https://github.com/Spotifyd/spotifyd as a spotify client on macOS?
             # The main one is only supported on x86_64-linux, but spotifyd works on all unix
@@ -86,11 +86,11 @@
         system = "x86_64-linux";
         specialArgs = { inherit pkgs; };
         modules = [
-          ./nixos/sirver
+          ./src/nixos/sirver
           home-manager.nixosModules.home-manager
           {
             home-manager.extraSpecialArgs = specialArgs // { inherit nix-doom-emacs; };
-            home-manager.users.tristan = import ./home;
+            home-manager.users.tristan = import ./src/home;
             home-manager.useUserPackages = true;
             home-manager.useGlobalPkgs = true;
           }
@@ -100,11 +100,11 @@
         system = "x86_64-linux";
         specialArgs = { inherit pkgs; };
         modules = [
-          ./nixos/chilldom
+          ./src/nixos/chilldom
           home-manager.nixosModules.home-manager
           {
             home-manager.extraSpecialArgs = specialArgs // { inherit nix-doom-emacs; };
-            home-manager.users.tristan = import ./home;
+            home-manager.users.tristan = import ./src/home;
             home-manager.useUserPackages = true;
             home-manager.useGlobalPkgs = true;
             home.extraPackages = with pkgs; [ android-studio ];
