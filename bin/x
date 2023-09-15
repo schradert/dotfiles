@@ -1,0 +1,65 @@
+#!\bash
+# shellcheck disable=SC2239
+
+set -o errexit
+
+# Construct an option string for the configs.
+# IFS must be reverted to not affect other code
+configs=("local")
+ifs_old="$IFS"
+IFS="|"
+configs_str="${configs[*]}"
+IFS="$ifs_old"
+
+usage="Usage: x
+       CONFIG                     The deployment you want to work with (must be one of: $configs_str)
+       [-o|--out FILE]            The output path of terranix build (default: \$PRJ_ROOT/build/<config>.tf.json)
+       [-w|--workdir WORKDIR]     The directory to run terraform in (default: \$PRJ_ROOT/configs/<config>)
+       [-h|--help]                Display this message
+       [-- ...]                   Options will be passed to terraform
+"
+
+# No arguments is the same as specifying `--help|-h`
+[[ $# -eq 0 ]] && { echo "$usage"; exit 0; }
+
+# Parse all of the script arguments
+# The generated pattern for valid configs only works with extglob syntax
+shopt -s extglob
+configs_glob="@($configs_str)"
+while [[ $# -gt 0 ]]; do
+    # configs_glob is a pattern we don't want matched literally
+    # shellcheck disable=SC2254
+    case $1 in
+        $configs_glob) config="$1" ;;
+        --help|-h) echo "$usage"; exit 0 ;;
+        --out|-o) build_f="$2"; shift ;;
+        --workdir|-w) work_d="$2"; shift ;;
+        --) shift; break ;;
+        *) echo "x: ERROR: unrecognized config/option $1" 1>&2; exit 1 ;;
+    esac
+    shift
+done
+shopt -u extglob
+
+# Set values given the parsed arguments
+[[ -z $config ]] && { echo "x: ERROR: a deployment config was not specified. aborting ..." 1>&2; exit 1; }
+build_f="${build_f:-$PRJ_ROOT/build/$config.tf.json}"
+build_d="$(dirname "$build_f")"
+work_d="${work_d:-$PRJ_ROOT/configs/$config}"
+work_f="$work_d/config.tf.json"
+secrets_d="$PRJ_ROOT/conf/secrets"
+
+# Build config with terranix
+# Only create relevant directories if build is successful
+nix build "$PRJ_ROOT#$config"
+[[ ! -d $build_d ]] && mkdir -p "$build_d"
+[[ ! -d $work_d ]] && mkdir -p "$work_d"
+[[ -f $build_f ]] && mv "$build_f" "$build_f.$(date +%s).backup"
+mv "$(pwd)/result" "$build_f"
+rm -f "$work_f"
+cp "$build_f" "$work_f"
+cp "$secrets_d/terraform.tfvars" "$work_d"
+
+# Run terraform
+\terraform -chdir="$work_d" init
+\terraform -chdir="$work_d" "$@"
