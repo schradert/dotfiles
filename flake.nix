@@ -29,6 +29,7 @@
           devshell.overlays.default
           emacs-overlay.overlay
           gke-gcloud-auth-plugin-flake.overlays.default
+          (final: prev: { lib = prev.lib // { backbone = import ./src/lib { pkgs = final; }; }; })
         ];
         config.allowUnfreePredicate = pkg: builtins.elem pkg.pname [ "zoom" "discord" "slack" ];
       };
@@ -36,7 +37,7 @@
       inherit (shared.funcs) writeScriptBinFromTemplate;
       inherit (shared.cmds) bash;
       tf = rec {
-        config = terranix.lib.terranixConfiguration { inherit system; modules = [ ./infra ]; };
+        config = terranix.lib.terranixConfiguration { inherit system pkgs; modules = [ ./infra ]; };
         cli =
           let
             inherit (pkgs.lib) genAttrs;
