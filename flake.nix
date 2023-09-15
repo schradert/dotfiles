@@ -74,6 +74,7 @@
               element-desktop
               google-cloud-sdk
               gke-gcloud-auth-plugin
+              k3d
               ranger
               skhd
             ];
