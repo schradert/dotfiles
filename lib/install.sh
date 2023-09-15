@@ -1,4 +1,4 @@
-#!@bash@
+#!\bash
 if [[ -e /etc/nixos ]]; then
   sudo nixos-rebuild test --flake '.#'
 else
