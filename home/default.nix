@@ -192,6 +192,10 @@ let
     };
     navi.enable = true;
     neovim = import ./nvim { inherit pkgs; };
+    ssh = {
+      enable = true;
+      forwardAgent = true;
+    };
     tmux = {
       enable = true;
       plugins = with pkgs.tmuxPlugins; [
