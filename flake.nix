@@ -53,6 +53,14 @@
           terraform
         ];
       });
+      packages.local = terranix.lib.terranixConfiguration {
+        inherit system pkgs;
+        modules = [
+          ./src/modules/firefly.nix
+          {
+
+          }
+        ];
       };
       packages.homeConfigurations.tristanschrader = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
