@@ -2,18 +2,12 @@
   description = "System configuration";
   inputs = {
     devshell.url = github:numtide/devshell;
-    devshell.inputs.nixpkgs.follows = "nixpkgs";
-    devshell.inputs.flake-utils.follows = "flake-utils";
     emacs-overlay.url = github:nix-community/emacs-overlay;
     flake-utils.url = github:numtide/flake-utils;
     home-manager.url = github:nix-community/home-manager;
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nixpkgs.url = github:nixos/nixpkgs;
     nix-doom-emacs.url = github:nix-community/nix-doom-emacs;
-    nix-doom-emacs.inputs.nixpkgs.follows = "nixpkgs";
     terranix.url = github:terranix/terranix;
-    terranix.inputs.nixpkgs.follows = "nixpkgs";
-    terranix.inputs.flake-utils.follows = "flake-utils";
     gke-gcloud-auth-plugin-flake.url = github:christian-blades-cb/gke-gcloud-auth-plugin-nix;
   };
   outputs =
@@ -76,7 +70,13 @@
             # We can explore https://github.com/Spotifyd/spotifyd as a spotify client on macOS?
             # The main one is only supported on x86_64-linux, but spotifyd works on all unix
             # The spicetify CLI possibly works on any system, so might be able to get it to work on macOS
-            home.extraPackages = with pkgs; [ ranger skhd element-desktop google-cloud-sdk gke-gcloud-auth-plugin ];
+            home.extraPackages = with pkgs; [
+              element-desktop
+              google-cloud-sdk
+              gke-gcloud-auth-plugin
+              ranger
+              skhd
+            ];
           }
         ];
         extraSpecialArgs = { inherit nix-doom-emacs; };
