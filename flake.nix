@@ -63,6 +63,7 @@
       legacyPackages.homeConfigurations.tristanschrader = inputs.self.nixos-flake.lib.mkHomeConfiguration pkgs {
         imports = [ inputs.self.homeModules.darwin-graphical ];
         home.username = "tristanschrader";
+        home.packages = with pkgs; [ google-cloud-sdk gke-gcloud-auth-plugin ];
       };
 
       packages.default = self'.packages.activate;
