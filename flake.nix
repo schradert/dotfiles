@@ -1,121 +1,99 @@
 {
   description = "System configuration";
   inputs = {
-    devshell.url = github:numtide/devshell;
-    emacs-overlay.url = github:nix-community/emacs-overlay;
-    flake-utils.url = github:numtide/flake-utils;
-    home-manager.url = github:nix-community/home-manager;
-    nixpkgs.url = github:nixos/nixpkgs/nixos-23.05;
+    home-manager.url = github:nix-community/home-manager/release-23.05;
+    nixpkgs.url = github:nixos/nixpkgs/release-23.05;
+    nix-darwin.url = github:LnL7/nix-darwin;
+
+    nixos-flake.url = github:srid/nixos-flake;
+    flake-parts.url = github:hercules-ci/flake-parts;
+    treefmt-nix.url = github:numtide/treefmt-nix;
+
     nix-doom-emacs.url = github:nix-community/nix-doom-emacs;
+    emacs-overlay.url = github:nix-community/emacs-overlay;
+
+    sops-nix.url = github:Mic92/sops-nix;
     terranix.url = github:terranix/terranix;
     gke-gcloud-auth-plugin-flake.url = github:christian-blades-cb/gke-gcloud-auth-plugin-nix;
   };
-  outputs =
-    inputs@{ self
-    , devshell
-    , emacs-overlay
-    , flake-utils
-    , home-manager
-    , nixpkgs
-    , nix-doom-emacs
-    , terranix
-    , gke-gcloud-auth-plugin-flake
-    }: flake-utils.lib.eachDefaultSystem (system:
-    let
-      project = "dotfiles";
-      pkgs = import nixpkgs {
+  outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+    systems = [ "x86_64-linux" "aarch64-darwin" ];
+    imports = [
+      inputs.treefmt-nix.flakeModule
+      inputs.nixos-flake.flakeModule
+      ./src/home
+      ./src/nixos
+      ./src/darwin
+      ./src/users
+    ];
+    flake = {
+      nixosConfigurations.climax-vps = inputs.self.nixos-flake.lib.mkLinuxSystem {
+        imports = [ inputs.self.nixosModules.default ];
+      };
+      nixosConfigurations.chilldom = inputs.self.nixos-flake.lib.mkLinuxSystem {
+        imports = [ ./src/systems/chilldom ];
+      };
+      nixosConfigurations.sirver = inputs.self.nixos-flake.lib.mkLinuxSystem {
+        imports = [ ./src/systems/sirver ];
+      };
+      darwinConfigurations.morgenmuffel = inputs.self.nixos-flake.lib.mkMacosSystem {
+        imports = [ inputs.self.darwinModules.common ./src/systems/morgenmuffel ];
+      };
+      homeConfigurations.morgenmuffel = inputs.self.nixos-flake.lib.mkHomeConfiguration {
+        imports = [ inputs.self.homeModules.common ./src/systems/morgenmuffel ];
+      };
+    };
+    perSystem = { self', inputs', config, pkgs, lib, system, ... }: {
+      _module.args.pkgs = import inputs.nixpkgs {
         inherit system;
         overlays = (import ./overlays.nix) ++ [
-          devshell.overlays.default
-          emacs-overlay.overlay
-          gke-gcloud-auth-plugin-flake.overlays.default
+          inputs.emacs-overlay.overlay
+          inputs.gke-gcloud-auth-plugin-flake.overlays.default
           (final: prev: { lib = prev.lib // { backbone = import ./src/lib { pkgs = final; }; }; })
         ];
-        config.allowUnfreePredicate = pkg: builtins.elem pkg.pname [ "zoom" "discord" "slack" ];
       };
-      x = pkgs.lib.backbone.subTemplateCmds {
-        template = ./bin/x;
-        cmds.bash = "${pkgs.bash}/bin/bash";
-        cmds.terraform = "${pkgs.terraform}/bin/terraform";
+      nixos-flake.primary-inputs = [ "nixpkgs" "home-manager" "nix-darwin" "nixos-flake" ];
+
+      formatter = config.treefmt.build.wrapper;
+      treefmt.config = {
+        projectRootFile = "flake.nix";
+        programs.nixpkgs-fmt.enable = true;
       };
-      install = pkgs.writeScriptBin "install" (pkgs.lib.backbone.subTemplateCmds {
-        template = ./src/lib/install.sh;
-        cmds.bash = "${pkgs.bash}/bin/bash";
-      });
-    in
-    {
-      devShell = pkgs.devshell.mkShell ({ ... }: {
-        name = "${project}-shell";
-        commands = [ { name = "x"; command = x; } ];
+
+      legacyPackages.homeConfigurations.tristanschrader = inputs.self.nixos-flake.lib.mkHomeConfiguration pkgs {
+        imports = [ inputs.self.homeModules.darwin-graphical ];
+        home.username = "tristanschrader";
+      };
+
+      packages.default = self'.packages.activate;
+      packages.home = self'.packages.activate-home;
+      devShells.default = pkgs.mkShell {
         packages = with pkgs; [
           kubectl
           kubernetes-helm
+          nixpkgs-fmt
+          sops
+          ssh-to-age
           terraform
         ];
-      });
-      packages.local = terranix.lib.terranixConfiguration {
+      };
+
+      #  TODO (Tristan): convert these two packages into new system
+      packages.local = inputs.terranix.lib.terranixConfiguration {
         inherit system pkgs;
         modules = [
           ./src/infra/firefly.nix
           ({ config, ... }: {
-            config.provider.kubernetes = { config_path = "~/.kube/config"; context_name = "k3d-personal-local"; };
+            config.provider.kubernetes = { config_path = "~/.kube/config"; config_context= "k3d-personal-local"; };
             config.provider.helm = { inherit (config.provider) kubernetes; };
-
           })
         ];
       };
-      packages.homeConfigurations.tristanschrader = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
-        modules = [
-          ./src/home
-          {
-            # We can explore https://github.com/Spotifyd/spotifyd as a spotify client on macOS?
-            # The main one is only supported on x86_64-linux, but spotifyd works on all unix
-            # The spicetify CLI possibly works on any system, so might be able to get it to work on macOS
-            home.extraPackages = with pkgs; [
-              element-desktop
-              google-cloud-sdk
-              gke-gcloud-auth-plugin
-              k3d
-              ranger
-              skhd
-            ];
-          }
-        ];
-        extraSpecialArgs = { inherit nix-doom-emacs; };
-      };
-      packages.nixosConfigurations.sirver = nixpkgs.lib.nixosSystem rec {
-        system = "x86_64-linux";
-        specialArgs = { inherit pkgs; };
-        modules = [
-          ./src/nixos/sirver
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.extraSpecialArgs = specialArgs // { inherit nix-doom-emacs; };
-            home-manager.users.tristan = import ./src/home;
-            home-manager.useUserPackages = true;
-            home-manager.useGlobalPkgs = true;
-          }
-        ];
-      };
-      packages.nixosConfigurations.chilldom = nixpkgs.lib.nixosSystem rec {
-        system = "x86_64-linux";
-        specialArgs = { inherit pkgs; };
-        modules = [
-          ./src/nixos/chilldom
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.extraSpecialArgs = specialArgs // { inherit nix-doom-emacs; };
-            home-manager.users.tristan = import ./src/home;
-            home-manager.useUserPackages = true;
-            home-manager.useGlobalPkgs = true;
-            home.extraPackages = with pkgs; [ android-studio ];
-          }
-        ];
-      };
-      packages.install = install;
-      packages.default = install;
-    }
-    );
-}
+      packages.install = pkgs.writeScriptBin "install" (pkgs.lib.backbone.subTemplateCmds {
+        template = ./src/lib/install.sh;
+        cmds.bash = "${pkgs.bash}/bin/bash";
+      });
 
+    };
+  };
+}

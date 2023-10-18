@@ -8,6 +8,7 @@
 (package! imenu-list)
 (package! org-brain)
 (package! org-ql)
+(package! magit-todos)
 (package! helm-org-rifle)
 (package! org-edna)
 (package! org-linker :recipe (:host github :repo "toshism/org-linker"))

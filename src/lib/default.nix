@@ -7,6 +7,12 @@
       output_f = pkgs.runCommand "to-yaml" { nativeBuildInputs = [ pkgs.remarshal ]; } command;
       values = [ (builtins.readFile output_f) ];
     in values;
+  fromYAML = yaml:
+    let
+      input_f = if builtins.isPath yaml then yaml else builtins.toFile "obj.yaml" yaml;
+      command = "remarshal -if yaml -i \"${input_f}\" -of json -o \"$out\"";
+      output_f = pkgs.runCommand "from-yaml" { nativeBuildInputs = [ pkgs.remarshal ]; } command;
+    in builtins.fromJSON (builtins.readFile output_f);
   subTemplateCmds = { template, cmds ? {} }:
     let
       contents_old = builtins.readFile template;

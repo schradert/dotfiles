@@ -5,6 +5,7 @@
 /build/
 /result
 /run/
-/src/home/doom.d/config.el
-/src/home/doom.d/packages.el
-/src/home/doom.d/custom.el
+/configs/
+/src/home/emacs/doom.d/config.el
+/src/home/emacs/doom.d/packages.el
+/src/home/emacs/doom.d/custom.el
