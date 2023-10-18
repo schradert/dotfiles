@@ -68,7 +68,8 @@
         ./emacs
       ];
       home.packages = with pkgs; [
-        docker
+# TODO (Tristan): figure out how to run docker as a home-manager service
+#       docker
         podman
         discord
         libtool
