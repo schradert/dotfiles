@@ -10,4 +10,8 @@ in
     enable = true;
     skin = pkgs.lib.backbone.fromYAML skin;
   };
+  home.packages = with pkgs; [
+    kubectl
+    kubernetes-helm
+  ];
 }

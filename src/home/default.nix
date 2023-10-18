@@ -9,6 +9,7 @@
         ./git
         ./ssh
         ./tmux
+        ./k9s
       ];
       home.username = lib.mkDefault config.people.myself;
       home.stateVersion = "23.05";
