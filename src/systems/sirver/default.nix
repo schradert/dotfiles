@@ -1,7 +1,7 @@
 { self, ... }:
 {
   imports = [
-    self.nixosModules.default
+    self.nixosModules.common
     ./hardware-configuration.nix
   ];
 
