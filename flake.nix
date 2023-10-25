@@ -28,6 +28,7 @@
       ./src/users
     ];
     flake = {
+      # TODO (Tristan): get the climax-vps into both terraform and nix flake deployment
       nixosConfigurations.climax-vps = inputs.self.nixos-flake.lib.mkLinuxSystem {
         imports = [ inputs.self.nixosModules.default ];
       };
@@ -39,9 +40,6 @@
       };
       darwinConfigurations.morgenmuffel = inputs.self.nixos-flake.lib.mkMacosSystem {
         imports = [ inputs.self.darwinModules.common ./src/systems/morgenmuffel ];
-      };
-      homeConfigurations.morgenmuffel = inputs.self.nixos-flake.lib.mkHomeConfiguration {
-        imports = [ inputs.self.homeModules.common ./src/systems/morgenmuffel ];
       };
     };
     perSystem = { self', inputs', config, pkgs, lib, system, ... }: {
