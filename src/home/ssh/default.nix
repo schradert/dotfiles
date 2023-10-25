@@ -29,6 +29,11 @@
         user = "terraform";
         identityFile = "/Users/tristanschrader/.ssh/terraform";
       };
+      sirver = {
+        hostname = "192.168.50.21";
+        user = "tristan";
+        identityFile = "/Users/tristanschrader/.ssh/tristan_sirver_ed25519";
+      };
     };
   };
 }
