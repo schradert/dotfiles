@@ -1,4 +1,4 @@
-{ self, pkgs, sops-nix, ... }:
+{ self, config, pkgs, sops-nix, ... }:
 {
   flake = {
     nixosModules.common = {
@@ -6,14 +6,14 @@
         self.nixosModules.home-manager
         sops-nix.nixosModules.sops
       ];
-      users.users.${self.flake.config.people.myself} = {
+      users.users.${config.people.myself} = {
         isNormalUser = true;
-        home = "/home/${self.flake.config.people.myself}";
-        description = self.flake.config.people.users.${self.flake.config.people.myself}.name;
+        home = "/home/${config.people.myself}";
+        description = config.people.users.${config.people.myself}.name;
         extraGroups = [ "wheel" "tty" ];
         shell = pkgs.zsh;
       };
-      home-manager.users.${self.flake.config.people.myself} = {
+      home-manager.users.${config.people.myself} = {
         imports = [ self.homeModules.common ];
         home.packages = with pkgs; [ nethogs protonvpn-cli ];
         services.emacs = { enable = true; defaultEditor = true; };
@@ -22,8 +22,8 @@
       environment.shells = [ pkgs.zsh ];
       home-manager.useUserPackages = true;
       home-manager.useGlobalPkgs = true;
-      users.users.root.openssh.authorizedKeys.keys = self.flake.config.people.users.${self.flake.config.people.myself}.sshKeys;
-      users.users.${self.flake.config.people.myself}.openssh.authorizedKeys.keys = self.flake.config.people.users.${self.flake.config.people.myself}.sshKeys;
+      users.users.root.openssh.authorizedKeys.keys = config.people.users.${config.people.myself}.sshKeys;
+      users.users.${config.people.myself}.openssh.authorizedKeys.keys = config.people.users.${config.people.myself}.sshKeys;
       users.mutableUsers = true;
       sops.defaultSopsFile = ../../conf/secrets.json;
       sops.defaultSopsFormat = "json";
@@ -39,7 +39,7 @@
     };
     nixosModules.graphical = {
       imports = [ self.nixosModules.common ];
-      home-manager.users.${self.flake.config.people.myself} = {
+      home-manager.users.${config.people.myself} = {
         imports = [ self.homeModules.graphical ];
         home.packages = with pkgs; [
           bitwarden
@@ -58,7 +58,7 @@
       fonts.fonts = with pkgs; [ meslo-lgs-nf ];
       sound.enable = true;
       hardware.pulseaudio.enable = true;
-      users.users.${self.flake.config.people.myself}.extraGroups = [ "networkmanager" ];
+      users.users.${config.people.myself}.extraGroups = [ "networkmanager" ];
     };
   };
 }
