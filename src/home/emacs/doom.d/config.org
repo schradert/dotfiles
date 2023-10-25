@@ -108,7 +108,29 @@
 ** Key bindings
 #+begin_src emacs-lisp
 (after! vterm
-  (evil-define-key 'normal vterm-mode-map (kbd "C-c ESC") #'vterm-send-escape))
+  (evil-define-key 'normal vterm-mode-map (kbd "C-c ESC") #'vterm-send-escape)
+  (defun vterm-ssh (host)
+    (vterm)
+    (vterm-send-string (concat "ssh " host "\n")))
+  (defun vterm-ssh-tramp ()
+    (interactive)
+    (let ((host (file-remote-p default-directory 'host)))
+      (if host
+          (vterm-ssh host)
+        (message "Not in a TRAMP buffer")))))
+#+end_src
+
+* ssh-deploy
+#+begin_src emacs-lisp
+(after! ssh-deploy
+  (ssh-deploy-line-mode)
+  (ssh-deploy-add-menu)
+  (ssh-deploy-add-after-save-hook)
+  (ssh-deploy-add-find-file-hook)
+  (advice-add #'turn-on-evil-mode :before
+              (lambda (&optional args)
+                (when (eq major-mode 'fundamental-mode)
+                  (hack-local-variables)))))
 #+end_src
 
 * Dired
