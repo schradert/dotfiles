@@ -15,6 +15,7 @@
     sops-nix.url = github:Mic92/sops-nix;
     terranix.url = github:terranix/terranix;
     gke-gcloud-auth-plugin-flake.url = github:christian-blades-cb/gke-gcloud-auth-plugin-nix;
+    spicetify-nix.url = github:the-argus/spicetify-nix;
   };
   outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } {
     systems = [ "x86_64-linux" "aarch64-darwin" ];

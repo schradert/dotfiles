@@ -64,7 +64,6 @@
     homeModules.graphical = ({ pkgs, lib, ... }: {
       imports = [
         self.homeModules.common
-        ./spicetify
         ./emacs
       ];
       home.packages = with pkgs; [
@@ -86,10 +85,14 @@
       ];
       nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem pkg.pname [ "discord" ];
     });
+    homeModules.linux-graphical = {
+      imports = [ self.homeModules.graphical ./spicetify/linux.nix ];
+    };
     homeModules.darwin-graphical = ({ config, pkgs, ... }: {
       imports = [
         self.homeModules.graphical
         ./brew
+        ./spicetify/darwin.nix
       ];
       home.packages = with pkgs; [ skhd ];
       home.homeDirectory = "/Users/${config.home.username}";
