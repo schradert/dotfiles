@@ -14,8 +14,8 @@
         user = "tristan";
         identityFile = "/Users/tristanschrader/.ssh/climax_server";
       };
-      climax-vps = {
-        hostname = "vps.nodes.climax.bio";
+      climax-dev = {
+        hostname = "dev.nodes.climax.bio";
         user = "terraform";
         identityFile = "/Users/tristanschrader/.ssh/terraform";
       };
