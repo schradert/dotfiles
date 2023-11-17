@@ -1,0 +1,53 @@
+#! /usr/bin/env bash
+
+set -o errexit
+
+# Setup
+root="$(git rev-parse --show-toplevel)"
+source "$root/bin/utils.sh"
+
+readarray -t devices < <(nix flake show --json | jq '.nixosConfigurations | keys[]' -r)
+devices_str="$(IFS="|"; echo "${devices[*]}")"
+cmd="test"
+
+usage="Usage: nixos
+       -d|--device DEVICE     (Required) The device to deploy a nixos configuration for (options: ${devices_str})
+       [-c|--cmd CMD]         The nixos-rebuild command to run on the device (default: $cmd)
+"
+
+# Parse and validate arguments
+if [[ $# -eq 0 ]]; then
+    logfx exit_status=SUCCESS <<< "$usage"
+fi
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -d|--device)
+            device="$2"
+            if ! contains "$device" "${devices[@]}"; then
+                logfx log_level=ERROR exit_status=FAILURE <<< "$1 is not an available device among: ${devices_str}"
+            fi
+            shift 1
+            ;;
+        -c|--cmd)
+            cmd="$2"
+            shift 1
+            ;;
+    esac
+    shift 1
+done
+if [[ -z $device ]]; then
+    logfx log_level=ERROR exit_status=FAILURE <<< "No device specified. Options: ${devices_str}"
+fi
+
+# Run commands
+# We override the ControlPath because otherwise Nix will create too long of a Unix domain socket name
+# if the name of the device is more than 5 characters... This path is managed by nix and will be deleted
+# when the connection to the remote host ends when the program halts.
+export NIX_SSHOPTS="-o ControlPath=/tmp/%C"
+\nixos-rebuild "$cmd" \
+  --flake ".#$device" \
+  --build-host "$device" \
+  --target-host "$device" \
+  --fast \
+  --show-trace \
+  --use-remote-sudo
