@@ -28,10 +28,6 @@
       ./src/users
     ];
     flake = {
-      # TODO (Tristan): get the climax-vps into both terraform and nix flake deployment
-      nixosConfigurations.climax-vps = inputs.self.nixos-flake.lib.mkLinuxSystem {
-        imports = [ inputs.self.nixosModules.default ];
-      };
       nixosConfigurations.chilldom = inputs.self.nixos-flake.lib.mkLinuxSystem {
         imports = [ ./src/systems/chilldom ];
       };
@@ -71,11 +67,15 @@
         packages = with pkgs; [
           kubectl
           kubernetes-helm
+          nixos-rebuild
           nixpkgs-fmt
           sops
           ssh-to-age
           terraform
         ];
+        shellHook = ''
+          PATH_add bin
+        '';
       };
 
       #  TODO (Tristan): convert these two packages into new system
