@@ -29,8 +29,8 @@
     ];
     flake = {
       overlays.default = inputs.nixpkgs.lib.composeManyExtensions [
-        (import ./overlays/external.nix)
-        (import ./overlays/internal.nix)
+        (import ./src/overlays/external.nix)
+        (import ./src/overlays/internal.nix)
         inputs.emacs-overlay.overlay
         inputs.gke-gcloud-auth-plugin-flake.overlays.default
       ];
