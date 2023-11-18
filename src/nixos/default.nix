@@ -12,6 +12,7 @@
         description = config.people.users.${config.people.myself}.name;
         extraGroups = [ "wheel" "tty" ];
         shell = pkgs.zsh;
+        openssh.authorizedKeys.keys = config.people.users.${config.people.myself}.sshKeys;
       };
       home-manager.users.${config.people.myself} = {
         imports = [ self.homeModules.common ];
@@ -23,7 +24,6 @@
       home-manager.useUserPackages = true;
       home-manager.useGlobalPkgs = true;
       users.users.root.openssh.authorizedKeys.keys = config.people.users.${config.people.myself}.sshKeys;
-      users.users.${config.people.myself}.openssh.authorizedKeys.keys = config.people.users.${config.people.myself}.sshKeys;
       users.mutableUsers = true;
       sops.defaultSopsFile = ../../conf/secrets.json;
       sops.defaultSopsFormat = "json";
