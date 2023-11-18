@@ -28,20 +28,37 @@
       ./src/users
     ];
     flake = {
-      nixosConfigurations.chilldom = inputs.self.nixos-flake.lib.mkLinuxSystem {
-        imports = [ ./src/systems/chilldom ];
-      };
-      nixosConfigurations.sirver = inputs.self.nixos-flake.lib.mkLinuxSystem {
-        imports = [ ./src/systems/sirver ];
       overlays.default = inputs.nixpkgs.lib.composeManyExtensions (import ./overlays.nix ++ [
         inputs.emacs-overlay.overlay
         inputs.gke-gcloud-auth-plugin-flake.overlays.default
         (final: prev: { lib = prev.lib // { backbone = import ./src/lib { pkgs = final; }; }; })
       ]);
+      nixosConfigurations.chilldom = inputs.nixpkgs.lib.nixosSystem {
+        modules = [
+          inputs.self.nixosModules.graphical
+          ./src/systems/chilldom/hardware-configuration.nix
+          {
+            networking.hostName = "chilldom";
+            networking.wireless.enable = true;
+            networking.wireless.networks.lanyard.psk = "bruhWHY123!";
+          }
+        ];
       };
-      darwinConfigurations.morgenmuffel = inputs.self.nixos-flake.lib.mkMacosSystem {
-        imports = [ inputs.self.darwinModules.common ./src/systems/morgenmuffel ];
+      nixosConfigurations.sirver = inputs.nixpkgs.lib.nixosSystem {
+        modules = [
+          inputs.self.nixosModules.common
+          ./src/systems/sirver/hardware-configuration.nix
+          { networking.hostName = "sirver"; }
+        ];
       };
+      darwinConfigurations.morgenmuffel = inputs.self.nixos-flake.lib.mkMacosSystem ({ pkgs, ... }: {
+        imports = [ inputs.self.darwinModules.common ];
+        home-manager.users.${inputs.self.people.myself}.home.packages = with pkgs; [
+          google-cloud-sdk
+          gke-gcloud-auth-plugin
+          skhd
+        ];
+      });
     };
     perSystem = { self', inputs', config, pkgs, lib, system, ... }: {
       _module.args.pkgs = inputs'.nixpkgs.legacyPackages.extend inputs.self.overlays.default;
