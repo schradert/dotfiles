@@ -34,6 +34,8 @@
         (final: prev: { lib = prev.lib // { backbone = import ./src/lib { pkgs = final; }; }; })
       ]);
       nixosConfigurations.chilldom = inputs.nixpkgs.lib.nixosSystem {
+        pkgs = import inputs.nixpkgs { system = "x86_64-linux"; overlays = [ inputs.self.overlays.default ]; };
+        specialArgs = inputs.self.nixos-flake.lib.specialArgsFor.nixos;
         modules = [
           inputs.self.nixosModules.graphical
           ./src/systems/chilldom/hardware-configuration.nix
@@ -45,6 +47,8 @@
         ];
       };
       nixosConfigurations.sirver = inputs.nixpkgs.lib.nixosSystem {
+        pkgs = import inputs.nixpkgs { system = "x86_64-linux"; overlays = [ inputs.self.overlays.default ]; };
+        specialArgs = inputs.self.nixos-flake.lib.specialArgsFor.nixos;
         modules = [
           inputs.self.nixosModules.common
           ./src/systems/sirver/hardware-configuration.nix
