@@ -15,7 +15,7 @@
     version = "0.7.2";
     chart = "firefly-iii-stack";
     namespace = "firefly";
-    values = pkgs.lib.backbone.toYAML {
+    values = pkgs.toYAML {
       firefly-db.storage.class = "local-path";
       firefly-iii.config.existingSecret = "firefly-app-key";
     };

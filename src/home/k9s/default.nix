@@ -8,7 +8,7 @@ in
 {
   programs.k9s = {
     enable = true;
-    skin = pkgs.lib.backbone.fromYAML skin;
+    skin = pkgs.fromYAML skin;
   };
   home.packages = with pkgs; [
     kubectl

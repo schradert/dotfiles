@@ -28,11 +28,12 @@
       ./src/users
     ];
     flake = {
-      overlays.default = inputs.nixpkgs.lib.composeManyExtensions (import ./overlays.nix ++ [
+      overlays.default = inputs.nixpkgs.lib.composeManyExtensions [
+        (import ./overlays/external.nix)
+        (import ./overlays/internal.nix)
         inputs.emacs-overlay.overlay
         inputs.gke-gcloud-auth-plugin-flake.overlays.default
-        (final: prev: { lib = prev.lib // { backbone = import ./src/lib { pkgs = final; }; }; })
-      ]);
+      ];
       nixosConfigurations.chilldom = inputs.nixpkgs.lib.nixosSystem {
         pkgs = import inputs.nixpkgs { system = "x86_64-linux"; overlays = [ inputs.self.overlays.default ]; };
         specialArgs = inputs.self.nixos-flake.lib.specialArgsFor.nixos;
@@ -108,7 +109,7 @@
           })
         ];
       };
-      packages.install = pkgs.writeScriptBin "install" (pkgs.lib.backbone.subTemplateCmds {
+      packages.install = pkgs.writeScriptBin "install" (pkgs.subTemplateCmds {
         template = ./src/lib/install.sh;
         cmds.bash = "${pkgs.bash}/bin/bash";
       });
