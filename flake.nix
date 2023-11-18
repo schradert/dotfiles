@@ -33,20 +33,18 @@
       };
       nixosConfigurations.sirver = inputs.self.nixos-flake.lib.mkLinuxSystem {
         imports = [ ./src/systems/sirver ];
+      overlays.default = inputs.nixpkgs.lib.composeManyExtensions (import ./overlays.nix ++ [
+        inputs.emacs-overlay.overlay
+        inputs.gke-gcloud-auth-plugin-flake.overlays.default
+        (final: prev: { lib = prev.lib // { backbone = import ./src/lib { pkgs = final; }; }; })
+      ]);
       };
       darwinConfigurations.morgenmuffel = inputs.self.nixos-flake.lib.mkMacosSystem {
         imports = [ inputs.self.darwinModules.common ./src/systems/morgenmuffel ];
       };
     };
     perSystem = { self', inputs', config, pkgs, lib, system, ... }: {
-      _module.args.pkgs = import inputs.nixpkgs {
-        inherit system;
-        overlays = (import ./overlays.nix) ++ [
-          inputs.emacs-overlay.overlay
-          inputs.gke-gcloud-auth-plugin-flake.overlays.default
-          (final: prev: { lib = prev.lib // { backbone = import ./src/lib { pkgs = final; }; }; })
-        ];
-      };
+      _module.args.pkgs = inputs'.nixpkgs.legacyPackages.extend inputs.self.overlays.default;
       nixos-flake.primary-inputs = [ "nixpkgs" "home-manager" "nix-darwin" "nixos-flake" ];
 
       formatter = config.treefmt.build.wrapper;
