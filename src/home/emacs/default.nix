@@ -26,7 +26,6 @@
     nodePackages.stylelint
     pandoc
     pipenv
-    pngpaste
     python311Packages.grip
     python311Packages.isort
     python311Packages.nose
@@ -36,6 +35,8 @@
     shellcheck
     taplo
     sqls
+  ] ++ lib.optionals (pkgs.system == "darwin") [
+      pngpaste
   ];
 # TODO (Tristan): figure out why none of this works correctly
 # home.activation.doomInstallation = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
