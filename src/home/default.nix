@@ -70,7 +70,6 @@
 # TODO (Tristan): figure out how to run docker as a home-manager service
 #       docker
         podman
-        discord
         libtool
         librsvg
         harfbuzz
@@ -83,21 +82,21 @@
 #       raycast
 #       slack
       ];
-      nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem pkg.pname [ "discord" ];
     });
     homeModules.linux-graphical = {
       imports = [ self.homeModules.graphical ./spicetify/linux.nix ];
     };
-    homeModules.darwin-graphical = ({ config, pkgs, ... }: {
+    homeModules.darwin-graphical = ({ config, pkgs, lib, ... }: {
       imports = [
         self.homeModules.graphical
         ./brew
         ./spicetify/darwin.nix
       ];
-      home.packages = with pkgs; [ skhd ];
+      home.packages = with pkgs; [ skhd discord ];
       home.homeDirectory = "/Users/${config.home.username}";
       home.file.".skhdrc".source = ./.skhdrc;
       home.file.".yabairc".source = ./.yabairc;
+      nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "discord" ];
     });
   };
 }
