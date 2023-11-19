@@ -41,7 +41,7 @@
         imports = [ self.homeModules.graphical ];
         home.packages = with pkgs; [
           bitwarden
-          brave-browser
+          brave
           godot
           protonvpn-gui
           android-studio
