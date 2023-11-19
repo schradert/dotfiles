@@ -1,0 +1,39 @@
+{ pkgs, flake, lib, ... }:
+{
+  home.packages = with pkgs; [
+    cargo
+    editorconfig-core-c
+    gopls
+    gotools
+    gomodifytags
+    gore
+    gotests
+    gnugrep
+    graphviz
+    haskellPackages.haskell-language-server
+    haskellPackages.hoogle
+    haskellPackages.cabal-install
+    imagemagick
+    ispell
+    isync
+    ktlint
+    mu
+    nil
+    nixfmt
+    nodePackages.js-beautify
+    nodePackages.stylelint
+    pandoc
+    pipenv
+    python311Packages.grip
+    python311Packages.isort
+    python311Packages.nose
+    python311Packages.pytest
+    rust-analyzer
+    rustc
+    shellcheck
+    taplo
+    sqls
+  ] ++ lib.optionals (pkgs.system == "darwin") [
+      pngpaste
+  ];
+}
