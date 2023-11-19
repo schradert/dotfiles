@@ -1,10 +1,9 @@
-{ self, config, pkgs, sops-nix, ... }:
+{ self, config, pkgs, ... }:
 {
   flake = {
     nixosModules.common = {
       imports = [
         self.nixosModules.home-manager
-        sops-nix.nixosModules.sops
       ];
       users.users.${config.people.myself} = {
         isNormalUser = true;
@@ -25,8 +24,6 @@
       home-manager.useGlobalPkgs = true;
       users.users.root.openssh.authorizedKeys.keys = config.people.users.${config.people.myself}.sshKeys;
       users.mutableUsers = true;
-      sops.defaultSopsFile = ../../conf/secrets.json;
-      sops.defaultSopsFormat = "json";
       services.openssh.enable = true;
       system.stateVersion = "22.11";
       security.polkit.enable = true;
