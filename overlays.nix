@@ -21,5 +21,22 @@
         };
       });
     };
+    displaylink =
+      let version = "5.4.1";
+      in super.stdenv.mkDerivation {
+        name = "displaylink-${version}";
+        src = super.fetchurl {
+          url = "https://files2.wavlink.com/drivers/PC-peripherals/Linux/DisplayLink USB Graphics Software for Ubuntu${version}-EXE.zip";
+          sha256 = super.lib.fakeSha256;
+        };
+        buildInputs = [ super.unzip ];
+        unpackCmd = ''
+          unzip $src
+        '';
+        installPhase = ''
+          chmod +x *.run
+          ln -s $(whereis rm | awk '{print $2}') /bin/rm
+        '';
+      };
   })
 ]
