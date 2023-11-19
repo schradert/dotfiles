@@ -1,11 +1,12 @@
 { flake, lib, pkgs, ... }:
 {
   imports = [ flake.inputs.spicetify-nix.homeManagerModule ];
-  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "spotify" ];
-  nixpkgs.overlays = import ./overlays.nix { inherit (flake.inputs) spicetify-nix; };
-  programs.spicetify = {
+# nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "spotify" ];
+  programs.spicetify = let
+    spicePkgs = flake.inputs.spicetify-nix.packages.${pkgs.system}.default;
+  in {
     enable = true;
-    enabledCustomApps = with pkgs.spicePkgs.apps; [
+    enabledCustomApps = with spicePkgs.apps; [
       new-releases
       reddit
       lyrics-plus
@@ -13,7 +14,7 @@
       localFiles
       nameThatTune
     ];
-    enabledExtensions = with pkgs.spicePkgs.extensions; [
+    enabledExtensions = with spicePkgs.extensions; [
       bookmark
       keyboardShortcut
       loopyLoop
@@ -37,6 +38,6 @@
       playNext
       volumePercentage
     ];
-    theme = pkgs.spicePkgs.themes.DefaultDynamic;
+    theme = spicePkgs.themes.DefaultDynamic;
   };
 }

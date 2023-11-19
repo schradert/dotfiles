@@ -41,17 +41,16 @@
     nixosModules.graphical = ({ pkgs, lib, ... }: {
       imports = [ self.nixosModules.common ];
       home-manager.users.${config.people.myself} = {
-        imports = [ self.homeModules.graphical ];
+        imports = [ self.homeModules.linux-graphical ];
         home.packages = with pkgs; [
           bitwarden
           brave
           godot
           protonvpn-gui
-          # android-studio
+          android-studio
         ];
-        services.emacs = { enable = true; defaultEditor = true; };
         # TODO (Tristan): why isn't this working?!
-        nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "android-studio-stable" ];
+        # nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "android-studio-stable" ];
       };
       services.xserver = {
         enable = true;

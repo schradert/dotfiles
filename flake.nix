@@ -35,16 +35,20 @@
         inputs.gke-gcloud-auth-plugin-flake.overlays.default
       ];
       nixosConfigurations.chilldom = inputs.nixpkgs.lib.nixosSystem {
-        pkgs = import inputs.nixpkgs { system = "x86_64-linux"; overlays = [ inputs.self.overlays.default ]; };
+        pkgs = import inputs.nixpkgs {
+          system = "x86_64-linux";
+          overlays = [ inputs.self.overlays.default ];
+        };
         specialArgs = inputs.self.nixos-flake.lib.specialArgsFor.nixos;
         modules = [
           inputs.self.nixosModules.graphical
           ./src/systems/chilldom/hardware-configuration.nix
-          {
+          ({ lib, ...}: {
             networking.hostName = "chilldom";
             networking.wireless.enable = true;
             networking.wireless.networks.lanyard.psk = "bruhWHY123!";
-          }
+            nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "discord" "android-studio" "spotify" ];
+          })
         ];
       };
       nixosConfigurations.sirver = inputs.nixpkgs.lib.nixosSystem {
@@ -53,7 +57,9 @@
         modules = [
           inputs.self.nixosModules.headless
           ./src/systems/sirver/hardware-configuration.nix
-          { networking.hostName = "sirver"; }
+          {
+            networking.hostName = "sirver";
+          }
         ];
       };
       darwinConfigurations.morgenmuffel = inputs.self.nixos-flake.lib.mkMacosSystem ({ pkgs, ... }: {
