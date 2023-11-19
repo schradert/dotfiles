@@ -14,12 +14,14 @@ usage="Usage: nixos
        -d|--device DEVICE     (Required) The device to deploy a nixos configuration for (options: ${devices_str})
        [-c|--cmd CMD]         The nixos-rebuild command to run on the device (default: $cmd)
        [--remote]             The device is a remote device
+       [...]                  Extra arguments passed to nixos-rebuild
 "
 
 # Parse and validate arguments
 if [[ $# -eq 0 ]]; then
     logfx exit_status=SUCCESS <<< "$usage"
 fi
+extra_args=()
 while [[ $# -gt 0 ]]; do
     case $1 in
         -d|--device)
@@ -34,7 +36,10 @@ while [[ $# -gt 0 ]]; do
             shift 1
             ;;
         --remote)
-            remote=1
+            extra_args+=(--build-host "$device" --target-host "$device" --fast --use-remote-sudo)
+            ;;
+        *)
+            extra_args+=("$1")
             ;;
     esac
     shift 1
@@ -47,9 +52,5 @@ fi
 # We override the ControlPath because otherwise Nix will create too long of a Unix domain socket name
 # if the name of the device is more than 5 characters... This path is managed by nix and will be deleted
 # when the connection to the remote host ends when the program halts.
-args=()
-if [[ -n $remote ]]; then
-  args+=(--build-host "$device" --target-host "$device" --fast --use-remote-sudo)
-fi
 export NIX_SSHOPTS="-o ControlPath=/tmp/%C"
 \nixos-rebuild "$cmd" --flake ".#$device" "${args[@]}"
