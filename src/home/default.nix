@@ -66,7 +66,6 @@
     };
     homeModules.graphical = ({ pkgs, lib, ... }: {
       imports = [
-        self.homeModules.common
         ./emacs
       ];
       home.packages = with pkgs; [
