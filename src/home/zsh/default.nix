@@ -97,7 +97,7 @@
           owner = "unixorn";
           repo = "git-extra-commands";
           rev = "main";
-          sha256 = "UOdtiLE+1wWGBCnI/kmesfwKjFKAva/YlNgxfnvUPfE=";
+          sha256 = "MB4BQf1Zu6/Ydo5DZj4juTOtA5ROhprAiqNEd8sFu4k=";
         };
       }
       {
