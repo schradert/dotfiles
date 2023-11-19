@@ -1,7 +1,7 @@
-{ self, config, pkgs, ... }:
+{ self, config, ... }:
 {
   flake = {
-    nixosModules.common = {
+    nixosModules.common = ({ pkgs, ... }: {
       imports = [
         self.nixosModules.home-manager
       ];
@@ -33,8 +33,8 @@
       i18n.defaultLocale = "en_US.UTF-8";
       boot.loader.systemd-boot.enable = true;
       boot.loader.efi.canTouchEfiVariables = true;
-    };
-    nixosModules.graphical = {
+    });
+    nixosModules.graphical = ({ pkgs, ... }: {
       imports = [ self.nixosModules.common ];
       home-manager.users.${config.people.myself} = {
         imports = [ self.homeModules.graphical ];
@@ -56,6 +56,6 @@
       sound.enable = true;
       hardware.pulseaudio.enable = true;
       users.users.${config.people.myself}.extraGroups = [ "networkmanager" ];
-    };
+    });
   };
 }
