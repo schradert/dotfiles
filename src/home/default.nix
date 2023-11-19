@@ -65,9 +65,6 @@
       programs.vim.defaultEditor = true;
     };
     homeModules.graphical = ({ pkgs, lib, ... }: {
-      imports = [
-        ./emacs
-      ];
       home.packages = with pkgs; [
 # TODO (Tristan): figure out how to run docker as a home-manager service
 #       docker
@@ -84,13 +81,19 @@
 #       raycast
 #       slack
       ];
+      services.emacs = { enable = true; defaultEditor = true; };
     });
     homeModules.linux-graphical = {
-      imports = [ self.homeModules.graphical ./spicetify/linux.nix ];
+      imports = [
+        self.homeModules.graphical
+     #  ./spicetify/linux.nix
+        ./emacs/linux.nix
+      ];
     };
     homeModules.darwin-graphical = ({ config, pkgs, lib, ... }: {
       imports = [
         self.homeModules.graphical
+        ./emacs/common.nix
         ./brew
         ./spicetify/darwin.nix
       ];

@@ -2,43 +2,9 @@
 # let doom-config-dir = import ./doom.d { inherit pkgs; };
 # in
 {
-  home.packages = with pkgs; [
-    cargo
-    editorconfig-core-c
-    gopls
-    gotools
-    gomodifytags
-    gore
-    gotests
-    gnugrep
-    graphviz
-    haskellPackages.haskell-language-server
-    haskellPackages.hoogle
-    haskellPackages.cabal-install
-    imagemagick
-    ispell
-    isync
-    ktlint
-    mu
-    nil
-    nixfmt
-    nodePackages.js-beautify
-    nodePackages.stylelint
-    pandoc
-    pipenv
-    python311Packages.grip
-    python311Packages.isort
-    python311Packages.nose
-    python311Packages.pytest
-    rust-analyzer
-    rustc
-    shellcheck
-    taplo
-    sqls
-  ] ++ lib.optionals (pkgs.system == "darwin") [
-      pngpaste
-  ];
-# TODO (Tristan): figure out why none of this works correctly
+  imports = [ ./common.nix flake.inputs.nix-doom-emacs.hmModule ];
+  programs.doom-emacs = { enable = true; doomPrivateDir = ./doom.d; };
+  # TODO (Tristan): figure out why none of this works correctly
 # home.activation.doomInstallation = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
 #   if ! command -v doom &>/dev/null; then
 #     ${pkgs.git}/bin/git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
