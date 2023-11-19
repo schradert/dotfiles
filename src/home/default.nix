@@ -61,6 +61,9 @@
         zoxide.enable = true;
       };
     });
+    homeModules.headless = {
+      programs.vim.defaultEditor = true;
+    };
     homeModules.graphical = ({ pkgs, lib, ... }: {
       imports = [
         self.homeModules.common

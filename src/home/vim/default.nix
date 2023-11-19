@@ -1,8 +1,7 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 {
   programs.vim = {
     enable = true;
-    defaultEditor = true;
     plugins = with pkgs.vimPlugins; [
       csv-vim
       ctrlp-vim
