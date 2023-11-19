@@ -51,7 +51,7 @@
         pkgs = import inputs.nixpkgs { system = "x86_64-linux"; overlays = [ inputs.self.overlays.default ]; };
         specialArgs = inputs.self.nixos-flake.lib.specialArgsFor.nixos;
         modules = [
-          inputs.self.nixosModules.common
+          inputs.self.nixosModules.headless
           ./src/systems/sirver/hardware-configuration.nix
           { networking.hostName = "sirver"; }
         ];

@@ -16,7 +16,6 @@
       home-manager.users.${config.people.myself} = {
         imports = [ self.homeModules.common ];
         home.packages = with pkgs; [ nethogs protonvpn-cli ];
-        services.emacs = { enable = true; defaultEditor = true; };
       };
       environment.pathsToLink = [ "/share/zsh" ];
       environment.shells = [ pkgs.zsh ];
@@ -35,6 +34,10 @@
       boot.loader.efi.canTouchEfiVariables = true;
       programs.zsh.enable = true;
     });
+    nixosModules.headless = {
+      imports = [ self.nixosModules.common ];
+      home-manager.users.${config.people.myself}.imports = [ self.homeModules.headless ];
+    };
     nixosModules.graphical = ({ pkgs, ... }: {
       imports = [ self.nixosModules.common ];
       home-manager.users.${config.people.myself} = {
@@ -46,6 +49,7 @@
           protonvpn-gui
           android-studio
         ];
+        services.emacs = { enable = true; defaultEditor = true; };
       };
       services.xserver = {
         enable = true;
