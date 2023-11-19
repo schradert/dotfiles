@@ -101,7 +101,7 @@
       home.homeDirectory = "/Users/${config.home.username}";
       home.file.".skhdrc".source = ./.skhdrc;
       home.file.".yabairc".source = ./.yabairc;
-      nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "discord" ];
+#     nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "discord" ];
     });
   };
 }
