@@ -36,6 +36,10 @@ while [[ $# -gt 0 ]]; do
             shift 1
             ;;
         --remote)
+            # We override the ControlPath because otherwise Nix will create too long of a Unix domain socket name
+            # if the name of the device is more than 5 characters... This path is managed by nix and will be deleted
+            # when the connection to the remote host ends when the program halts.
+            export NIX_SSHOPTS="-o ControlPath=/tmp/%C"
             extra_args+=(--build-host "$device" --target-host "$device" --fast --use-remote-sudo)
             ;;
         *)
@@ -48,9 +52,4 @@ if [[ -z $device ]]; then
     logfx log_level=ERROR exit_status=FAILURE <<< "No device specified. Options: ${devices_str}"
 fi
 
-# Run commands
-# We override the ControlPath because otherwise Nix will create too long of a Unix domain socket name
-# if the name of the device is more than 5 characters... This path is managed by nix and will be deleted
-# when the connection to the remote host ends when the program halts.
-export NIX_SSHOPTS="-o ControlPath=/tmp/%C"
-\nixos-rebuild "$cmd" --flake ".#$device" "${args[@]}"
+\nixos-rebuild "$cmd" --flake ".#$device" "${extra_args[@]}"
