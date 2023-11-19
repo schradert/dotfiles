@@ -33,6 +33,7 @@
       i18n.defaultLocale = "en_US.UTF-8";
       boot.loader.systemd-boot.enable = true;
       boot.loader.efi.canTouchEfiVariables = true;
+      programs.zsh.enable = true;
     });
     nixosModules.graphical = ({ pkgs, ... }: {
       imports = [ self.nixosModules.common ];
