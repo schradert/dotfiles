@@ -38,7 +38,7 @@
       imports = [ self.nixosModules.common ];
       home-manager.users.${config.people.myself}.imports = [ self.homeModules.headless ];
     };
-    nixosModules.graphical = ({ pkgs, ... }: {
+    nixosModules.graphical = ({ pkgs, lib, ... }: {
       imports = [ self.nixosModules.common ];
       home-manager.users.${config.people.myself} = {
         imports = [ self.homeModules.graphical ];
@@ -47,9 +47,11 @@
           brave
           godot
           protonvpn-gui
-          android-studio
+          # android-studio
         ];
         services.emacs = { enable = true; defaultEditor = true; };
+        # TODO (Tristan): why isn't this working?!
+        nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "android-studio-stable" ];
       };
       services.xserver = {
         enable = true;
