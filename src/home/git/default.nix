@@ -3,8 +3,8 @@
   programs.git = {
     enable = true;
     # TODO (Tristan): figure out using home.username
-    userName = flake.config.people.users.${flake.config.people.myself}.name;
-    userEmail = flake.config.people.users.${flake.config.people.myself}.email;
+    userName = flake.config.people.my.name;
+    userEmail = flake.config.people.my.email;
     extraConfig = {
       push.autoSetupRemote = true;
       color.status = "always";
