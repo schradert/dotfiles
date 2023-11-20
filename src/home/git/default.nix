@@ -1,5 +1,8 @@
-{ config, flake, ... }:
 {
+  config,
+  flake,
+  ...
+}: {
   programs.git = {
     enable = true;
     # TODO (Tristan): figure out using home.username
@@ -18,8 +21,8 @@
     enable = true;
     settings.editor = "emacs";
     settings.git_protocol = "ssh";
-#   settings.editor = lib.mkIf config.programs.emacs.enable "emacs";
-#   settings.git_protocol = lib.mkIf config.programs.ssh.enable "ssh";
+    #   settings.editor = lib.mkIf config.programs.emacs.enable "emacs";
+    #   settings.git_protocol = lib.mkIf config.programs.ssh.enable "ssh";
     settings.aliases.co = "pr checkout";
   };
 }

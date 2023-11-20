@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   programs.tmux = {
     enable = true;
     plugins = [
@@ -11,6 +10,6 @@
           set -g @dracula-refresh-rate 10
         '';
       }
-    ];   
+    ];
   };
 }

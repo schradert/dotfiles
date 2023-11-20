@@ -1,5 +1,8 @@
-{ pkgs, lib, ... }:
 {
+  pkgs,
+  lib,
+  ...
+}: {
   programs.vim = {
     enable = true;
     plugins = with pkgs.vimPlugins; [
@@ -37,6 +40,6 @@
       smartcase = true;
       tabstop = 2;
     };
-    extraConfig = builtins.readFile ./config.vim; 
+    extraConfig = builtins.readFile ./config.vim;
   };
-} 
+}

@@ -1,7 +1,11 @@
-{ flake, lib, pkgs, ... }:
 {
-  imports = [ flake.inputs.spicetify-nix.homeManagerModule ];
-# nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "spotify" ];
+  flake,
+  lib,
+  pkgs,
+  ...
+}: {
+  imports = [flake.inputs.spicetify-nix.homeManagerModule];
+  # nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "spotify" ];
   programs.spicetify = let
     spicePkgs = flake.inputs.spicetify-nix.packages.${pkgs.system}.default;
   in {

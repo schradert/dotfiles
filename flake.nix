@@ -17,113 +17,126 @@
     gke-gcloud-auth-plugin-flake.url = github:christian-blades-cb/gke-gcloud-auth-plugin-nix;
     spicetify-nix.url = github:the-argus/spicetify-nix;
   };
-  outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-    systems = [ "x86_64-linux" "aarch64-darwin" ];
-    imports = [
-      inputs.treefmt-nix.flakeModule
-      inputs.nixos-flake.flakeModule
-      ./src/home
-      ./src/nixos
-      ./src/darwin
-      ./src/users
-    ];
-    flake = {
-      overlays.default = inputs.nixpkgs.lib.composeManyExtensions [
-        (import ./src/overlays/external.nix)
-        (import ./src/overlays/internal.nix)
-        inputs.emacs-overlay.overlay
-        inputs.gke-gcloud-auth-plugin-flake.overlays.default
+  outputs = inputs:
+    inputs.flake-parts.lib.mkFlake {inherit inputs;} {
+      systems = ["x86_64-linux" "aarch64-darwin"];
+      imports = [
+        inputs.treefmt-nix.flakeModule
+        inputs.nixos-flake.flakeModule
+        ./src/home
+        ./src/nixos
+        ./src/darwin
+        ./src/users
       ];
-      nixosConfigurations.chilldom = inputs.nixpkgs.lib.nixosSystem {
-        pkgs = import inputs.nixpkgs {
-          system = "x86_64-linux";
-          overlays = [ inputs.self.overlays.default ];
+      flake = {
+        overlays.default = inputs.nixpkgs.lib.composeManyExtensions [
+          (import ./src/overlays/external.nix)
+          (import ./src/overlays/internal.nix)
+          inputs.emacs-overlay.overlay
+          inputs.gke-gcloud-auth-plugin-flake.overlays.default
+        ];
+        nixosConfigurations.chilldom = inputs.nixpkgs.lib.nixosSystem {
+          pkgs = import inputs.nixpkgs {
+            system = "x86_64-linux";
+            overlays = [inputs.self.overlays.default];
+          };
+          specialArgs = inputs.self.nixos-flake.lib.specialArgsFor.nixos;
+          modules = [
+            inputs.self.nixosModules.graphical
+            ./src/systems/chilldom/hardware-configuration.nix
+            ({lib, ...}: {
+              networking.hostName = "chilldom";
+              networking.wireless.enable = true;
+              networking.wireless.networks.lanyard.psk = "bruhWHY123!";
+              nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) ["discord" "android-studio" "spotify"];
+            })
+          ];
         };
-        specialArgs = inputs.self.nixos-flake.lib.specialArgsFor.nixos;
-        modules = [
-          inputs.self.nixosModules.graphical
-          ./src/systems/chilldom/hardware-configuration.nix
-          ({ lib, ...}: {
-            networking.hostName = "chilldom";
-            networking.wireless.enable = true;
-            networking.wireless.networks.lanyard.psk = "bruhWHY123!";
-            nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "discord" "android-studio" "spotify" ];
-          })
-        ];
+        nixosConfigurations.sirver = inputs.nixpkgs.lib.nixosSystem {
+          pkgs = import inputs.nixpkgs {
+            system = "x86_64-linux";
+            overlays = [inputs.self.overlays.default];
+          };
+          specialArgs = inputs.self.nixos-flake.lib.specialArgsFor.nixos;
+          modules = [
+            inputs.self.nixosModules.headless
+            ./src/systems/sirver/hardware-configuration.nix
+            {
+              networking.hostName = "sirver";
+            }
+          ];
+        };
+        darwinConfigurations.morgenmuffel = inputs.self.nixos-flake.lib.mkMacosSystem ({pkgs, ...}: {
+          imports = [inputs.self.darwinModules.common];
+          home-manager.users.${inputs.self.people.myself}.home.packages = with pkgs; [
+            google-cloud-sdk
+            gke-gcloud-auth-plugin
+            skhd
+          ];
+        });
       };
-      nixosConfigurations.sirver = inputs.nixpkgs.lib.nixosSystem {
-        pkgs = import inputs.nixpkgs { system = "x86_64-linux"; overlays = [ inputs.self.overlays.default ]; };
-        specialArgs = inputs.self.nixos-flake.lib.specialArgsFor.nixos;
-        modules = [
-          inputs.self.nixosModules.headless
-          ./src/systems/sirver/hardware-configuration.nix
-          {
-            networking.hostName = "sirver";
-          }
-        ];
+      perSystem = {
+        self',
+        inputs',
+        config,
+        pkgs,
+        lib,
+        system,
+        ...
+      }: {
+        _module.args.pkgs = inputs'.nixpkgs.legacyPackages.extend inputs.self.overlays.default;
+        nixos-flake.primary-inputs = ["nixpkgs" "home-manager" "nix-darwin" "nixos-flake"];
+
+        formatter = config.treefmt.build.wrapper;
+        treefmt.config = {
+          projectRootFile = "flake.nix";
+          programs.alejandra.enable = true;
+        };
+
+        legacyPackages.homeConfigurations.tristanschrader = inputs.self.nixos-flake.lib.mkHomeConfiguration pkgs {
+          imports = [
+            inputs.self.homeModules.common
+            inputs.self.homeModules.darwin-graphical
+          ];
+          home.username = "tristanschrader";
+          home.packages = with pkgs; [google-cloud-sdk gke-gcloud-auth-plugin];
+          nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) ["discord"];
+        };
+
+        packages.default = self'.packages.activate;
+        packages.home = self'.packages.activate-home;
+        devShells.default = pkgs.mkShell {
+          packages = with pkgs; [
+            kubectl
+            kubernetes-helm
+            nixos-rebuild
+            sops
+            ssh-to-age
+            terraform
+          ];
+          shellHook = ''
+            PATH_add bin
+          '';
+        };
+
+        #  TODO (Tristan): convert these two packages into new system
+        packages.local = inputs.terranix.lib.terranixConfiguration {
+          inherit system pkgs;
+          modules = [
+            ./src/infra/firefly.nix
+            ({config, ...}: {
+              config.provider.kubernetes = {
+                config_path = "~/.kube/config";
+                config_context = "k3d-personal-local";
+              };
+              config.provider.helm = {inherit (config.provider) kubernetes;};
+            })
+          ];
+        };
+        packages.install = pkgs.writeScriptBin "install" (pkgs.subTemplateCmds {
+          template = ./src/lib/install.sh;
+          cmds.bash = "${pkgs.bash}/bin/bash";
+        });
       };
-      darwinConfigurations.morgenmuffel = inputs.self.nixos-flake.lib.mkMacosSystem ({ pkgs, ... }: {
-        imports = [ inputs.self.darwinModules.common ];
-        home-manager.users.${inputs.self.people.myself}.home.packages = with pkgs; [
-          google-cloud-sdk
-          gke-gcloud-auth-plugin
-          skhd
-        ];
-      });
     };
-    perSystem = { self', inputs', config, pkgs, lib, system, ... }: {
-      _module.args.pkgs = inputs'.nixpkgs.legacyPackages.extend inputs.self.overlays.default;
-      nixos-flake.primary-inputs = [ "nixpkgs" "home-manager" "nix-darwin" "nixos-flake" ];
-
-      formatter = config.treefmt.build.wrapper;
-      treefmt.config = {
-        projectRootFile = "flake.nix";
-        programs.nixpkgs-fmt.enable = true;
-      };
-
-      legacyPackages.homeConfigurations.tristanschrader = inputs.self.nixos-flake.lib.mkHomeConfiguration pkgs {
-        imports = [
-          inputs.self.homeModules.common
-          inputs.self.homeModules.darwin-graphical
-        ];
-        home.username = "tristanschrader";
-        home.packages = with pkgs; [ google-cloud-sdk gke-gcloud-auth-plugin ];
-        nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "discord" ];
-      };
-
-      packages.default = self'.packages.activate;
-      packages.home = self'.packages.activate-home;
-      devShells.default = pkgs.mkShell {
-        packages = with pkgs; [
-          kubectl
-          kubernetes-helm
-          nixos-rebuild
-          nixpkgs-fmt
-          sops
-          ssh-to-age
-          terraform
-        ];
-        shellHook = ''
-          PATH_add bin
-        '';
-      };
-
-      #  TODO (Tristan): convert these two packages into new system
-      packages.local = inputs.terranix.lib.terranixConfiguration {
-        inherit system pkgs;
-        modules = [
-          ./src/infra/firefly.nix
-          ({ config, ... }: {
-            config.provider.kubernetes = { config_path = "~/.kube/config"; config_context= "k3d-personal-local"; };
-            config.provider.helm = { inherit (config.provider) kubernetes; };
-          })
-        ];
-      };
-      packages.install = pkgs.writeScriptBin "install" (pkgs.subTemplateCmds {
-        template = ./src/lib/install.sh;
-        cmds.bash = "${pkgs.bash}/bin/bash";
-      });
-
-    };
-  };
 }
