@@ -1,0 +1,23 @@
+ssh:
+    tristan:
+        github: ENC[AES256_GCM,data:oQFOjog2gjRTNQyXNODVS3e+Hz0bInhFMs6kp/aK5Or6G8XqgYZlqwUECtbEQnJ1C39Epgjr8Loidc/37IqE/w8pp/I7M0IRUE516VGwyXm5zFo/8Tz6r0ROYnN89CNvjqYGqOsBCiB+81COEPNZjZ1puF0wGa2Py830WUb09ngoHCqOnYWMQWO+M8ihbTUZuJi8g3Yo1vm3H9pZx9n08kcAmxVcVt+lhyYANQPpDEdyuE+6INUKwbZjnvObOcyKv5sI2FaLJLuTHyG36UOpSUjd0S7JDI3BcYMC+Jbb5tQjxTt+r0mfMMfYJlwbIcCm+4CREwub3aoFwml/RKBxc1ZCpixEHu80kB30r0CwLrocBceXJz6zsnARpKU5atT62fHdvXaP7N5U97+7jH3y37PnMP/k37RYHgSbGkr6v+3qw7ocvgrxJ2+JZu0Gc6AnCDU2KO2wTip7TR+hFPZRyaFf09AJxUHtt1iLFE122Po/NHrUYyaoqfV2oVxp4Ns/FBgeo5R5mj90DXeo/r5qDSyNLncjKSWoj5CekUtoR8ywiREP41ttDB9PIpjxZfOw,iv:pi7ORV6Ebhgy3dtB4fvt5hpZNuwPG4emjeOmsCJAg60=,tag:q11h3pKdV7jxilXUmg+RNw==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age1udsm4dv9q95d76p7ljxqyceafrwj3twmq883glc3prmry4w9eunqfhg9p3
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBJY3RLRXhUWmduS2dMQ1lj
+            TXZiQy84eFE1MnM4WDhtUDhXMk96M1drYkRZCkJZcGs1bjZjS2xMTit5eWVWZTBO
+            a0V2NTlDM0l1Mkw3aXVJUk51OXVXY2cKLS0tIDB4UkQ2WjZYQ2ZxbCtwUi91N2M4
+            eEo1NDVyMVhEU25URGRNME9RNkxtN2sKXcH2q5R1cvarIAArLqqlP9V482kNoGsa
+            MlBB4DuwhJrl9yi43eGvcltj01vPmwSx99ZTbDG6KbR5PknJnftv7A==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2023-11-19T01:41:48Z"
+    mac: ENC[AES256_GCM,data:mi13NNQJXBvP939FWKX1ebKMLQCtdKbrn3Ue4stQq2Tan+fCBBFsYQJ59+hXJC/TQ8f6IbD7x7Q1fPCgCaBiAMQoLxiqJ9wHCKQzcMwpogxx1jBPj1/QCjrSeyuf91IFPk1V7OYQ7Ff5ubdf5VkgOje/gf6Pxy0DQ3Si3TkJzIo=,iv:4c36XqI+lyy4k0vVITstK91v+KaVhbXXQVexk4NoxK0=,tag:kFJHmLoV5vdlDOiocNHByQ==,type:str]
+    pgp: []
+    unencrypted_suffix: _unencrypted
+    version: 3.8.1

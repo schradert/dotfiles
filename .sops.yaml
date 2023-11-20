@@ -1,0 +1,7 @@
+keys:
+  - &tristan age1udsm4dv9q95d76p7ljxqyceafrwj3twmq883glc3prmry4w9eunqfhg9p3
+creation_rules:
+  - path_regex: conf/sops.yaml$
+    key_groups:
+      - age:
+          - *tristan

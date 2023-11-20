@@ -1,6 +1,7 @@
 {
   self,
   config,
+  inputs,
   ...
 }: let
   flakeConfig = config;
@@ -13,6 +14,7 @@ in {
       ...
     }: {
       imports = [
+        inputs.sops-nix.homeManagerModule
         ./vim
         ./zsh
         ./nvim
@@ -76,6 +78,8 @@ in {
         wezterm.enable = true;
         zoxide.enable = true;
       };
+      sops.defaultSopsFile = ../../conf/sops.yaml;
+      sops.age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
     };
     homeModules.headless = {
       programs.vim.defaultEditor = true;
