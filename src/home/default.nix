@@ -2,11 +2,14 @@
   self,
   config,
   ...
-}: {
+}: let
+  flakeConfig = config;
+in {
   flake = {
     homeModules.common = {
       pkgs,
       lib,
+      config,
       ...
     }: {
       imports = [
@@ -18,7 +21,7 @@
         ./tmux
         ./k9s
       ];
-      home.username = lib.mkDefault config.people.myself;
+      home.username = lib.mkDefault flakeConfig.people.me;
       home.stateVersion = "23.05";
       home.packages = with pkgs; [
         aria2
