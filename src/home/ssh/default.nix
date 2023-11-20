@@ -1,5 +1,9 @@
-{ ... }:
 {
+  config,
+  flake,
+  lib,
+  ...
+}: {
   options.hostname = lib.mkOption {
     type = lib.types.str;
     description = lib.mdDoc "The hostname of the relevant machine with this user";
@@ -42,5 +46,10 @@
       };
     };
   };
+
+  # TODO (Tristan): figure out how I can get the path to work properly with home-manager
+  sops.secrets."ssh/${flake.config.people.me}/github" = {};
+  # home.file.".ssh/github".source = config.sops.secrets."ssh/${flake.config.people.me}/github".path;
+  home.file.".ssh/github.pub".text = "${flake.config.people.my.sshKeys.github.public} ${config.home.username}@${config.hostname}.local";
   };
 }
