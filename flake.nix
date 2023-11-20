@@ -68,7 +68,7 @@
         };
         darwinConfigurations.morgenmuffel = inputs.self.nixos-flake.lib.mkMacosSystem ({pkgs, ...}: {
           imports = [inputs.self.darwinModules.common];
-          home-manager.users.${inputs.self.people.myself}.home.packages = with pkgs; [
+          home-manager.users.${inputs.self.people.me}.home.packages = with pkgs; [
             google-cloud-sdk
             gke-gcloud-auth-plugin
             skhd
