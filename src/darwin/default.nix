@@ -1,5 +1,8 @@
-{ self, config, ... }:
 {
+  self,
+  config,
+  ...
+}: {
   flake = {
     darwinModules.common = {
       users.users.${config.people.me} = {};

@@ -3,8 +3,7 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   sshKeySubmodule = lib.types.submodule {
     options = {
       public = lib.mkOption {

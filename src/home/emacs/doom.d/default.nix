@@ -1,10 +1,10 @@
-{ pkgs }:
+{pkgs}:
 pkgs.stdenv.mkDerivation {
   pname = "emacs-config";
   version = "dev";
-  src = pkgs.lib.sourceByRegex ./. [ "config.org" "init.el" ];
+  src = pkgs.lib.sourceByRegex ./. ["config.org" "init.el"];
 
-  buildInputs = with pkgs; [ emacs coreutils ];
+  buildInputs = with pkgs; [emacs coreutils];
   buildPhase = ''
     cp $src/* .
     # Tangle org files

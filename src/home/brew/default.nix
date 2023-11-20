@@ -1,9 +1,13 @@
-{ lib, config, pkgs, ... }:
-let brew = "/opt/homebrew/bin/brew";
-in
 {
+  lib,
+  config,
+  pkgs,
+  ...
+}: let
+  brew = "/opt/homebrew/bin/brew";
+in {
   home.file.".config/brew/Brewfile".source = ./Brewfile;
-  home.activation.homebrewSelfInstallation = lib.hm.dag.entryAfter["linkGeneration"] ''
+  home.activation.homebrewSelfInstallation = lib.hm.dag.entryAfter ["linkGeneration"] ''
     brew=/opt/homebrew/bin/brew
     if [ ! -x "$brew" ] &>/dev/null; then
       $DRY_RUN_CMD ${pkgs.bash}/bin/bash \

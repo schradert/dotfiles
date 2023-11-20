@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   programs.zsh = {
     enable = true;
     enableAutosuggestions = true;
@@ -18,7 +17,7 @@
       YSU_HARDCORE = 1;
       CPPFLAGS = "-I/opt/homebrew/opt/ruby/include";
       LDFLAGS = "-L/opt/homebrew/opt/ruby/lib";
-      ZSH_AUTOSUGGEST_STRATEGY = [ "history" "completion" ];
+      ZSH_AUTOSUGGEST_STRATEGY = ["history" "completion"];
       DIRENV_WARN_TIMEOUT = "10s";
     };
     oh-my-zsh = {

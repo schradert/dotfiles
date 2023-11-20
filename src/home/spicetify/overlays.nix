@@ -1,5 +1,4 @@
-{ spicetify-nix }:
-[
+{spicetify-nix}: [
   (final: prev: {
     spicetify-cli = prev.spicetify-cli.overrideAttrs (_: rec {
       version = "2.24.2";
