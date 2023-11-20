@@ -38,14 +38,16 @@ final: prev: {
       vendorSha256 = "iRgLspYhwSVuL0yarPdjXCKfjK7TGDZeQCOcIYtNvzA=";
     });
   };
-  spicetify-cli = prev.spicetify-cli.overrideAttrs (_: rec {
-    version = "2.24.2";
-    src = prev.fetchFromGitHub {
-      owner = "spicetify";
-      repo = "spicetify-cli";
-      rev = "v${version}";
-      sha256 = "";
-    };
-    vendorHash = "";
-  });
+  spicetify-cli = prev.spicetify-cli.override {
+    buildGoModule = args: prev.buildGoModule (args // rec {
+      version = "2.24.2";
+      src = prev.fetchFromGitHub {
+        owner = "spicetify";
+        repo = args.pname;
+        rev = "v${version}";
+        sha256 = "jzEtXmlpt6foldLW57ZcpevX8CDc+c8iIynT5nOD9qY=";
+      };
+      vendorHash = "sha256-rMMTUT7HIgYvxGcqR02VmxOh1ihE6xuIboDsnuOo09g=";
+    });
+  };
 }
