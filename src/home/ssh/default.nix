@@ -1,5 +1,11 @@
 { ... }:
 {
+  options.hostname = lib.mkOption {
+    type = lib.types.str;
+    description = lib.mdDoc "The hostname of the relevant machine with this user";
+    example = "another-server";
+  };
+  config = {
   programs.ssh = {
     enable = true;
     forwardAgent = true;
@@ -35,5 +41,6 @@
         identityFile = "/Users/tristanschrader/.ssh/tristan_sirver_ed25519";
       };
     };
+  };
   };
 }

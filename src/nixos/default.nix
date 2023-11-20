@@ -22,6 +22,7 @@ let flakeConfig = config;
       home-manager.users.${flakeConfig.people.me} = {
         imports = [self.homeModules.common];
         home.packages = with pkgs; [nethogs protonvpn-cli];
+        hostname = config.networking.hostName;
       };
       environment.pathsToLink = ["/share/zsh"];
       environment.shells = [pkgs.zsh];

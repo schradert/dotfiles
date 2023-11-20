@@ -98,6 +98,7 @@
             inputs.self.homeModules.common
             inputs.self.homeModules.darwin-graphical
           ];
+          hostname = "morgenmuffel";
           home.username = "tristanschrader";
           home.packages = with pkgs; [google-cloud-sdk gke-gcloud-auth-plugin];
           nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) ["discord"];
