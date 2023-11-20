@@ -88,6 +88,7 @@
         ];
         home.username = "tristanschrader";
         home.packages = with pkgs; [ google-cloud-sdk gke-gcloud-auth-plugin ];
+        nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "discord" ];
       };
 
       packages.default = self'.packages.activate;
