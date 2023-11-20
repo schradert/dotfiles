@@ -81,7 +81,6 @@
 #       raycast
 #       slack
       ];
-      services.emacs = { enable = true; defaultEditor = true; };
     });
     homeModules.linux-graphical = {
       imports = [
@@ -89,6 +88,7 @@
      #  ./spicetify/linux.nix
         ./emacs/linux.nix
       ];
+      services.emacs = { enable = true; defaultEditor = true; };
     };
     homeModules.darwin-graphical = ({ config, pkgs, lib, ... }: {
       imports = [
