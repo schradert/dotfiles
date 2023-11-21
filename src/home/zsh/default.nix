@@ -95,8 +95,8 @@
         src = pkgs.fetchFromGitHub {
           owner = "unixorn";
           repo = "git-extra-commands";
-          rev = "main";
-          sha256 = "MB4BQf1Zu6/Ydo5DZj4juTOtA5ROhprAiqNEd8sFu4k=";
+          rev = "05083c4ed2f0f5e253714e340625adaf8d51e2eb";
+          sha256 = "OQ1LH0XNQgNF6DEUO4i4zNls95Y2ZVngnN2AUMQ65MU=";
         };
       }
       {
