@@ -21,7 +21,6 @@ in {
         ./git
         ./ssh
         ./tmux
-        ./k9s
       ];
       home.username = lib.mkDefault flakeConfig.people.me;
       home.stateVersion = "23.05";
@@ -128,6 +127,7 @@ in {
         ./emacs/common.nix
         ./brew
         ./spicetify/darwin.nix
+        ./k9s
       ];
       home.packages = with pkgs; [skhd discord];
       home.homeDirectory = "/Users/${config.home.username}";
