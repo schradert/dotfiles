@@ -25,6 +25,7 @@
         inputs.nixos-flake.flakeModule
         ./src/home
         ./src/nixos
+        ./src/nixos/kubernetes.nix
         ./src/darwin
         ./src/users
       ];
@@ -60,6 +61,7 @@
           specialArgs = inputs.self.nixos-flake.lib.specialArgsFor.nixos;
           modules = [
             inputs.self.nixosModules.headless
+            inputs.self.nixosModules.kubernetes
             ./src/systems/sirver/hardware-configuration.nix
             {
               networking.hostName = "sirver";
