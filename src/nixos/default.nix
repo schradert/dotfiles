@@ -2,12 +2,16 @@
   self,
   config,
   ...
-}:
-let flakeConfig = config;
-    in
-{
+}: let
+  flakeConfig = config;
+in {
   flake = {
-    nixosModules.common = {pkgs, config, lib, ...}: {
+    nixosModules.common = {
+      pkgs,
+      config,
+      lib,
+      ...
+    }: {
       imports = [
         self.nixosModules.home-manager
       ];
