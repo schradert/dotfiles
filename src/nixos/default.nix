@@ -48,6 +48,17 @@ in {
       boot.loader.systemd-boot.enable = true;
       boot.loader.efi.canTouchEfiVariables = true;
       programs.zsh.enable = true;
+      security.sudo.extraRules = [
+        {
+          users = [flakeConfig.people.me];
+          commands = [
+            {
+              command = "ALL";
+              options = ["NOPASSWD"];
+            }
+          ];
+        }
+      ];
     };
     nixosModules.headless = {
       imports = [self.nixosModules.common];
