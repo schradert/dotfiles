@@ -1,11 +1,11 @@
 final: prev: {
-  toYAML = obj: let
+  toYAMLFile = obj: let
     input_f = builtins.toFile "obj.json" (builtins.toJSON obj);
     command = "remarshal -if json -i \"${input_f}\" -of yaml -o \"$out\"";
     output_f = prev.runCommand "to-yaml" {nativeBuildInputs = [prev.remarshal];} command;
-    values = [(builtins.readFile output_f)];
   in
-    values;
+    output_f;
+  toYAML = obj: [(builtins.readFile (final.toYAMLFile obj))];
   fromYAML = yaml: let
     input_f =
       if prev.lib.strings.isStorePath yaml
