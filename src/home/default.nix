@@ -59,6 +59,7 @@ in {
       ];
       programs = {
         bat.enable = true;
+        btop.enable = true;
         dircolors.enable = true;
         direnv = {
           enable = true;
