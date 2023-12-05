@@ -118,6 +118,7 @@
             terraform
           ];
           shellHook = ''
+            export PRJ_ROOT="$(git rev-parse --show-toplevel)"
             PATH_add bin
           '';
         };
