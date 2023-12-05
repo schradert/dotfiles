@@ -1,4 +1,4 @@
-#!\bash
+#! /usr/bin/env bash
 # shellcheck disable=SC2239
 
 set -o errexit
@@ -61,5 +61,5 @@ cp "$build_f" "$work_f"
 cp "$secrets_d/terraform.tfvars" "$work_d"
 
 # Run terraform
-\terraform -chdir="$work_d" init
-\terraform -chdir="$work_d" "$@"
+terraform -chdir="$work_d" init
+terraform -chdir="$work_d" "$@"
