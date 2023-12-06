@@ -108,6 +108,7 @@
 
         packages.default = self'.packages.activate;
         packages.home = self'.packages.activate-home;
+        packages.nux = pkgs.mk-nux-pkg ./src/nux;
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
             kubectl
