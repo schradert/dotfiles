@@ -138,10 +138,6 @@
             })
           ];
         };
-        packages.install = pkgs.writeScriptBin "install" (pkgs.subTemplateCmds {
-          template = ./src/lib/install.sh;
-          cmds.bash = "${pkgs.bash}/bin/bash";
-        });
       };
     };
 }
