@@ -33,8 +33,14 @@
           example = "23h59m59s";
           description = lib.mdDoc "Interval for syncing with repository";
         };
+        spec.type = lib.mkOption {
+          type = lib.types.enum ["http" "oci"];
+          default = "http";
+          example = "oci";
+          description = lib.mdDoc "HelmRepository type (e.g. http, oci, etc.)";
+        };
         spec.url = lib.mkOption {
-          type = lib.types.strMatching "^https://[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(/.*)?$";
+          type = lib.types.strMatching "^(oci|https)://[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(/.*)?$";
           example = "https://traefik.github.io/charts";
           description = lib.mdDoc "URL of helm chart repository";
         };
