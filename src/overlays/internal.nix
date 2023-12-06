@@ -1,20 +1,14 @@
 final: prev: {
-  toYAMLFile = obj: let
-    input_f = builtins.toFile "obj.json" (builtins.toJSON obj);
+  fromJSONtoYAML = input_f: let
     command = "remarshal -if json -i \"${input_f}\" -of yaml -o \"$out\"";
-    output_f = prev.runCommand "to-yaml" {nativeBuildInputs = [prev.remarshal];} command;
-  in
-    output_f;
+  in prev.runCommand "from-json-to-yaml" {nativeBuildInputs = [prev.remarshal];} command;
+  toYAMLFile = obj: let
+    file = builtins.toFile "obj.json" (builtins.toJSON obj);
+  in final.fromJSONtoYAML file;
   toYAML = obj: [(builtins.readFile (final.toYAMLFile obj))];
   fromYAML = yaml: let
-    input_f =
-      if prev.lib.strings.isStorePath yaml
-      then yaml
-      else builtins.toFile "obj.yaml" yaml;
-    command = "remarshal -if yaml -i \"${input_f}\" -of json -o \"$out\"";
-    output_f = prev.runCommand "from-yaml" {nativeBuildInputs = [prev.remarshal];} command;
-  in
-    prev.lib.trivial.importJSON output_f;
+    command = "remarshal -if yaml -i \"${builtins.toFile "yaml.yaml" yaml}\" -of json -o \"$out\"";
+  in prev.lib.trivial.importJSON (prev.runCommand "from-yaml" {nativeBuildInputs = [prev.remarshal];} command);
   subTemplateCmds = {
     template,
     cmds ? {},
@@ -24,4 +18,18 @@ final: prev: {
     contents_new = builtins.replaceStrings cmds_sub_fmt (builtins.attrValues cmds) contents_old;
   in
     contents_new;
+  validate-nux-pkg = pkg: let
+    errors = prev.lib.trivial.pipe pkg.config.assertions [
+      (builtins.filter (assertion: !assertion.assertion))
+      (map (builtins.getAttr "message"))
+      (builtins.concatStringsSep "\n")
+    ];
+    failed = builtins.stringLength errors > 0;
+  in prev.lib.trivial.throwIf failed errors pkg;
+  map' = values: function: builtins.map function values;
+  mk-nux-pkg = module: prev.lib.trivial.pipe module [
+    (mod: prev.lib.evalModules { specialArgs.pkgs = final; modules = [mod]; })
+    final.validate-nux-pkg
+    (pkg: final.toYAMLFile { apiVersion = "v1"; kind = "List"; items = pkg.config.resources; })
+  ];
 }

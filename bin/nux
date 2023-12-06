@@ -1,0 +1,3 @@
+#! /usr/bin/env bash
+
+nix build "$PRJ_ROOT#nux" --out-link "$PRJ_ROOT/src/nux/clusters/prod/nux.yaml"
