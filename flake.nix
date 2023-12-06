@@ -132,7 +132,7 @@
             ({config, ...}: {
               provider.kubernetes = {
                 config_path = "~/.kube/config";
-                config_context = "k3d-personal-local";
+                config_context = "k3d-local";
               };
               provider.helm = {inherit (config.provider) kubernetes;};
             })
