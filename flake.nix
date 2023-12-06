@@ -128,13 +128,13 @@
         packages.local = inputs.terranix.lib.terranixConfiguration {
           inherit system pkgs;
           modules = [
-            ./src/infra/firefly.nix
+            # ./src/infra/firefly.nix
             ({config, ...}: {
-              config.provider.kubernetes = {
+              provider.kubernetes = {
                 config_path = "~/.kube/config";
                 config_context = "k3d-personal-local";
               };
-              config.provider.helm = {inherit (config.provider) kubernetes;};
+              provider.helm = {inherit (config.provider) kubernetes;};
             })
           ];
         };
