@@ -65,6 +65,9 @@
             ./src/systems/sirver/hardware-configuration.nix
             {
               networking.hostName = "sirver";
+              home-manager.users.tristan = {
+                imports = [./src/home/k9s];
+              };
             }
           ];
         };
