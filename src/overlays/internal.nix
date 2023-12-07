@@ -7,7 +7,7 @@ final: prev: {
   in final.fromJSONtoYAML file;
   toYAML = obj: [(builtins.readFile (final.toYAMLFile obj))];
   fromYAML = yaml: let
-    command = "remarshal -if yaml -i \"${builtins.toFile "yaml.yaml" yaml}\" -of json -o \"$out\"";
+    command = "remarshal -if yaml -i \"${yaml}\" -of json -o \"$out\"";
   in prev.lib.trivial.importJSON (prev.runCommand "from-yaml" {nativeBuildInputs = [prev.remarshal];} command);
   subTemplateCmds = {
     template,
