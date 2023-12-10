@@ -63,6 +63,7 @@
   )
   (map! :map org-mode-map
         :localleader
+        "le" #'org-linker-edna
         "ll" #'org-super-links-link
         "li" #'org-super-links-insert-link
         "lI" #'org-super-links-quick-insert-inline-link
