@@ -61,12 +61,12 @@
     org-agenda-include-diary t
     org-agenda-start-day nil
   )
-  (evil-define-key 'normal org-mode-map
-    (kbd "SPC mls") 'org-super-links-store-link
-    (kbd "SPC mli") 'org-super-links-insert-link
-    (kbd "SPC mlI") 'org-super-links-quick-insert-inline-link
-    (kbd "SPC mll") 'org-super-links-link
-  )
+  (map! :map org-mode-map
+        :localleader
+        "ll" #'org-super-links-link
+        "li" #'org-super-links-insert-link
+        "lI" #'org-super-links-quick-insert-inline-link
+        "ls" #'org-super-links-store-link)
   (defun mark-as-project ()
     "This function makes sure that the current heading has
 (1) the tag :project:
@@ -108,7 +108,7 @@
 ** Key bindings
 #+begin_src emacs-lisp
 (after! vterm
-  (evil-define-key 'normal vterm-mode-map (kbd "C-c ESC") #'vterm-send-escape)
+  (map! :map vterm-mode-map "C-c ESC" #'vterm-send-escape)
   (defun vterm-ssh (host)
     (vterm)
     (vterm-send-string (concat "ssh " host "\n")))
@@ -135,16 +135,11 @@
 
 * Dired
 #+begin_src emacs-lisp
-(map! :leader
-      (:after dired
-       (:map dired-mode-map
-        :desc "Peep-dired image previews" "d p" #'peep-dired)))
-
-(evil-define-key 'normal dired-mode-map
-  (kbd "h") 'dired-up-directory
-  (kbd "l") 'dired-view-file
-  (kbd "x") 'dired-do-kill-lines
-)
+(map! :map dired-mode-map
+      "h" #'dired-up-directory
+      "l" #'dired-view-file
+      "x" #'dired-do-kill-lines
+      "dp" #'peep-dired :desc "Peep-dired image previews")
 #+end_src
 
 * Magit
@@ -163,8 +158,9 @@
 ;; Use same passwords used for forge
 (setq code-review-auth-login-marker 'forge)
 ;; Jump into code review from a magit-forge PR view
-(after! forge
-  (define-key forge-topic-mode-map (kbd "rr") 'code-review-forge-pr-at-point))
+(map! :after forge
+      :map forge-topic-mode-map
+      "rr" #'code-review-forge-pr-at-point)
 ;; Show *Code Review* in current workspace (Doom bug)
 (add-hook 'code-review-mode-hook (lambda () (persp-add-buffer (current-buffer))))
 ;; Show pretty symbols
