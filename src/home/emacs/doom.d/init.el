@@ -68,7 +68,9 @@
 
        :checkers
        (syntax +childframe)
-       (spell +flyspell)
+       ;; TODO figure out why flyspell-lazy is freaking out
+       ;; (spell +flyspell)
+       spell
        grammar
 
        :tools
