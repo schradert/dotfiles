@@ -41,6 +41,7 @@
     org-todo-keywords '(
       (sequence "DRAFTING(d!)" "ACTIVE(a!)" "WAITING(w@)" "|" "COMPLETED(c!)" "REJECTED(r@)")
     )
+    org-todo-repeat-to-state "ACTIVE"
     org-columns-default-format "%40ITEM(Task) %TODO %3PRIORITY %17Effort{:} %CLOCKSUM %CLOCKSUM_T %TAGS"
     org-agenda-columns-add-appointments-to-effort-sum t
     org-capture-templates '(
