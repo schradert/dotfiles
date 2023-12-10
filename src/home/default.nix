@@ -130,7 +130,7 @@ in {
         ./spicetify/darwin.nix
         ./k9s
       ];
-      home.packages = with pkgs; [skhd discord];
+      home.packages = with pkgs; [skhd discord pngpaste];
       home.homeDirectory = "/Users/${config.home.username}";
       home.file.".skhdrc".source = ./.skhdrc;
       home.file.".yabairc".source = ./.yabairc;
