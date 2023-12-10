@@ -38,8 +38,5 @@
       shellcheck
       taplo
       sqls
-    ]
-    ++ lib.optionals (pkgs.system == "darwin") [
-      pngpaste
     ];
 }
