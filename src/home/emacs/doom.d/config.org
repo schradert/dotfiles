@@ -102,6 +102,9 @@
     )
   )
 )
+(add-hook! org-mode
+           (org-edna-mode)
+           (require 'org-linker-edna))
 #+end_src
 
 * Vterm
