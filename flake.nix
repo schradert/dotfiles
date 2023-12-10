@@ -128,7 +128,7 @@
         };
 
         #  TODO (Tristan): convert these two packages into new system
-        packages.local = inputs.terranix.lib.terranixConfiguration {
+        packages.sirver = inputs.terranix.lib.terranixConfiguration {
           inherit system pkgs;
           modules = [
             # ./src/infra/firefly.nix
@@ -167,6 +167,14 @@
               };
               resource.flux_bootstrap_git.prod = {path = "src/nux/clusters/prod";};
             }
+          ];
+        };
+        packages.local = inputs.terranix.lib.terranixConfiguration {
+          inherit system pkgs;
+          modules = [
+            ./src/tix/sirver
+            { locals.cluster.name = "sirver"; }
+            # ./src/infra/firefly.nix
           ];
         };
       };
