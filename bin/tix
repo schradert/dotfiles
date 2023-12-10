@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC2239
+
+set -o errexit
+
+# Variable and function definitions
+root="$(git rev-parse --show-toplevel)"
+source "$root/bin/utils.sh"
+
+readarray -t workspaces < <(find "$root/src/tix" -type d -exec basename {} \; | sed 1d)
+workspaces_str="$(IFS="|"; echo "${workspaces[*]}")"
+
+usage="Usage: tix
+       [-h|--help]                Display this message
+       [tf WORKSPACE]             Terraform workspace to build (options: ${workspaces_str})
+           [all]                  Run entire terraform workspace in phases
+           [...]                  Options will be passed to terraform
+"
+
+# Parse arguments
+# SUBJECT is needed for the Google Drive Terraform provider
+SUBJECT="$(git config user.email)"
+export SUBJECT
+
+if [[ $# -eq 0 ]]; then
+    logfx exit_status=SUCCESS <<< "$usage"
+fi
+while [[ $# -gt 0 ]]; do
+    group="$1"
+    case $group in
+        tf)
+            workspace="$2"
+            if ! contains "$workspace" "${workspaces[@]}"; then
+                message="'$workspace' is not a valid workspace among: ${workspaces_str}"
+                logfx log_level=ERROR exit_status=FAILURE <<< "$message"
+            fi
+            case $3 in
+                all)
+                    bb tf "$workspace" -- init
+                    bb tf "$workspace" -- apply -auto-approve
+                    exit 0
+                    ;;
+                *)
+                    # Open SSH tunnel if connecting to a remote host
+                    [[ $workspace != local && $workspace != $(hostname) ]] && {
+                        ssh -N -L 6443:localhost:6443 "$workspace" &
+                        ssh_pid=$!
+                        trap 'kill -9 "$ssh_pid" &> /dev/null' EXIT
+                        sleep 1
+                    }
+
+                    # Build workspace config with terranix
+                    nix build "$root#${workspace}"
+
+                    # Prepare run directory
+                    run_d="$root/run/terraform/$workspace"
+                    mkdir -p "$run_d"
+                    mv -f "$(pwd)/result" "$run_d/terraform.tf.json"
+
+                    # Run terraform
+                    terraform -chdir="$run_d" "${@:3}"
+                    exit 0
+                    ;;
+            esac
+            ;;
+        --help|-h) logfx exit_status=SUCCESS <<< "$usage" ;;
+        *) logfx log_level=ERROR exit_status=FAILURE <<< "'$1' is not a recognized option" ;;
+    esac
+    shift
+done
