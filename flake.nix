@@ -123,6 +123,8 @@
           ];
           shellHook = ''
             export PRJ_ROOT="$(git rev-parse --show-toplevel)"
+            export KUBE_CONFIG_PATH="$PRJ_ROOT/run/secrets/config.yaml"
+            export KUBECONFIG="$KUBE_CONFIG_PATH:$HOME/.kube/config"
             PATH_add bin
           '';
         };
