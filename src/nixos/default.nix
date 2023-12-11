@@ -79,8 +79,6 @@ in {
           protonvpn-gui
           android-studio
         ];
-        # TODO (Tristan): why isn't this working?!
-        # nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "android-studio-stable" ];
       };
       services.xserver = {
         enable = true;
