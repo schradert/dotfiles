@@ -104,6 +104,12 @@
     )
   )
 )
+(defun my/org-clock-todo-change ()
+  "Clock in on an in progress task and clock out of the other"
+  (if (equal org-state "IN-PROGRESS")
+      (org-clock-in)
+    (org-clock-out-if-current)))
+(add-hook! 'org-after-todo-state-change-hook 'my/org-clock-todo-change)
 (add-hook! org-mode
            (org-edna-mode)
            (require 'org-linker-edna))
