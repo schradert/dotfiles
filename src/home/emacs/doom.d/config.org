@@ -104,11 +104,36 @@
     )
   )
 )
+
+(defun my/org-habit-is-habit-subheading ()
+  "Check if the current TODO is under an org-habit heading."
+  (save-excursion
+    (while (and (not (org-at-heading-p))
+                (org-up-heading-safe))
+      (let ((style (org-entry-get (point) "STYLE")))
+        (when (and style (string= style "habit"))
+          (cl-return t))))
+    nil))
+
+(defun my/org-agenda-remove-schedule ()
+  "Remove SCHEDULED-cookie is switching state to WAITING."
+  (save-excursion
+    (and (equal org-state "COMPLETED")
+         ;; (my/org-habit-is-habit-subheading)
+         (org-get-scheduled-time (point))
+         (when (search-forward-regexp org-scheduled-time-regexp nil t)
+           (or (delete-region (match-beginning 0) (match-end 0)) t))
+         (get-buffer "*Org Agenda*")
+         (with-current-buffer "*Org Agenda*"
+           (org-agenda-redo)))))
+
 (defun my/org-clock-todo-change ()
   "Clock in on an in progress task and clock out of the other"
   (if (equal org-state "IN-PROGRESS")
       (org-clock-in)
     (org-clock-out-if-current)))
+
+(add-hook! 'org-after-todo-stage-change-hook 'my/org-agenda-remove-schedule)
 (add-hook! 'org-after-todo-state-change-hook 'my/org-clock-todo-change)
 (add-hook! org-mode
            (org-edna-mode)
