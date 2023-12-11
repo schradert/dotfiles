@@ -1,8 +1,8 @@
 {
   description = "System configuration";
   inputs = {
-    home-manager.url = github:nix-community/home-manager/release-23.05;
-    nixpkgs.url = github:nixos/nixpkgs/release-23.05;
+    home-manager.url = github:nix-community/home-manager/release-23.11;
+    nixpkgs.url = github:nixos/nixpkgs/release-23.11;
     nix-darwin.url = github:LnL7/nix-darwin;
 
     nixos-flake.url = github:srid/nixos-flake;
@@ -82,14 +82,17 @@
       };
       perSystem = {
         self',
-        inputs',
         config,
         pkgs,
         lib,
         system,
         ...
       }: {
-        _module.args.pkgs = inputs'.nixpkgs.legacyPackages.extend inputs.self.overlays.default;
+        _module.args.pkgs = import inputs.nixpkgs {
+          inherit system;
+          overlays = [inputs.self.overlays.default];
+          config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) ["terraform"];
+        };
         nixos-flake.primary-inputs = ["nixpkgs" "home-manager" "nix-darwin" "nixos-flake"];
 
         formatter = config.treefmt.build.wrapper;

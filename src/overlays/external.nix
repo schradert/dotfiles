@@ -39,7 +39,7 @@ final: prev: {
             rev = "v${version}";
             sha256 = "4K09wLV1+TvYTtvha6YyGhjlhEldWL1eVazNwcEhi3Q=";
           };
-          vendorSha256 = "iRgLspYhwSVuL0yarPdjXCKfjK7TGDZeQCOcIYtNvzA=";
+          vendorHash = "sha256-iRgLspYhwSVuL0yarPdjXCKfjK7TGDZeQCOcIYtNvzA=";
         });
   };
   spicetify-cli = prev.spicetify-cli.override {
