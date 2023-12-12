@@ -9,6 +9,8 @@
         # TODO what's the right user name and location?
         # home.username = "termux";
         # home.userDirectory = "/data/data/com.termux.nix/files/home";
+        programs.eza.enable = null;
+        programs.exa.enable = true;
       };
       home-manager.useGlobalPkgs = true;
       nix.extraOptions = ''
