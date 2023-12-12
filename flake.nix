@@ -31,7 +31,12 @@
         ./src/droid
         ./src/users
       ];
-      flake = {
+      flake = let
+        allowUnfree = {
+          pkgs ? [],
+          system ? builtins.currentSystem,
+        }: pkg: builtins.elem (inputs.nixpkgs.legacyPackages.${system}.lib.getName pkg) pkgs;
+      in {
         overlays.default = inputs.nixpkgs.lib.composeManyExtensions [
           (import ./src/overlays/external.nix)
           (import ./src/overlays/internal.nix)
@@ -39,9 +44,10 @@
           inputs.gke-gcloud-auth-plugin-flake.overlays.default
         ];
         nixosConfigurations.chilldom = inputs.nixpkgs.lib.nixosSystem {
-          pkgs = import inputs.nixpkgs {
+          pkgs = import inputs.nixpkgs rec {
             system = "x86_64-linux";
             overlays = [inputs.self.overlays.default];
+            config.allowUnfreePredicate = allowUnfree { pkgs = ["discord" "android-studio-stable" "spotify"]; inherit system; };
           };
           specialArgs = inputs.self.nixos-flake.lib.specialArgsFor.nixos;
           modules = [
@@ -51,7 +57,6 @@
               networking.hostName = "chilldom";
               networking.wireless.enable = true;
               networking.wireless.networks.lanyard.psk = "bruhWHY123!";
-              nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) ["discord" "android-studio" "spotify"];
             })
           ];
         };
