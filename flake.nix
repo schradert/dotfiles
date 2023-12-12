@@ -183,7 +183,7 @@
           inherit system pkgs;
           modules = [
             ./src/tix/sirver
-            { locals.cluster.name = "sirver"; }
+            {locals.cluster.name = "sirver";}
             # ./src/infra/firefly.nix
           ];
         };

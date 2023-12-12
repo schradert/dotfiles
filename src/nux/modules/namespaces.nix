@@ -1,5 +1,9 @@
-{ config, lib, pkgs, ... }:
 {
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
   options.namespaces.existing = lib.mkOption {
     type = lib.types.listOf lib.types.str;
     example = ["another-existing-namespace"];

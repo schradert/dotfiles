@@ -1,5 +1,9 @@
-{ config, lib, pkgs, ... }:
 {
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
   options.repositories.helm = lib.mkOption {
     type = lib.types.attrsOf (lib.types.submodule ({name, ...}: {
       options = {
