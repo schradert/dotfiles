@@ -4,6 +4,7 @@
     home-manager.url = github:nix-community/home-manager/release-23.11;
     nixpkgs.url = github:nixos/nixpkgs/release-23.11;
     nix-darwin.url = github:LnL7/nix-darwin;
+    nix-on-droid.url = github:nix-community/nix-on-droid/release-23.05;
 
     nixos-flake.url = github:srid/nixos-flake;
     flake-parts.url = github:hercules-ci/flake-parts;
@@ -27,6 +28,7 @@
         ./src/nixos
         ./src/nixos/kubernetes.nix
         ./src/darwin
+        ./src/droid
         ./src/users
       ];
       flake = {
@@ -79,6 +81,9 @@
             skhd
           ];
         });
+        nixOnDroidConfigurations.boox = inputs.nix-on-droid.lib.nixOnDroidConfiguration {
+          modules = [inputs.self.droidModules.common];
+        };
       };
       perSystem = {
         self',
