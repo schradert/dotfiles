@@ -64,7 +64,7 @@ in {
           enable = true;
           nix-direnv.enable = true;
         };
-        exa.enable = true;
+        eza.enable = true;
         fzf = {
           enable = true;
           tmux.enableShellIntegration = true;
