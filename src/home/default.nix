@@ -108,8 +108,8 @@ in {
     homeModules.linux-graphical = {pkgs, ...}: {
       imports = [
         self.homeModules.graphical
-        #  ./spicetify/linux.nix
-        ./emacs/linux.nix
+        # ./spicetify/linux.nix
+        # ./emacs/linux.nix
       ];
       services.emacs = {
         enable = true;
