@@ -1,4 +1,9 @@
 final: prev: {
+  wordnet = prev.wordnet.overrideAttrs (old: {
+    patchPhase = old.patchPhase + ''
+      sed '132s/^/int /' -i src/wn.c
+    '';
+  });
   tmux = prev.tmux.overrideAttrs (_: {
     version = "unstable-2023-04-06";
     src = prev.fetchFromGitHub {
