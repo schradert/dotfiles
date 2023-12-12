@@ -75,7 +75,7 @@ in {
         home.packages = with pkgs; [
           bitwarden
           brave
-          godot
+          godot3
           protonvpn-gui
           android-studio
         ];
