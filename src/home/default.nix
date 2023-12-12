@@ -26,7 +26,6 @@ in {
       home.stateVersion = "23.05";
       home.packages = with pkgs; [
         aria2
-        anki
         bitwarden-cli
         cheat
         cachix
@@ -106,7 +105,7 @@ in {
         #       slack
       ];
     };
-    homeModules.linux-graphical = {
+    homeModules.linux-graphical = {pkgs, ...}: {
       imports = [
         self.homeModules.graphical
         #  ./spicetify/linux.nix
@@ -116,6 +115,7 @@ in {
         enable = true;
         defaultEditor = true;
       };
+      home.packages = with pkgs; [anki];
     };
     homeModules.darwin-graphical = {
       config,
