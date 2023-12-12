@@ -1,5 +1,4 @@
-{self, ...}:
-{
+{self, ...}: {
   flake = {
     droidModules.common = {
       environment.etcBackupExtension = ".bak";

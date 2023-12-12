@@ -1,5 +1,4 @@
-{config, ...}:
-{
+{config, ...}: {
   provider.helm = {inherit (config.provider) kubernetes;};
   terraform.required_providers = {
     github.source = "integrations/github";

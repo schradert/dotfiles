@@ -1,5 +1,4 @@
-{pkgs, ...}:
-{
+{pkgs, ...}: {
   imports = [./modules];
   namespaces.new = ["oauth2-proxy" "prometheus" "traefik" "keycloak"];
   repositories.helm.oauth2-proxy.spec.url = "https://oauth2-proxy.github.io/manifests";

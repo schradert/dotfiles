@@ -1,6 +1,10 @@
-{ config, lib, pkgs, ... }:
 {
-   options.repositories.git = lib.mkOption {
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
+  options.repositories.git = lib.mkOption {
     type = lib.types.attrsOf (lib.types.submodule ({name, ...}: {
       options = {
         apiVersion = lib.mkOption {

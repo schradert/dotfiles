@@ -1,8 +1,17 @@
-{ config, lib, pkgs, ... }:
-let cfg = config;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
+  cfg = config;
 in {
   options.releases.helm = lib.mkOption {
-    type = lib.types.attrsOf (lib.types.submodule ({name, config, ...}: {
+    type = lib.types.attrsOf (lib.types.submodule ({
+      name,
+      config,
+      ...
+    }: {
       options = {
         apiVersion = lib.mkOption {
           type = lib.types.str;
