@@ -7,8 +7,11 @@ brew "kdoctor"
 brew "libvterm"
 brew "libtool"
 brew "koekeishiya/formulae/yabai"
+# TODO why does libgccjit have to be installed here and not in nix?
 brew "libgccjit"
-# brew "emacs-plus", args: ["with-native-comp"]
+# TODO why do I have to install this separately with `brew install`?
+# This is just here for documentation despite not working from scratch
+brew "emacs-plus", args: ["with-native-comp"]
 brew "poetry"
 brew "python@3.10"
 cask "android-studio"
