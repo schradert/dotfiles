@@ -86,7 +86,7 @@ in {
         displayManager.sddm.enable = true;
         desktopManager.plasma5.enable = true;
       };
-      fonts.fonts = with pkgs; [meslo-lgs-nf];
+      fonts.packages = with pkgs; [meslo-lgs-nf];
       sound.enable = true;
       hardware.pulseaudio.enable = true;
       users.users.${flakeConfig.people.me}.extraGroups = ["networkmanager"];
