@@ -34,7 +34,6 @@ in {
         fd
         file
         glab
-        gyb
         iftop
         k3d
         libtool
