@@ -39,7 +39,7 @@
     org-agenda-files (list (expand-file-name "agenda" org-directory))
     org-log-into-drawer t
     org-todo-keywords '(
-      (sequence "DRAFTING(d@)" "PLANNED(p!)" "IN-PROGRESS(i!/@)" "WAITING(w@)" "|" "COMPLETED(c@)" "REJECTED(r@)")
+      (sequence "DRAFTING(d@)" "PLANNED(p!)" "IN-PROGRESS(i!/@)" "WAITING(w@)" "|" "COMPLETED(c@)" "REJECTED(r@)" "MISSED(m@)")
     )
     org-todo-repeat-to-state "PLANNED"
     org-columns-default-format "%40ITEM(Task) %TODO %3PRIORITY %17Effort{:} %CLOCKSUM %CLOCKSUM_T %TAGS"
