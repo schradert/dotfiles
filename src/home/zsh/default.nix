@@ -41,10 +41,6 @@
         "helm"
         "kubectl"
         "pip"
-        # TODO: dynamically change python path "poetry" plugin uses
-        # This plugin wants to grab a homebrew path for poetry python, so we'll hold off
-        # including it until I can figure out how to include it without a bad interpreter error.
-        # "poetry"
         "ripgrep"
         "rsync"
         "terraform"
