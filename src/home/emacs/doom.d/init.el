@@ -106,7 +106,7 @@
        (nix +tree-sitter)
        (org +brain +dragndrop +pandoc +pomodoro +present +pretty +roam2)
        ;;plantuml
-       (python +lsp +poetry +pyright +tree-sitter)
+       (python +lsp +pyright +tree-sitter)
        (rust +lsp +tree-sitter)
        (sh +lsp +tree-sitter)
        ;;solidity
