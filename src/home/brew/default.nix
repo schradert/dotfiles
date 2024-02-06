@@ -20,5 +20,6 @@ in {
     export HOMEBREW_BUNDLE_NO_LOCKFILE_WRITE_WARNING=1
     $DRY_RUN_CMD ${brew} bundle check --file ${./Brewfile} \
         || ${brew} bundle install --file ${./Brewfile} --cleanup
+    $DRY_RUN_CMD ${brew} install emacs-plus@29 --with-native-comp
   '';
 }
