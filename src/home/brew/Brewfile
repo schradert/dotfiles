@@ -11,7 +11,7 @@ brew "koekeishiya/formulae/yabai"
 brew "libgccjit"
 # TODO why do I have to install this separately with `brew install`?
 # This is just here for documentation despite not working from scratch
-brew "emacs-plus", args: ["with-native-comp"]
+# brew "emacs-plus", args: ["with-native-comp"]
 brew "python@3.10"
 cask "android-studio"
 cask "bitwarden"
