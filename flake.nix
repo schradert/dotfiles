@@ -10,6 +10,8 @@
     flake-parts.url = github:hercules-ci/flake-parts;
     treefmt-nix.url = github:numtide/treefmt-nix;
 
+    # nix-doom-emacs marked as broken for now
+    # TODO keep tabs on this project to see if it's evolving enough to try to use
     nix-doom-emacs.url = github:nix-community/nix-doom-emacs;
     emacs-overlay.url = github:nix-community/emacs-overlay;
 

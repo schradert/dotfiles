@@ -20,6 +20,6 @@ in {
     export HOMEBREW_BUNDLE_NO_LOCKFILE_WRITE_WARNING=1
     $DRY_RUN_CMD ${brew} bundle check --file ${./Brewfile} \
         || ${brew} bundle install --file ${./Brewfile} --cleanup
-    $DRY_RUN_CMD ${brew} install emacs-plus@29 --with-native-comp
+    # $DRY_RUN_CMD zsh -c "${brew} install emacs-plus@29 --with-native-comp --with-modern-doom3-icon --with-xwidgets --with-poll --with-imagemagick --with-dbus"
   '';
 }
