@@ -87,6 +87,7 @@ in {
       lib,
       ...
     }: {
+      imports = [./emacs];
       home.packages = with pkgs; [
         # TODO (Tristan): figure out how to run docker as a home-manager service
         #       docker
@@ -108,12 +109,7 @@ in {
       imports = [
         self.homeModules.graphical
         # ./spicetify/linux.nix
-        # ./emacs/linux.nix
       ];
-      services.emacs = {
-        enable = true;
-        defaultEditor = true;
-      };
       home.packages = with pkgs; [anki];
     };
     homeModules.darwin-graphical = {
@@ -124,7 +120,6 @@ in {
     }: {
       imports = [
         self.homeModules.graphical
-        ./emacs/common.nix
         ./brew
         ./spicetify/darwin.nix
         ./k9s
