@@ -80,9 +80,6 @@ in {
         overlays = attrValues inputs.self.overlays;
         config.allowUnfreePredicate = pkg: elem (getName pkg) ["terraform" "spotify" "android-studio-stable"];
       };
-    devShells.default = pkgs.mkShell {
-      inputsFrom = nix.attrValues (nix.removeAttrs config.devShells ["default"]);
-    };
   };
 
   flake.nixosModules.args = {
