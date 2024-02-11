@@ -37,5 +37,5 @@ with nix; {
           nixpkgs.hostPlatform = system;
         };
       }))
-  config.nixos;
+  config.darwin;
 }
