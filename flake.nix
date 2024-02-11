@@ -60,6 +60,9 @@
       droid.boox = {};
       droid.mobile = {};
       # TODO fix nix-darwin
-      darwin.morgenmuffel.module.dotfiles.work.enable = true;
+      darwin.morgenmuffel.module = {
+        dotfiles.work.enable = true;
+        homebrew.casks = ["clickup" "google-drive" "teamviewer" "zotero"];
+      };
     };
 }

@@ -1,61 +1,49 @@
-{
+{lib, ...}:
+with lib; {
   flake.homeModules.graphical = {
     config,
-    lib,
-    pkgs,
-    ...
-  }:
-    with lib; {
-      options.dotfiles.graphical.enable = mkEnableOption "graphical tools (i.e. not headless)";
-      config = mkIf config.dotfiles.graphical.enable (mkMerge [
-        {
-          dotfiles.editor = "emacs";
-          home.packages = with pkgs; [
-            gnutls
-            harfbuzz
-            libtool
-            librsvg
-            podman
-            unbound
-            # TODO (Tristan): figure out how to run docker as a home-manager service
-            # docker
-            # TODO (Tristan): fix ENOTFOUND -3008 getaddrinfo registry.yarnpkg.com for element-desktop build
-            # element-desktop
-            # TODO (Tristan): figure out why these graphical apps are not installing!
-            # zoom-us
-            # raycast
-            # slack
-          ];
-        }
-        (mkIf pkgs.stdenv.isDarwin {
-          # TODO why do I need pngpaste
-          home.packages = with pkgs; [discord pngpaste];
-          home.homeDirectory = "/Users/${config.home.username}";
-        })
-        (mkIf pkgs.stdenv.isLinux {
-          home.packages = with pkgs; [
-            android-studio
-            anki
-            bitwarden
-            brave
-            godot3
-            protonvpn-gui
-          ];
-        })
-      ]);
-    };
-  flake.nixosModules.nixos-graphical = {
-    config,
-    flake,
-    lib,
     pkgs,
     ...
   }: {
-    options.dotfiles.graphical.enable = lib.mkEnableOption "graphical tools (i.e. not headless)";
-    config = lib.mkIf config.dotfiles.graphical.enable {
+    options.dotfiles.graphical.enable = mkEnableOption "graphical tools (i.e. not headless)";
+    config = mkIf config.dotfiles.graphical.enable {
+      dotfiles.editor = "emacs";
+      home.packages = with pkgs; [
+        anki
+        discord
+        gnutls
+        harfbuzz
+        libtool
+        librsvg
+        spotify
+        unbound
+      ];
+    };
+  };
+  flake.nixosModules.nixos-graphical = {
+    config,
+    flake,
+    pkgs,
+    ...
+  }: {
+    options.dotfiles.graphical.enable = mkEnableOption "graphical tools (i.e. not headless)";
+    config = mkIf config.dotfiles.graphical.enable {
       fonts.packages = [pkgs.meslo-lgs-nf];
       hardware.pulseaudio.enable = true;
-      home-manager.users.${flake.config.people.me}.dotfiles.graphical.enable = true;
+      home-manager.users.${flake.config.people.me} = {
+        dotfiles.graphical.enable = true;
+        home.packages = with pkgs; [
+          android-studio
+          bitwarden
+          brave
+          element-desktop
+          godot_4
+          podman-desktop
+          protonvpn-gui
+          session-desktop
+          signal-desktop
+        ];
+      };
       services.xserver = {
         enable = true;
         layout = "us";
@@ -65,17 +53,34 @@
       sound.enable = true;
     };
   };
-  flake.darwinModules_.nixos-graphical = {
+  flake.darwinModules_.darwin-graphical = {
     config,
     flake,
-    lib,
+    nix,
     pkgs,
     ...
   }: {
-    options.dotfiles.graphical.enable = lib.mkEnableOption "graphical tools (i.e. not headless)";
-    config = lib.mkIf config.dotfiles.graphical.enable {
+    options.dotfiles.graphical.enable = nix.mkEnabledOption "graphical tools (i.e. not headless)";
+    config = mkIf config.dotfiles.graphical.enable {
       fonts.fonts = [pkgs.meslo-lgs-nf];
-      home-manager.users.${flake.config.people.me}.dotfiles.graphical.enable = true;
+      home-manager.users.${flake.config.people.me} = {
+        dotfiles.graphical.enable = true;
+        home.packages = with pkgs; [discord pngpaste raycast];
+        home.homeDirectory = "/Users/${config.home.username}";
+      };
+      homebrew.enable = true;
+      homebrew.casks = [
+        "android-studio"
+        "bitwarden"
+        "brave-browser"
+        "element"
+        "godot"
+        "lulu"
+        "podman-desktop"
+        "protonvpn"
+        "session"
+        "signal"
+      ];
     };
   };
 }

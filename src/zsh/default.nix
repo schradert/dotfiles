@@ -32,7 +32,6 @@
             fpath+=($ZSH/custom/plugins/zsh-completions/src)
             export PATH="$HOME/.local/bin:$PATH"
             export XDG_CONFIG_HOME="$HOME/.config"
-            ${optionalString pkgs.stdenv.isDarwin "export PATH=\"/Applications/Docker.app/Contents/Resources/bin:$PATH\""}
             ${optionalString fzf.enable ''
               bindkey '^R' fzf-history-widget
               # switch group using `,` and `.`
