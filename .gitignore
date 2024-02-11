@@ -9,3 +9,4 @@
 /src/home/emacs/doom.d/config.el
 /src/home/emacs/doom.d/packages.el
 /src/home/emacs/doom.d/custom.el
+/.pre-commit-config.yaml
