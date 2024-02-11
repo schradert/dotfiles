@@ -32,10 +32,12 @@ with nix; {
       inputs.nix-darwin.lib.darwinSystem {
         inherit pkgs system;
         specialArgs = inputs.self.nixos-flake.lib.specialArgsFor.darwin;
-        modules = toList {
+        modules = toList (darwin: {
           imports = attrValues inputs.self.darwinModules_ ++ [cfg.module];
           nixpkgs.hostPlatform = system;
-        };
+          dotfiles.hostname = mkDefault name;
+          home-manager.users.${config.people.me}.dotfiles = darwin.config.dotfiles;
+        });
       }))
   config.darwin;
 }

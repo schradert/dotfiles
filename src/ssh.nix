@@ -3,25 +3,21 @@
   nix,
   ...
 }:
-with nix; {
-  flake.homeModules.hostname.options.dotfiles.hostname = mkOption {
+with nix; let
+  option = mkOption {
     type = str;
     description = mdDoc "The hostname of the relevant machine with this user";
     example = "another-server";
   };
-  flake.nixosModules.nixos-hostname = {
-    config,
-    flake,
-    ...
-  }: {
-    home-manager.users.${flake.config.people.me}.dotfiles.hostname = config.networking.hostName;
+in {
+  flake.homeModules.hostname.options.dotfiles.hostname = option;
+  flake.nixosModules.nixos-hostname = nixos: {
+    options.dotfiles.hostname = option;
+    config.networking.hostName = nixos.config.dotfiles.hostname;
   };
-  flake.darwinModules_.darwin-hostname = {
-    config,
-    flake,
-    ...
-  }: {
-    home-manager.users.${flake.config.people.me}.dotfiles.hostname = config.networking.hostName;
+  flake.darwinModules_.darwin-hostname = nixos: {
+    options.dotfiles.hostname = option;
+    config.networking.hostName = nixos.config.dotfiles.hostname;
   };
   flake.homeModules.ssh = home: let
     base = home.config.home.homeDirectory;
