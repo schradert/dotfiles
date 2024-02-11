@@ -60,10 +60,12 @@ with nix; {
       inputs.nixpkgs.lib.nixosSystem {
         inherit pkgs system;
         specialArgs = inputs.self.nixos-flake.lib.specialArgsFor.nixos;
-        modules = toList {
+        modules = toList (nixos: {
           imports = attrValues inputs.self.nixosModules ++ [cfg.module];
           nixpkgs.hostPlatform = system;
-        };
+          dotfiles.hostname = mkDefault name;
+          home-manager.users.${config.people.me}.dotfiles = nixos.config.dotfiles;
+        });
       }))
   config.nixos;
 }
