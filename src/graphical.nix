@@ -74,16 +74,8 @@
   }: {
     options.dotfiles.graphical.enable = lib.mkEnableOption "graphical tools (i.e. not headless)";
     config = lib.mkIf config.dotfiles.graphical.enable {
-      fonts.packages = [pkgs.meslo-lgs-nf];
-      hardware.pulseaudio.enable = true;
+      fonts.fonts = [pkgs.meslo-lgs-nf];
       home-manager.users.${flake.config.people.me}.dotfiles.graphical.enable = true;
-      services.xserver = {
-        enable = true;
-        layout = "us";
-        displayManager.sddm.enable = true;
-        desktopManager.plasma5.enable = true;
-      };
-      sound.enable = true;
     };
   };
 }
