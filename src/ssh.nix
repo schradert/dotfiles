@@ -10,7 +10,6 @@ with nix; let
     example = "another-server";
   };
 in {
-  flake.homeModules.hostname.options.dotfiles.hostname = option;
   flake.nixosModules.nixos-hostname = nixos: {
     options.dotfiles.hostname = option;
     config.networking.hostName = nixos.config.dotfiles.hostname;

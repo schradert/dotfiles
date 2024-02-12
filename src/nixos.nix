@@ -62,9 +62,12 @@ with nix; {
         specialArgs = inputs.self.nixos-flake.lib.specialArgsFor.nixos;
         modules = toList (nixos: {
           imports = attrValues inputs.self.nixosModules ++ [cfg.module];
+          home-manager.users.${config.people.me} = {
+            options.dotfiles = nixos.options.dotfiles;
+            config.dotfiles = nixos.config.dotfiles;
+          };
           nixpkgs.hostPlatform = system;
           dotfiles.hostname = mkDefault name;
-          home-manager.users.${config.people.me}.dotfiles = nixos.config.dotfiles;
         });
       }))
   config.nixos;

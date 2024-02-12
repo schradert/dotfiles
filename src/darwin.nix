@@ -34,9 +34,12 @@ with nix; {
         specialArgs = inputs.self.nixos-flake.lib.specialArgsFor.darwin;
         modules = toList (darwin: {
           imports = attrValues inputs.self.darwinModules_ ++ [cfg.module];
+          home-manager.users.${config.people.me} = {
+            options.dotfiles = darwin.options.dotfiles;
+            config.dotfiles = darwin.config.dotfiles;
+          };
           nixpkgs.hostPlatform = system;
           dotfiles.hostname = mkDefault name;
-          home-manager.users.${config.people.me}.dotfiles = darwin.config.dotfiles;
         });
       }))
   config.darwin;
