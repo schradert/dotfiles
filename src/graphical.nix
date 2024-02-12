@@ -65,7 +65,6 @@ with lib; {
       home-manager.users.${flake.config.people.me} = {
         dotfiles.graphical.enable = true;
         home.packages = with pkgs; [discord pngpaste raycast];
-        home.homeDirectory = "/Users/${config.home.username}";
       };
       homebrew.enable = true;
       homebrew.casks = [
