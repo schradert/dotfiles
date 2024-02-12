@@ -73,6 +73,8 @@ with nix; {
       sops.age.keyFile = "${home.config.home.homeDirectory}/.config/sops/age/keys.txt";
     };
   };
+  # TODO figure out a different implementation for import home-manager modules
+  # For some reason it was complaining that imports doesn't exist, yet it lets me set options
   config.flake.nixosModules =
     mapAttrs (_: module: {
       home-manager.users.${config.people.me} = module;
@@ -82,5 +84,6 @@ with nix; {
     mapAttrs (_: module: {
       home-manager.users.${config.people.me} = module;
     })
-    inputs.self.homeModules;
+    # Spicetify-nix only supports x86_64-linux
+    (removeAttrs inputs.self.homeModules ["spicetify" "spicetify-nix"]);
 }
