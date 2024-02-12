@@ -78,7 +78,7 @@ in {
       import inputs.nixpkgs {
         inherit system;
         overlays = attrValues inputs.self.overlays;
-        config.allowUnfreePredicate = pkg: elem (getName pkg) ["terraform" "spotify" "android-studio-stable"];
+        config.allowUnfreePredicate = pkg: elem (getName pkg) ["android-studio-stable" "discord" "spotify"];
       };
   };
 
