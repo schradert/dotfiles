@@ -14,9 +14,9 @@ in {
     options.dotfiles.hostname = option;
     config.networking.hostName = nixos.config.dotfiles.hostname;
   };
-  flake.darwinModules_.darwin-hostname = nixos: {
+  flake.darwinModules_.darwin-hostname = darwin: {
     options.dotfiles.hostname = option;
-    config.networking.hostName = nixos.config.dotfiles.hostname;
+    config.networking.hostName = darwin.config.dotfiles.hostname;
   };
   flake.homeModules.ssh = home: let
     base = home.config.home.homeDirectory;
