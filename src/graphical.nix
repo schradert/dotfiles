@@ -5,7 +5,6 @@ with lib; {
     pkgs,
     ...
   }: {
-    options.dotfiles.graphical.enable = mkEnableOption "graphical tools (i.e. not headless)";
     config = mkIf config.dotfiles.graphical.enable {
       dotfiles.editor = "emacs";
       home.packages = with pkgs; [
