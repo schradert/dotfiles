@@ -8,7 +8,7 @@
 with nix; {
   options.darwin = mkOption {
     type = attrsOf (submodule {
-      options.system = mkSystemOption {};
+      options.system = mkSystemOption {default = head (import inputs.systems-darwin);};
       options.module = mkOpenModuleOption {};
     });
     default = {};
