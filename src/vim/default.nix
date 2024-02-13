@@ -1,13 +1,12 @@
 {
   flake.homeModules.vim = {
     config,
-    lib,
     nix,
     pkgs,
     ...
   }:
     with nix;
-      mkMerge [
+      
         {
           programs.vim = {
             enable = true;
@@ -52,9 +51,6 @@
             extraConfig = readFile ./config.vim;
           };
           programs.vim.defaultEditor = config.dotfiles.editor == "vim";
-        }
-        (lib.mkIf config.programs.vim.enable {
           programs.zsh.localVariables.VISUAL = "vim";
-        })
-      ];
+        };
 }

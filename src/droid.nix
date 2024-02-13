@@ -22,13 +22,10 @@ with nix; {
       # home.userDirectory = "/data/data/com.termux.nix/files/home";
     };
     home-manager.useGlobalPkgs = true;
-    nix.extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
     system.stateVersion = "23.05";
   };
   config.flake.nixOnDroidConfigurations = mapAttrs' (_: module:
     inputs.nix-on-droid.lib.nixOnDroidConfiguration {
-      modules = attrValues inputs.self.droidModules ++ [module];
+      modules = attrValues inputs.self.systemModules ++ attrValues inputs.self.droidModules ++ [module];
     });
 }

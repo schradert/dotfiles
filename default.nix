@@ -63,31 +63,34 @@
     }
   ];
 in {
-  imports = nix.fs.everything ./src;
-
-  _module.args.nix = nix;
-
-  perSystem = {
-    config,
-    pkgs,
-    system,
-    ...
-  }: {
-    _module.args.nix = nix;
-    _module.args.pkgs = with nix;
-      import inputs.nixpkgs {
-        inherit system;
-        overlays = attrValues inputs.self.overlays;
-        config.allowUnfreePredicate = pkg: elem (getName pkg) ["android-studio-stable" "discord" "raycast" "spotify"];
-      };
+  imports = nix.fs.everything ./src ++ [./work.nix];
+  options.flake = nix.mkSubmoduleOptions {
+    systemModules = nix.mkOpenModuleOption {
+      description = nix.mkDoc "Modules common to system config tools (nixos, nix-darwin, nix-on-droid)";
+    };
   };
-
-  flake.nixosModules.args = {
+  config = {
     _module.args.nix = nix;
-    home-manager.extraSpecialArgs.nix = nix;
-  };
-  flake.darwinModules_.args = {
-    _module.args.nix = nix;
-    home-manager.extraSpecialArgs.nix = nix;
+    flake.systemModules.default = {
+      _module.args.nix = nix;
+      nix.extraOptions = ''
+        experimental-features = nix-command flakes
+      '';
+    };
+    flake.homeModules.args._module.args.nix = nix;
+    perSystem = {
+      config,
+      pkgs,
+      system,
+      ...
+    }: {
+      _module.args.nix = nix;
+      _module.args.pkgs = with nix;
+        import inputs.nixpkgs {
+          inherit system;
+          overlays = attrValues inputs.self.overlays;
+          config.allowUnfreePredicate = pkg: elem (getName pkg) ["android-studio-stable" "discord" "raycast" "spotify"];
+        };
+    };
   };
 }

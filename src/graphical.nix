@@ -5,6 +5,7 @@ with lib; {
     pkgs,
     ...
   }: {
+    options.dotfiles.graphical.enable = mkEnableOption "graphical tools (i.e. not headless)";
     config = mkIf config.dotfiles.graphical.enable {
       dotfiles.editor = "emacs";
       home.packages = with pkgs; [
@@ -32,7 +33,7 @@ with lib; {
         dotfiles.graphical.enable = true;
         home.packages = with pkgs; [
           android-studio
-	  anki
+	        anki
           bitwarden
           brave
           element-desktop
@@ -50,36 +51,6 @@ with lib; {
         desktopManager.plasma5.enable = true;
       };
       sound.enable = true;
-    };
-  };
-  flake.darwinModules_.darwin-graphical = {
-    config,
-    flake,
-    nix,
-    pkgs,
-    ...
-  }: {
-    options.dotfiles.graphical.enable = nix.mkEnabledOption "graphical tools (i.e. not headless)";
-    config = mkIf config.dotfiles.graphical.enable {
-      fonts.fonts = [pkgs.meslo-lgs-nf];
-      home-manager.users.${flake.config.people.me} = {
-        dotfiles.graphical.enable = true;
-        home.packages = with pkgs; [discord pngpaste raycast];
-      };
-      homebrew.enable = true;
-      homebrew.casks = [
-        "android-studio"
-	"anki"
-        "bitwarden"
-        "brave-browser"
-        "element"
-        "godot"
-        "lulu"
-        "podman-desktop"
-        "protonvpn"
-        "session"
-        "signal"
-      ];
     };
   };
 }
