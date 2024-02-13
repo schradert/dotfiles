@@ -5,6 +5,12 @@
   # Convenience functions
   pipe' = functions: value: lib.trivial.pipe value functions;
   flatMap = function: pipe' [(builtins.map function) lib.lists.flatten];
+  # Borrowed from GitHub Gist from user udf@
+  mkMergeTopLevel = names: pipe' [
+    (lib.attrsets.foldAttrs (this: those: [this] ++ those) [])
+    (builtins.mapAttrs (_: lib.mkMerge))
+    (lib.attrsets.getAttrs names)
+  ];
 
   # Filesystem traversal
   filter = f: root:
