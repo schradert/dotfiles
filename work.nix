@@ -23,6 +23,11 @@
         "zotero"
       ];
       nix.useDaemon = true;
+      system.defaults.dock = {
+        autohide = true;
+        orientation = "left";
+        static-only = true;
+      };
       system.stateVersion = 4;
     };
   });
