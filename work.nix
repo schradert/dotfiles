@@ -30,6 +30,7 @@
   perSystem = {pkgs, ...}: {
     legacyPackages.homeConfigurations.tristan = inputs.self.nixos-flake.lib.mkHomeConfiguration pkgs {
       imports = attrValues inputs.self.homeModules;
+      dotfiles.graphical.enable = true;
       dotfiles.hostname = "morgenmuffel";
       programs.emacs.enable = true;
       programs.zsh.oh-my-zsh.plugins = ["brew" "gcloud"];
