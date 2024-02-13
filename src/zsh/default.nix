@@ -12,7 +12,6 @@
         default = [];
         description = mdDoc "List implementation of programs.zsh.initExtra to allow merging";
       };
-      config.home.sessionPath = ["${config.home.homeDirectory}/.local/bin"];
       config.programs.zsh = {
         enable = true;
         enableAutosuggestions = true;
