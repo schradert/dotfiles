@@ -53,6 +53,7 @@ with nix; {
       ];
       home.file.".local/bin/docker".source = "${pkgs.podman}/bin/podman";
       programs = {
+        bash.enable = true;
         bat.enable = true;
         btop.enable = true;
         dircolors.enable = true;

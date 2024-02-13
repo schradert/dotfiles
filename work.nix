@@ -3,7 +3,6 @@
     inherit pkgs system;
     specialArgs = inputs.self.nixos-flake.lib.specialArgsFor.darwin;
     modules = builtins.attrValues inputs.self.systemModules ++ toList {
-      environment.systemPackages = with pkgs; [pngpaste raycast];
       homebrew.enable = true;
       homebrew.casks = [
         "android-studio"
@@ -33,14 +32,25 @@
   });
   flake.overlays.gke-gcloud-auth-plugin = inputs.gke-gcloud-auth-plugin-flake.overlays.default;
   perSystem = {pkgs, ...}: {
-    legacyPackages.homeConfigurations.tristan = inputs.self.nixos-flake.lib.mkHomeConfiguration pkgs {
+    legacyPackages.homeConfigurations.tristan = inputs.self.nixos-flake.lib.mkHomeConfiguration pkgs (home: {
       imports = attrValues inputs.self.homeModules;
       dotfiles.graphical.enable = true;
       dotfiles.hostname = "morgenmuffel";
       programs.emacs.enable = true;
       programs.zsh.oh-my-zsh.plugins = ["brew" "gcloud"];
-      home.packages = with pkgs; [google-cloud-sdk gke-gcloud-auth-plugin];
-    };
+      home.activation.prepareFutoffo = let
+        gcloud = getExe pkgs.google-cloud-sdk;
+      in home.lib.hm.dag.entryAfter ["linkGeneration"] ''
+        chmod +x ${home.config.home.shellAliases.futoffo}
+        if [[ -z $(${gcloud} auth list --filter active | grep '@climaxfoods.com' | awk '{print $NF}') ]]; then
+           ${gcloud} auth login
+        fi
+        if [[ ! $(grep -q gcloud "$HOME/.docker/config.json") ]]; then
+           ${gcloud} auth configure-docker
+        fi
+      '';
+      home.packages = with pkgs; [google-cloud-sdk gke-gcloud-auth-plugin pngpaste python312 raycast];
+      home.shellAliases.futoffo = "\"${home.config.home.homeDirectory}/Google Drive/Shared drives/software/futoffo/start_docker.command\"";
       launchd.agents = let
         config.RunAtLoad = true;
         config.KeepAlive.Crashed = true;
