@@ -19,8 +19,15 @@ with nix; {
       description = mkDoc "Nix-Darwin modules";
     };
   };
-  config.flake.darwinModules_.default = {
-    users.users.${config.people.me} = {};
+  config.flake.darwinModules_.default = darwin: {
+    users.users.${config.people.me} = {
+      home = "/Users/${config.people.me}";
+    };
+    home-manager.users.${config.people.me} = {
+      options.dotfiles = darwin.options.dotfiles;
+      config.dotfiles = darwin.config.dotfiles;
+      config.home.homeDirectory = darwin.config.users.users.${config.people.me}.home;
+    };
     nix.extraOptions = ''
       experimental-features = nix-command flakes
     '';
@@ -36,15 +43,11 @@ with nix; {
       inputs.nix-darwin.lib.darwinSystem {
         inherit pkgs system;
         specialArgs = inputs.self.nixos-flake.lib.specialArgsFor.darwin;
-        modules = toList (darwin: {
+        modules = toList {
           imports = attrValues inputs.self.darwinModules_ ++ [cfg.module];
-          home-manager.users.${config.people.me} = {
-            options.dotfiles = darwin.options.dotfiles;
-            config.dotfiles = darwin.config.dotfiles;
-          };
           nixpkgs.hostPlatform = system;
           dotfiles.hostname = mkDefault name;
-        });
+        };
       }))
   config.darwin;
 }
