@@ -6,18 +6,15 @@
 with nix; let
   option = mkOption {
     type = str;
-    description = mdDoc "The hostname of the relevant machine with this user";
+    description = mdDoc "The hostname of the relevant machine";
     example = "another-server";
   };
 in {
-  flake.nixosModules.nixos-hostname = nixos: {
+  flake.nixosModules.hostname = {config, ...}: {
     options.dotfiles.hostname = option;
-    config.networking.hostName = nixos.config.dotfiles.hostname;
+    config.networking.hostName = config.dotfiles.hostname;
   };
-  flake.darwinModules_.darwin-hostname = darwin: {
-    options.dotfiles.hostname = option;
-    config.networking.hostName = darwin.config.dotfiles.hostname;
-  };
+  flake.homeModules.hostname.options.dotfiles.hostname = option;
   flake.homeModules.ssh = home: let
     base = home.config.home.homeDirectory;
   in {

@@ -30,8 +30,6 @@
             # set list-colors to enable filename colorizing
             zstyle ':completion:*' list-colors $LS_COLORS  # ''${(s.:.)LS_COLORS}
             fpath+=($ZSH/custom/plugins/zsh-completions/src)
-            export PATH="$HOME/.local/bin:$PATH"
-            export XDG_CONFIG_HOME="$HOME/.config"
             ${optionalString fzf.enable ''
               bindkey '^R' fzf-history-widget
               # switch group using `,` and `.`
@@ -62,14 +60,12 @@
             "docker-compose"
             "ripgrep"
             "rsync"
-            (optionals dotfiles.work.enable ["gcloud"])
             (optionals programs.gh.enable ["gh"])
             (optionals programs.fzf.enable ["fzf"])
             (optionals programs.git.enable ["git git-auto-fetch"])
             (optionals programs.tmux.enable ["tmux"])
             (optionals programs.k9s.enable ["helm" "kubectl"])
             (optionals programs.k9s.enable ["helm" "kubectl"])
-            (optionals pkgs.stdenv.isDarwin ["brew"])
           ];
         plugins = with pkgs; [
           {
@@ -88,7 +84,7 @@
               owner = "Aloxaf";
               repo = "fzf-tab";
               rev = "master";
-	      sha256 = "ilUavAIWmLiMh2PumtErMCpOcR71ZMlQkKhVOTDdHZw=";
+	            sha256 = "ilUavAIWmLiMh2PumtErMCpOcR71ZMlQkKhVOTDdHZw=";
             };
           }
           {

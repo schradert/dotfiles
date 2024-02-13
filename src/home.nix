@@ -19,6 +19,7 @@ with nix; {
     };
     config = {
       home.username = config.people.me;
+      home.homeDirectory = "/${if pkgs.stdenv.isDarwin then "Users" else "home"}/${config.people.me}";
       home.stateVersion = "23.05";
       home.packages = with pkgs; [
         aria2
@@ -68,17 +69,4 @@ with nix; {
       sops.age.keyFile = "${home.config.home.homeDirectory}/.config/sops/age/keys.txt";
     };
   };
-  # TODO figure out a different implementation for import home-manager modules
-  # For some reason it was complaining that imports doesn't exist, yet it lets me set options
-  config.flake.nixosModules =
-    mapAttrs (_: module: {
-      home-manager.users.${config.people.me} = module;
-    })
-    inputs.self.homeModules;
-  config.flake.darwinModules_ =
-    mapAttrs (_: module: {
-      home-manager.users.${config.people.me} = module;
-    })
-    # Spicetify-nix only supports x86_64-linux
-    (removeAttrs inputs.self.homeModules ["spicetify" "spicetify-nix"]);
 }
