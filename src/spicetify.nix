@@ -22,18 +22,16 @@ with nix; {
             });
       };
   };
-  flake.homeModules.spicetify-nix = inputs.spicetify-nix.homeManagerModule;
-  flake.homeModules.spicetify = moduleWithSystem ({
+  flake.nixosModules.spicetify.home-manager.sharedModules = toList (moduleWithSystem ({
     inputs',
     self',
     ...
   }: {
     config,
-    lib,
     ...
   }:
-    mkMerge [
       {
+  	imports = [inputs.spicetify-nix.homeManagerModule];
         programs.spicetify = with inputs'.spicetify-nix.packages.default; {
           enable = mkDefault true;
           enabledCustomApps = with apps; [
@@ -70,11 +68,9 @@ with nix; {
           ];
           theme = themes.DefaultDynamic;
         };
-      }
-      (lib.mkIf config.programs.spicetify.enable {
-        programs.zsh.initExtraLines = toList "export PATH=\"$HOME/.spicetify:$PATH\"";
+        # TODO is this necessary
+        # home.sessionPath = ["${config.home.homeDirectory}/.spicetify"];
         home.shellAliases.spicetify = "spicetify-cli";
         home.packages = [self'.packages.spicetify-cli];
-      })
-    ]);
+      }));
 }
