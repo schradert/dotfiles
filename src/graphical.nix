@@ -8,7 +8,6 @@ with lib; {
     config = mkIf config.dotfiles.graphical.enable {
       dotfiles.editor = "emacs";
       home.packages = with pkgs; [
-        anki
         discord
         gnutls
         harfbuzz
@@ -33,6 +32,7 @@ with lib; {
         dotfiles.graphical.enable = true;
         home.packages = with pkgs; [
           android-studio
+	  anki
           bitwarden
           brave
           element-desktop
@@ -69,6 +69,7 @@ with lib; {
       homebrew.enable = true;
       homebrew.casks = [
         "android-studio"
+	"anki"
         "bitwarden"
         "brave-browser"
         "element"
