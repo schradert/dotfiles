@@ -21,6 +21,9 @@ with nix; {
   };
   config.flake.darwinModules_.default = {
     users.users.${config.people.me} = {};
+    nix.extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
     nix.useDaemon = true;
     system.stateVersion = 4;
   };
