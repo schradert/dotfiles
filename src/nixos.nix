@@ -61,8 +61,9 @@ with nix; {
         inherit pkgs system;
         specialArgs = inputs.self.nixos-flake.lib.specialArgsFor.nixos;
         modules = toList (nixos: {
-          imports = attrValues inputs.self.nixosModules ++ [cfg.module];
+          imports = attrValues inputs.self.systemModules ++ attrValues inputs.self.nixosModules ++ [cfg.module];
           home-manager.users.${config.people.me} = {
+            imports = attrValues inputs.self.homeModules;
             options.dotfiles = nixos.options.dotfiles;
             config.dotfiles = nixos.config.dotfiles;
           };
