@@ -41,5 +41,29 @@
       programs.zsh.oh-my-zsh.plugins = ["brew" "gcloud"];
       home.packages = with pkgs; [google-cloud-sdk gke-gcloud-auth-plugin];
     };
+      launchd.agents = let
+        config.RunAtLoad = true;
+        config.KeepAlive.Crashed = true;
+      in {
+        bitwarden.enable = true;
+        bitwarden.config = config // {Program = "/Applications/Bitwarden.app/Contents/MacOS/Bitwarden";};
+        brave.enable = true;
+        brave.config = config // {Program = "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser";};
+        clickup.enable = true;
+        clickup.config = config // {Program = "/Applications/ClickUp.app/Contents/MacOS/ClickUp";};
+        gdrive.enable = true;
+        gdrive.config = config // {Program = "/Applications/Google Drive.app/Contents/MacOS/Google Drive";};
+        lulu.enable = true;
+        lulu.config = config // {Program = "/Applications/LuLu.app/Contents/MacOS/LuLu";};
+        podman.enable = true;
+        podman.config = config // {Program = "/Applications/Podman Desktop.app/Contents/MacOS/Podman Desktop";};
+        protonvpn.enable = true;
+        protonvpn.config = config // {Program = "/Applications/ProtonVPN.app/Contents/MacOS/ProtonVPN";};
+        raycast.enable = true;
+        raycast.config = config // {Program = "${pkgs.raycast}/Applications/Raycast.app/Contents/MacOS/Raycast";};
+        wezterm.enable = true;
+        wezterm.config = config // {Program = "${pkgs.wezterm}/Applications/WezTerm.app/Contents/MacOS/WezTerm";};
+      };
+    });
   };
 }
