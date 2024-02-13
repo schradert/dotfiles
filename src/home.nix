@@ -18,7 +18,7 @@ with nix; {
       description = mdDoc "Default editor to use for profile";
     };
     config = {
-      home.username = mkDefault config.people.me;
+      home.username = config.people.me;
       home.stateVersion = "23.05";
       home.packages = with pkgs; [
         aria2
