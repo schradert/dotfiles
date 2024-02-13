@@ -21,6 +21,7 @@ with nix; {
   };
   config.flake.darwinModules_.default = {
     users.users.${config.people.me} = {};
+    nix.useDaemon = true;
     system.stateVersion = 4;
   };
   config.flake.darwinConfigurations = mapAttrs (name: cfg:
