@@ -22,9 +22,7 @@ with nix; {
       home.stateVersion = "23.05";
       home.packages = with pkgs; [
         aria2
-        bitwarden-cli
         cheat
-        cachix
         cmake
         dig
         fd
@@ -34,15 +32,12 @@ with nix; {
         k3d
         libtool
         lsof
-        nethogs
         nmap
         nodejs
         openssl
-        protonvpn-cli
         ranger
         rclone
         ripgrep
-        signal-cli
         speedtest-cli
         sqlite
         thefuck
