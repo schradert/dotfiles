@@ -3,7 +3,9 @@
   flake-parts-lib = inputs.flake-parts.lib;
 
   # Convenience functions
-  pipe' = functions: value: lib.trivial.pipe value functions;
+  switch = function: arg1: arg2: function arg2 arg1;
+  pipe' = switch lib.trivial.pipe;
+  removeAttrs' = switch lib.attrsets.removeAttrs;
   flatMap = function: pipe' [(builtins.map function) lib.lists.flatten];
   # Borrowed from GitHub Gist from user udf@
   mkMergeTopLevel = names: pipe' [
@@ -61,18 +63,19 @@
     lib.strings
     lib.trivial
     lib.types
+    lib.lists
     flake-parts-lib
     {
-      inherit pipe' flatMap;
+      inherit pipe' flatMap removeAttrs' switch;
       inherit mkEnabledOption mkOpenModuleOption mkSystemOption;
       fs = {inherit filter dirs files everything everythingBut;};
     }
   ];
-in {
-  imports = nix.fs.everything ./src ++ [./work.nix];
-  options.flake = nix.mkSubmoduleOptions {
-    systemModules = nix.mkOpenModuleOption {
-      description = nix.mkDoc "Modules common to system config tools (nixos, nix-darwin, nix-on-droid)";
+in (with nix; {
+  imports = fs.everything ./src ++ [./work.nix];
+  options.flake = mkSubmoduleOptions {
+    systemModules = mkOpenModuleOption {
+      description = mkDoc "Modules common to system config tools (nixos, nix-darwin, nix-on-droid)";
     };
   };
   config = {
@@ -99,4 +102,4 @@ in {
         };
     };
   };
-}
+})

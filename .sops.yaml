@@ -1,7 +1,7 @@
 keys:
-  - &tristan age1udsm4dv9q95d76p7ljxqyceafrwj3twmq883glc3prmry4w9eunqfhg9p3
+  - &tristan age198yu3najdv79x087fa9qnl9x0pctugcl08ccc3cjpxd6h8ygp57sjglj0k
 creation_rules:
-  - path_regex: src/dev/sops.yaml$
+  - path_regex: src/dev/sops/tristan$
     key_groups:
       - age:
           - *tristan

@@ -1,9 +1,4 @@
-{
-  config,
-  nix,
-  ...
-}:
-with nix; let
+{nix, ...}: with nix; let
   option = mkOption {
     type = str;
     description = mdDoc "The hostname of the relevant machine";
@@ -16,57 +11,16 @@ in {
   };
   flake.homeModules.hostname.options.dotfiles.hostname = option;
   flake.homeModules.ssh = home: let
-    base = home.config.home.homeDirectory;
+    user = home.config.home.username;
   in {
-    config = mkMerge [
-      {
-        programs.ssh = {
-          enable = mkDefault true;
-          forwardAgent = true;
-          matchBlocks = {
-            climax-static-relay = {
-              hostname = "35.212.163.7";
-              user = "root";
-              identityFile = "${base}/.ssh/climax_server";
-            };
-            climax-server-via-relay = {
-              proxyCommand = "ssh -q climax-static-relay nc localhost 2222";
-              user = "tristan";
-              identityFile = "${base}/.ssh/climax_server";
-            };
-            climax-dev = {
-              hostname = "dev.nodes.climax.bio";
-              user = "terraform";
-              identityFile = "${base}/.ssh/terraform";
-            };
-            climax-relay = {
-              hostname = "relay.nodes.climax.bio";
-              user = "terraform";
-              identityFile = "${base}/.ssh/terraform";
-            };
-            climax-server = {
-              hostname = "server.nodes.climax.bio";
-              user = "terraform";
-              identityFile = "${base}/.ssh/terraform";
-            };
-            sirver = {
-              hostname = "192.168.50.21";
-              user = "tristan";
-              identityFile = "${base}/.ssh/tristan_sirver_ed25519";
-            };
-          };
-        };
-      }
-      (mkIf home.config.programs.ssh.enable {
-        # TODO (Tristan): figure out how I can get the path to work properly with home-manager
-        sops.secrets."ssh/${config.people.me}/github" = {};
-        # home.file.".ssh/github".source = config.sops.secrets."ssh/${flake.config.people.me}/github".path;
-        home.file.".ssh/github.pub".text = let
-          key = config.people.my.sshKeys.github.public;
-          username = home.config.home.username;
-          hostname = home.config.dotfiles.hostname;
-        in "${key} ${username}@${hostname}.local";
-      })
-    ];
+    programs.ssh.enable = true;
+    programs.ssh.forwardAgent = true;
+    sops.secrets.ssh = {
+      format = "binary";
+      sopsFile = ./dev/sops + "/${user}";
+    };
+    # TODO still not working
+    # home.file.".ssh/${user}".source = home.config.sops.secrets.ssh.path;
+    home.file.".ssh/${user}.pub".source = ./dev/sops + "/${user}.pub";
   };
 }
