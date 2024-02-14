@@ -2,17 +2,7 @@
   config,
   nix,
   ...
-}:
-with nix; let
-  sshKeySubmodule = submodule {
-    options = {
-      public = mkOption {
-        type = str;
-        description = mdDoc "Contents of public key";
-        example = "ssh-ed25519 AAAAC3Qrst1lZDI1NTE5AAAAIBRaIPhp5LExmqK7KECgbqdTY3goyUfNgKjKD9WFalkE";
-      };
-    };
-  };
+}: with nix; let
   userSubmodule = submodule {
     options = {
       name = mkOption {
@@ -20,20 +10,20 @@ with nix; let
         description = "The name of the user to default to in all contexts";
         example = "John Doe";
       };
-      email = mkOption {
-        type = str;
-        description = mdDoc "The default email to associate with the user in all contexts";
-        example = "me@123.com";
-      };
       accounts = mkOption {
         type = attrsOf str;
         default = {};
         example.github = "my-username";
         description = mdDoc "Mapping of external program name to user account name on it";
       };
-      sshKeys = mkOption {
-        type = attrsOf sshKeySubmodule;
-        description = mdDoc "Public and private keys for SSH access between machines";
+      profiles = mkOption {
+        type = attrsOf (submodule {
+          options.email = mkOption {
+            type = str;
+            description = mdDoc "The email to associate with the user in this profile";
+            example = "me@123.com";
+          };
+        });
       };
     };
   };

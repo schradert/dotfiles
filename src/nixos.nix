@@ -6,18 +6,34 @@
   ...
 }:
 with nix; {
+  options.domain = mkOption {
+    type = strMatching "^[a-z0-9\-]+\.[a-z]{2,}$";
+    description = mdDoc "Base domain for NixOS nodes and services";
+  };
   options.nixos = mkOption {
-    type = attrsOf (submodule {
-      options.system = mkSystemOption {};
-      options.module = mkOpenModuleOption {};
-    });
+    type = attrsOf (submodule ({name, ...}: {
+      options = {
+        system = mkSystemOption {};
+        ssh.hostname = mkOption {
+          type = strMatching "^([a-z0-9\-]+\.){2,}[a-z]{2,}$";
+          default = "${name}.nixos.${config.domain}";
+          description = mdDoc "Unique DNS identifier of machine";
+        };
+        ssh.user = mkOption {
+          type = str;
+          default = config.people.me;
+          description = mdDoc "User to connect to host as";
+        };
+        module = mkOpenModuleOption {};
+      };
+    }));
     default = {};
     description = "Specific NixOS configurations";
   };
   config.flake.nixosModules.default = {pkgs, ...}: let
     me = config.people.me;
     my = config.people.my;
-    keys = nix.catAttrs "public" (attrValues my.sshKeys);
+    keys = [(./dev/sops + "${me}.pub")];
   in {
     environment.pathsToLink = ["/share/zsh"];
     environment.shells = [pkgs.zsh];
@@ -66,6 +82,13 @@ with nix; {
             imports = attrValues inputs.self.homeModules;
             options.dotfiles = nixos.options.dotfiles;
             config.dotfiles = nixos.config.dotfiles;
+            config.programs.ssh.matchBlocks = pipe config.nixos [
+              (removeAttrs' [name])
+              (mapAttrs (_: node: {
+                inherit (node.ssh) hostname user;
+                identityFile = "/${if pkgs.stdenv.isDarwin then "Users" else "home"}/${config.people.me}/.ssh/${config.people.me}";
+              }))
+            ];
           };
           nixpkgs.hostPlatform = system;
           dotfiles.hostname = mkDefault name;

@@ -1,9 +1,11 @@
 {inputs, nix, withSystem, ...}: with nix; {
-  flake.darwinConfigurations.morgenmuffel = withSystem (head (import inputs.systems-darwin)) ({pkgs, system, ...}: inputs.nix-darwin.lib.darwinSystem {
+  people.users.tristan.profiles.work.email = "tristan@climaxfoods.com";
+  flake.darwinConfigurations.morgenmuffel = withSystem "aarch64-darwin" ({pkgs, system, ...}: inputs.nix-darwin.lib.darwinSystem {
     inherit pkgs system;
     specialArgs = inputs.self.nixos-flake.lib.specialArgsFor.darwin;
     modules = builtins.attrValues inputs.self.systemModules ++ toList {
       homebrew.enable = true;
+      homebrew.brews = ["libtool"];
       homebrew.casks = [
         "android-studio"
         "anki"
@@ -37,15 +39,33 @@
       dotfiles.graphical.enable = true;
       dotfiles.hostname = "morgenmuffel";
       programs.emacs.enable = true;
+      programs.ssh.matchBlocks = let
+        identityFile = "${home.config.home.homeDirectory}/.ssh/work";
+        user = "terraform";
+        nodes = {
+          climax-static-relay = {
+            hostname = "35.212.163.7";
+            user = "root";
+          };
+          climax-server-via-relay = {
+            proxyCommand = "ssh -q climax-static-relay nc localhost 2222";
+            user = "tristan";
+          };
+          climax-dev.hostname = "dev.nodes.climax.bio";
+          climax-relay.hostname = "relay.nodes.climax.bio";
+          climax-server.hostname = "server.nodes.climax.bio";
+        };
+      in mapAttrs (_: mergeAttrs {inherit identityFile user;}) nodes;
       programs.zsh.oh-my-zsh.plugins = ["brew" "gcloud"];
+      # TODO remove all of the extra logging (why isn't /dev/null working on relevant commands?)
       home.activation.prepareFutoffo = let
         gcloud = getExe pkgs.google-cloud-sdk;
       in home.lib.hm.dag.entryAfter ["linkGeneration"] ''
         chmod +x ${home.config.home.shellAliases.futoffo}
-        if [[ -z $(${gcloud} auth list --filter active | grep '@climaxfoods.com' | awk '{print $NF}') ]]; then
+        if [[ -z $(${gcloud} auth list --filter active | grep '@climaxfoods.com' | ${pkgs.gawk}/bin/awk '{print $NF}' 2> /dev/null) ]]; then
            ${gcloud} auth login
         fi
-        if [[ ! $(grep -q gcloud "$HOME/.docker/config.json") ]]; then
+        if [[ ! $(grep -q gcloud "$HOME/.docker/config.json" &> /dev/null) ]]; then
            ${gcloud} auth configure-docker
         fi
       '';

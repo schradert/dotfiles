@@ -59,7 +59,7 @@
        :emacs
        (dired +icons +ranger)
        electric
-       ibuffer
+       (ibuffer +icons)
        (undo +tree)
        vc
 

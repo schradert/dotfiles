@@ -30,33 +30,29 @@
       systems = import inputs.systems-all;
       imports = [./.];
 
+      domain = "t0rdos.me";
       people = {
         me = "tristan";
         users.tristan = {
           name = "Tristan Schrader";
-          email = "t0rdos@pm.me";
           accounts.github = "schradert";
           accounts.gitlab = "schrader.tristan";
-          sshKeys.github.public = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDBU/var4dzyl3BvVvN/e+T6JjnptZVhLpLemn6UaUcm";
-        };
-        users.test = {
-          name = "Test User";
-          email = "test@t0rdos.me";
+          profiles.default.email = "t0rdos@pm.me";
         };
       };
-      nixos.sirver.module = {
-        dotfiles.kubernetes.enable = true;
-        # TODO allow creating another basic user
-        # dotfiles.users.test.home.dotfiles.work.enable = true;
-        boot.initrd.availableKernelModules = ["ehci_pci" "megaraid_sas" "usbhid"];
-      };
-      nixos.chilldom.module = {
-        dotfiles.graphical.enable = true;
-        boot.initrd.availableKernelModules = ["xhci_pci" "nvme" "rtsx_pci_sdmmc"];
-        networking.wireless.enable = true;
-        networking.wireless.networks.lanyard.psk = "bruhWHY123!";
-        powerManagement.cpuFreqGovernor = "powersave";
-      };
+      # nixos.sirver.module = {
+      #   dotfiles.kubernetes.enable = true;
+      #   # TODO allow creating another basic user
+      #   # dotfiles.users.test.home.dotfiles.work.enable = true;
+      #   boot.initrd.availableKernelModules = ["ehci_pci" "megaraid_sas" "usbhid"];
+      # };
+      # nixos.chilldom.module = {
+      #   dotfiles.graphical.enable = true;
+      #   boot.initrd.availableKernelModules = ["xhci_pci" "nvme" "rtsx_pci_sdmmc"];
+      #   networking.wireless.enable = true;
+      #   networking.wireless.networks.lanyard.psk = "bruhWHY123!";
+      #   powerManagement.cpuFreqGovernor = "powersave";
+      # };
       droid.boox = {};
       droid.mobile = {};
     };

@@ -7,16 +7,16 @@
     ...
   }:
     with nix; {
-      programs.git = {
+      programs.git = let
+        my = flake.config.people.users.${config.home.username};
+      in {
         enable = true;
-        userName = flake.config.people.my.name;
-        userEmail = flake.config.people.my.email;
+        userName = my.name;
+        userEmail = my.profiles.${config.dotfiles.profile}.email;
         extraConfig = {
           push.autoSetupRemote = true;
           color.status = "always";
-          github.user = "schradert";
-          gitlab.user = "schrader.tristan";
-        };
+        } // mapAttrs (_: setAttrByPath ["user"]) my.accounts;
       };
       programs.gh = {
         enable = true;

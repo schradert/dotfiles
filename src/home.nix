@@ -5,9 +5,9 @@
   ...
 }:
 with nix; {
-  options.flake = nix.mkSubmoduleOptions {
-    homeModules = nix.mkOpenModuleOption {
-      description = nix.mkDoc "Home-Manager modules";
+  options.flake = mkSubmoduleOptions {
+    homeModules = mkOpenModuleOption {
+      description = mkDoc "Home-Manager modules";
     };
   };
   config.flake.homeModules.home = home @ {pkgs, ...}: {
@@ -16,6 +16,12 @@ with nix; {
       default = "vim";
       example = "emacs";
       description = mdDoc "Default editor to use for profile";
+    };
+    options.dotfiles.profile = mkOption {
+      type = enum (attrNames config.people.users.${home.config.home.username}.profiles);
+      default = "default";
+      example = "work";
+      description = mdDoc "The dotfiles profile to use for this configuration";
     };
     config = {
       home.username = config.people.me;
@@ -70,8 +76,6 @@ with nix; {
         wezterm.enable = true;
         zoxide.enable = true;
       };
-      sops.defaultSopsFile = ./dev/sops.yaml;
-      sops.age.keyFile = "${home.config.home.homeDirectory}/.config/sops/age/keys.txt";
     };
   };
 }
