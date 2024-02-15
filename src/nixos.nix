@@ -86,7 +86,11 @@ with nix; {
               (removeAttrs' [name])
               (mapAttrs (_: node: {
                 inherit (node.ssh) hostname user;
-                identityFile = "/${if pkgs.stdenv.isDarwin then "Users" else "home"}/${config.people.me}/.ssh/${config.people.me}";
+                identityFile = "/${
+                  if pkgs.stdenv.isDarwin
+                  then "Users"
+                  else "home"
+                }/${config.people.me}/.ssh/${config.people.me}";
               }))
             ];
           };

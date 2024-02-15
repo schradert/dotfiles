@@ -2,7 +2,8 @@
   config,
   nix,
   ...
-}: with nix; let
+}:
+with nix; let
   userSubmodule = submodule {
     options = {
       name = mkOption {

@@ -25,7 +25,11 @@ with nix; {
     };
     config = {
       home.username = config.people.me;
-      home.homeDirectory = "/${if pkgs.stdenv.isDarwin then "Users" else "home"}/${config.people.me}";
+      home.homeDirectory = "/${
+        if pkgs.stdenv.isDarwin
+        then "Users"
+        else "home"
+      }/${config.people.me}";
       home.sessionPath = ["${home.config.home.homeDirectory}/.local/bin"];
       home.stateVersion = "23.05";
       home.packages = with pkgs; [

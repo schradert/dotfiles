@@ -33,7 +33,7 @@ with lib; {
         dotfiles.graphical.enable = true;
         home.packages = with pkgs; [
           android-studio
-	        anki
+          anki
           bitwarden
           brave
           element-desktop

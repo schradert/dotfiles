@@ -1,4 +1,9 @@
-{inputs, nix, ...}: with nix; {
+{
+  inputs,
+  nix,
+  ...
+}:
+with nix; {
   flake.overlays.emacs = inputs.emacs-overlay.overlay;
   flake.homeModules.emacs = {
     config,

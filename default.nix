@@ -8,11 +8,12 @@
   removeAttrs' = switch lib.attrsets.removeAttrs;
   flatMap = function: pipe' [(builtins.map function) lib.lists.flatten];
   # Borrowed from GitHub Gist from user udf@
-  mkMergeTopLevel = names: pipe' [
-    (lib.attrsets.foldAttrs (this: those: [this] ++ those) [])
-    (builtins.mapAttrs (_: lib.mkMerge))
-    (lib.attrsets.getAttrs names)
-  ];
+  mkMergeTopLevel = names:
+    pipe' [
+      (lib.attrsets.foldAttrs (this: those: [this] ++ those) [])
+      (builtins.mapAttrs (_: lib.mkMerge))
+      (lib.attrsets.getAttrs names)
+    ];
 
   # Filesystem traversal
   filter = f: root:
@@ -90,10 +91,10 @@ in (with nix; {
     perSystem = {system, ...}: {
       _module.args.nix = nix;
       _module.args.pkgs = import inputs.nixpkgs {
-          inherit system;
-          overlays = attrValues inputs.self.overlays;
-          config.allowUnfreePredicate = pkg: elem (getName pkg) ["android-studio-stable" "discord" "raycast" "spotify" "terraform"];
-        };
+        inherit system;
+        overlays = attrValues inputs.self.overlays;
+        config.allowUnfreePredicate = pkg: elem (getName pkg) ["android-studio-stable" "discord" "raycast" "spotify" "terraform"];
+      };
     };
   };
 })

@@ -13,10 +13,12 @@
         enable = true;
         userName = my.name;
         userEmail = my.profiles.${config.dotfiles.profile}.email;
-        extraConfig = {
-          push.autoSetupRemote = true;
-          color.status = "always";
-        } // mapAttrs (_: setAttrByPath ["user"]) my.accounts;
+        extraConfig =
+          {
+            push.autoSetupRemote = true;
+            color.status = "always";
+          }
+          // mapAttrs (_: setAttrByPath ["user"]) my.accounts;
       };
       programs.gh = {
         enable = true;

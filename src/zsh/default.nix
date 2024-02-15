@@ -84,7 +84,7 @@
               owner = "Aloxaf";
               repo = "fzf-tab";
               rev = "master";
-	            sha256 = "ilUavAIWmLiMh2PumtErMCpOcR71ZMlQkKhVOTDdHZw=";
+              sha256 = "ilUavAIWmLiMh2PumtErMCpOcR71ZMlQkKhVOTDdHZw=";
             };
           }
           {
@@ -129,7 +129,7 @@
               owner = "DarrinTisdale";
               repo = "zsh-aliases-exa";
               rev = "master";
-	      sha256 = "31od2U/8MtIYh801eBdOvubzON5GpMM/2kWjkGXguAE=";
+              sha256 = "31od2U/8MtIYh801eBdOvubzON5GpMM/2kWjkGXguAE=";
             };
           }
           {
