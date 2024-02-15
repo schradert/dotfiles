@@ -8,6 +8,12 @@ in {
     imports = [inputs.sops-nix.homeManagerModules.sops];
     sops.age.keyFile = toPath (get_age_key_file pkgs);
   };
+  flake.terranixModules.sops = {pkgs, ...}: with pkgs; {
+    data.external.sops_decrypt.program = execBash ''
+      root="$(${getExe git} rev-parse --show-toplevel)"
+      ${getExe sops} --config "$root/.sops.yaml" --decrypt "$root/src/dev/sops/default.yaml" | ${getExe yq}
+    '';
+  };
   perSystem = {
     config,
     pkgs,

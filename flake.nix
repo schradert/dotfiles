@@ -19,6 +19,7 @@
     nix-doom-emacs.url = github:nix-community/nix-doom-emacs;
     emacs-overlay.url = github:nix-community/emacs-overlay;
 
+    terranix.url = github:terranix/terranix;
     sops-nix.url = github:Mic92/sops-nix;
     gke-gcloud-auth-plugin-flake.url = github:christian-blades-cb/gke-gcloud-auth-plugin-nix;
     spicetify-nix.url = github:the-argus/spicetify-nix;
