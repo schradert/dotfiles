@@ -87,18 +87,12 @@ in (with nix; {
       '';
     };
     flake.homeModules.args._module.args.nix = nix;
-    perSystem = {
-      config,
-      pkgs,
-      system,
-      ...
-    }: {
+    perSystem = {system, ...}: {
       _module.args.nix = nix;
-      _module.args.pkgs = with nix;
-        import inputs.nixpkgs {
+      _module.args.pkgs = import inputs.nixpkgs {
           inherit system;
           overlays = attrValues inputs.self.overlays;
-          config.allowUnfreePredicate = pkg: elem (getName pkg) ["android-studio-stable" "discord" "raycast" "spotify"];
+          config.allowUnfreePredicate = pkg: elem (getName pkg) ["android-studio-stable" "discord" "raycast" "spotify" "terraform"];
         };
     };
   };

@@ -13,6 +13,7 @@
       # if the name of the device is more than 5 characters... This path is managed by nix and will be deleted
       # when the connection to the remote host ends when the program halts.
       text = ''
+        ${getExe self'.packages.terranix-deploy}
         export NIX_SSHOPTS="-o ControlPath=/tmp/%C"
         ${concatStringsSep "\n" (forEach (attrNames inputs.self.nixosConfigurations) (hostname: ''
           ${getExe pkgs.nixos-rebuild} test \

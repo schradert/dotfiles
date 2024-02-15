@@ -18,4 +18,7 @@ with nix; {
         importJSON
       ];
     };
+  flake.overlays.bash = final: prev: {
+    execBash = command: ["${getExe final.bash}" "-c" command];
+  };
 }
