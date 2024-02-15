@@ -1,37 +1,50 @@
-{inputs, nix, withSystem, ...}: with nix; {
+{
+  inputs,
+  nix,
+  withSystem,
+  ...
+}:
+with nix; {
   people.users.tristan.profiles.work.email = "tristan@climaxfoods.com";
-  flake.darwinConfigurations.morgenmuffel = withSystem "aarch64-darwin" ({pkgs, system, ...}: inputs.nix-darwin.lib.darwinSystem {
-    inherit pkgs system;
-    specialArgs = inputs.self.nixos-flake.lib.specialArgsFor.darwin;
-    modules = builtins.attrValues inputs.self.systemModules ++ toList {
-      homebrew.enable = true;
-      homebrew.brews = ["libtool"];
-      homebrew.casks = [
-        "android-studio"
-        "anki"
-        "bitwarden"
-        "brave-browser"
-        "clickup"
-        "element"
-        "godot"
-        "google-drive"
-        "lulu"
-        "podman-desktop"
-        "protonvpn"
-        "session"
-        "signal"
-        "teamviewer"
-        "zotero"
-      ];
-      nix.useDaemon = true;
-      system.defaults.dock = {
-        autohide = true;
-        orientation = "left";
-        static-only = true;
-      };
-      system.stateVersion = 4;
-    };
-  });
+  flake.darwinConfigurations.morgenmuffel = withSystem "aarch64-darwin" ({
+    pkgs,
+    system,
+    ...
+  }:
+    inputs.nix-darwin.lib.darwinSystem {
+      inherit pkgs system;
+      specialArgs = inputs.self.nixos-flake.lib.specialArgsFor.darwin;
+      modules =
+        builtins.attrValues inputs.self.systemModules
+        ++ toList {
+          homebrew.enable = true;
+          homebrew.brews = ["libtool"];
+          homebrew.casks = [
+            "android-studio"
+            "anki"
+            "bitwarden"
+            "brave-browser"
+            "clickup"
+            "element"
+            "godot"
+            "google-drive"
+            "lulu"
+            "podman-desktop"
+            "protonvpn"
+            "session"
+            "signal"
+            "teamviewer"
+            "zotero"
+          ];
+          nix.useDaemon = true;
+          system.defaults.dock = {
+            autohide = true;
+            orientation = "left";
+            static-only = true;
+          };
+          system.stateVersion = 4;
+        };
+    });
   flake.overlays.gke-gcloud-auth-plugin = inputs.gke-gcloud-auth-plugin-flake.overlays.default;
   perSystem = {pkgs, ...}: {
     legacyPackages.homeConfigurations.tristan = inputs.self.nixos-flake.lib.mkHomeConfiguration pkgs (home: {
@@ -55,20 +68,22 @@
           climax-relay.hostname = "relay.nodes.climax.bio";
           climax-server.hostname = "server.nodes.climax.bio";
         };
-      in mapAttrs (_: mergeAttrs {inherit identityFile user;}) nodes;
+      in
+        mapAttrs (_: mergeAttrs {inherit identityFile user;}) nodes;
       programs.zsh.oh-my-zsh.plugins = ["brew" "gcloud"];
       # TODO remove all of the extra logging (why isn't /dev/null working on relevant commands?)
       home.activation.prepareFutoffo = let
         gcloud = getExe pkgs.google-cloud-sdk;
-      in home.lib.hm.dag.entryAfter ["linkGeneration"] ''
-        chmod +x ${home.config.home.shellAliases.futoffo}
-        if [[ -z $(${gcloud} auth list --filter active | grep '@climaxfoods.com' | ${pkgs.gawk}/bin/awk '{print $NF}' 2> /dev/null) ]]; then
-           ${gcloud} auth login
-        fi
-        if [[ ! $(grep -q gcloud "$HOME/.docker/config.json" &> /dev/null) ]]; then
-           ${gcloud} auth configure-docker
-        fi
-      '';
+      in
+        home.lib.hm.dag.entryAfter ["linkGeneration"] ''
+          chmod +x ${home.config.home.shellAliases.futoffo}
+          if [[ -z $(${gcloud} auth list --filter active | grep '@climaxfoods.com' | ${pkgs.gawk}/bin/awk '{print $NF}' 2> /dev/null) ]]; then
+             ${gcloud} auth login
+          fi
+          if [[ ! $(grep -q gcloud "$HOME/.docker/config.json" &> /dev/null) ]]; then
+             ${gcloud} auth configure-docker
+          fi
+        '';
       home.packages = with pkgs; [google-cloud-sdk gke-gcloud-auth-plugin pngpaste python312 raycast];
       home.shellAliases.futoffo = "\"${home.config.home.homeDirectory}/Google Drive/Shared drives/software/futoffo/start_docker.command\"";
       launchd.agents = let

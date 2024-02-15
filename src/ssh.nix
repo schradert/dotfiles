@@ -1,4 +1,9 @@
-{config, nix, ...}: with nix; let
+{
+  config,
+  nix,
+  ...
+}:
+with nix; let
   option = mkOption {
     type = str;
     description = mdDoc "The hostname of the relevant machine";

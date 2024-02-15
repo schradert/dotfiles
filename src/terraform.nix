@@ -1,10 +1,20 @@
-{inputs, nix, ...}: with nix; {
+{
+  inputs,
+  nix,
+  ...
+}:
+with nix; {
   options.flake = mkSubmoduleOptions {
     terranixModules = mkOpenModuleOption {
       description = mkDoc "Terranix modules";
     };
   };
-  config.perSystem = {pkgs, self', system, ...}: {
+  config.perSystem = {
+    pkgs,
+    self',
+    system,
+    ...
+  }: {
     packages.terranixConfiguration = inputs.terranix.lib.terranixConfiguration {
       inherit pkgs system;
       modules = attrValues inputs.self.terranixModules;
