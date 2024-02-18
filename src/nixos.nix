@@ -33,7 +33,7 @@ with nix; {
   config.flake.nixosModules.default = {pkgs, ...}: let
     me = config.people.me;
     my = config.people.my;
-    keys = [(./dev/sops + "${me}.pub")];
+    keys = [(./dev/sops + "/${me}.pub")];
   in {
     environment.pathsToLink = ["/share/zsh"];
     environment.shells = [pkgs.zsh];
@@ -58,9 +58,9 @@ with nix; {
       description = my.name;
       extraGroups = ["wheel" "tty" "networkmanager"];
       shell = pkgs.zsh;
-      openssh.authorizedKeys.keys = keys;
+      openssh.authorizedKeys.keyFiles = keys;
     };
-    users.users.root.openssh.authorizedKeys.keys = keys;
+    users.users.root.openssh.authorizedKeys.keyFiles = keys;
     virtualisation.podman = {
       enable = true;
       dockerSocket.enable = true;
