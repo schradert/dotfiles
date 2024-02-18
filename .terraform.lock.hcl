@@ -5,6 +5,7 @@ provider "registry.terraform.io/gitlabhq/gitlab" {
   version     = "16.8.1"
   constraints = "16.8.1"
   hashes = [
+    "h1:DckfSLS+kvajbjF98OL8qoQJW7RfluCAQXgAVHfjZYs=",
     "h1:wOZqZgdEdNBzODiAhXLcJOUpX/FuXlPRG+fhrxoEuwI=",
     "zh:04d2594aac4c313d8a78c97c8f389211c122beaa80d9702f2808a1429f0e41b5",
     "zh:096f61d33bb8667757ac75f3e57f21ca90b1caca9ca8beb0a75cbeb7034024ed",
@@ -27,6 +28,7 @@ provider "registry.terraform.io/gitlabhq/gitlab" {
 provider "registry.terraform.io/hashicorp/external" {
   version = "2.3.3"
   hashes = [
+    "h1:H+3QlVPs/7CDa3I4KU/a23wYeGeJxeBlgvR7bfK1t1w=",
     "h1:gShzO1rJtADK9tDZMvMgjciVAzsBh39LNjtThCwX1Hg=",
     "zh:03d81462f9578ec91ce8e26f887e34151eda0e100f57e9772dbea86363588239",
     "zh:37ec2a20f6a3ec3a0fd95d3f3de26da6cb9534b30488bc45723e118a0911c0d8",
@@ -48,6 +50,7 @@ provider "registry.terraform.io/integrations/github" {
   constraints = "6.0.0-rc2"
   hashes = [
     "h1:81+JMH/kLJeKH2zqx68TlfQZwLK+OHipEDpGeDE6ywY=",
+    "h1:OES5coHPc9V9XUctJ2Q+yEiNnOmRbWuCPcOaS4a5YHA=",
     "zh:01bbec0ec4dcaa9fe7ead4244779ec956b5a7181853738829c268737f476a4f9",
     "zh:093e9768e614f342b7754ecd76cdbbcad98b333cc51db50fa575e574d1af6703",
     "zh:1d57427d4583649e45ad9bbec796bfb8db0fb1a43d4f6219e1005973b36528d1",
