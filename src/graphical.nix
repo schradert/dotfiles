@@ -1,11 +1,13 @@
 {lib, ...}:
 with lib; {
+  flake.systemModules.graphical = {
+    options.dotfiles.graphical.enable = mkEnableOption "graphical tools (i.e. not headless)";
+  };
   flake.homeModules.graphical = {
     config,
     pkgs,
     ...
   }: {
-    options.dotfiles.graphical.enable = mkEnableOption "graphical tools (i.e. not headless)";
     config = mkIf config.dotfiles.graphical.enable {
       dotfiles.editor = "emacs";
       home.packages = with pkgs; [
@@ -25,7 +27,6 @@ with lib; {
     pkgs,
     ...
   }: {
-    options.dotfiles.graphical.enable = mkEnableOption "graphical tools (i.e. not headless)";
     config = mkIf config.dotfiles.graphical.enable {
       fonts.packages = [pkgs.meslo-lgs-nf];
       hardware.pulseaudio.enable = true;
