@@ -41,12 +41,12 @@
           profiles.default.email = "t0rdos@pm.me";
         };
       };
-      # nixos.sirver.module = {
-      #   dotfiles.kubernetes.enable = true;
-      #   # TODO allow creating another basic user
-      #   # dotfiles.users.test.home.dotfiles.work.enable = true;
-      #   boot.initrd.availableKernelModules = ["ehci_pci" "megaraid_sas" "usbhid"];
-      # };
+      nixos.sirver.module = {
+        # dotfiles.kubernetes.enable = true;
+        # TODO allow creating another basic user
+        # dotfiles.users.test.home.dotfiles.work.enable = true;
+        boot.initrd.availableKernelModules = ["ehci_pci" "megaraid_sas" "usbhid"];
+      };
       # nixos.chilldom.module = {
       #   dotfiles.graphical.enable = true;
       #   boot.initrd.availableKernelModules = ["xhci_pci" "nvme" "rtsx_pci_sdmmc"];
