@@ -1,7 +1,21 @@
+# MacOS
 .DS_Store
+
+# Direnv
 /.direnv/
-/result
+
+# Vim
+*.swp
+
+# Flakes
+result
+
+# Pre-commit
 /.pre-commit-config.yaml
+
+# Terranix
 /config.tf.json
+
+# Terraform
 /.terraform/
 /terraform.tfstate*
