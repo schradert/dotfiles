@@ -10,7 +10,11 @@ with nix; let
     example = "another-server";
   };
 in {
-  flake.systemModules.hostname = {config, lib, ...}: {
+  flake.systemModules.hostname = {
+    config,
+    lib,
+    ...
+  }: {
     options.dotfiles.hostname = option;
     config = mkIf (config ? networking) {
       networking.hostName = config.dotfiles.hostname;
