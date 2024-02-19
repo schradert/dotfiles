@@ -22,51 +22,59 @@ with nix; {
             });
       };
   };
-  flake.nixosModules.spicetify.home-manager.sharedModules = toList (moduleWithSystem ({
+  flake.nixosModules.spicetify = moduleWithSystem ({
     inputs',
     self',
     ...
-  }: {config, ...}: {
-    imports = [inputs.spicetify-nix.homeManagerModule];
-    programs.spicetify = with inputs'.spicetify-nix.packages.default; {
-      enable = mkDefault true;
-      enabledCustomApps = with apps; [
-        new-releases
-        reddit
-        lyrics-plus
-        marketplace
-        localFiles
-        nameThatTune
-      ];
-      enabledExtensions = with extensions; [
-        bookmark
-        keyboardShortcut
-        loopyLoop
-        shuffle
-        popupLyrics
-        trashbin
-        powerBar
-        seekSong
-        skipOrPlayLikedSongs
-        playlistIcons
-        listPlaylistsWithSong
-        playlistIntersection
-        skipStats
-        wikify
-        featureShuffle
-        songStats
-        showQueueDuration
-        history
-        genre
-        autoSkip
-        playNext
-        volumePercentage
-      ];
-      theme = themes.DefaultDynamic;
+  }: {
+    config,
+    lib,
+    ...
+  }: {
+    config = lib.mkIf config.dotfiles.graphical.enable {
+      home-manager.sharedModules = toList {
+        imports = [inputs.spicetify-nix.homeManagerModule];
+        programs.spicetify = with inputs'.spicetify-nix.packages.default; {
+          enable = mkDefault true;
+          enabledCustomApps = with apps; [
+            new-releases
+            reddit
+            lyrics-plus
+            marketplace
+            localFiles
+            nameThatTune
+          ];
+          enabledExtensions = with extensions; [
+            bookmark
+            keyboardShortcut
+            loopyLoop
+            shuffle
+            popupLyrics
+            trashbin
+            powerBar
+            seekSong
+            skipOrPlayLikedSongs
+            playlistIcons
+            listPlaylistsWithSong
+            playlistIntersection
+            skipStats
+            wikify
+            featureShuffle
+            songStats
+            showQueueDuration
+            history
+            genre
+            autoSkip
+            playNext
+            volumePercentage
+          ];
+          theme = themes.DefaultDynamic;
+        };
+        # TODO is this necessary
+        # home.sessionPath = ["${config.home.homeDirectory}/.spicetify"];
+        home.shellAliases.spicetify = "spicetify-cli";
+        home.packages = [self'.packages.spicetify-cli];
+      };
     };
-    # TODO is this necessary
-    # home.sessionPath = ["${config.home.homeDirectory}/.spicetify"];
-    home.shellAliases.spicetify = "spicetify-cli";
-    home.packages = [self'.packages.spicetify-cli];
-  }));
+  });
 }
