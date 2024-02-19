@@ -32,6 +32,7 @@
       imports = [./.];
 
       domain = "t0rdos.me";
+      root = "sirver";
       people = {
         me = "tristan";
         users.tristan = {
