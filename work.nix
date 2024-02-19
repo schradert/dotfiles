@@ -48,10 +48,12 @@ with nix; {
   flake.overlays.gke-gcloud-auth-plugin = inputs.gke-gcloud-auth-plugin-flake.overlays.default;
   perSystem = {pkgs, ...}: {
     legacyPackages.homeConfigurations.tristan = inputs.self.nixos-flake.lib.mkHomeConfiguration pkgs (home: {
-      imports = attrValues inputs.self.homeModules ++ (with inputs.self.systemModules; [
-        graphical
-        hostname
-      ]);
+      imports =
+        attrValues inputs.self.homeModules
+        ++ (with inputs.self.systemModules; [
+          graphical
+          hostname
+        ]);
       dotfiles.graphical.enable = true;
       dotfiles.hostname = "morgenmuffel";
       programs.emacs.enable = true;
