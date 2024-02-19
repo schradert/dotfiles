@@ -10,11 +10,12 @@ with nix; let
     example = "another-server";
   };
 in {
-  flake.nixosModules.hostname = {config, ...}: {
+  flake.systemModules.hostname = {config, lib, ...}: {
     options.dotfiles.hostname = option;
-    config.networking.hostName = config.dotfiles.hostname;
+    config = mkIf (config ? networking) {
+      networking.hostName = config.dotfiles.hostname;
+    };
   };
-  flake.homeModules.hostname.options.dotfiles.hostname = option;
   flake.terranixModules.github = {
     terraform.required_providers.github = {
       source = "integrations/github";
