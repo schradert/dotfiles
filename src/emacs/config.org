@@ -35,7 +35,7 @@
 #+begin_src emacs-lisp
 (after! org
   (setq
-    org-directory "~/Code/Personal/dev/knowledge/sabedoria"
+    org-directory "~/sabedoria"
     org-agenda-files (list (expand-file-name "agenda" org-directory))
     org-log-into-drawer t
     org-todo-keywords '(
