@@ -50,6 +50,8 @@ with nix; {
       };
     };
     system.stateVersion = "22.11";
+    system.autoUpgrade.enable = true;
+    system.autoUpgrade.allowReboot = true;
     time.timeZone = "America/Los_Angeles";
     users.mutableUsers = true;
     users.users.${me} = {
