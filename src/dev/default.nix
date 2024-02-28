@@ -22,6 +22,7 @@
               --build-host ${hostname} \
               --target-host ${hostname} \
               --use-remote-sudo \
+              --upgrade \
               --fast
           ''))}
           ${optionalString pkgs.stdenv.isDarwin ''
