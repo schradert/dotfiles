@@ -54,6 +54,7 @@
       ("b" "Bookmark" entry (file "bookmarks.org") "* %?\n")
     )
     org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id
+    org-roam-directory (concat org-directory "/roam")
     org-super-links-related-into-drawer t
     org-super-links-link-prefix 'org-super-links-link-prefix-timestamp
     org-super-links-search-function 'helm-org-ql-org-directory
