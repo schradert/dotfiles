@@ -20,6 +20,7 @@ in {
       networking.hostName = config.dotfiles.hostname;
     };
   };
+  flake.homeModules.hostname.options.dotfiles.hostname = option;
   flake.terranixModules.github = {
     terraform.required_providers.github = {
       source = "integrations/github";
