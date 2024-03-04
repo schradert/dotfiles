@@ -15,7 +15,8 @@
         # when the connection to the remote host ends when the program halts.
         text = ''
           ${getExe self'.packages.terranix-deploy}
-          ${if pkgs.stdenv.isDarwin
+          ${
+            if pkgs.stdenv.isDarwin
             then ''
               ${getExe self'.packages.activate}
               ${getExe self'.packages.activate-home}
@@ -32,7 +33,7 @@
                   --fast
               ''))}
             ''
-           }
+          }
         '';
       };
       devShells.default = pkgs.mkShell {
