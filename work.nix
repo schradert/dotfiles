@@ -17,6 +17,7 @@ with nix; {
       modules =
         builtins.attrValues inputs.self.systemModules
         ++ toList {
+          dotfiles.hostname = "morgenmuffel";
           homebrew.enable = true;
           homebrew.brews = ["libtool"];
           homebrew.casks = [
@@ -52,7 +53,6 @@ with nix; {
         attrValues inputs.self.homeModules
         ++ (with inputs.self.systemModules; [
           graphical
-          hostname
         ]);
       dotfiles.graphical.enable = true;
       dotfiles.hostname = "morgenmuffel";
