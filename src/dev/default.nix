@@ -15,20 +15,24 @@
         # when the connection to the remote host ends when the program halts.
         text = ''
           ${getExe self'.packages.terranix-deploy}
-          export NIX_SSHOPTS="-o ControlPath=/tmp/%C"
-          ${concatStringsSep "\n" (forEach (attrNames inputs.self.nixosConfigurations) (hostname: ''
-            ${getExe pkgs.nixos-rebuild} test \
-              --flake .#${hostname} \
-              --build-host ${hostname} \
-              --target-host ${hostname} \
-              --use-remote-sudo \
-              --upgrade \
-              --fast
-          ''))}
-          ${optionalString pkgs.stdenv.isDarwin ''
-            ${getExe self'.packages.activate}
-            ${getExe self'.packages.activate-home}
-          ''}
+          ${if pkgs.stdenv.isDarwin
+            then ''
+              ${getExe self'.packages.activate}
+              ${getExe self'.packages.activate-home}
+            ''
+            else ''
+              export NIX_SSHOPTS="-o ControlPath=/tmp/%C"
+              ${concatStringsSep "\n" (forEach (attrNames inputs.self.nixosConfigurations) (hostname: ''
+                ${getExe pkgs.nixos-rebuild} test \
+                  --flake .#${hostname} \
+                  --build-host ${hostname} \
+                  --target-host ${hostname} \
+                  --use-remote-sudo \
+                  --upgrade \
+                  --fast
+              ''))}
+            ''
+           }
         '';
       };
       devShells.default = pkgs.mkShell {
