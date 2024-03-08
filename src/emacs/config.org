@@ -18,6 +18,7 @@
 (package! tldr)
 (package! kubernetes)
 (package! kubernetes-evil)
+(package! jq-mode)
 (unpin! code-review)
 #+end_src
 
@@ -29,6 +30,15 @@
       delete-by-moving-to-trash t
       trash-directory "~/.Trash")
 (map! "C-M-i" #'completion-at-point)
+#+end_src
+
+* JQ Lang
+#+begin_src emacs-lisp
+(use-package! jq-mode
+  :init
+  (autoload 'jq-mode "jq-mode.el"
+    "Major mode for editing jq files" t)
+  (add-to-list 'auto-mode-alist '("\\.jq$" . jq-mode)))
 #+end_src
 
 * Org Mode
