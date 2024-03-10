@@ -48,13 +48,13 @@
         # dotfiles.users.test.home.dotfiles.work.enable = true;
         boot.initrd.availableKernelModules = ["ehci_pci" "megaraid_sas" "usbhid"];
       };
-      # nixos.chilldom.module = {
-      #   dotfiles.graphical.enable = true;
-      #   boot.initrd.availableKernelModules = ["xhci_pci" "nvme" "rtsx_pci_sdmmc"];
-      #   networking.wireless.enable = true;
-      #   networking.wireless.networks.lanyard.psk = "bruhWHY123!";
-      #   powerManagement.cpuFreqGovernor = "powersave";
-      # };
+      nixos.chilldom.module = {
+        dotfiles.graphical.enable = true;
+        boot.initrd.availableKernelModules = ["xhci_pci" "nvme" "rtsx_pci_sdmmc"];
+        networking.wireless.enable = false;
+        networking.wireless.networks.lanyard.psk = "bruhWHY123!";
+        powerManagement.cpuFreqGovernor = "powersave";
+      };
       droid.boox = {};
       droid.mobile = {};
     };

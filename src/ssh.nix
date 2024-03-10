@@ -3,24 +3,12 @@
   nix,
   ...
 }:
-with nix; let
-  option = mkOption {
+with nix; {
+  flake.homeModules.hostname.options.dotfiles.hostname = mkOption {
     type = str;
     description = mdDoc "The hostname of the relevant machine";
     example = "another-server";
   };
-in {
-  flake.systemModules.hostname = {
-    config,
-    lib,
-    ...
-  }: {
-    options.dotfiles.hostname = option;
-    config = mkIf (config ? networking) {
-      networking.hostName = config.dotfiles.hostname;
-    };
-  };
-  flake.homeModules.hostname.options.dotfiles.hostname = option;
   flake.terranixModules.github = {
     terraform.required_providers.github = {
       source = "integrations/github";

@@ -15,9 +15,9 @@ with nix; {
       inherit pkgs system;
       specialArgs = inputs.self.nixos-flake.lib.specialArgsFor.darwin;
       modules =
-        builtins.attrValues inputs.self.systemModules
+        attrValues inputs.self.systemModules
         ++ toList {
-          dotfiles.hostname = "morgenmuffel";
+          networking.hostName = "morgenmuffel";
           homebrew.enable = true;
           homebrew.brews = ["libtool"];
           homebrew.casks = [
@@ -57,10 +57,11 @@ with nix; {
       dotfiles.graphical.enable = true;
       dotfiles.hostname = "morgenmuffel";
       programs.emacs.enable = true;
-      programs.ssh.matchBlocks = mapAttrs (_: mergeAttrs {
-        identityFile = "${home.config.home.homeDirectory}/.ssh/work";
-        user = "terraform";
-      }) {};
+      programs.ssh.matchBlocks = mapAttrs (_:
+        mergeAttrs {
+          identityFile = "${home.config.home.homeDirectory}/.ssh/work";
+          user = "terraform";
+        }) {};
       programs.zsh.oh-my-zsh.plugins = ["brew" "gcloud"];
       # TODO remove all of the extra logging (why isn't /dev/null working on relevant commands?)
       home.activation.prepareFutoffo = let
