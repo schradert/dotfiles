@@ -83,21 +83,17 @@ with nix; {
           home-manager.users.${config.people.me} = {
             imports = attrValues inputs.self.homeModules;
             options.dotfiles = nixos.options.dotfiles;
-            config.dotfiles = nixos.config.dotfiles;
+            config.dotfiles.hostname = name;
             config.programs.ssh.matchBlocks = pipe config.nixos [
               (removeAttrs' [name])
               (mapAttrs (_: node: {
                 inherit (node.ssh) hostname user;
-                identityFile = "/${
-                  if pkgs.stdenv.isDarwin
-                  then "Users"
-                  else "home"
-                }/${config.people.me}/.ssh/${config.people.me}";
+                identityFile = with config.people; "/home/${me}/.ssh/${me}";
               }))
             ];
           };
           nixpkgs.hostPlatform = system;
-          dotfiles.hostname = mkDefault name;
+          networking.hostName = name;
         });
       }))
   config.nixos;

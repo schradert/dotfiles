@@ -16,7 +16,6 @@ with lib; {
         harfbuzz
         libtool
         librsvg
-        spotify
         unbound
       ];
     };
