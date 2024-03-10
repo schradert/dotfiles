@@ -29,6 +29,7 @@ with nix; {
   }: {
     config,
     lib,
+    pkgs,
     ...
   }: {
     config = lib.mkIf config.dotfiles.graphical.enable {
@@ -63,10 +64,23 @@ with nix; {
             songStats
             showQueueDuration
             history
-            genre
             autoSkip
             playNext
             volumePercentage
+            # genre
+            # Shinyhero36 user account doesn't exist anymore for Spicetify-Genre
+            # https://github.com/the-argus/spicetify-nix/issues/50
+            # Found this project better-spotify-genres instead
+            {
+              # name = "better-spotify-genres";
+              src = pkgs.fetchFromGitHub {
+                owner = "Vexcited";
+                repo = "better-spotify-genres";
+                rev = "build";
+                hash = "sha256-Z4u/RK/lb7kkB4f4MTXh7sPXDFV37ZoUxwdHA3BnSDg=";
+              };
+              filename = "spotifyGenres.js";
+            }
           ];
           theme = themes.DefaultDynamic;
         };
