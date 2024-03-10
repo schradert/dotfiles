@@ -57,24 +57,10 @@ with nix; {
       dotfiles.graphical.enable = true;
       dotfiles.hostname = "morgenmuffel";
       programs.emacs.enable = true;
-      programs.ssh.matchBlocks = let
+      programs.ssh.matchBlocks = mapAttrs (_: mergeAttrs {
         identityFile = "${home.config.home.homeDirectory}/.ssh/work";
         user = "terraform";
-        nodes = {
-          climax-static-relay = {
-            hostname = "35.212.163.7";
-            user = "root";
-          };
-          climax-server-via-relay = {
-            proxyCommand = "ssh -q climax-static-relay nc localhost 2222";
-            user = "tristan";
-          };
-          climax-dev.hostname = "dev.nodes.climax.bio";
-          climax-relay.hostname = "relay.nodes.climax.bio";
-          climax-server.hostname = "server.nodes.climax.bio";
-        };
-      in
-        mapAttrs (_: mergeAttrs {inherit identityFile user;}) nodes;
+      }) {};
       programs.zsh.oh-my-zsh.plugins = ["brew" "gcloud"];
       # TODO remove all of the extra logging (why isn't /dev/null working on relevant commands?)
       home.activation.prepareFutoffo = let
