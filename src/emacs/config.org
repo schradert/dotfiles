@@ -19,6 +19,7 @@
 (package! kubernetes)
 (package! kubernetes-evil)
 (package! jq-mode)
+(package! sops :recipe (:host github :repo "djgoku/sops") :pin "b7b6784")
 (unpin! code-review)
 #+end_src
 
@@ -39,6 +40,24 @@
   (autoload 'jq-mode "jq-mode.el"
     "Major mode for editing jq files" t)
   (add-to-list 'auto-mode-alist '("\\.jq$" . jq-mode)))
+#+end_src
+
+* SOPS
+#+begin_src emacs-lisp :tangle no
+(use-package! sops
+  :init
+  (global-sops-mode 1)
+  :config
+  ;; Create a custom keymap that doesn't exist
+  (defvar sops-mode-map (make-sparse-keymap) "Keymap for sops-mode.")
+  ;; Define useful bindings in keymap
+  (map! :map sops-mode-map
+        :localleader
+        "fe" #'sops-edit-file
+        "fc" #'sops-cancel
+        "fs" #'sops-save-file)
+  ;; Activate keymap in sops-mode
+  (add-hook! sops-mode (use-local-map sops-mode-map)))
 #+end_src
 
 * Org Mode
