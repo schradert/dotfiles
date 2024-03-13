@@ -113,6 +113,7 @@
        (swift +lsp)
        (web +lsp)
        (yaml +lsp +tree-sitter)
+       (zig +lsp)
 
        :email
        ;; (mu4e +org +gmail)
