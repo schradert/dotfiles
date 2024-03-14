@@ -83,7 +83,9 @@ with nix; {
           home-manager.users.${config.people.me} = {
             imports = attrValues inputs.self.homeModules;
             options.dotfiles = nixos.options.dotfiles;
-            config.dotfiles.hostname = name;
+            config.dotfiles = nixos.config.dotfiles // {
+              hostname = name;
+            };
             config.programs.ssh.matchBlocks = pipe config.nixos [
               (removeAttrs' [name])
               (mapAttrs (_: node: {
