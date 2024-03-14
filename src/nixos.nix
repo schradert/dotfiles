@@ -80,6 +80,7 @@ with nix; {
         specialArgs = inputs.self.nixos-flake.lib.specialArgsFor.nixos;
         modules = toList (nixos: {
           imports = attrValues inputs.self.systemModules ++ attrValues inputs.self.nixosModules ++ [cfg.module];
+          systemd.services."home-manager-${config.people.me}".serviceConfig.TimeoutStartSec = mkForce "10m";
           home-manager.users.${config.people.me} = {
             imports = attrValues inputs.self.homeModules;
             options.dotfiles = nixos.options.dotfiles;
