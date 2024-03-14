@@ -64,6 +64,7 @@ with nix; {
             taplo
             sqls
           ];
+          # TODO add doom to the sessionPath (doesn't work with config.home.homeDirectory either!)
           sessionPath = ["${emacs}/bin"];
         };
       }
