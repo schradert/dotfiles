@@ -54,7 +54,6 @@ with nix; {
       config = {
         dotfiles.graphical.enable = true;
         dotfiles.hostname = "morgenmuffel";
-        programs.emacs.enable = true;
         programs.ssh.matchBlocks = mapAttrs (_:
           mergeAttrs {
             identityFile = "${home.config.home.homeDirectory}/.ssh/work";

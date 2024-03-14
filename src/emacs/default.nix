@@ -72,6 +72,7 @@ with nix; {
           enable = mkDefault true;
           defaultEditor = config.dotfiles.editor == "emacs";
           package = config.programs.emacs.package;
+          client.enable = true;
         };
       })
     ]);
