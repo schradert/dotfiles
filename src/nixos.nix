@@ -24,7 +24,7 @@ with nix; {
           default = config.people.me;
           description = mdDoc "User to connect to host as";
         };
-        module = mkOpenModuleOption {};
+        module = mkOption {type = attrsOf anything;};
       };
     }));
     default = {};
