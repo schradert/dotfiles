@@ -24,7 +24,7 @@
             else ''
               export NIX_SSHOPTS="-o ControlPath=/tmp/%C"
               ${concatStringsSep "\n" (forEach (attrNames inputs.self.nixosConfigurations) (hostname: ''
-                ${getExe pkgs.nixos-rebuild} test \
+                ${getExe pkgs.nixos-rebuild} switch \
                   --flake .#${hostname} \
                   --build-host ${hostname} \
                   --target-host ${hostname} \
