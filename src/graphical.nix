@@ -10,6 +10,7 @@ with lib; {
   }: {
     config = mkIf config.dotfiles.graphical.enable {
       dotfiles.editor = "emacs";
+      programs.emacs.enable = true;
       home.packages = with pkgs; [
         discord
         gnutls
