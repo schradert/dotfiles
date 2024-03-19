@@ -24,13 +24,15 @@
             else ''
               export NIX_SSHOPTS="-o ControlPath=/tmp/%C"
               ${concatStringsSep "\n" (forEach (attrNames inputs.self.nixosConfigurations) (hostname: ''
-                ${getExe pkgs.nixos-rebuild} switch \
-                  --flake .#${hostname} \
-                  --build-host ${hostname} \
-                  --target-host ${hostname} \
-                  --use-remote-sudo \
-                  --upgrade \
-                  --fast
+                extraBuildFlags=()
+                if [[ $(hostname) != ${hostname} ]]; then
+                  extraBuildFlags+=(
+                    --build-host ${hostname}
+                    --target-host ${hostname}
+                    --use-remote-sudo
+                  )
+                fi
+                sudo ${getExe pkgs.nixos-rebuild} switch --flake .#${hostname} "''${extraBuildFlags[@]}"
               ''))}
             ''
           }
