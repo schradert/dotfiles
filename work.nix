@@ -1,4 +1,5 @@
 {
+  config,
   inputs,
   nix,
   withSystem,
@@ -37,6 +38,7 @@ with nix; {
             "teamviewer"
             "zotero"
           ];
+          nix.settings.trusted-users = [config.people.me];
           nix.useDaemon = true;
           system.defaults.dock = {
             autohide = true;
