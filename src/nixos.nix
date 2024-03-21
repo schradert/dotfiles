@@ -97,6 +97,7 @@ with nix; {
               }))
             ];
           };
+          nix.settings.trusted-users = [config.people.me];
           nixpkgs.hostPlatform = system;
           networking.hostName = name;
         });
