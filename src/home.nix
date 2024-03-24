@@ -41,6 +41,7 @@ with nix; {
         file
         glab
         iftop
+        inxi
         k3d
         libtool
         lsof
