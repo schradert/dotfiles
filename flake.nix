@@ -50,9 +50,10 @@
       };
       nixos.chilldom.module = {
         dotfiles.graphical.enable = true;
+        home-manager.users.tristan.programs.macchina.networkInterface = "enp0s31f6";
         boot.initrd.availableKernelModules = ["xhci_pci" "nvme" "rtsx_pci_sdmmc"];
-        networking.wireless.enable = false;
-        networking.wireless.networks.lanyard.psk = "bruhWHY123!";
+        # networking.wireless.enable = false;
+        # networking.wireless.networks.lanyard.psk = "bruhWHY123!";
         powerManagement.cpuFreqGovernor = "powersave";
       };
       droid.boox = {};
