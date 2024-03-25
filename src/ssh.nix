@@ -37,17 +37,28 @@ with nix; {
       }))
     ];
   };
-  flake.homeModules.ssh = home: let
-    user = home.config.home.username;
-  in {
-    programs.ssh.enable = true;
-    programs.ssh.forwardAgent = true;
-    sops.secrets.ssh = {
-      format = "binary";
-      sopsFile = ./dev/sops + "/${user}";
-    };
-    # TODO still not working
-    # home.file.".ssh/${user}".source = home.config.sops.secrets.ssh.path;
-    home.file.".ssh/${user}.pub".source = ./dev/sops + "/${user}.pub";
-  };
+  flake.homeModules.ssh = {
+    config,
+    lib,
+    pkgs,
+    ...
+  }: let
+    user = config.home.username;
+  in
+    lib.mkMerge [
+      {
+        programs.ssh.enable = true;
+        programs.ssh.forwardAgent = true;
+        sops.secrets.ssh = {
+          format = "binary";
+          sopsFile = ./dev/sops + "/${user}";
+        };
+        # TODO still not working
+        # home.file.".ssh/${user}".source = home.config.sops.secrets.ssh.path;
+        home.file.".ssh/${user}.pub".source = ./dev/sops + "/${user}.pub";
+      }
+      (lib.mkIf pkgs.stdenv.isLinux {
+        services.ssh-agent.enable = true;
+      })
+    ];
 }
