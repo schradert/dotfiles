@@ -27,6 +27,7 @@ with nix; {
             "bitwarden"
             "brave-browser"
             "clickup"
+            # "dracula-wallpaper"
             "element"
             "godot"
             "google-drive"
@@ -38,6 +39,7 @@ with nix; {
             "teamviewer"
             "zotero"
           ];
+          # homebrew.taps = ["dracula/install"];
           nix.settings.trusted-users = [config.people.me];
           nix.useDaemon = true;
           system.defaults.dock = {
