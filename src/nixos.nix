@@ -41,7 +41,8 @@ with nix; {
     programs.zsh.enable = true;
     services.openssh.enable = true;
     security.polkit.enable = true;
-    security.pam.enableSSHAgentAuth = true;
+    security.pam.sshAgentAuth.enable = true;
+    security.pam.sshAgentAuth.authorizedKeysFiles = mkForce ["/etc/ssh/authorized_keys.d/%u"];
     security.sudo.extraRules = toList {
       users = [me];
       commands = toList {
