@@ -21,11 +21,12 @@ with nix; {
     };
     packages.terranix-deploy = pkgs.writeShellApplication {
       name = "terranix-deploy";
+      runtimeInputs = with pkgs; [git terraform];
       text = ''
-        root="$(${pkgs.git}/bin/git rev-parse --show-toplevel)"
+        root="$(git rev-parse --show-toplevel)"
         cp -f ${self'.packages.terranixConfiguration} "$root/config.tf.json"
-        ${pkgs.terraform}/bin/terraform -chdir="$root" init
-        ${pkgs.terraform}/bin/terraform -chdir="$root" "''${@:-apply}"
+        terraform -chdir="$root" init
+        terraform -chdir="$root" "''${@:-apply}"
       '';
     };
     devShells.terraform = pkgs.mkShell {
