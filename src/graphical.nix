@@ -25,11 +25,11 @@ with lib; {
     config,
     flake,
     pkgs,
+    inputs',
     ...
   }: {
     config = mkIf config.dotfiles.graphical.enable {
       fonts.packages = [pkgs.meslo-lgs-nf];
-      hardware.pulseaudio.enable = true;
       home-manager.users.${flake.config.people.me} = {
         dotfiles.graphical.enable = true;
         home.packages = with pkgs; [
@@ -51,7 +51,18 @@ with lib; {
         displayManager.sddm.enable = true;
         desktopManager.plasma5.enable = true;
       };
+
+      # Sound
       sound.enable = true;
+      security.rtkit.enable = true;
+      services.pipewire = {
+        enable = true;
+        alsa.enable = true;
+        alsa.support32Bit = true;
+        pulse.enable = true;
+        jack.enable = true;
+        wireplumber.enable = true;
+      };
     };
   };
 }

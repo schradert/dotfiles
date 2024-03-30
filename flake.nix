@@ -36,10 +36,6 @@
     gke-gcloud-auth-plugin-flake.url = github:christian-blades-cb/gke-gcloud-auth-plugin-nix;
     spicetify-nix.url = github:the-argus/spicetify-nix;
     spicetify-nix.inputs.nixpkgs.follows = "nixpkgs";
-    hyprland.url = github:hyprwm/Hyprland;
-    hyprland.inputs.nixpkgs.follows = "nixpkgs";
-    hyprland-plugins.url = github:hyprwm/hyprland-plugins;
-    hyprland-plugins.inputs.hyprland.follows = "hyprland";
   };
   outputs = inputs:
     inputs.flake-parts.lib.mkFlake {inherit inputs;} {
