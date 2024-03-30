@@ -51,8 +51,14 @@ with nix; {
       };
     };
     system.stateVersion = "22.11";
-    system.autoUpgrade.enable = true;
-    system.autoUpgrade.allowReboot = true;
+    system.autoUpgrade = {
+      enable = true;
+      allowReboot = true;
+      flake = "github:schradert/dotfiles";
+      persistent = true;
+      rebootWindow.lower = "05:00";
+      rebootWindow.upper = "06:00";
+    };
     time.timeZone = "America/Los_Angeles";
     users.mutableUsers = true;
     users.users.${me} = {
