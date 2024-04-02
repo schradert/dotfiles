@@ -1,11 +1,14 @@
 {
   description = "System configuration";
   inputs = {
-    nixpkgs.url = github:nixos/nixpkgs/nixos-unstable;
+    # nixpkgs.url = github:nixos/nixpkgs/nixos-unstable;
+    # Pinning this while xz exploit is being resolved in unstable stream
+    nixpkgs.url = github:nixos/nixpkgs/f72123158996b8d4449de481897d855bc47c7bf6;
     nixpkgs-stable.url = github:nixos/nixpkgs/release-23.11;
     home-manager.url = github:nix-community/home-manager;
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nix-darwin.url = github:LnL7/nix-darwin;
+    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
     nix-on-droid.url = github:nix-community/nix-on-droid;
     nix-on-droid.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -57,16 +60,12 @@
       };
       nixos.sirver.module = {
         # dotfiles.kubernetes.enable = true;
-        # TODO allow creating another basic user
-        # dotfiles.users.test.home.dotfiles.work.enable = true;
         boot.initrd.availableKernelModules = ["ehci_pci" "megaraid_sas" "usbhid"];
       };
       nixos.chilldom.module = {
         dotfiles.graphical.enable = true;
         home-manager.users.tristan.programs.macchina.networkInterface = "enp0s31f6";
         boot.initrd.availableKernelModules = ["xhci_pci" "nvme" "rtsx_pci_sdmmc"];
-        # networking.wireless.enable = false;
-        # networking.wireless.networks.lanyard.psk = "bruhWHY123!";
         powerManagement.cpuFreqGovernor = "powersave";
       };
       droid.boox = {};
