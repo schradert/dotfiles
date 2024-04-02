@@ -77,7 +77,7 @@ with nix; {
                ${gcloud} auth configure-docker
             fi
           '';
-        home.packages = with pkgs; [google-cloud-sdk gke-gcloud-auth-plugin pngpaste python312 raycast];
+        home.packages = with pkgs; [google-cloud-sdk gke-gcloud-auth-plugin pngpaste python312 raycast spotify];
         home.shellAliases.futoffo = "\"${home.config.home.homeDirectory}/Google Drive/Shared drives/software/futoffo/start_docker.command\"";
         launchd.agents = let
           config.RunAtLoad = true;
