@@ -13,22 +13,83 @@ with nix; {
   options.nixos = mkOption {
     type = attrsOf (submodule ({name, ...}: {
       options = {
-        system = mkSystemOption {};
-        ssh.hostname = mkOption {
-          type = strMatching "^([a-z0-9\-]+\.){2,}[a-z]{2,}$";
-          default = "${name}.nixos.${config.domain}";
-          description = mdDoc "Unique DNS identifier of machine";
+        system = mkSystemOption {default = head (import inputs.systems-default);};
+        ssh = {
+          hostname = mkOption {
+            type = str;
+            default = name;
+            description = mdDoc "Identifier of machine";
+          };
+          user = mkOption {
+            type = str;
+            default = config.people.me;
+            description = mdDoc "User to connect to host as";
+          };
+          identityFile = mkOption {
+            type = str;
+            default = "~/.ssh/${config.people.me}";
+            description = mdDoc "SSH private key";
+          };
+          proxyJump = mkOption {
+            type = str;
+            default = config.domain;
+            description = mdDoc "Relay server for SSH jump connection";
+          };
         };
-        ssh.user = mkOption {
-          type = str;
-          default = config.people.me;
-          description = mdDoc "User to connect to host as";
-        };
-        module = mkOption {type = attrsOf anything;};
+        module = mkOption {type = deferredModule;};
       };
     }));
     default = {};
     description = "Specific NixOS configurations";
+  };
+  config.perSystem.canivete.opentofu = {
+    # TODO why do I have to specify hashicorp ones too? and if I only do hashicorp, it wants opentofu??
+    plugins = ["opentofu/null" "opentofu/external" "hashicorp/null" "hashicorp/external"];
+    workspaces.nixos = {};
+  };
+  config.perSystem.canivete.opentofu.sharedModules.nixos-rebuild = {pkgs, ...}: {
+    config = let
+      mkModule = hostname: cfg: let
+        nixFlags = "--extra-experimental-features \"nix-command flakes\"";
+        drv = "\${ data.external.nixos_eval_${hostname}.result.drv }";
+        systemdFlags = [
+          "--collect"
+          "--no-ask-password"
+          "--pipe"
+          "--quiet"
+          "--same-dir"
+          "--wait"
+          "--setenv"
+          "LOCALE_ARCHIVE"
+          "--setenv"
+          "NIXOS_INSTALL_BOOTLOADER="
+          "--service-type"
+          "exec"
+          "--unit"
+          # Using the full 'nixos-rebuild-switch-to-configuration' name on sirver would fail to collect/cleanup
+          "nixos-switch"
+        ];
+      in {
+        data.external."nixos_eval_${hostname}".program = pkgs.execBash ''
+          nix ${nixFlags} path-info --derivation ${inputs.self}#nixosConfigurations.${hostname}.config.system.build.toplevel | \
+              ${pkgs.jq}/bin/jq --raw-input '{"drv":.}'
+        '';
+        resource.null_resource."nixos_switch_${hostname}" = {
+          triggers.drv = drv;
+          # TODO does NIX_SSHOPTS serve a purpose outside of nixos-rebuild
+          provisioner.local-exec.command = ''
+            sshFlags="-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new"
+            export NIX_SSHOPTS="$sshFlags"
+            nix ${nixFlags} copy --derivation --to ssh://${config.root} ${drv}
+            closure=$(ssh $sshFlags ${config.root} nix-store --verbose --realise ${drv})
+            nix ${nixFlags} copy --from ssh://${config.root} --to ssh://${hostname} "$closure"
+            ssh $sshFlags ${hostname} sudo nix-env --profile /nix/var/nix/profiles/system --set "$closure"
+            ssh $sshFlags ${hostname} sudo systemd-run ${concatStringsSep " " systemdFlags} "$closure/bin/switch-to-configuration" switch
+          '';
+        };
+      };
+    in
+      mkMerge (mapAttrsToList mkModule config.nixos);
   };
   config.flake.nixosModules.default = {pkgs, ...}: let
     me = config.people.me;
@@ -84,10 +145,11 @@ with nix; {
     }:
       inputs.nixpkgs.lib.nixosSystem {
         inherit pkgs system;
-        specialArgs = inputs.self.nixos-flake.lib.specialArgsFor.nixos;
+        specialArgs = inputs.self.nixos-flake.lib.specialArgsFor.nixos // {inherit nix;};
         modules = toList (nixos: {
           imports = attrValues inputs.self.systemModules ++ attrValues inputs.self.nixosModules ++ [cfg.module];
           systemd.services."home-manager-${config.people.me}".serviceConfig.TimeoutStartSec = mkForce "10m";
+          home-manager.extraSpecialArgs = inputs.self.nixos-flake.lib.specialArgsFor.common // {inherit nix;};
           home-manager.users.${config.people.me} = {
             imports = attrValues inputs.self.homeModules;
             options.dotfiles = nixos.options.dotfiles;
@@ -96,13 +158,6 @@ with nix; {
               // {
                 hostname = name;
               };
-            config.programs.ssh.matchBlocks = pipe config.nixos [
-              (removeAttrs' [name])
-              (mapAttrs (_: node: {
-                inherit (node.ssh) hostname user;
-                identityFile = with config.people; "/home/${me}/.ssh/${me}";
-              }))
-            ];
           };
           nix.settings.trusted-users = [config.people.me];
           nixpkgs.hostPlatform = system;

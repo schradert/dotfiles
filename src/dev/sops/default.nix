@@ -20,13 +20,6 @@ in {
     imports = [inputs.sops-nix.homeManagerModules.sops];
     sops.age.keyFile = toPath (get_age_key_file pkgs);
   };
-  flake.terranixModules.sops = {pkgs, ...}:
-    with pkgs; {
-      data.external.sops_decrypt.program = execBash ''
-        root="$(${getExe git} rev-parse --show-toplevel)"
-        ${getExe sops} --config "$root/.sops.yaml" --decrypt "$root/src/dev/sops/default.yaml" | ${getExe yq}
-      '';
-    };
   perSystem = {
     config,
     pkgs,
@@ -36,7 +29,11 @@ in {
     ssh_key_file = "$HOME/.ssh/${key_name}";
     sops_repo_file = "src/dev/sops/${key_name}";
   in {
-    packages.keygen = pkgs.mkShellApplication {
+    canivete.opentofu.sharedModules.sops.data.external.sops_decrypt.program = pkgs.execBash ''
+      root="$(${getExe pkgs.git} rev-parse --show-toplevel)"
+      ${getExe pkgs.sops} --config "$root/.sops.yaml" --decrypt "$root/src/dev/sops/default.yaml" | ${getExe pkgs.yq}
+    '';
+    packages.keygen = pkgs.writeShellApplication {
       name = "setup";
       text = ''
                 age_key_file="${get_age_key_file pkgs}"
@@ -61,7 +58,7 @@ in {
         EOT
       '';
     };
-    packages.encrypt = pkgs.mkShellApplication {
+    packages.encrypt = pkgs.writeShellApplication {
       name = "encrypt";
       text = ''
         sops_repo_file="$(${getExe pkgs.git} rev-parse --show-toplevel)/${sops_repo_file}"

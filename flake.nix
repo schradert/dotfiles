@@ -1,10 +1,10 @@
 {
   description = "System configuration";
   inputs = {
-    # nixpkgs.url = github:nixos/nixpkgs/nixos-unstable;
-    # Pinning this while xz exploit is being resolved in unstable stream
-    nixpkgs.url = github:nixos/nixpkgs/f72123158996b8d4449de481897d855bc47c7bf6;
-    nixpkgs-stable.url = github:nixos/nixpkgs/release-23.11;
+    canivete.url = github:schradert/canivete;
+    nixpkgs.follows = "canivete/nixpkgs";
+    nixpkgs-stable.follows = "canivete/nixpkgs-stable";
+
     home-manager.url = github:nix-community/home-manager;
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nix-darwin.url = github:LnL7/nix-darwin;
@@ -12,16 +12,10 @@
     nix-on-droid.url = github:nix-community/nix-on-droid;
     nix-on-droid.inputs.nixpkgs.follows = "nixpkgs";
 
-    systems-all.url = github:nix-systems/default;
     systems-default.url = github:nix-systems/x86_64-linux;
     systems-darwin.url = github:nix-systems/aarch64-darwin;
 
     nixos-flake.url = github:srid/nixos-flake;
-    flake-parts.url = github:hercules-ci/flake-parts;
-    flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
-    pre-commit-hooks-nix.url = github:cachix/pre-commit-hooks.nix;
-    pre-commit-hooks-nix.inputs.nixpkgs.follows = "nixpkgs";
-    pre-commit-hooks-nix.inputs.nixpkgs-stable.follows = "nixpkgs-stable";
 
     # nix-doom-emacs marked as broken for now
     # TODO keep tabs on this project to see if it's evolving enough to try to use
@@ -41,34 +35,37 @@
     spicetify-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
   outputs = inputs:
-    inputs.flake-parts.lib.mkFlake {inherit inputs;} {
-      # TODO fix infinite recursion using `nix.mkIf`
+    with inputs;
+      canivete.lib.mkFlake {
+        inherit inputs;
+        everything = ./src;
+      } {
+        imports = [nixos-flake.flakeModule ./work.nix];
 
-      systems = import inputs.systems-all;
-      imports = [./.];
-
-      domain = "t0rdos.me";
-      root = "sirver";
-      people = {
-        me = "tristan";
-        users.tristan = {
-          name = "Tristan Schrader";
-          accounts.github = "schradert";
-          accounts.gitlab = "schrader.tristan";
-          profiles.default.email = "t0rdos@pm.me";
+        domain = "trdos.me";
+        root = "sirver";
+        people = {
+          me = "tristan";
+          users.tristan = {
+            name = "Tristan Schrader";
+            accounts.github = "schradert";
+            accounts.gitlab = "schrader.tristan";
+            profiles.default.email = "t0rdos@pm.me";
+          };
         };
+        # nixos.sirver.ssh.hostname = "192.168.50.21";
+        nixos.sirver.module = {
+          # dotfiles.kubernetes.enable = true;
+          boot.initrd.availableKernelModules = ["ehci_pci" "megaraid_sas" "usbhid"];
+        };
+        # nixos.chilldom.ssh.hostname = "192.168.50.250";
+        nixos.chilldom.module = {
+          dotfiles.graphical.enable = true;
+          home-manager.users.tristan.programs.macchina.networkInterface = "enp0s31f6";
+          boot.initrd.availableKernelModules = ["xhci_pci" "nvme" "rtsx_pci_sdmmc"];
+          powerManagement.cpuFreqGovernor = "powersave";
+        };
+        droid.boox = {};
+        droid.mobile = {};
       };
-      nixos.sirver.module = {
-        # dotfiles.kubernetes.enable = true;
-        boot.initrd.availableKernelModules = ["ehci_pci" "megaraid_sas" "usbhid"];
-      };
-      nixos.chilldom.module = {
-        dotfiles.graphical.enable = true;
-        home-manager.users.tristan.programs.macchina.networkInterface = "enp0s31f6";
-        boot.initrd.availableKernelModules = ["xhci_pci" "nvme" "rtsx_pci_sdmmc"];
-        powerManagement.cpuFreqGovernor = "powersave";
-      };
-      droid.boox = {};
-      droid.mobile = {};
-    };
 }

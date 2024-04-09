@@ -52,6 +52,7 @@ with nix; {
     });
   flake.overlays.gke-gcloud-auth-plugin = inputs.gke-gcloud-auth-plugin-flake.overlays.default;
   perSystem = {pkgs, ...}: {
+    canivete.opentofu.workspaces.work = {};
     legacyPackages.homeConfigurations.tristan = inputs.self.nixos-flake.lib.mkHomeConfiguration pkgs (home: {
       imports = attrValues inputs.self.homeModules;
       options.dotfiles.graphical.enable = mkEnableOption "graphical tools (i.e. not headless)";

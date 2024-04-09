@@ -6,8 +6,8 @@
 }:
 with nix; {
   options.flake = mkSubmoduleOptions {
-    homeModules = mkOpenModuleOption {
-      description = mkDoc "Home-Manager modules";
+    homeModules = mkModulesOption {
+      description = mdDoc "Home-Manager modules";
     };
   };
   config.flake.homeModules.home = home @ {pkgs, ...}: {

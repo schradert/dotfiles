@@ -4,12 +4,12 @@
   ...
 }:
 with nix; {
-  options.droid = mkOpenModuleOption {
+  options.droid = mkModulesOption {
     description = "Specific Nix-on-Droid configurations";
   };
   options.flake = mkSubmoduleOptions {
-    droidModules = mkOpenModuleOption {
-      description = mkDoc "Nix-on-Droid modules";
+    droidModules = mkModulesOption {
+      description = mdDoc "Nix-on-Droid modules";
     };
   };
   config.flake.droidModules.default = {

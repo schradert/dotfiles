@@ -1,5 +1,6 @@
 github_pat: ENC[AES256_GCM,data:2cFxd1efB5ILmZ2bAYl4hh4AuzduY4kvEzl3AKK0HPClsTkW6CTIjQ==,iv:tK/nqisrMHCXmKi5LZBrivFOjLuLcqFA4t32aFjD460=,tag:P29gyw18eYiRqFsbiQetkw==,type:str]
 gitlab_pat: ENC[AES256_GCM,data:L1hFvE6FkuqvQTxr2zuGJood4+e2s+yEvSk=,iv:L81NGFTH5u4Glb94GCNOnMacZrIGnfeQ24x38y9rf/o=,tag:cWUVclS30qk9sAvk+7X5Mg==,type:str]
+cloudflare_pat: ENC[AES256_GCM,data:aMen8sGgpfq/DbO8ixYCpFkqbxyHXJSmqjz37i2j460KFU5tv/I18g==,iv:+oubrX/MG9SPvlNVgMvITAilEdxQr7RMuaUEP7y8WoA=,tag:6KnWGnzehWBadM0dHsPqYA==,type:str]
 sops:
     kms: []
     gcp_kms: []
@@ -15,8 +16,8 @@ sops:
             RUVzTGVCL0p0bSs5d2Jpc3p0ZldtYUkKS9vx8/HR9ZeH0GB34mCBDDhCm2XLLCWX
             VDKZ48OMnlRRAFin9X/wj6RyUJlk0AWG6wgnlsLqnxE8m0+D1U2PDA==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2024-02-14T23:38:07Z"
-    mac: ENC[AES256_GCM,data:EEoaJQ3Y4DX6bQ8mxFnk49gjI471KXZ7pHLUkUQx2ZVTK/VoaXzCY1r7782KbVBTXGMT9GYz7VDqR0tWE1wzCkrg3AzebJm3jPZalqQ5w0B8io5zNFayWcCu76y3vOUsYhytppkfhChBXetPJ+kF0sZUyYc9WGnhre+mlPg3iHo=,iv:TX5NLRelFT//p0pqMATy5h+mTvrv8YhV5aE6bj6ldWI=,tag:SReBigpgX0vIys6DA6OIaQ==,type:str]
+    lastmodified: "2024-04-06T22:55:24Z"
+    mac: ENC[AES256_GCM,data:InTgX6sxEYs1bWDjliIvm2Vv7982RdBCnvx1/wOGaRiHLwpJ1zaa0UChQV//ze1ZCSHYQL/E7xOM+jRnu67Waq59YNKJPOuEKOUns2GruaySebTbWO6oN9YK+C5QFuMT5biWoRkFWEIdNAZQ5nqzXElG6YQPWLRo0LkbNjHVom4=,iv:pOmhIa3ZW3K47SLQAj/jC1FOsdWB9tlG4+/VZ6TbuBg=,tag:962RD+aqoESZW1vfM1mJFA==,type:str]
     pgp: []
     unencrypted_suffix: _unencrypted
     version: 3.8.1

@@ -1,4 +1,4 @@
-{
+flake @ {
   config,
   nix,
   ...
@@ -9,46 +9,55 @@ with nix; {
     description = mdDoc "The hostname of the relevant machine";
     example = "another-server";
   };
-  flake.terranixModules.github = {
-    terraform.required_providers.github = {
-      source = "integrations/github";
-      version = "6.0.0-rc2";
+  perSystem.canivete.opentofu = {
+    plugins = ["integrations/github" "gitlabhq/gitlab" "cloudflare/cloudflare"];
+    sharedModules = {
+      github.provider.github.token = "\${ data.external.sops_decrypt.result[\"github_pat\"] }";
+      github.resource.github_user_ssh_key = pipe config.people.users [
+        (filterAttrs (_: hasAttrByPath ["accounts" "github"]))
+        (mapAttrs (name: _: {
+          title = "dotfiles";
+          key = readFile (./dev/sops + "/${name}.pub");
+        }))
+      ];
+      gitlab.provider.gitlab.token = "\${ data.external.sops_decrypt.result[\"gitlab_pat\"] }";
+      gitlab.resource.gitlab_user_sshkey = pipe config.people.users [
+        (filterAttrs (_: hasAttrByPath ["accounts" "gitlab"]))
+        (mapAttrs (name: _: {
+          title = "dotfiles";
+          key = readFile (./dev/sops + "/${name}.pub");
+        }))
+      ];
+      cloudflare.provider.cloudflare.api_token = "\${ data.external.sops_decrypt.result[\"cloudflare_pat\"] }";
+      # TODO prevent this account name hardcoding
+      cloudflare.data.cloudflare_accounts.main.name = "Tristanschrader@proton.me's Account";
+      cloudflare.resource = {
+        cloudflare_zone.trdos = {
+          account_id = "\${ data.cloudflare_accounts.main.accounts[0].id }";
+          zone = "trdos.me";
+        };
+        cloudflare_record.base = {
+          name = "@";
+          value = "157.131.152.251";
+          type = "A";
+          zone_id = "\${ cloudflare_zone.trdos.id }";
+        };
+      };
     };
-    provider.github.token = "\${ data.external.sops_decrypt.result[\"github_pat\"] }";
-    resource.github_user_ssh_key = pipe config.people.users [
-      (filterAttrs (_: hasAttrByPath ["accounts" "github"]))
-      (mapAttrs (name: _: {
-        title = "dotfiles";
-        key = readFile (./dev/sops + "/${name}.pub");
-      }))
-    ];
-  };
-  flake.terranixModules.gitlab = {
-    terraform.required_providers.gitlab = {
-      source = "gitlabhq/gitlab";
-      version = "16.8.1";
-    };
-    provider.gitlab.token = "\${ data.external.sops_decrypt.result[\"gitlab_pat\"] }";
-    resource.gitlab_user_sshkey = pipe config.people.users [
-      (filterAttrs (_: hasAttrByPath ["accounts" "gitlab"]))
-      (mapAttrs (name: _: {
-        title = "dotfiles";
-        key = readFile (./dev/sops + "/${name}.pub");
-      }))
-    ];
   };
   flake.homeModules.ssh = {
     config,
-    lib,
     pkgs,
     ...
   }: let
     user = config.home.username;
+    home = config.home.homeDirectory;
   in
-    lib.mkMerge [
+    mkMerge [
       {
         programs.ssh.enable = true;
         programs.ssh.forwardAgent = true;
+        programs.ssh.matchBlocks = mapAttrs (_: getAttr "ssh") flake.config.nixos;
         sops.secrets.ssh = {
           format = "binary";
           sopsFile = ./dev/sops + "/${user}";
@@ -57,7 +66,7 @@ with nix; {
         # home.file.".ssh/${user}".source = home.config.sops.secrets.ssh.path;
         home.file.".ssh/${user}.pub".source = ./dev/sops + "/${user}.pub";
       }
-      (lib.mkIf pkgs.stdenv.isLinux {
+      (mkIf pkgs.stdenv.isLinux {
         services.ssh-agent.enable = true;
       })
     ];
