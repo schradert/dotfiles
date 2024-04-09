@@ -25,7 +25,6 @@ with lib; {
     config,
     flake,
     pkgs,
-    inputs',
     ...
   }: {
     config = mkIf config.dotfiles.graphical.enable {

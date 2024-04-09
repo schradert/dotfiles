@@ -328,7 +328,7 @@ wtf:
         width: 1
       refreshInterval: 1h
     github:
-      apiKey: "" 
+      apiKey: ""
       baseURL: ""
       customQueries:
         othersPRs:

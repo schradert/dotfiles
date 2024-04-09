@@ -16,7 +16,7 @@ with nix; {
     pkgs,
     ...
   }: let
-    root = flake.config.root;
+    inherit (flake.config) root;
     host = flake.config.nixos.${root}.ssh.hostname;
     Where = "/mnt/${root}";
     What = "${host}:${Where}";

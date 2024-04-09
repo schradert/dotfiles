@@ -1,7 +1,6 @@
 {
   flake.homeModules.zsh = {
     config,
-    lib,
     nix,
     pkgs,
     ...

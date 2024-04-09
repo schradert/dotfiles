@@ -2,7 +2,6 @@
   flake.homeModules.git = {
     config,
     flake,
-    lib,
     nix,
     ...
   }:

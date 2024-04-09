@@ -10,14 +10,14 @@
         "program": [
           "/nix/store/a1s263pmsci9zykm5xcdf7x9rv26w6d5-bash-5.2p26/bin/bash",
           "-c",
-          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/0j3bjfx48mbd69p1v3i0q6f95p7zg0np-source#nixosConfigurations.chilldom.config.system.build.toplevel | \\\n    /nix/store/fnpqqn7v8f6nqywxvngv4sp7k590m0x0-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
+          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/i6xq68y3xxmvdp16fpp8lgki3nvw1g5s-source#nixosConfigurations.chilldom.config.system.build.toplevel | \\\n    /nix/store/fnpqqn7v8f6nqywxvngv4sp7k590m0x0-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
         ]
       },
       "nixos_eval_sirver": {
         "program": [
           "/nix/store/a1s263pmsci9zykm5xcdf7x9rv26w6d5-bash-5.2p26/bin/bash",
           "-c",
-          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/0j3bjfx48mbd69p1v3i0q6f95p7zg0np-source#nixosConfigurations.sirver.config.system.build.toplevel | \\\n    /nix/store/fnpqqn7v8f6nqywxvngv4sp7k590m0x0-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
+          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/i6xq68y3xxmvdp16fpp8lgki3nvw1g5s-source#nixosConfigurations.sirver.config.system.build.toplevel | \\\n    /nix/store/fnpqqn7v8f6nqywxvngv4sp7k590m0x0-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
         ]
       },
       "sops_decrypt": {

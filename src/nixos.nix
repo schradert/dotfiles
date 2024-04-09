@@ -49,7 +49,7 @@ with nix; {
   };
   config.perSystem.canivete.opentofu.sharedModules.nixos-rebuild = {pkgs, ...}: {
     config = let
-      mkModule = hostname: cfg: let
+      mkModule = hostname: _: let
         nixFlags = "--extra-experimental-features \"nix-command flakes\"";
         drv = "\${ data.external.nixos_eval_${hostname}.result.drv }";
         systemdFlags = [
@@ -92,8 +92,7 @@ with nix; {
       mkMerge (mapAttrsToList mkModule config.nixos);
   };
   config.flake.nixosModules.default = {pkgs, ...}: let
-    me = config.people.me;
-    my = config.people.my;
+    inherit (config.people) me my;
     keys = [(./dev/sops + "/${me}.pub")];
   in {
     environment.pathsToLink = ["/share/zsh"];

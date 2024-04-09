@@ -7,12 +7,11 @@ with nix; {
   flake.overlays.emacs = inputs.emacs-overlay.overlay;
   flake.homeModules.emacs = {
     config,
-    flake,
     lib,
     pkgs,
     ...
   }: {
-    config = lib.mkIf config.programs.emacs.enable (mkMerge [
+    config = mkIf config.programs.emacs.enable (mkMerge [
       {
         programs.emacs.package = pkgs.emacs-unstable-pgtk;
         home = let
@@ -68,11 +67,11 @@ with nix; {
           sessionPath = ["${emacs}/bin"];
         };
       }
-      (lib.mkIf pkgs.stdenv.isLinux {
+      (mkIf pkgs.stdenv.isLinux {
         services.emacs = {
           enable = mkDefault true;
           defaultEditor = config.dotfiles.editor == "emacs";
-          package = config.programs.emacs.package;
+          inherit (config.programs.emacs) package;
           client.enable = true;
         };
       })

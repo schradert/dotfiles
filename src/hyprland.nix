@@ -1,16 +1,15 @@
-{
+{nix, ...}:
+with nix; {
   flake.homeModules.hyprland = {
     config,
-    inputs',
-    lib,
     pkgs,
     ...
   }: {
-    config = lib.mkIf (pkgs.stdenv.isLinux && config.dotfiles.graphical.enable) (lib.mkMerge [
+    config = mkIf (pkgs.stdenv.isLinux && config.dotfiles.graphical.enable) (mkMerge [
       {
         home.packages = [pkgs.swaynotificationcenter];
         xdg.configFile."swaync/config.json" = {
-          onChange = "${lib.getExe pkgs.swaynotificationcenter} swaync-client --reload-config";
+          onChange = "${getExe pkgs.swaynotificationcenter} swaync-client --reload-config";
           text = builtins.toJSON {};
         };
       }
@@ -65,13 +64,8 @@
       }
     ]);
   };
-  flake.nixosModules.hyprland = {
-    config,
-    lib,
-    pkgs,
-    ...
-  }: {
-    config = lib.mkIf config.dotfiles.graphical.enable {
+  flake.nixosModules.hyprland = {config, ...}: {
+    config = mkIf config.dotfiles.graphical.enable {
       services.xserver.displayManager.sddm.wayland.enable = true;
       programs.hyprland.enable = true;
       programs.hyprland.xwayland.enable = true;
