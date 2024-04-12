@@ -93,7 +93,7 @@ with nix; {
   };
   config.flake.nixosModules.default = {pkgs, ...}: let
     inherit (config.people) me my;
-    keys = [(./dev/sops + "/${me}.pub")];
+    keys = [(inputs.self + "/dev/sops/${me}.pub")];
   in {
     environment.pathsToLink = ["/share/zsh"];
     environment.shells = [pkgs.zsh];

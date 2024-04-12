@@ -23,11 +23,11 @@ in {
   perSystem = {pkgs, ...}: let
     key_name = "$USER";
     ssh_key_file = "$HOME/.ssh/${key_name}";
-    sops_repo_file = "src/dev/sops/${key_name}";
+    sops_repo_file = "dev/sops/${key_name}";
   in {
     canivete.opentofu.sharedModules.sops.data.external.sops_decrypt.program = pkgs.execBash ''
       root="$(${getExe pkgs.git} rev-parse --show-toplevel)"
-      ${getExe pkgs.sops} --config "$root/.sops.yaml" --decrypt "$root/src/dev/sops/default.yaml" | ${getExe pkgs.yq}
+      ${getExe pkgs.sops} --config "$root/.sops.yaml" --decrypt "$root/dev/sops/default.yaml" | ${getExe pkgs.yq}
     '';
     packages.keygen = pkgs.writeShellApplication {
       name = "setup";
