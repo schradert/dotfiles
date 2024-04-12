@@ -6,7 +6,7 @@
     ...
   }: {
     programs.k9s.enable = true;
-    # Reference "https://github.com/derailed/k9s/blob/master/skins/dracula.yml"
+    # Reference "https://github.com/derailed/k9s/blob/master/skins/dracula.yaml"
     programs.k9s.skins.skin.k9s = let
       fgColor = "#f8f8f2";
       bgColor = "#282a36";

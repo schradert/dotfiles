@@ -51,7 +51,11 @@ with nix; {
         };
     });
   flake.overlays.gke-gcloud-auth-plugin = inputs.gke-gcloud-auth-plugin-flake.overlays.default;
-  perSystem = {pkgs, system, ...}: {
+  perSystem = {
+    pkgs,
+    system,
+    ...
+  }: {
     canivete.opentofu.workspaces.work = {
       plugins = ["opentofu/null"];
       modules.default = {pkgs, ...}: let
