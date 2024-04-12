@@ -87,6 +87,7 @@ with nix; {
         _module.args.nix = nix;
         dotfiles.graphical.enable = true;
         dotfiles.hostname = "morgenmuffel";
+        dotfiles.profile = "work";
         programs.ssh.matchBlocks = mapAttrs (_:
           mergeAttrs {
             identityFile = "${home.config.home.homeDirectory}/.ssh/work";
