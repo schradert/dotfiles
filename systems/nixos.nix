@@ -44,8 +44,8 @@ with nix; {
   };
   config.perSystem.canivete.opentofu = {
     # TODO why do I have to specify hashicorp ones too? and if I only do hashicorp, it wants opentofu??
-    workspaces.nixos.plugins = ["opentofu/null" "opentofu/external" "hashicorp/null" "hashicorp/external"];
-    workspaces.nixos.modules.default =  {pkgs, ...}: {
+    workspaces.nixos.plugins = ["opentofu/null" "hashicorp/null" "hashicorp/external"];
+    workspaces.nixos.modules.default = {pkgs, ...}: {
       config = let
         mkModule = hostname: _: let
           nixFlags = "--extra-experimental-features \"nix-command flakes\"";
@@ -76,7 +76,6 @@ with nix; {
             triggers.drv = drv;
             # TODO does NIX_SSHOPTS serve a purpose outside of nixos-rebuild
             provisioner.local-exec.command = ''
-              set -x
               sshFlags="-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new"
               export NIX_SSHOPTS="$sshFlags"
               nix ${nixFlags} copy --derivation --to ssh://${config.root} ${drv}

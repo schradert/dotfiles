@@ -25,6 +25,7 @@ in {
     ssh_key_file = "$HOME/.ssh/${key_name}";
     sops_repo_file = "dev/sops/${key_name}";
   in {
+    canivete.opentofu.sharedPlugins = ["opentofu/external"];
     canivete.opentofu.sharedModules.sops.data.external.sops_decrypt.program = pkgs.execBash ''
       root="$(${getExe pkgs.git} rev-parse --show-toplevel)"
       ${getExe pkgs.sops} --config "$root/.sops.yaml" --decrypt "$root/dev/sops/default.yaml" | ${getExe pkgs.yq}

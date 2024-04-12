@@ -53,12 +53,10 @@
             profiles.default.email = "t0rdos@pm.me";
           };
         };
-        # nixos.sirver.ssh.hostname = "192.168.50.21";
         nixos.sirver.module = {
           # dotfiles.kubernetes.enable = true;
           boot.initrd.availableKernelModules = ["ehci_pci" "megaraid_sas" "usbhid"];
         };
-        # nixos.chilldom.ssh.hostname = "192.168.50.250";
         nixos.chilldom.module = {
           dotfiles.graphical.enable = true;
           home-manager.users.tristan.programs.macchina.networkInterface = "enp0s31f6";
