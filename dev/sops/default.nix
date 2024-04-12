@@ -14,11 +14,11 @@ with nix; let
       if pkgs.stdenv.isDarwin
       then "Library/Application Support"
       else ".config";
-  in "${base_dir}/${config.people.me}/${config_dir}/sops/age/keys.txt";
+  in "/${base_dir}/${config.people.me}/${config_dir}/sops/age/keys.txt";
 in {
   flake.homeModules.sops = {pkgs, ...}: {
     imports = [inputs.sops-nix.homeManagerModules.sops];
-    sops.age.keyFile = /. + (get_age_key_file pkgs);
+    sops.age.keyFile = get_age_key_file pkgs;
   };
   perSystem = {pkgs, ...}: let
     key_name = "$USER";

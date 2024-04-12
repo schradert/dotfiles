@@ -44,52 +44,52 @@ with nix; {
   };
   config.perSystem.canivete.opentofu = {
     # TODO why do I have to specify hashicorp ones too? and if I only do hashicorp, it wants opentofu??
-    plugins = ["opentofu/null" "opentofu/external" "hashicorp/null" "hashicorp/external"];
-    workspaces.nixos = {};
-  };
-  config.perSystem.canivete.opentofu.sharedModules.nixos-rebuild = {pkgs, ...}: {
-    config = let
-      mkModule = hostname: _: let
-        nixFlags = "--extra-experimental-features \"nix-command flakes\"";
-        drv = "\${ data.external.nixos_eval_${hostname}.result.drv }";
-        systemdFlags = [
-          "--collect"
-          "--no-ask-password"
-          "--pipe"
-          "--quiet"
-          "--same-dir"
-          "--wait"
-          "--setenv"
-          "LOCALE_ARCHIVE"
-          "--setenv"
-          "NIXOS_INSTALL_BOOTLOADER="
-          "--service-type"
-          "exec"
-          "--unit"
-          # Using the full 'nixos-rebuild-switch-to-configuration' name on sirver would fail to collect/cleanup
-          "nixos-switch"
-        ];
-      in {
-        data.external."nixos_eval_${hostname}".program = pkgs.execBash ''
-          nix ${nixFlags} path-info --derivation ${inputs.self}#nixosConfigurations.${hostname}.config.system.build.toplevel | \
-              ${pkgs.jq}/bin/jq --raw-input '{"drv":.}'
-        '';
-        resource.null_resource."nixos_switch_${hostname}" = {
-          triggers.drv = drv;
-          # TODO does NIX_SSHOPTS serve a purpose outside of nixos-rebuild
-          provisioner.local-exec.command = ''
-            sshFlags="-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new"
-            export NIX_SSHOPTS="$sshFlags"
-            nix ${nixFlags} copy --derivation --to ssh://${config.root} ${drv}
-            closure=$(ssh $sshFlags ${config.root} nix-store --verbose --realise ${drv})
-            nix ${nixFlags} copy --from ssh://${config.root} --to ssh://${hostname} "$closure"
-            ssh $sshFlags ${hostname} sudo nix-env --profile /nix/var/nix/profiles/system --set "$closure"
-            ssh $sshFlags ${hostname} sudo systemd-run ${concatStringsSep " " systemdFlags} "$closure/bin/switch-to-configuration" switch
+    workspaces.nixos.plugins = ["opentofu/null" "opentofu/external" "hashicorp/null" "hashicorp/external"];
+    workspaces.nixos.modules.default =  {pkgs, ...}: {
+      config = let
+        mkModule = hostname: _: let
+          nixFlags = "--extra-experimental-features \"nix-command flakes\"";
+          drv = "\${ data.external.nixos_eval_${hostname}.result.drv }";
+          systemdFlags = [
+            "--collect"
+            "--no-ask-password"
+            "--pipe"
+            "--quiet"
+            "--same-dir"
+            "--wait"
+            "--setenv"
+            "LOCALE_ARCHIVE"
+            "--setenv"
+            "NIXOS_INSTALL_BOOTLOADER="
+            "--service-type"
+            "exec"
+            "--unit"
+            # Using the full 'nixos-rebuild-switch-to-configuration' name on sirver would fail to collect/cleanup
+            "nixos-switch"
+          ];
+        in {
+          data.external."nixos_eval_${hostname}".program = pkgs.execBash ''
+            nix ${nixFlags} path-info --derivation ${inputs.self}#nixosConfigurations.${hostname}.config.system.build.toplevel | \
+                ${pkgs.jq}/bin/jq --raw-input '{"drv":.}'
           '';
+          resource.null_resource."nixos_switch_${hostname}" = {
+            triggers.drv = drv;
+            # TODO does NIX_SSHOPTS serve a purpose outside of nixos-rebuild
+            provisioner.local-exec.command = ''
+              set -x
+              sshFlags="-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new"
+              export NIX_SSHOPTS="$sshFlags"
+              nix ${nixFlags} copy --derivation --to ssh://${config.root} ${drv}
+              closure=$(ssh $sshFlags ${config.root} nix-store --verbose --realise ${drv})
+              nix ${nixFlags} copy --from ssh://${config.root} --to ssh://${hostname} "$closure"
+              ssh $sshFlags ${hostname} sudo nix-env --profile /nix/var/nix/profiles/system --set "$closure"
+              ssh $sshFlags ${hostname} sudo systemd-run ${concatStringsSep " " systemdFlags} "$closure/bin/switch-to-configuration" switch
+            '';
+          };
         };
-      };
-    in
-      mkMerge (mapAttrsToList mkModule config.nixos);
+      in
+        mkMerge (mapAttrsToList mkModule config.nixos);
+    };
   };
   config.flake.nixosModules.default = {pkgs, ...}: let
     inherit (config.people) me my;

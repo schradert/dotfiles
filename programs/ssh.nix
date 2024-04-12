@@ -10,28 +10,28 @@ with nix; {
     example = "another-server";
   };
   perSystem.canivete.opentofu = {
-    plugins = ["integrations/github" "gitlabhq/gitlab" "cloudflare/cloudflare"];
-    sharedModules = {
-      github.provider.github.token = "\${ data.external.sops_decrypt.result[\"github_pat\"] }";
-      github.resource.github_user_ssh_key = pipe config.people.users [
+    workspaces.cloud.plugins = ["integrations/github" "gitlabhq/gitlab" "cloudflare/cloudflare"];
+    workspaces.cloud.modules.default = {
+      provider.github.token = "\${ data.external.sops_decrypt.result[\"github_pat\"] }";
+      resource.github_user_ssh_key = pipe config.people.users [
         (filterAttrs (_: hasAttrByPath ["accounts" "github"]))
         (mapAttrs (name: _: {
           title = "dotfiles";
           key = readFile (./dev/sops + "/${name}.pub");
         }))
       ];
-      gitlab.provider.gitlab.token = "\${ data.external.sops_decrypt.result[\"gitlab_pat\"] }";
-      gitlab.resource.gitlab_user_sshkey = pipe config.people.users [
+      provider.gitlab.token = "\${ data.external.sops_decrypt.result[\"gitlab_pat\"] }";
+      resource.gitlab_user_sshkey = pipe config.people.users [
         (filterAttrs (_: hasAttrByPath ["accounts" "gitlab"]))
         (mapAttrs (name: _: {
           title = "dotfiles";
           key = readFile (./dev/sops + "/${name}.pub");
         }))
       ];
-      cloudflare.provider.cloudflare.api_token = "\${ data.external.sops_decrypt.result[\"cloudflare_pat\"] }";
+      provider.cloudflare.api_token = "\${ data.external.sops_decrypt.result[\"cloudflare_pat\"] }";
       # TODO prevent this account name hardcoding
-      cloudflare.data.cloudflare_accounts.main.name = "Tristanschrader@proton.me's Account";
-      cloudflare.resource = {
+      data.cloudflare_accounts.main.name = "Tristanschrader@proton.me's Account";
+      resource = {
         cloudflare_zone.trdos = {
           account_id = "\${ data.cloudflare_accounts.main.accounts[0].id }";
           zone = "trdos.me";
