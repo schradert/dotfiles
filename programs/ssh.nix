@@ -43,6 +43,12 @@ with nix; {
           type = "A";
           zone_id = "\${ cloudflare_zone.trdos.id }";
         };
+        cloudflare_record.www = {
+          name = "www";
+          value = "\${ cloudflare_zone.trdos.zone }";
+          type = "CNAME";
+          zone_id = "\${ cloudflare_zone.trdos.id }";
+        };
       };
     };
   };
