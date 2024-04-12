@@ -39,7 +39,7 @@ with nix; {
         };
         cloudflare_record.base = {
           name = "@";
-          value = "157.131.152.251";
+          value = "ref+sops://dev/sops/default.yaml#/trdos_ip";
           type = "A";
           zone_id = "\${ cloudflare_zone.trdos.id }";
         };
