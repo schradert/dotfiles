@@ -51,12 +51,36 @@ with nix; {
         };
     });
   flake.overlays.gke-gcloud-auth-plugin = inputs.gke-gcloud-auth-plugin-flake.overlays.default;
-  perSystem = {pkgs, ...}: {
-    canivete.opentofu.workspaces.work = {};
+  perSystem = {pkgs, system, ...}: {
+    canivete.opentofu.workspaces.work = {
+      plugins = ["opentofu/null"];
+      modules.default = {pkgs, ...}: let
+        nixFlags = "--extra-experimental-features \"nix-command flakes\"";
+      in {
+        data.external.darwin_eval.program = pkgs.execBash ''
+          nix ${nixFlags} path-info --derivation ${inputs.self}#darwinConfigurations.morgenmuffel.config.system.build.toplevel | \
+              ${pkgs.jq}/bin/jq --raw-input '{"drv":.}'
+        '';
+        resource.null_resource.darwin_switch = {
+          triggers.drv = "\${ data.external.darwin_eval.result.drv }";
+          provisioner.local-exec.command = "nix ${nixFlags} run ${inputs.nix-darwin}# -- switch --flake ${inputs.self}#morgenmuffel";
+        };
+        data.external.home_eval.program = pkgs.execBash ''
+          nix ${nixFlags} path-info --derivation ${inputs.self}#legacyPackages.${system}.homeConfigurations.tristan.config.home.activationPackage | \
+              ${pkgs.jq}/bin/jq --raw-input '{"drv":.}'
+        '';
+        resource.null_resource.home_switch = {
+          depends_on = ["null_resource.darwin_switch"];
+          triggers.drv = "\${ data.external.home_eval.result.drv }";
+          provisioner.local-exec.command = "nix ${nixFlags} run ${inputs.self}#homeConfigurations.tristan.activationPackage";
+        };
+      };
+    };
     legacyPackages.homeConfigurations.tristan = inputs.self.nixos-flake.lib.mkHomeConfiguration pkgs (home: {
       imports = attrValues inputs.self.homeModules;
       options.dotfiles.graphical.enable = mkEnableOption "graphical tools (i.e. not headless)";
       config = {
+        _module.args.nix = nix;
         dotfiles.graphical.enable = true;
         dotfiles.hostname = "morgenmuffel";
         programs.ssh.matchBlocks = mapAttrs (_:
