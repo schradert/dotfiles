@@ -1,0 +1,92 @@
+{
+  "data": {
+    "external": {
+      "darwin_eval": {
+        "program": [
+          "/nix/store/crs76r1gifq0ay48v4kvws42fc59gmx5-bash-5.2p26/bin/bash",
+          "-c",
+          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/8mrgmmkigkfry3qc4zc09vy1cfpcx0bj-source#darwinConfigurations.morgenmuffel.config.system.build.toplevel | \\\n    /nix/store/l7zwv2ispr3x3cr9w2zd3jz7zgm3kjpp-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
+        ]
+      },
+      "home_eval": {
+        "program": [
+          "/nix/store/crs76r1gifq0ay48v4kvws42fc59gmx5-bash-5.2p26/bin/bash",
+          "-c",
+          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/8mrgmmkigkfry3qc4zc09vy1cfpcx0bj-source#legacyPackages.aarch64-darwin.homeConfigurations.tristan.config.home.activationPackage | \\\n    /nix/store/l7zwv2ispr3x3cr9w2zd3jz7zgm3kjpp-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
+        ]
+      },
+      "sops_decrypt": {
+        "program": [
+          "/nix/store/crs76r1gifq0ay48v4kvws42fc59gmx5-bash-5.2p26/bin/bash",
+          "-c",
+          "root=\"$(/nix/store/v164ksb5p2cp4hr18nadn1i7zln9p23h-git-2.44.0/bin/git rev-parse --show-toplevel)\"\n/nix/store/la29b8q08v8fycymcync5z570ikwfvlm-sops-3.8.1/bin/sops --config \"$root/.sops.yaml\" --decrypt \"$root/dev/sops/default.yaml\" | /nix/store/1b751xllcmzsfnqmv3k12ggyjwrgi93h-python3.11-yq-3.2.3/bin/yq\n"
+        ]
+      }
+    }
+  },
+  "resource": {
+    "null_resource": {
+      "darwin_switch": {
+        "provisioner": {
+          "local-exec": {
+            "command": "nix --extra-experimental-features \"nix-command flakes\" run /nix/store/87clbsxcf2wawlhi49k96ffb805sa3v0-source# -- switch --flake /nix/store/8mrgmmkigkfry3qc4zc09vy1cfpcx0bj-source#morgenmuffel"
+          }
+        },
+        "triggers": {
+          "drv": "${ data.external.darwin_eval.result.drv }"
+        }
+      },
+      "home_switch": {
+        "depends_on": [
+          "null_resource.darwin_switch"
+        ],
+        "provisioner": {
+          "local-exec": {
+            "command": "nix --extra-experimental-features \"nix-command flakes\" run /nix/store/8mrgmmkigkfry3qc4zc09vy1cfpcx0bj-source#homeConfigurations.tristan.activationPackage"
+          }
+        },
+        "triggers": {
+          "drv": "${ data.external.home_eval.result.drv }"
+        }
+      }
+    }
+  },
+  "terraform": {
+    "encryption": {
+      "key_provider": {
+        "pbkdf2": {
+          "default": {
+            "passphrase": "ref+sops://dev/sops/default.yaml#/opentofu_pw"
+          }
+        }
+      },
+      "method": {
+        "aes_gcm": {
+          "default": {
+            "keys": "${ key_provider.pbkdf2.default }"
+          }
+        }
+      },
+      "plan": {
+        "fallback": {
+          "method": "${ method.aes_gcm.default }"
+        },
+        "method": "${ method.aes_gcm.default }"
+      },
+      "state": {
+        "fallback": {},
+        "method": "${ method.aes_gcm.default }"
+      }
+    },
+    "required_providers": {
+      "external": {
+        "source": "opentofu/external",
+        "version": "2.3.3"
+      },
+      "null": {
+        "source": "opentofu/null",
+        "version": "3.2.2"
+      }
+    }
+  }
+}

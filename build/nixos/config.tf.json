@@ -1,77 +1,35 @@
 {
   "data": {
-    "cloudflare_accounts": {
-      "main": {
-        "name": "Tristanschrader@proton.me's Account"
-      }
-    },
     "external": {
       "nixos_eval_chilldom": {
         "program": [
-          "/nix/store/a1s263pmsci9zykm5xcdf7x9rv26w6d5-bash-5.2p26/bin/bash",
+          "/nix/store/crs76r1gifq0ay48v4kvws42fc59gmx5-bash-5.2p26/bin/bash",
           "-c",
-          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/i6xq68y3xxmvdp16fpp8lgki3nvw1g5s-source#nixosConfigurations.chilldom.config.system.build.toplevel | \\\n    /nix/store/fnpqqn7v8f6nqywxvngv4sp7k590m0x0-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
+          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/wrhks9gdmp1nkf9ca540b9x34ra715hb-source#nixosConfigurations.chilldom.config.system.build.toplevel | \\\n    /nix/store/l7zwv2ispr3x3cr9w2zd3jz7zgm3kjpp-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
         ]
       },
       "nixos_eval_sirver": {
         "program": [
-          "/nix/store/a1s263pmsci9zykm5xcdf7x9rv26w6d5-bash-5.2p26/bin/bash",
+          "/nix/store/crs76r1gifq0ay48v4kvws42fc59gmx5-bash-5.2p26/bin/bash",
           "-c",
-          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/i6xq68y3xxmvdp16fpp8lgki3nvw1g5s-source#nixosConfigurations.sirver.config.system.build.toplevel | \\\n    /nix/store/fnpqqn7v8f6nqywxvngv4sp7k590m0x0-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
+          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/wrhks9gdmp1nkf9ca540b9x34ra715hb-source#nixosConfigurations.sirver.config.system.build.toplevel | \\\n    /nix/store/l7zwv2ispr3x3cr9w2zd3jz7zgm3kjpp-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
         ]
       },
       "sops_decrypt": {
         "program": [
-          "/nix/store/a1s263pmsci9zykm5xcdf7x9rv26w6d5-bash-5.2p26/bin/bash",
+          "/nix/store/crs76r1gifq0ay48v4kvws42fc59gmx5-bash-5.2p26/bin/bash",
           "-c",
-          "root=\"$(/nix/store/y56vmnczakd9p0dsjl6jgnqrkqv04yxx-git-2.44.0/bin/git rev-parse --show-toplevel)\"\n/nix/store/dyff4cgs80kbf1w4cf7nkpwi29rcwl6p-sops-3.8.1/bin/sops --config \"$root/.sops.yaml\" --decrypt \"$root/src/dev/sops/default.yaml\" | /nix/store/vvww34pk99164z09lhd7j2i6xq5bj1cn-python3.11-yq-3.2.3/bin/yq\n"
+          "root=\"$(/nix/store/v164ksb5p2cp4hr18nadn1i7zln9p23h-git-2.44.0/bin/git rev-parse --show-toplevel)\"\n/nix/store/la29b8q08v8fycymcync5z570ikwfvlm-sops-3.8.1/bin/sops --config \"$root/.sops.yaml\" --decrypt \"$root/dev/sops/default.yaml\" | /nix/store/1b751xllcmzsfnqmv3k12ggyjwrgi93h-python3.11-yq-3.2.3/bin/yq\n"
         ]
       }
     }
   },
-  "provider": {
-    "cloudflare": {
-      "api_token": "${ data.external.sops_decrypt.result[\"cloudflare_pat\"] }"
-    },
-    "github": {
-      "token": "${ data.external.sops_decrypt.result[\"github_pat\"] }"
-    },
-    "gitlab": {
-      "token": "${ data.external.sops_decrypt.result[\"gitlab_pat\"] }"
-    }
-  },
   "resource": {
-    "cloudflare_record": {
-      "base": {
-        "name": "@",
-        "type": "A",
-        "value": "157.131.152.251",
-        "zone_id": "${ cloudflare_zone.trdos.id }"
-      }
-    },
-    "cloudflare_zone": {
-      "trdos": {
-        "account_id": "${ data.cloudflare_accounts.main.accounts[0].id }",
-        "zone": "trdos.me"
-      }
-    },
-    "github_user_ssh_key": {
-      "tristan": {
-        "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAfcKmSKVDQ+jMIP/dSbeG7QwzepO3CdUvXNi2iLhefl\n",
-        "title": "dotfiles"
-      }
-    },
-    "gitlab_user_sshkey": {
-      "tristan": {
-        "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAfcKmSKVDQ+jMIP/dSbeG7QwzepO3CdUvXNi2iLhefl\n",
-        "title": "dotfiles"
-      }
-    },
     "null_resource": {
       "nixos_switch_chilldom": {
         "provisioner": {
           "local-exec": {
-            "command": "sshFlags=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new\"\nexport NIX_SSHOPTS=\"$sshFlags\"\nnix --extra-experimental-features \"nix-command flakes\" copy --derivation --to ssh://sirver ${ data.external.nixos_eval_chilldom.result.drv }\nclosure=$(ssh $sshFlags sirver nix-store --verbose --realise ${ data.external.nixos_eval_chilldom.result.drv })\nnix --extra-experimental-features \"nix-command flakes\" copy --from ssh://sirver --to ssh://chilldom \"$closure\"\nssh $sshFlags chilldom sudo nix-env --profile /nix/var/nix/profiles/system --set \"$closure\"\nssh $sshFlags chilldom sudo systemd-run --collect --no-ask-password --pipe --quiet --same-dir --wait --setenv LOCALE_ARCHIVE --setenv NIXOS_INSTALL_BOOTLOADER= --service-type exec --unit nixos-switch \"$closure/bin/switch-to-configuration\" switch\n"
+            "command": "set -x\nsshFlags=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new\"\nexport NIX_SSHOPTS=\"$sshFlags\"\nnix --extra-experimental-features \"nix-command flakes\" copy --derivation --to ssh://sirver ${ data.external.nixos_eval_chilldom.result.drv }\nclosure=$(ssh $sshFlags sirver nix-store --verbose --realise ${ data.external.nixos_eval_chilldom.result.drv })\nnix --extra-experimental-features \"nix-command flakes\" copy --from ssh://sirver --to ssh://chilldom \"$closure\"\nssh $sshFlags chilldom sudo nix-env --profile /nix/var/nix/profiles/system --set \"$closure\"\nssh $sshFlags chilldom sudo systemd-run --collect --no-ask-password --pipe --quiet --same-dir --wait --setenv LOCALE_ARCHIVE --setenv NIXOS_INSTALL_BOOTLOADER= --service-type exec --unit nixos-switch \"$closure/bin/switch-to-configuration\" switch\n"
           }
         },
         "triggers": {
@@ -81,7 +39,7 @@
       "nixos_switch_sirver": {
         "provisioner": {
           "local-exec": {
-            "command": "sshFlags=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new\"\nexport NIX_SSHOPTS=\"$sshFlags\"\nnix --extra-experimental-features \"nix-command flakes\" copy --derivation --to ssh://sirver ${ data.external.nixos_eval_sirver.result.drv }\nclosure=$(ssh $sshFlags sirver nix-store --verbose --realise ${ data.external.nixos_eval_sirver.result.drv })\nnix --extra-experimental-features \"nix-command flakes\" copy --from ssh://sirver --to ssh://sirver \"$closure\"\nssh $sshFlags sirver sudo nix-env --profile /nix/var/nix/profiles/system --set \"$closure\"\nssh $sshFlags sirver sudo systemd-run --collect --no-ask-password --pipe --quiet --same-dir --wait --setenv LOCALE_ARCHIVE --setenv NIXOS_INSTALL_BOOTLOADER= --service-type exec --unit nixos-switch \"$closure/bin/switch-to-configuration\" switch\n"
+            "command": "set -x\nsshFlags=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new\"\nexport NIX_SSHOPTS=\"$sshFlags\"\nnix --extra-experimental-features \"nix-command flakes\" copy --derivation --to ssh://sirver ${ data.external.nixos_eval_sirver.result.drv }\nclosure=$(ssh $sshFlags sirver nix-store --verbose --realise ${ data.external.nixos_eval_sirver.result.drv })\nnix --extra-experimental-features \"nix-command flakes\" copy --from ssh://sirver --to ssh://sirver \"$closure\"\nssh $sshFlags sirver sudo nix-env --profile /nix/var/nix/profiles/system --set \"$closure\"\nssh $sshFlags sirver sudo systemd-run --collect --no-ask-password --pipe --quiet --same-dir --wait --setenv LOCALE_ARCHIVE --setenv NIXOS_INSTALL_BOOTLOADER= --service-type exec --unit nixos-switch \"$closure/bin/switch-to-configuration\" switch\n"
           }
         },
         "triggers": {
@@ -91,22 +49,36 @@
     }
   },
   "terraform": {
-    "required_providers": {
-      "cloudflare": {
-        "source": "cloudflare/cloudflare",
-        "version": "4.28.0"
+    "encryption": {
+      "key_provider": {
+        "pbkdf2": {
+          "default": {
+            "passphrase": "ref+sops://dev/sops/default.yaml#/opentofu_pw"
+          }
+        }
       },
+      "method": {
+        "aes_gcm": {
+          "default": {
+            "keys": "${ key_provider.pbkdf2.default }"
+          }
+        }
+      },
+      "plan": {
+        "fallback": {
+          "method": "${ method.aes_gcm.default }"
+        },
+        "method": "${ method.aes_gcm.default }"
+      },
+      "state": {
+        "fallback": {},
+        "method": "${ method.aes_gcm.default }"
+      }
+    },
+    "required_providers": {
       "external": {
         "source": "opentofu/external",
         "version": "2.3.3"
-      },
-      "github": {
-        "source": "integrations/github",
-        "version": "6.2.1"
-      },
-      "gitlab": {
-        "source": "gitlabhq/gitlab",
-        "version": "16.10.0"
       },
       "null": {
         "source": "opentofu/null",
