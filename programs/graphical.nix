@@ -17,6 +17,7 @@ with lib; {
         harfbuzz
         libtool
         librsvg
+        slack
         unbound
       ];
     };
