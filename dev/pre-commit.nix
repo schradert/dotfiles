@@ -2,7 +2,7 @@
   perSystem = {pkgs, ...}: {
     canivete.pre-commit.shell.enable = true;
     pre-commit.settings = {
-      excludes = ["old/.+" "dev/sops/default.yaml" "dev/sops/tristan"];
+      excludes = ["old/.+" ".canivete/sops/default.yaml" ".canivete/sops/tristan"];
       # TODO extract these tool configurations into options
       hooks.lychee.settings.configPath = toString (pkgs.writers.writeTOML "lychee.toml" {exclude_path = ["programs/emacs/config.org"];});
       # Used in vim configuration

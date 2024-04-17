@@ -18,7 +18,7 @@ with nix; {
         (filterAttrs (_: hasAttrByPath ["accounts" "github"]))
         (mapAttrs (name: _: {
           title = "dotfiles";
-          key = readFile (inputs.self + "/dev/sops/${name}.pub");
+          key = readFile (inputs.self + "/.canivete/sops/${name}.pub");
         }))
       ];
       provider.gitlab.token = "\${ data.external.sops_decrypt.result[\"gitlab_pat\"] }";
@@ -26,7 +26,7 @@ with nix; {
         (filterAttrs (_: hasAttrByPath ["accounts" "gitlab"]))
         (mapAttrs (name: _: {
           title = "dotfiles";
-          key = readFile (inputs.self + "/dev/sops/${name}.pub");
+          key = readFile (inputs.self + "/.canivete/sops/${name}.pub");
         }))
       ];
       provider.cloudflare.api_token = "\${ data.external.sops_decrypt.result[\"cloudflare_pat\"] }";
@@ -39,7 +39,7 @@ with nix; {
         };
         cloudflare_record.base = {
           name = "@";
-          value = "ref+sops://dev/sops/default.yaml#/trdos_ip";
+          value = "ref+sops://.canivete/sops/default.yaml#/trdos_ip";
           type = "A";
           zone_id = "\${ cloudflare_zone.trdos.id }";
         };
@@ -67,11 +67,11 @@ with nix; {
         programs.ssh.matchBlocks = mapAttrs (_: getAttr "ssh") flake.config.nixos;
         sops.secrets.ssh = {
           format = "binary";
-          sopsFile = inputs.self + "/dev/sops/${user}";
+          sopsFile = inputs.self + "/.canivete/sops/${user}";
         };
         # TODO still not working
         # home.file.".ssh/${user}".source = home.config.sops.secrets.ssh.path;
-        home.file.".ssh/${user}.pub".source = inputs.self + "/dev/sops/${user}.pub";
+        home.file.".ssh/${user}.pub".source = inputs.self + "/.canivete/sops/${user}.pub";
       }
       (mkIf pkgs.stdenv.isLinux {
         services.ssh-agent.enable = true;

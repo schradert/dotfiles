@@ -92,8 +92,9 @@ with nix; {
   };
   config.flake.nixosModules.default = {pkgs, ...}: let
     inherit (config.people) me my;
-    keys = [(inputs.self + "/dev/sops/${me}.pub")];
+    keys = [(inputs.self + "/.canivete/sops/${me}.pub")];
   in {
+    # TODO extract
     environment.pathsToLink = ["/share/zsh"];
     environment.shells = [pkgs.zsh];
     i18n.defaultLocale = "en_US.UTF-8";
@@ -151,11 +152,7 @@ with nix; {
           home-manager.users.${config.people.me} = {
             imports = attrValues inputs.self.homeModules;
             options.dotfiles = nixos.options.dotfiles;
-            config.dotfiles =
-              nixos.config.dotfiles
-              // {
-                hostname = name;
-              };
+            config.dotfiles = mergeAttrs nixos.config.dotfiles {hostname = name;};
           };
           nix.settings.trusted-users = [config.people.me];
           nixpkgs.hostPlatform = system;

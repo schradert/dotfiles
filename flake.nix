@@ -38,7 +38,7 @@
     with inputs;
       canivete.lib.mkFlake {
         inherit inputs;
-        everything = [./dev ./programs ./systems];
+        everything = [./dev ./programs ./profiles];
       } {
         imports = [nixos-flake.flakeModule ./work.nix];
 

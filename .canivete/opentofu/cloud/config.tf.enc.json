@@ -10,7 +10,7 @@
         "program": [
           "/nix/store/crs76r1gifq0ay48v4kvws42fc59gmx5-bash-5.2p26/bin/bash",
           "-c",
-          "root=\"$(/nix/store/v164ksb5p2cp4hr18nadn1i7zln9p23h-git-2.44.0/bin/git rev-parse --show-toplevel)\"\n/nix/store/la29b8q08v8fycymcync5z570ikwfvlm-sops-3.8.1/bin/sops --config \"$root/.sops.yaml\" --decrypt \"$root/dev/sops/default.yaml\" | /nix/store/1b751xllcmzsfnqmv3k12ggyjwrgi93h-python3.11-yq-3.2.3/bin/yq\n"
+          "root=\"$(/nix/store/v164ksb5p2cp4hr18nadn1i7zln9p23h-git-2.44.0/bin/git rev-parse --show-toplevel)\"\n/nix/store/la29b8q08v8fycymcync5z570ikwfvlm-sops-3.8.1/bin/sops --config \"$root/.sops.yaml\" --decrypt \"$root/.canivete/sops/default.yaml\" | /nix/store/1b751xllcmzsfnqmv3k12ggyjwrgi93h-python3.11-yq-3.2.3/bin/yq\n"
         ]
       }
     }
@@ -31,7 +31,7 @@
       "base": {
         "name": "@",
         "type": "A",
-        "value": "ref+sops://dev/sops/default.yaml#/trdos_ip",
+        "value": "ref+sops://.canivete/sops/default.yaml#/trdos_ip",
         "zone_id": "${ cloudflare_zone.trdos.id }"
       },
       "www": {
@@ -65,7 +65,7 @@
       "key_provider": {
         "pbkdf2": {
           "default": {
-            "passphrase": "ref+sops://dev/sops/default.yaml#/opentofu_pw"
+            "passphrase": "ref+sops://.canivete/sops/default.yaml#/opentofu_pw"
           }
         }
       },
@@ -83,7 +83,9 @@
         "method": "${ method.aes_gcm.default }"
       },
       "state": {
-        "fallback": {},
+        "fallback": {
+          "method": "${ method.aes_gcm.default }"
+        },
         "method": "${ method.aes_gcm.default }"
       }
     },

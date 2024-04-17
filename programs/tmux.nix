@@ -1,6 +1,7 @@
 {moduleWithSystem, ...}: {
-  flake.homeModules.tmux = moduleWithSystem ({config, ...}:
-    with config.packages; {
+  flake.homeModules.tmux = moduleWithSystem ({self', ...}: {config, ...}:
+    with self'.packages; {
+      programs.fzf.tmux.enableShellIntegration = config.programs.tmux.enable;
       programs.tmux = {
         enable = true;
         package = tmux;
