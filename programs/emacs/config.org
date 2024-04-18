@@ -82,6 +82,10 @@
       (".m" "Meeting" entry (file "agenda/main.org") "* PLANNED %? :meeting:\n%T\n")
       ("b" "Bookmark" entry (file "bookmarks.org") "* %?\n")
     )
+    org-roam-capture-templates '(
+      ("D" "daily" entry "* %<%I:%M %p>: %?"
+       :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))
+    )
     org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id
     org-roam-directory (concat org-directory "/roam")
     org-super-links-related-into-drawer t
