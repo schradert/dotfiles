@@ -82,8 +82,22 @@
       (".m" "Meeting" entry (file "agenda/main.org") "* PLANNED %? :meeting:\n%T\n")
       ("b" "Bookmark" entry (file "bookmarks.org") "* %?\n")
     )
-    org-roam-capture-templates '(
-      ("D" "daily" entry "* %<%I:%M %p>: %?"
+    org-roam-catpure-templates '(
+      ("d" "default" plain
+       "%?"
+       :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+       :unnarrowed t))
+      ("l" "programming languages" plain
+       "* Characteristics\n\n- Family: %?\n- Inspired by: \n\n* Reference:\n\n"
+       :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+       :unnarrowed t))
+      ("b" "boot notes" plain
+       "\n* Source\n\nAuthor: %^{Author}\nTitle: ${title}\nYear: %^{Year}\n\n* Summary\n\n%?"
+       :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+       :unnarrowed t))
+    )
+    org-roam-dailies-capture-templates '(
+      ("d" "default" entry "* %<%I:%M %p>: %?"
        :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))
     )
     org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id
