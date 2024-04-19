@@ -43,8 +43,7 @@ with nix; {
     description = "Specific NixOS configurations";
   };
   config.perSystem.canivete.opentofu = {
-    # TODO why do I have to specify hashicorp ones too? and if I only do hashicorp, it wants opentofu??
-    workspaces.nixos.plugins = ["opentofu/null" "hashicorp/null" "hashicorp/external"];
+    workspaces.nixos.plugins = ["opentofu/null" "opentofu/external"];
     workspaces.nixos.modules.default = {pkgs, ...}: {
       config = let
         mkModule = hostname: _: let

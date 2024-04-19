@@ -10,10 +10,10 @@ with nix; {
     description = mdDoc "The hostname of the relevant machine";
     example = "another-server";
   };
-  perSystem.canivete.opentofu = {
-    workspaces.cloud.plugins = ["integrations/github" "gitlabhq/gitlab" "cloudflare/cloudflare"];
-    workspaces.cloud.modules.default = {
-      provider.github.token = "\${ data.external.sops_decrypt.result[\"github_pat\"] }";
+  perSystem.canivete.opentofu.workspaces.cloud = {
+    plugins = ["integrations/github" "gitlabhq/gitlab" "cloudflare/cloudflare"];
+    modules.default = {
+      provider.github.token = "ref+sops://.canivete/sops/default.yaml#/github_pat";
       resource.github_user_ssh_key = pipe config.people.users [
         (filterAttrs (_: hasAttrByPath ["accounts" "github"]))
         (mapAttrs (name: _: {
@@ -21,7 +21,7 @@ with nix; {
           key = readFile (inputs.self + "/.canivete/sops/${name}.pub");
         }))
       ];
-      provider.gitlab.token = "\${ data.external.sops_decrypt.result[\"gitlab_pat\"] }";
+      provider.gitlab.token = "ref+sops://.canivete/sops/default.yaml#/gitlab_pat";
       resource.gitlab_user_sshkey = pipe config.people.users [
         (filterAttrs (_: hasAttrByPath ["accounts" "gitlab"]))
         (mapAttrs (name: _: {
@@ -29,7 +29,7 @@ with nix; {
           key = readFile (inputs.self + "/.canivete/sops/${name}.pub");
         }))
       ];
-      provider.cloudflare.api_token = "\${ data.external.sops_decrypt.result[\"cloudflare_pat\"] }";
+      provider.cloudflare.api_token = "ref+sops://.canivete/sops/default.yaml#/cloudflare_pat";
       # TODO prevent this account name hardcoding
       data.cloudflare_accounts.main.name = "Tristanschrader@proton.me's Account";
       resource = {

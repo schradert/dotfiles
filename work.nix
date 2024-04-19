@@ -57,7 +57,7 @@ with nix; {
     ...
   }: {
     canivete.opentofu.workspaces.work = {
-      plugins = ["opentofu/null"];
+      plugins = ["opentofu/null" "opentofu/external"];
       modules.default = {pkgs, ...}: let
         nixFlags = "--extra-experimental-features \"nix-command flakes\"";
       in {
