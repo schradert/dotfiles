@@ -9,6 +9,19 @@ with nix; {
     example = "my-nixos-server";
     description = mdDoc "NixOS machine to use as a root server for secret storage";
   };
+  config.perSystem.canivete.opentofu.workspaces.cloud = {
+    plugins = ["Backblaze/b2"];
+    modules.backblaze = {
+      provider.b2 = {
+        application_key = "ref+sops://.canivete/sops/default.yaml#/backblaze/application_key";
+        application_key_id = "ref+sops://.canivete/sops/default.yaml#/backblaze/application_key_id";
+      };
+      resource.b2_bucket.main = {
+        bucket_name = "t0rdos";
+        bucket_type = "allPrivate";
+      };
+    };
+  };
   config.flake.homeModules.sshfs = {
     config,
     flake,

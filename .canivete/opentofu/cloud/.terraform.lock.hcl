@@ -1,6 +1,14 @@
 # This file is maintained automatically by "tofu init".
 # Manual edits may be lost in future updates.
 
+provider "registry.opentofu.org/backblaze/b2" {
+  version     = "0.8.9"
+  constraints = "0.8.9"
+  hashes = [
+    "h1:IcNzax4FngNctjBbYG3g62FIA8i1Ju0RTm8LPvs/7pM=",
+  ]
+}
+
 provider "registry.opentofu.org/cloudflare/cloudflare" {
   version     = "4.28.0"
   constraints = "4.28.0"
@@ -22,13 +30,5 @@ provider "registry.opentofu.org/integrations/github" {
   constraints = "6.2.1"
   hashes = [
     "h1:oJyNnCADFGTCRD6fKvR+UAx7a4uoVTCgI0ooSbEotkg=",
-  ]
-}
-
-provider "registry.opentofu.org/opentofu/external" {
-  version     = "2.3.3"
-  constraints = "2.3.3"
-  hashes = [
-    "h1:Mi/Gy5vIR6WK9YfgnL2Lw9s4ZbQxH7ATKiOGtEfqfck=",
   ]
 }

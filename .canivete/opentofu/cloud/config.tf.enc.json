@@ -4,29 +4,30 @@
       "main": {
         "name": "Tristanschrader@proton.me's Account"
       }
-    },
-    "external": {
-      "sops_decrypt": {
-        "program": [
-          "/nix/store/crs76r1gifq0ay48v4kvws42fc59gmx5-bash-5.2p26/bin/bash",
-          "-c",
-          "root=\"$(/nix/store/v164ksb5p2cp4hr18nadn1i7zln9p23h-git-2.44.0/bin/git rev-parse --show-toplevel)\"\n/nix/store/la29b8q08v8fycymcync5z570ikwfvlm-sops-3.8.1/bin/sops --config \"$root/.sops.yaml\" --decrypt \"$root/.canivete/sops/default.yaml\" | /nix/store/1b751xllcmzsfnqmv3k12ggyjwrgi93h-python3.11-yq-3.2.3/bin/yq\n"
-        ]
-      }
     }
   },
   "provider": {
+    "b2": {
+      "application_key": "ref+sops://.canivete/sops/default.yaml#/backblaze/application_key",
+      "application_key_id": "ref+sops://.canivete/sops/default.yaml#/backblaze/application_key_id"
+    },
     "cloudflare": {
-      "api_token": "${ data.external.sops_decrypt.result[\"cloudflare_pat\"] }"
+      "api_token": "ref+sops://.canivete/sops/default.yaml#/cloudflare_pat"
     },
     "github": {
-      "token": "${ data.external.sops_decrypt.result[\"github_pat\"] }"
+      "token": "ref+sops://.canivete/sops/default.yaml#/github_pat"
     },
     "gitlab": {
-      "token": "${ data.external.sops_decrypt.result[\"gitlab_pat\"] }"
+      "token": "ref+sops://.canivete/sops/default.yaml#/gitlab_pat"
     }
   },
   "resource": {
+    "b2_bucket": {
+      "main": {
+        "bucket_name": "t0rdos",
+        "bucket_type": "allPrivate"
+      }
+    },
     "cloudflare_record": {
       "base": {
         "name": "@",
@@ -90,13 +91,13 @@
       }
     },
     "required_providers": {
+      "b2": {
+        "source": "Backblaze/b2",
+        "version": "0.8.9"
+      },
       "cloudflare": {
         "source": "cloudflare/cloudflare",
         "version": "4.28.0"
-      },
-      "external": {
-        "source": "opentofu/external",
-        "version": "2.3.3"
       },
       "github": {
         "source": "integrations/github",
