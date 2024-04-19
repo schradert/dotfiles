@@ -82,19 +82,23 @@
       (".m" "Meeting" entry (file "agenda/main.org") "* PLANNED %? :meeting:\n%T\n")
       ("b" "Bookmark" entry (file "bookmarks.org") "* %?\n")
     )
-    org-roam-catpure-templates '(
+    org-roam-capture-templates '(
       ("d" "default" plain
        "%?"
        :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-       :unnarrowed t))
+       :unnarrowed t)
       ("l" "programming languages" plain
        "* Characteristics\n\n- Family: %?\n- Inspired by: \n\n* Reference:\n\n"
        :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-       :unnarrowed t))
-      ("b" "boot notes" plain
-       "\n* Source\n\nAuthor: %^{Author}\nTitle: ${title}\nYear: %^{Year}\n\n* Summary\n\n%?"
+       :unnarrowed t)
+      ("b" "book notes" plain
+       (file "templates/book-notes.org")
        :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-       :unnarrowed t))
+       :unnarrowed t)
+      ("p" "project" plain
+       (file "templates/project.org")
+       :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Project")
+       :unnarrowed t)
     )
     org-roam-dailies-capture-templates '(
       ("d" "default" entry "* %<%I:%M %p>: %?"
