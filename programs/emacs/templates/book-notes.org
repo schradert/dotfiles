@@ -1,9 +1,0 @@
-* Source
-
-Author: %^{Author}
-Title: ${title}
-Year: %^{Year}
-
-* Summary
-
-%?
