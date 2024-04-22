@@ -44,9 +44,7 @@ with nix; {
             haskellPackages.cabal-install
             imagemagick
             ispell
-            isync
             ktlint
-            mu
             nil
             nixfmt
             nodePackages.js-beautify
