@@ -120,8 +120,9 @@
         "ll" #'org-super-links-link
         "li" #'org-super-links-insert-link
         "lI" #'org-super-links-quick-insert-inline-link
-        "ls" #'org-super-links-store-link)
   (defun mark-as-project ()
+        "ls" #'org-super-links-store-link
+        "ds" #'my/org-schedule)
     "This function makes sure that the current heading has
 (1) the tag :project:
 (2) has property COOKIE_DATA set to \"todo recursive\"
@@ -155,6 +156,34 @@
       )
     )
   )
+  (defun my/org-schedule ()
+    "Prompt for a datetime and insert it into a SCHEDULE drawer under the current Org heading."
+    (interactive)
+    (unless (eq major-mode 'org-mode)
+      (error "Not in Org mode"))
+    (let* ((drawer "SCHEDULE")
+           drawer-beg
+           drawer-end)
+      ;; Move to the beginning of the current heading
+      (org-back-to-heading t)
+      ;; Look for an existing SCHEDULE drawer
+      (if (re-search-forward (format ":%s:" drawer) (save-excursion (org-end-of-subtree t t)) t)
+          (setq drawer-beg (match-beginning 0)
+                drawer-end (save-excursion
+                             (goto-char (match-end 0))
+                             (if (re-search-forward ":END:" nil t)
+                                 (point)
+                               (user-error "Drawer %s is not properly closed" drawer))))
+        ;; If no drawer found, create one
+        (goto-char (org-end-of-subtree t t))
+        (setq drawer-beg (point-marker))
+        (insert (format ":%s:\n:END:\n" drawer)))
+      ;; Go to the end of the drawer and insert the date
+      (goto-char drawer-beg)
+      (end-of-line)
+      (insert "\n")
+      (org-time-stamp nil)
+      (org-indent-region drawer-beg (point))))
 )
 
 (defun my/org-habit-is-habit-subheading ()
