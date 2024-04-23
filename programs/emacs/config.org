@@ -175,7 +175,9 @@
                                  (point)
                                (user-error "Drawer %s is not properly closed" drawer))))
         ;; If no drawer found, create one
-        (goto-char (org-end-of-subtree t t))
+        (org-back-to-heading t)
+        (end-of-line)
+        (insert "\n")
         (setq drawer-beg (point-marker))
         (insert (format ":%s:\n:END:\n" drawer)))
       ;; Go to the end of the drawer and insert the date
