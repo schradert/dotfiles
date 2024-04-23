@@ -80,7 +80,6 @@
     org-agenda-skip-deadline-if-done t
     org-agenda-include-diary t
     org-agenda-start-day nil
-    org-agenda-files (directory-files-recursively org-roam-directory "\\.org$")
     org-agenda-show-future-repeats nil
   )
   (map! :map org-mode-map
@@ -196,6 +195,8 @@
 ** General
 #+begin_src emacs-lisp
 (after! org
+  (org-roam-db-autosync-mode)
+
   (setq
       org-roam-directory (concat org-directory "/roam")
       org-roam-capture-templates `(
@@ -222,7 +223,12 @@
       org-roam-dailies-capture-templates '(
         ("d" "default" entry "* %<%I:%M %p>: %?"
          :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
-  (org-roam-db-autosync-mode))
+
+  (defun my/org-roam-update-agenda-files ()
+    "Set org-agenda-files to all org-roam files"
+    (setq org-agenda-files (directory-files-recursively org-roam-directory "\\.org$")))
+  (add-hook! 'org-roam-capture-new-node-hook 'my/org-roam-update-agenda-files)
+  (my/org-roam-update-agenda-files)
 #+end_src
 ** org-roam-ui
 #+begin_src emacs-lisp :tangle packages.el
