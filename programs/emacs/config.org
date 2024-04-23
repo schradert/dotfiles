@@ -72,39 +72,7 @@
     org-todo-repeat-to-state "PLANNED"
     org-columns-default-format "%40ITEM(Task) %TODO %3PRIORITY %17Effort{:} %CLOCKSUM %CLOCKSUM_T %TAGS"
     org-agenda-columns-add-appointments-to-effort-sum t
-    org-capture-templates '(
-      ("w" "Work")
-      ("wt" "Work" entry (file "agenda/work.org") "* %?\n" :clock-in t :clock-resume t)
-      ("wm" "Meeting" entry (file "agenda/work.org") "* PLANNED %? :meeting:\n%T\n")
-      ("." "Personal")
-      (".t" "Task" entry (file "agenda/main.org") "* %?\n" :clock-in t :clock-resume t)
-      (".m" "Meeting" entry (file "agenda/main.org") "* PLANNED %? :meeting:\n%T\n")
-      ("b" "Bookmark" entry (file "bookmarks.org") "* %?\n")
-    )
-    org-roam-capture-templates '(
-      ("d" "default" plain
-       "%?"
-       :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-       :unnarrowed t)
-      ("l" "programming languages" plain
-       "* Characteristics\n\n- Family: %?\n- Inspired by: \n\n* Reference:\n\n"
-       :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-       :unnarrowed t)
-      ("b" "book notes" plain
-       (file "templates/book-notes.org")
-       :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-       :unnarrowed t)
-      ("p" "project" plain
-       (file "templates/project.org")
-       :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: Project")
-       :unnarrowed t)
-    )
-    org-roam-dailies-capture-templates '(
-      ("d" "default" entry "* %<%I:%M %p>: %?"
-       :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))
-    )
     org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id
-    org-roam-directory (concat org-directory "/roam")
     org-super-links-related-into-drawer t
     org-super-links-link-prefix 'org-super-links-link-prefix-timestamp
     org-super-links-search-function 'helm-org-ql-org-directory
@@ -224,6 +192,37 @@
 #+end_src
 
 * Roam
+** General
+#+begin_src emacs-lisp
+(after! org
+  (setq
+      org-roam-directory (concat org-directory "/roam")
+      org-roam-capture-templates `(
+        ("d" "default" plain
+         "%?"
+         :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+         :unnarrowed t)
+        ("l" "programming languages" plain
+         "* Characteristics\n\n- Family: %?\n- Inspired by: \n\n* Reference:\n\n"
+         :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+         :unnarrowed t)
+        ("b" "book notes" plain
+         (file ,(concat org-directory "/templates/book-notes.org"))
+         :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+         :unnarrowed t)
+        ("a" "agenda" plain
+         (file ,(concat org-directory "/templates/agenda.org"))
+         :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: project\n#+category: ${title}")
+         :unnarrowed t)
+        ("i" "inbox" entry
+         (file ,(concat org-directory "/templates/inbox.org"))
+         :target (file "inbox.org")
+         :unnarrowed t))
+      org-roam-dailies-capture-templates '(
+        ("d" "default" entry "* %<%I:%M %p>: %?"
+         :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
+  (org-roam-db-autosync-mode))
+#+end_src
 ** org-roam-ui
 #+begin_src emacs-lisp :tangle packages.el
 (unpin! org-roam)
