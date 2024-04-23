@@ -65,7 +65,6 @@
 (after! org
   (setq
     org-directory "~/sabedoria"
-    org-agenda-files (list (expand-file-name "agenda" org-directory))
     org-log-into-drawer t
     org-todo-keywords '(
       (sequence "DRAFTING(d@)" "PLANNED(p!)" "IN-PROGRESS(i!/@)" "WAITING(w@)" "|" "COMPLETED(c@)" "REJECTED(r@)" "MISSED(m@)")
@@ -113,6 +112,7 @@
     org-agenda-skip-deadline-if-done t
     org-agenda-include-diary t
     org-agenda-start-day nil
+    org-agenda-files (directory-files-recursively org-roam-directory "\\.org$")
   )
   (map! :map org-mode-map
         :localleader
