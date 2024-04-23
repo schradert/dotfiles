@@ -1,7 +1,6 @@
 * Extra Packages (on macOS)
 #+begin_src emacs-lisp :tangle packages.el
 (package! editorconfig)
-(package! org-roam-ui)
 (package! peep-dired)
 (package! rainbow-mode)
 (package! kurecolor)
@@ -221,6 +220,22 @@
            (require 'org-linker-edna))
 #+end_src
 
+* Roam
+** org-roam-ui
+#+begin_src emacs-lisp :tangle packages.el
+(unpin! org-roam)
+(package! org-roam-ui)
+#+end_src
+#+begin_src emacs-lisp
+(use-package! websocket :after org-roam)
+(use-package! org-roam-ui
+  :after org-roam
+  :config
+  (setq org-roam-ui-sync-theme t
+        org-roam-ui-follow t
+        org-roam-ui-update-on-save t
+        org-roam-ui-open-on-start t))
+#+end_src
 * Vterm
 ** Key bindings
 #+begin_src emacs-lisp
