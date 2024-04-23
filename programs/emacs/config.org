@@ -81,6 +81,7 @@
     org-agenda-include-diary t
     org-agenda-start-day nil
     org-agenda-files (directory-files-recursively org-roam-directory "\\.org$")
+    org-agenda-show-future-repeats nil
   )
   (map! :map org-mode-map
         :localleader
