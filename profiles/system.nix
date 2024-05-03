@@ -9,6 +9,6 @@ with nix; {
     flake.systemModules.default.nix.extraOptions = ''
       experimental-features = nix-command flakes
     '';
-    canivete.pkgs.config.allowUnfreePredicate = pkg: elem (getName pkg) ["android-studio-stable" "discord" "raycast" "slack" "spotify"];
+    canivete.pkgs.config.allowUnfreePredicate = pkg: elem (getName pkg) ["android-studio-stable" "discord" "raycast" "slack" "spotify" "beeper"];
   };
 }

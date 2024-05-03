@@ -5,14 +5,14 @@
         "program": [
           "/nix/store/crs76r1gifq0ay48v4kvws42fc59gmx5-bash-5.2p26/bin/bash",
           "-c",
-          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/wsd50bvib2c86q8d256kqkjv3pmcvkpg-source#darwinConfigurations.morgenmuffel.config.system.build.toplevel | \\\n    /nix/store/l7zwv2ispr3x3cr9w2zd3jz7zgm3kjpp-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
+          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/dc78kr3fdpbjim11bx5qfl4w67g2sr0v-source#darwinConfigurations.morgenmuffel.config.system.build.toplevel | \\\n    /nix/store/l7zwv2ispr3x3cr9w2zd3jz7zgm3kjpp-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
         ]
       },
       "home_eval": {
         "program": [
           "/nix/store/crs76r1gifq0ay48v4kvws42fc59gmx5-bash-5.2p26/bin/bash",
           "-c",
-          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/wsd50bvib2c86q8d256kqkjv3pmcvkpg-source#legacyPackages.aarch64-darwin.homeConfigurations.tristan.config.home.activationPackage | \\\n    /nix/store/l7zwv2ispr3x3cr9w2zd3jz7zgm3kjpp-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
+          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/dc78kr3fdpbjim11bx5qfl4w67g2sr0v-source#legacyPackages.aarch64-darwin.homeConfigurations.tristan.config.home.activationPackage | \\\n    /nix/store/l7zwv2ispr3x3cr9w2zd3jz7zgm3kjpp-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
         ]
       }
     }
@@ -22,7 +22,7 @@
       "darwin_switch": {
         "provisioner": {
           "local-exec": {
-            "command": "nix --extra-experimental-features \"nix-command flakes\" run /nix/store/87clbsxcf2wawlhi49k96ffb805sa3v0-source# -- switch --flake /nix/store/wsd50bvib2c86q8d256kqkjv3pmcvkpg-source#morgenmuffel"
+            "command": "nix --extra-experimental-features \"nix-command flakes\" run /nix/store/87clbsxcf2wawlhi49k96ffb805sa3v0-source# -- switch --flake /nix/store/dc78kr3fdpbjim11bx5qfl4w67g2sr0v-source#morgenmuffel"
           }
         },
         "triggers": {
@@ -35,7 +35,7 @@
         ],
         "provisioner": {
           "local-exec": {
-            "command": "nix --extra-experimental-features \"nix-command flakes\" run /nix/store/wsd50bvib2c86q8d256kqkjv3pmcvkpg-source#homeConfigurations.tristan.activationPackage"
+            "command": "nix --extra-experimental-features \"nix-command flakes\" run /nix/store/dc78kr3fdpbjim11bx5qfl4w67g2sr0v-source#homeConfigurations.tristan.activationPackage"
           }
         },
         "triggers": {

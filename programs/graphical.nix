@@ -35,6 +35,7 @@ with lib; {
         home.packages = with pkgs; [
           android-studio
           anki
+          beeper
           bitwarden
           brave
           element-desktop

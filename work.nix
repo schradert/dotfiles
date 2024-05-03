@@ -24,6 +24,7 @@ with nix; {
           homebrew.casks = [
             "android-studio"
             "anki"
+            "beeper"
             "bitwarden"
             "brave-browser"
             "clickup"
