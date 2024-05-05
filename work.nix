@@ -20,7 +20,7 @@ with nix; {
         ++ toList {
           networking.hostName = "morgenmuffel";
           homebrew.enable = true;
-          homebrew.brews = ["libtool"];
+          homebrew.brews = ["libtool" "vfkit"];
           homebrew.casks = [
             "android-studio"
             "anki"
@@ -33,14 +33,16 @@ with nix; {
             "godot"
             "google-drive"
             "lulu"
-            "podman-desktop"
             "protonvpn"
             "session"
             "signal"
             "teamviewer"
             "zotero"
           ];
-          # homebrew.taps = ["dracula/install"];
+          homebrew.taps = [
+            "cfergeau/crc"
+            # "dracula/install"
+          ];
           nix.settings.trusted-users = [config.people.me];
           nix.useDaemon = true;
           system.defaults.dock = {
@@ -108,6 +110,15 @@ with nix; {
                ${gcloud} auth configure-docker
             fi
           '';
+        home.sessionVariables.XDG_RUNTIME_DIR = "${home.config.home.homeDirectory}/.run";
+        home.activation.podmanMacInstallation = home.lib.hm.dag.entryAfter ["writeBoundary"] ''
+          rootSock=/var/run/docker.sock
+          dockerSockDir="${home.config.home.homeDirectory}/.docker/run"
+          podmanSockDir="${home.config.home.sessionVariables.XDG_RUNTIME_DIR}/podman"
+          mkdir -p "$dockerSockDir" "$podmanSockDir"
+          ln -sf $rootSock "$dockerSockDir/docker.sock"
+          ln -sf $rootSock "$podmanSockDir/podman.sock"
+        '';
         home.packages = with pkgs; [google-cloud-sdk gke-gcloud-auth-plugin pngpaste python312 raycast spotify];
         home.shellAliases.futoffo = "\"${home.config.home.homeDirectory}/Google Drive/Shared drives/software/futoffo/start_docker.command\"";
         launchd.agents = let
@@ -124,8 +135,6 @@ with nix; {
           gdrive.config = config // {Program = "/Applications/Google Drive.app/Contents/MacOS/Google Drive";};
           lulu.enable = true;
           lulu.config = config // {Program = "/Applications/LuLu.app/Contents/MacOS/LuLu";};
-          podman.enable = true;
-          podman.config = config // {Program = "/Applications/Podman Desktop.app/Contents/MacOS/Podman Desktop";};
           protonvpn.enable = true;
           protonvpn.config = config // {Program = "/Applications/ProtonVPN.app/Contents/MacOS/ProtonVPN";};
           raycast.enable = true;

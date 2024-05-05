@@ -40,7 +40,6 @@ with lib; {
           brave
           element-desktop
           godot_4
-          podman-desktop
           protonvpn-gui
           session-desktop
           signal-desktop

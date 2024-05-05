@@ -1,4 +1,22 @@
 {
+  flake.overlays.podman = _: prev:
+    with prev; {
+      # TODO Build vfkit into podman on Darwin (undeclared identifiers?)
+      # NOTE: https://github.com/NixOS/nixpkgs/issues/305868
+      # vfkit = buildGoModule rec {
+      #   pname = "vfkit";
+      #   version = "0.5.1";
+      #   src = fetchFromGitHub {
+      #     owner = "crc-org";
+      #     repo = pname;
+      #     rev = "v${version}";
+      #     hash = "sha256-9iPr9VhN60B6kBikdEIFAs5mMH+VcmnjGhLuIa3A2JU=";
+      #   };
+      #   vendorHash = "sha256-6O1T9aOCymYXGAIR/DQBWfjc2sCyU/nZu9b1bIuXEps=";
+      #   buildInputs = lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [Virtualization Cocoa]);
+      #   meta.mainProgram = pname;
+      # };
+    };
   flake.homeModules.default = {pkgs, ...}: {
     home.packages = with pkgs; [
       aria2
@@ -11,6 +29,7 @@
       iftop
       inxi
       k3d
+      lazydocker
       libtool
       lsof
       nmap
@@ -18,6 +37,7 @@
       openssl
       podman
       podman-compose
+      podman-tui
       procps
       ranger
       rclone
