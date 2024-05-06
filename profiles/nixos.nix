@@ -8,7 +8,7 @@
 with nix; {
   options.domain = mkOption {
     type = strMatching "^[a-z0-9\-]+\.[a-z]{2,}$";
-    description = mdDoc "Base domain for NixOS nodes and services";
+    description = "Base domain for NixOS nodes and services";
   };
   options.nixos = mkOption {
     type = attrsOf (submodule ({name, ...}: {
@@ -18,22 +18,22 @@ with nix; {
           hostname = mkOption {
             type = str;
             default = name;
-            description = mdDoc "Identifier of machine";
+            description = "Identifier of machine";
           };
           user = mkOption {
             type = str;
             default = config.people.me;
-            description = mdDoc "User to connect to host as";
+            description = "User to connect to host as";
           };
           identityFile = mkOption {
             type = str;
             default = "~/.ssh/${config.people.me}";
-            description = mdDoc "SSH private key";
+            description = "SSH private key";
           };
           proxyJump = mkOption {
             type = str;
             default = config.domain;
-            description = mdDoc "Relay server for SSH jump connection";
+            description = "Relay server for SSH jump connection";
           };
         };
         module = mkOption {type = deferredModule;};
@@ -77,9 +77,9 @@ with nix; {
             provisioner.local-exec.command = ''
               sshFlags="-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new"
               export NIX_SSHOPTS="$sshFlags"
-              nix ${nixFlags} copy --derivation --to ssh://${config.root} ${drv}
+              nix ${nixFlags} copy --derivation --to ssh-ng://${config.root} ${drv}
               closure=$(ssh $sshFlags ${config.root} nix-store --verbose --realise ${drv})
-              nix ${nixFlags} copy --from ssh://${config.root} --to ssh://${hostname} "$closure"
+              nix ${nixFlags} copy --from ssh-ng://${config.root} --to ssh-ng://${hostname} "$closure"
               ssh $sshFlags ${hostname} sudo nix-env --profile /nix/var/nix/profiles/system --set "$closure"
               ssh $sshFlags ${hostname} sudo systemd-run ${concatStringsSep " " systemdFlags} "$closure/bin/switch-to-configuration" switch
             '';

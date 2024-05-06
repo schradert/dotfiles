@@ -16,7 +16,7 @@
         type = str;
         default = "en0";
         example = "wlan0";
-        description = mdDoc "Network interface to display a local IP for";
+        description = "Network interface to display a local IP for";
       };
     };
     config = lib.mkIf macchina.enable {

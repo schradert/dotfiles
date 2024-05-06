@@ -9,7 +9,7 @@ with nix; {
   };
   options.flake = mkSubmoduleOptions {
     droidModules = mkModulesOption {
-      description = mdDoc "Nix-on-Droid modules";
+      description = "Nix-on-Droid modules";
     };
   };
   config.flake.droidModules.default = {

@@ -46,15 +46,14 @@ with nix; {
             ispell
             ktlint
             nil
-            nixfmt
+            nixfmt-classic
             nodePackages.js-beautify
             nodePackages.stylelint
             pandoc
             pipenv
-            python311Packages.grip
-            python311Packages.isort
-            python311Packages.nose
-            python311Packages.pytest
+            python312Packages.grip
+            python312Packages.isort
+            python312Packages.pytest
             rust-analyzer
             rustc
             shellcheck

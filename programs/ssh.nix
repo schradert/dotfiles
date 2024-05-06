@@ -7,7 +7,7 @@ flake @ {
 with nix; {
   flake.homeModules.hostname.options.dotfiles.hostname = mkOption {
     type = str;
-    description = mdDoc "The hostname of the relevant machine";
+    description = "The hostname of the relevant machine";
     example = "another-server";
   };
   perSystem.canivete.opentofu.workspaces.cloud = {

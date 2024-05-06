@@ -2,7 +2,7 @@
 with nix; {
   options.flake = mkSubmoduleOptions {
     systemModules = mkModulesOption {
-      description = mdDoc "Modules common to system config tools (nixos, nix-darwin, nix-on-droid)";
+      description = "Modules common to system config tools (nixos, nix-darwin, nix-on-droid)";
     };
   };
   config = {

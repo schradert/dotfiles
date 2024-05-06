@@ -3,16 +3,16 @@
     "external": {
       "nixos_eval_chilldom": {
         "program": [
-          "/nix/store/crs76r1gifq0ay48v4kvws42fc59gmx5-bash-5.2p26/bin/bash",
+          "/nix/store/93haq4cas597hmsmvq3g59rjf02c5frw-bash-5.2p26/bin/bash",
           "-c",
-          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/4mzw0g36qaxsjvxgpccbr5yhj3arp8lb-source#nixosConfigurations.chilldom.config.system.build.toplevel | \\\n    /nix/store/l7zwv2ispr3x3cr9w2zd3jz7zgm3kjpp-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
+          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/nh4gm72bkji9in5v40zr2dl7x6jch90h-source#nixosConfigurations.chilldom.config.system.build.toplevel | \\\n    /nix/store/xa19z3h3jph7gi92m4p0dc0b5zkm17a0-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
         ]
       },
       "nixos_eval_sirver": {
         "program": [
-          "/nix/store/crs76r1gifq0ay48v4kvws42fc59gmx5-bash-5.2p26/bin/bash",
+          "/nix/store/93haq4cas597hmsmvq3g59rjf02c5frw-bash-5.2p26/bin/bash",
           "-c",
-          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/4mzw0g36qaxsjvxgpccbr5yhj3arp8lb-source#nixosConfigurations.sirver.config.system.build.toplevel | \\\n    /nix/store/l7zwv2ispr3x3cr9w2zd3jz7zgm3kjpp-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
+          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/nh4gm72bkji9in5v40zr2dl7x6jch90h-source#nixosConfigurations.sirver.config.system.build.toplevel | \\\n    /nix/store/xa19z3h3jph7gi92m4p0dc0b5zkm17a0-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
         ]
       }
     }
@@ -22,7 +22,7 @@
       "nixos_switch_chilldom": {
         "provisioner": {
           "local-exec": {
-            "command": "sshFlags=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new\"\nexport NIX_SSHOPTS=\"$sshFlags\"\nnix --extra-experimental-features \"nix-command flakes\" copy --derivation --to ssh://sirver ${ data.external.nixos_eval_chilldom.result.drv }\nclosure=$(ssh $sshFlags sirver nix-store --verbose --realise ${ data.external.nixos_eval_chilldom.result.drv })\nnix --extra-experimental-features \"nix-command flakes\" copy --from ssh://sirver --to ssh://chilldom \"$closure\"\nssh $sshFlags chilldom sudo nix-env --profile /nix/var/nix/profiles/system --set \"$closure\"\nssh $sshFlags chilldom sudo systemd-run --collect --no-ask-password --pipe --quiet --same-dir --wait --setenv LOCALE_ARCHIVE --setenv NIXOS_INSTALL_BOOTLOADER= --service-type exec --unit nixos-switch \"$closure/bin/switch-to-configuration\" switch\n"
+            "command": "sshFlags=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new\"\nexport NIX_SSHOPTS=\"$sshFlags\"\nnix --extra-experimental-features \"nix-command flakes\" copy --derivation --to ssh-ng://sirver ${ data.external.nixos_eval_chilldom.result.drv }\nclosure=$(ssh $sshFlags sirver nix-store --verbose --realise ${ data.external.nixos_eval_chilldom.result.drv })\nnix --extra-experimental-features \"nix-command flakes\" copy --from ssh-ng://sirver --to ssh://chilldom \"$closure\"\nssh $sshFlags chilldom sudo nix-env --profile /nix/var/nix/profiles/system --set \"$closure\"\nssh $sshFlags chilldom sudo systemd-run --collect --no-ask-password --pipe --quiet --same-dir --wait --setenv LOCALE_ARCHIVE --setenv NIXOS_INSTALL_BOOTLOADER= --service-type exec --unit nixos-switch \"$closure/bin/switch-to-configuration\" switch\n"
           }
         },
         "triggers": {
@@ -32,7 +32,7 @@
       "nixos_switch_sirver": {
         "provisioner": {
           "local-exec": {
-            "command": "sshFlags=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new\"\nexport NIX_SSHOPTS=\"$sshFlags\"\nnix --extra-experimental-features \"nix-command flakes\" copy --derivation --to ssh://sirver ${ data.external.nixos_eval_sirver.result.drv }\nclosure=$(ssh $sshFlags sirver nix-store --verbose --realise ${ data.external.nixos_eval_sirver.result.drv })\nnix --extra-experimental-features \"nix-command flakes\" copy --from ssh://sirver --to ssh://sirver \"$closure\"\nssh $sshFlags sirver sudo nix-env --profile /nix/var/nix/profiles/system --set \"$closure\"\nssh $sshFlags sirver sudo systemd-run --collect --no-ask-password --pipe --quiet --same-dir --wait --setenv LOCALE_ARCHIVE --setenv NIXOS_INSTALL_BOOTLOADER= --service-type exec --unit nixos-switch \"$closure/bin/switch-to-configuration\" switch\n"
+            "command": "sshFlags=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new\"\nexport NIX_SSHOPTS=\"$sshFlags\"\nnix --extra-experimental-features \"nix-command flakes\" copy --derivation --to ssh-ng://sirver ${ data.external.nixos_eval_sirver.result.drv }\nclosure=$(ssh $sshFlags sirver nix-store --verbose --realise ${ data.external.nixos_eval_sirver.result.drv })\nnix --extra-experimental-features \"nix-command flakes\" copy --from ssh-ng://sirver --to ssh://sirver \"$closure\"\nssh $sshFlags sirver sudo nix-env --profile /nix/var/nix/profiles/system --set \"$closure\"\nssh $sshFlags sirver sudo systemd-run --collect --no-ask-password --pipe --quiet --same-dir --wait --setenv LOCALE_ARCHIVE --setenv NIXOS_INSTALL_BOOTLOADER= --service-type exec --unit nixos-switch \"$closure/bin/switch-to-configuration\" switch\n"
           }
         },
         "triggers": {

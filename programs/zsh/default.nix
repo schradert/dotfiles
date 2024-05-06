@@ -9,7 +9,7 @@
       options.programs.zsh.initExtraLines = mkOption {
         type = listOf str;
         default = [];
-        description = mdDoc "List implementation of programs.zsh.initExtra to allow merging";
+        description = "List implementation of programs.zsh.initExtra to allow merging";
       };
       config.programs.zsh = {
         enable = true;

@@ -7,7 +7,7 @@ with nix; {
   options.root = mkOption {
     type = enum (attrNames config.nixos);
     example = "my-nixos-server";
-    description = mdDoc "NixOS machine to use as a root server for secret storage";
+    description = "NixOS machine to use as a root server for secret storage";
   };
   config.perSystem.canivete.opentofu.workspaces.cloud = {
     plugins = ["Backblaze/b2"];
