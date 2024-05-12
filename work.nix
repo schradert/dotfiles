@@ -45,6 +45,7 @@ with nix; {
           ];
           nix.settings.trusted-users = [config.people.me];
           nix.useDaemon = true;
+          services.karabiner-elements.enable = true;
           system.defaults.dock = {
             autohide = true;
             orientation = "left";
