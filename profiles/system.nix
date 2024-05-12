@@ -6,9 +6,12 @@ with nix; {
     };
   };
   config = {
-    flake.systemModules.default.nix.extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
+    flake.systemModules.default = {pkgs, ...}: {
+      nix.extraOptions = ''
+        experimental-features = nix-command flakes
+      '';
+      nix.package = pkgs.nixVersions.latest;
+    };
     canivete.pkgs.config.allowUnfreePredicate = pkg: elem (getName pkg) ["android-studio-stable" "discord" "raycast" "slack" "spotify" "beeper"];
   };
 }
