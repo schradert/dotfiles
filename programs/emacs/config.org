@@ -65,6 +65,7 @@
 (after! org
   (setq
     org-directory "~/sabedoria"
+    org-roam-directory (concat org-directory "/roam")
     org-global-properties '(("Effort_ALL" . "0 0:15 0:30 1:00 2:00 3:00 4:00 5:00 6:00 7:00"))
     org-log-into-drawer t
     org-todo-keywords '(
@@ -82,16 +83,29 @@
     org-agenda-include-diary t
     org-agenda-start-day nil
     org-agenda-show-future-repeats nil
-  )
+    org-agenda-custom-commands '(("g" "Get Things Done (GTD)"
+                                  ((agenda "" ((org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline))
+                                               (org-deadline-warning-days 0)))
+                                   (todo "PLANNED" ((org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline))
+                                                    (org-agenda-prefix-format "  %i %-12:c [%e] ")
+                                                    (org-agenda-overriding-header "\nTasks\n")))
+                                   (agenda nil ((org-agenda-entry-types '(:deadline))
+                                                (org-agenda-format-date "")
+                                                (org-deadline-warning-days 7)
+                                                (org-agenda-skip-function '(org-agenda-skip-entry-if 'notregexp "\\* PLANNED"))
+                                                (org-agenda-overriding-header "\nDeadlines\n")))
+                                   (tags-todo "inbox" ((org-agenda-prefix-format "  %?-12t% s")
+                                                       (org-agenda-overriding-header "\nInbox\n")))
+                                   (tags "COMPLETED>=\"<today>\"" ((org-agenda-overriding-header "\nCompleted today\n")))))))
   (map! :map org-mode-map
         :localleader
         "le" #'org-linker-edna
         "ll" #'org-super-links-link
         "li" #'org-super-links-insert-link
         "lI" #'org-super-links-quick-insert-inline-link
-  (defun mark-as-project ()
         "ls" #'org-super-links-store-link
         "ds" #'my/org-schedule)
+  (defun my/mark-as-project ()
     "This function makes sure that the current heading has
 (1) the tag :project:
 (2) has property COOKIE_DATA set to \"todo recursive\"
@@ -199,7 +213,6 @@
   (org-roam-db-autosync-mode)
 
   (setq
-      org-roam-directory (concat org-directory "/roam")
       org-roam-capture-templates `(
         ("d" "default" plain
          "%?"
@@ -230,6 +243,57 @@
     (setq org-agenda-files (directory-files-recursively org-roam-directory "\\.org$")))
   (add-hook! 'org-roam-capture-new-node-hook 'my/org-roam-update-agenda-files)
   (my/org-roam-update-agenda-files)
+
+  (defun my/org-roam-node-insert-immediate (arg &rest args)
+    "Create link to node without opening a buffer to edit it"
+    (interactive "P")
+    (let ((args (cons arg args))
+          (org-roam-capture-templates (list (append (car org-roam-capture-templates)
+                                                    '(:immediate-finish t)))))
+      (apply #'org-roam-node-insert args)))
+
+  (defun my/org-roam-filter-by-tag (tag-name)
+    "Filter function for org-roam nodes by name of a tag"
+    (lambda (node) (member tag-name (org-roam-node-tags node))))
+
+  (defun my/org-roam-list-notes-by-tag (tag-name)
+    "List all org-roam notes by tag-name"
+    (mapcar #'org-roam-node-file
+            (seq-filter
+             (my/org-roam-filter-by-tag tag-name)
+             (org-roam-node-list))))
+
+  (defun my/org-roam-update-org-agenda-files ()
+    "Update org-agenda-files"
+    (interactive)
+    (setq org-agenda-files (my/org-roam-list-notes-by-tag "agenda"))))
+  ;; (defun my/org-roam-project-finalize-hook ()
+  ;;   ;; Remove temporary hook
+  ;;   (remove-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
+  ;;   ;; Add file to agenda list if capture confirmed
+  ;;   (unless org-note-abort
+  ;;     (with-current-buffer (org-capture-get :buffer)
+  ;;       (add-to-list 'org-agenda-files (buffer-file-name)))))
+  ;; (defun my/org-roam-find-project ()
+  ;;   (interactive)
+  ;;   (add-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
+  ;;   (org-roam-node-find
+  ;;    nil
+  ;;    nil
+  ;;    (my/org-roam-filter-by-tag "agenda")
+  ;;    :templates
+  ;;    '(("p" "project" plain
+  ;;       (file "templates/project.org")
+  ;;       :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: agenda\n#+category: ${title}")
+  ;;       :unnarrowed t))))
+  ;; (defun my/org-roam-capture-task ()
+  ;;   (interactive)
+  ;;   (add-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
+  ;;   (org-roam-capture-
+  ;;    :node (org-roam-node-read nil (my/org-roam-filter-by-tag "agenda"))
+  ;;    :templates
+  ;;    '(("p" "project" plain "* TODO %?"
+  ;;       :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+category: ${title}\n#+filetags: agenda project" ("Tasks"))))))
 #+end_src
 ** org-roam-ui
 #+begin_src emacs-lisp :tangle packages.el
@@ -324,11 +388,22 @@
 * mu4e
 ** msmtp
 #+begin_src emacs-lisp
+(after! org
+  (add-to-list 'org-capture-templates
+               '("@" "inbox [mu4e]" entry (file "inbox.org")
+                 "* DRAFTING Process \"%a\" %?\nEntered on %U"
+                 :clock-in t :clock-resume t)))
+(after! mu4e
+  (defun my/org-capture-mail ()
+    (interactive)
+    (call-interactively 'org-store-link)
+    (org-capture nil "@"))
+  (map! :map mu4e-headers-mode-map "X" #'my/org-capture-mail)
+  (map! :map mu4e-view-mode-map "X" #'my/org-capture-mail))
 ;; TODO figure out msmtp in emacs
-;; (after! mu4e
 ;;   (setq sendmail-program (executable-find "msmtp")
 ;;         send-mail-function #'smtpmail-send-it
 ;;         message-sendmail-f-is-evil t
 ;;         message-sendmail-extra-arguments '("--read-envelope-from")
-;;         message-send-mail-function #'message-send-mail-with-sendmail))
+;;         message-send-mail-function #'message-send-mail-with-sendmail)
 #+end_src
