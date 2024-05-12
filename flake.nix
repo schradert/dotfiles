@@ -65,5 +65,6 @@
         };
         droid.boox = {};
         droid.mobile = {};
+        perSystem.canivete.devShell.name = "dot";
       };
 }
