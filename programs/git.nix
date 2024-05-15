@@ -3,6 +3,7 @@
     config,
     flake,
     nix,
+    pkgs,
     ...
   }:
     with nix; {
@@ -23,6 +24,12 @@
             push.autoSetupRemote = true;
             color.status = "always";
             init.defaultBranch = "trunk";
+            user.signingKey = "${flake.inputs.self}/.canivete/sops/${config.home.username}.pub";
+            gpg.format = "ssh";
+            gpg.ssh.program = "${pkgs.openssh}/bin/ssh-keygen";
+            commit.gpgSign = true;
+            tag.gpgSign = true;
+            push.gpgSign = "if-asked";
           }
           // mapAttrs (_: setAttrByPath ["user"]) my.accounts;
       };
