@@ -30,6 +30,7 @@ with nix; {
             "clickup"
             # "dracula-wallpaper"
             "element"
+            "gitbutler"
             "godot"
             "google-drive"
             "lulu"

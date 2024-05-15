@@ -24,6 +24,22 @@
             push.autoSetupRemote = true;
             color.status = "always";
             init.defaultBranch = "trunk";
+            rerere.enabled = true;
+            column.ui = "auto";
+            branch.sort = "-committerdate";
+            fetch.writeCommitGraph = true;
+            core.untrackedCache = true;
+            core.fsmonitor = true;
+            rebase.autoSquash = true;
+            rebase.autoStash = true;
+            rebase.updateRefs = true;
+            maintenance.auto = false;
+            maintenance.strategy = "incremental";
+            # TODO run `git maintenance start` in all of these repositories
+            # TODO convert repositories to modules, maybe with categories?
+            maintenance.repo = map (dir: "${config.home.homeDirectory}/${dir}") ["dotfiles" "sage" "alexandria" "basement" "canivete" "umomi" "VILF" "dyspraxis" "sandbox" "sabedoria"];
+
+            # Signing
             user.signingKey = "${flake.inputs.self}/.canivete/sops/${config.home.username}.pub";
             gpg.format = "ssh";
             gpg.ssh.program = "${pkgs.openssh}/bin/ssh-keygen";
@@ -32,6 +48,7 @@
             push.gpgSign = "if-asked";
           }
           // mapAttrs (_: setAttrByPath ["user"]) my.accounts;
+        aliases.stash = "stash --all";
       };
       programs.gh = {
         enable = true;
@@ -42,6 +59,7 @@
           else "https";
         settings.aliases.co = "pr checkout";
       };
+      programs.gh-dash.enable = true;
       programs.git-cliff.enable = true;
       # TODO figure out how to use git-cliff and find what settings I prefer
       programs.git-cliff.settings = {};
