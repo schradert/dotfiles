@@ -1,0 +1,3 @@
+layout {
+    pane command="btop"
+}
