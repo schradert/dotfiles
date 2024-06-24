@@ -31,7 +31,7 @@ in {
                 age_key_file="${get_age_key_file pkgs}"
                 mkdir -p "$(dirname "$age_key_file")"
 
-                ${pkgs.ssh}/bin/ssh-keygen -t ed25519 -P "" -f "${ssh_key_file}" &> /dev/null
+                ${pkgs.openssh}/bin/ssh-keygen -t ed25519 -P "" -f "${ssh_key_file}" &> /dev/null
                 ${nix.getExe pkgs.ssh-to-age} -private-key -i "${ssh_key_file}" > "$age_key_file" 2> /dev/null
                 age_key_public="$(${pkgs.age}/bin/age-keygen -y "$get_age_key_file")"
 

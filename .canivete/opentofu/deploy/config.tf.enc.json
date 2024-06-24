@@ -1,0 +1,118 @@
+{
+  "data": {
+    "external": {
+      "darwin_morgenmuffel_system": {
+        "program": [
+          "/nix/store/93haq4cas597hmsmvq3g59rjf02c5frw-bash-5.2p26/bin/bash",
+          "-c",
+          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/04v4qvcwhra45zzmk4lgrf3406km4jkr-source#canivete.deploy.darwin.nodes.morgenmuffel.profiles.system.raw.config.system.build.toplevel | \\\n    /nix/store/xa19z3h3jph7gi92m4p0dc0b5zkm17a0-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
+        ]
+      },
+      "darwin_morgenmuffel_tristan": {
+        "program": [
+          "/nix/store/93haq4cas597hmsmvq3g59rjf02c5frw-bash-5.2p26/bin/bash",
+          "-c",
+          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/04v4qvcwhra45zzmk4lgrf3406km4jkr-source#canivete.deploy.darwin.nodes.morgenmuffel.profiles.tristan.raw.config.home.activationPackage | \\\n    /nix/store/xa19z3h3jph7gi92m4p0dc0b5zkm17a0-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
+        ]
+      },
+      "nixos_chilldom_system": {
+        "program": [
+          "/nix/store/93haq4cas597hmsmvq3g59rjf02c5frw-bash-5.2p26/bin/bash",
+          "-c",
+          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/04v4qvcwhra45zzmk4lgrf3406km4jkr-source#canivete.deploy.nixos.nodes.chilldom.profiles.system.raw.config.system.build.toplevel | \\\n    /nix/store/xa19z3h3jph7gi92m4p0dc0b5zkm17a0-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
+        ]
+      },
+      "nixos_sirver_system": {
+        "program": [
+          "/nix/store/93haq4cas597hmsmvq3g59rjf02c5frw-bash-5.2p26/bin/bash",
+          "-c",
+          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/04v4qvcwhra45zzmk4lgrf3406km4jkr-source#canivete.deploy.nixos.nodes.sirver.profiles.system.raw.config.system.build.toplevel | \\\n    /nix/store/xa19z3h3jph7gi92m4p0dc0b5zkm17a0-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
+        ]
+      }
+    }
+  },
+  "resource": {
+    "null_resource": {
+      "darwin_morgenmuffel_system": {
+        "provisioner": {
+          "local-exec": {
+            "command": "if [[ $(hostname) == morgenmuffel ]]; then\n    closure=$(nix-store --verbose --realise ${ data.external.darwin_morgenmuffel_system.result.drv })\nelse\n    export NIX_SSHOPTS=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new \"\n    nix --extra-experimental-features \"nix-command flakes\" copy --derivation --to ssh-ng://morgenmuffel ${ data.external.darwin_morgenmuffel_system.result.drv }\n    closure=$(ssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new morgenmuffel nix-store --verbose --realise ${ data.external.darwin_morgenmuffel_system.result.drv })\n    nix --extra-experimental-features \"nix-command flakes\" copy --from ssh-ng://morgenmuffel \"$closure\"\nfi\n\nif [[ $(hostname) == morgenmuffel ]]; then\n    sudo HOME=/var/root \"$closure/activate\"\nelse\n    export NIX_SSHOPTS=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new \"\n    nix --extra-experimental-features \"nix-command flakes\" copy --to ssh-ng://morgenmuffel \"$closure\"\n    ssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new morgenmuffel sudo HOME=/var/root \"$closure/activate\"\nfi\n"
+          }
+        },
+        "triggers": {
+          "drv": "${ data.external.darwin_morgenmuffel_system.result.drv }"
+        }
+      },
+      "darwin_morgenmuffel_tristan": {
+        "provisioner": {
+          "local-exec": {
+            "command": "if [[ $(hostname) == morgenmuffel ]]; then\n    closure=$(nix-store --verbose --realise ${ data.external.darwin_morgenmuffel_tristan.result.drv })\nelse\n    export NIX_SSHOPTS=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new \"\n    nix --extra-experimental-features \"nix-command flakes\" copy --derivation --to ssh-ng://morgenmuffel ${ data.external.darwin_morgenmuffel_tristan.result.drv }\n    closure=$(ssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new morgenmuffel nix-store --verbose --realise ${ data.external.darwin_morgenmuffel_tristan.result.drv })\n    nix --extra-experimental-features \"nix-command flakes\" copy --from ssh-ng://morgenmuffel \"$closure\"\nfi\n\nif [[ $(hostname) == morgenmuffel ]]; then\n    \"$closure/activate\"\nelse\n    export NIX_SSHOPTS=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new \"\n    nix --extra-experimental-features \"nix-command flakes\" copy --to ssh-ng://morgenmuffel \"$closure\"\n    ssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new morgenmuffel \"$closure/activate\"\nfi\n"
+          }
+        },
+        "triggers": {
+          "drv": "${ data.external.darwin_morgenmuffel_tristan.result.drv }"
+        }
+      },
+      "nixos_chilldom_system": {
+        "provisioner": {
+          "local-exec": {
+            "command": "if [[ $(hostname) == chilldom ]]; then\n    closure=$(nix-store --verbose --realise ${ data.external.nixos_chilldom_system.result.drv })\nelse\n    export NIX_SSHOPTS=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new -J trdos.me\"\n    nix --extra-experimental-features \"nix-command flakes\" copy --derivation --to ssh-ng://chilldom ${ data.external.nixos_chilldom_system.result.drv }\n    closure=$(ssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new chilldom nix-store --verbose --realise ${ data.external.nixos_chilldom_system.result.drv })\n    nix --extra-experimental-features \"nix-command flakes\" copy --from ssh-ng://chilldom \"$closure\"\nfi\n\nif [[ $(hostname) == chilldom ]]; then\n    sudo nix-env --profile /nix/var/nix/profiles/system --set \"$closure\"\nsudo systemd-run --collect --no-ask-password --pipe --quiet --same-dir --wait --setenv LOCALE_ARCHIVE --setenv NIXOS_INSTALL_BOOTLOADER= --service-type exec --unit nixos-switch \"$closure/bin/switch-to-configuration\" switch\nelse\n    export NIX_SSHOPTS=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new \"\n    nix --extra-experimental-features \"nix-command flakes\" copy --to ssh-ng://chilldom \"$closure\"\n    ssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new chilldom sudo nix-env --profile /nix/var/nix/profiles/system --set \"$closure\"\nssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new chilldom sudo systemd-run --collect --no-ask-password --pipe --quiet --same-dir --wait --setenv LOCALE_ARCHIVE --setenv NIXOS_INSTALL_BOOTLOADER= --service-type exec --unit nixos-switch \"$closure/bin/switch-to-configuration\" switch\nfi\n"
+          }
+        },
+        "triggers": {
+          "drv": "${ data.external.nixos_chilldom_system.result.drv }"
+        }
+      },
+      "nixos_sirver_system": {
+        "provisioner": {
+          "local-exec": {
+            "command": "if [[ $(hostname) == sirver ]]; then\n    closure=$(nix-store --verbose --realise ${ data.external.nixos_sirver_system.result.drv })\nelse\n    export NIX_SSHOPTS=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new \"\n    nix --extra-experimental-features \"nix-command flakes\" copy --derivation --to ssh-ng://sirver ${ data.external.nixos_sirver_system.result.drv }\n    closure=$(ssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new sirver nix-store --verbose --realise ${ data.external.nixos_sirver_system.result.drv })\n    nix --extra-experimental-features \"nix-command flakes\" copy --from ssh-ng://sirver \"$closure\"\nfi\n\nif [[ $(hostname) == sirver ]]; then\n    sudo nix-env --profile /nix/var/nix/profiles/system --set \"$closure\"\nsudo systemd-run --collect --no-ask-password --pipe --quiet --same-dir --wait --setenv LOCALE_ARCHIVE --setenv NIXOS_INSTALL_BOOTLOADER= --service-type exec --unit nixos-switch \"$closure/bin/switch-to-configuration\" switch\nelse\n    export NIX_SSHOPTS=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new \"\n    nix --extra-experimental-features \"nix-command flakes\" copy --to ssh-ng://sirver \"$closure\"\n    ssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new sirver sudo nix-env --profile /nix/var/nix/profiles/system --set \"$closure\"\nssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new sirver sudo systemd-run --collect --no-ask-password --pipe --quiet --same-dir --wait --setenv LOCALE_ARCHIVE --setenv NIXOS_INSTALL_BOOTLOADER= --service-type exec --unit nixos-switch \"$closure/bin/switch-to-configuration\" switch\nfi\n"
+          }
+        },
+        "triggers": {
+          "drv": "${ data.external.nixos_sirver_system.result.drv }"
+        }
+      }
+    }
+  },
+  "terraform": {
+    "encryption": {
+      "key_provider": {
+        "pbkdf2": {
+          "default": {
+            "passphrase": "ref+sops://.canivete/sops/default.yaml#/opentofu_pw"
+          }
+        }
+      },
+      "method": {
+        "aes_gcm": {
+          "default": {
+            "keys": "${ key_provider.pbkdf2.default }"
+          }
+        }
+      },
+      "plan": {
+        "fallback": {
+          "method": "${ method.aes_gcm.default }"
+        },
+        "method": "${ method.aes_gcm.default }"
+      },
+      "state": {
+        "fallback": {
+          "method": "${ method.aes_gcm.default }"
+        },
+        "method": "${ method.aes_gcm.default }"
+      }
+    },
+    "required_providers": {
+      "external": {
+        "source": "opentofu/external",
+        "version": "2.3.3"
+      },
+      "null": {
+        "source": "opentofu/null",
+        "version": "3.2.2"
+      }
+    }
+  }
+}

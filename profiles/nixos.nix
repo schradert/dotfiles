@@ -135,6 +135,17 @@ with nix; {
       defaultNetwork.settings.dns_enable = true;
     };
   };
+  config.flake.nixosModules.temporary = nixos @ {pkgs, ...}: {
+    systemd.services."home-manager-${config.people.me}".serviceConfig.TimeoutStartSec = mkForce "10m";
+    home-manager.extraSpecialArgs = inputs.self.nixos-flake.lib.specialArgsFor.common // {inherit nix;};
+    home-manager.users.${config.people.me} = {
+      imports = attrValues inputs.self.homeModules;
+      options.dotfiles = nixos.options.dotfiles;
+      config.dotfiles = mergeAttrs nixos.config.dotfiles {hostname = nixos.config.networking.hostName;};
+    };
+    nix.settings.trusted-users = [config.people.me];
+    nixpkgs.hostPlatform = pkgs.system;
+  };
   config.flake.nixosConfigurations = mapAttrs (name: cfg:
     withSystem cfg.system ({
       pkgs,

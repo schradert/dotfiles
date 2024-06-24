@@ -40,7 +40,7 @@
         inherit inputs;
         everything = [./dev ./programs ./profiles];
       } {
-        imports = [nixos-flake.flakeModule ./work.nix];
+        imports = [nixos-flake.flakeModule ./work.nix ./deploy.nix ./canivete-deploy.nix];
 
         domain = "trdos.me";
         root = "sirver";
@@ -54,7 +54,7 @@
           };
         };
         nixos.sirver.module = {
-          # dotfiles.kubernetes.enable = true;
+          dotfiles.kubernetes.enable = true;
           boot.initrd.availableKernelModules = ["ehci_pci" "megaraid_sas" "usbhid"];
         };
         nixos.chilldom.module = {
@@ -66,5 +66,15 @@
         droid.boox = {};
         droid.mobile = {};
         perSystem.canivete.devShell.name = "dot";
+        perSystem.canivete.kubenix.clusters.prod.modules.main = {kubenix, ...}: {
+          kubernetes.helm.releases = {
+            actualbudget.chart = kubenix.lib.helm.fetch {
+              repo = "https://beluga-cloud.github.io/charts/";
+              chart = "actual";
+              version = "2.0.0";
+              sha256 = "NZ+886bgZwg5CotPqs1IyiJKUmWrsRPiFzEeOAUXpnQ=";
+            };
+          };
+        };
       };
 }
