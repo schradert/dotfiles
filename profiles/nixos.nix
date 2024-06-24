@@ -156,7 +156,7 @@ with nix; {
         inherit pkgs system;
         specialArgs = inputs.self.nixos-flake.lib.specialArgsFor.nixos // {inherit nix;};
         modules = toList (nixos: {
-          imports = attrValues inputs.self.systemModules ++ attrValues inputs.self.nixosModules ++ [cfg.module];
+          imports = attrValues inputs.self.systemModules ++ attrValues (removeAttrs inputs.self.nixosModules ["temporary"]) ++ [cfg.module];
           systemd.services."home-manager-${config.people.me}".serviceConfig.TimeoutStartSec = mkForce "10m";
           home-manager.extraSpecialArgs = inputs.self.nixos-flake.lib.specialArgsFor.common // {inherit nix;};
           home-manager.users.${config.people.me} = {
