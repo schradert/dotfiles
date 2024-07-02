@@ -1,4 +1,9 @@
-{inputs, nix, ...}: {
+{
+  config,
+  inputs,
+  nix,
+  ...
+}: {
   options.flake.deploy = with nix; mkOption {type = lazyAttrsOf anything;};
   config.flake = {
     deploy = {
@@ -8,14 +13,14 @@
         profiles.system = {
           user = "root";
           sshUser = "tristan";
-          sshOpts = ["-J" "trdos.me"];
+          sshOpts = ["-J" config.domain];
           path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos inputs.self.nixosConfigurations.sirver;
           remoteBuild = true;
         };
         # profiles.home-tristan = {
         #   user = "tristan";
         #   sshUser = "tristan";
-        #   sshOpts = ["-J" "trdos.me"];
+        #   sshOpts = ["-J" config.domain];
         #   path = inputs.deploy-rs.lib.x86_64-linux.activate.home-manager inputs.self.legacyPackages.x86_64-linux.homeConfigurations.sirver;
         #   remoteBuild = true;
         # };
@@ -26,14 +31,14 @@
         profiles.system = {
           user = "root";
           sshUser = "tristan";
-          sshOpts = ["-J" "trdos.me"];
+          sshOpts = ["-J" config.domain];
           path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos inputs.self.nixosConfigurations.chilldom;
           remoteBuild = true;
         };
         # profiles.home-tristan = {
         #   user = "tristan";
         #   sshUser = "tristan";
-        #   sshOpts = ["-J" "trdos.me"];
+        #   sshOpts = ["-J" config.domain];
         #   path = inputs.deploy-rs.lib.x86_64-linux.activate.home-manager inputs.self.legacyPackages.x86_64-linux.homeConfigurations.chilldom;
         #   remoteBuild = true;
         # };

@@ -1,8 +1,14 @@
-{config, inputs, nix, ...}: with nix; {
+{
+  config,
+  inputs,
+  nix,
+  ...
+}:
+with nix; {
   canivete.deploy = {
     system.modules = inputs.self.systemModules;
     darwin.nodes.morgenmuffel = {
-      home.tristan = home@{pkgs, ...}: {
+      home.tristan = home @ {pkgs, ...}: {
         imports = attrValues inputs.self.homeModules;
         options.dotfiles.graphical.enable = mkEnableOption "graphical tools (i.e. not headless)";
         config = {
@@ -119,7 +125,7 @@
           powerManagement.cpuFreqGovernor = "powersave";
         };
         remoteBuild.host = "chilldom";
-        remoteBuild.sshFlags = "-J trdos.me";
+        remoteBuild.sshFlags = "-J ${config.domain}";
       };
       sirver.profiles.system.build = {
         dotfiles.kubernetes.enable = true;

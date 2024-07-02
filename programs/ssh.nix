@@ -35,7 +35,7 @@ with nix; {
       resource = {
         cloudflare_zone.trdos = {
           account_id = "\${ data.cloudflare_accounts.main.accounts[0].id }";
-          zone = "trdos.me";
+          zone = config.domain;
         };
         cloudflare_record.base = {
           name = "@";

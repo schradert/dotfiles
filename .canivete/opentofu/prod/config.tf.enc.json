@@ -1,0 +1,61 @@
+{
+  "data": {
+    "external": {
+      "encrypt-kubeconfig": {
+        "program": [
+          "/nix/store/s30jrpgav677fpc9yvkqsib70xfmx7xi-bash-5.2p26/bin/bash",
+          "-c",
+          "ssh sirver sudo k3s kubectl config view --raw | sed 's/127.0.0.1/trdos.me/' | \\\n  /nix/store/klpam99gffi7n3892c71mrbzaf7r14ij-sops-3.8.1/bin/sops --encrypt --input-type binary --output-type binary /dev/stdin | \\\n  /nix/store/l77pjb83h8hdfsaicp2xlphskdcjhjrx-python3.11-yq-3.4.3/bin/yq --raw-input '{\"kubeconfig\":.}'\n"
+        ]
+      }
+    }
+  },
+  "resource": {
+    "local_file": {
+      "encrypted-kubeconfig": {
+        "content": "${ yamlencode(jsondecode(data.external.encrypt-kubeconfig.result.kubeconfig)) }",
+        "filename": "${ path.module }/kubeconfig.enc"
+      }
+    }
+  },
+  "terraform": {
+    "encryption": {
+      "key_provider": {
+        "pbkdf2": {
+          "default": {
+            "passphrase": "ref+sops://.canivete/sops/default.yaml#/opentofu_pw"
+          }
+        }
+      },
+      "method": {
+        "aes_gcm": {
+          "default": {
+            "keys": "${ key_provider.pbkdf2.default }"
+          }
+        }
+      },
+      "plan": {
+        "fallback": {
+          "method": "${ method.aes_gcm.default }"
+        },
+        "method": "${ method.aes_gcm.default }"
+      },
+      "state": {
+        "fallback": {
+          "method": "${ method.aes_gcm.default }"
+        },
+        "method": "${ method.aes_gcm.default }"
+      }
+    },
+    "required_providers": {
+      "external": {
+        "source": "opentofu/external",
+        "version": "2.3.3"
+      },
+      "local": {
+        "source": "opentofu/local",
+        "version": "2.5.1"
+      }
+    }
+  }
+}
