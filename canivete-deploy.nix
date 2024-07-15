@@ -78,6 +78,10 @@ with nix; {
       };
       profiles.system.build = {
         networking.hostName = "morgenmuffel";
+        nix.linux-builder = {
+          enable = true;
+          systems = ["aarch64-linux"];
+        };
         homebrew.enable = true;
         homebrew.brews = ["libtool" "vfkit"];
         homebrew.casks = [
