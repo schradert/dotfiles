@@ -3,30 +3,30 @@
     "external": {
       "darwin_morgenmuffel_system": {
         "program": [
-          "/nix/store/s30jrpgav677fpc9yvkqsib70xfmx7xi-bash-5.2p26/bin/bash",
+          "/nix/store/spyn2n8l9ca1pkqn20l40l424xmqwda4-bash-5.2p26/bin/bash",
           "-c",
-          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/qpf6s3glmb8anyj6hj8l55bxzmqw4smp-source#canivete.deploy.darwin.nodes.morgenmuffel.profiles.system.raw.config.system.build.toplevel | \\\n    /nix/store/xg81izi6f47kqkdz18pfmrdc51dknlhw-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
+          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/p0j2bbxxsrvmi76jrhp150jpx05wq055-source#canivete.deploy.darwin.nodes.morgenmuffel.profiles.system.raw.config.system.build.toplevel | \\\n    /nix/store/5dsicv93i37c4rqr08r1zdj8dwpa63nj-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
         ]
       },
       "darwin_morgenmuffel_tristan": {
         "program": [
-          "/nix/store/s30jrpgav677fpc9yvkqsib70xfmx7xi-bash-5.2p26/bin/bash",
+          "/nix/store/spyn2n8l9ca1pkqn20l40l424xmqwda4-bash-5.2p26/bin/bash",
           "-c",
-          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/qpf6s3glmb8anyj6hj8l55bxzmqw4smp-source#canivete.deploy.darwin.nodes.morgenmuffel.profiles.tristan.raw.config.home.activationPackage | \\\n    /nix/store/xg81izi6f47kqkdz18pfmrdc51dknlhw-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
+          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/p0j2bbxxsrvmi76jrhp150jpx05wq055-source#canivete.deploy.darwin.nodes.morgenmuffel.profiles.tristan.raw.config.home.activationPackage | \\\n    /nix/store/5dsicv93i37c4rqr08r1zdj8dwpa63nj-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
         ]
       },
       "nixos_chilldom_system": {
         "program": [
-          "/nix/store/s30jrpgav677fpc9yvkqsib70xfmx7xi-bash-5.2p26/bin/bash",
+          "/nix/store/spyn2n8l9ca1pkqn20l40l424xmqwda4-bash-5.2p26/bin/bash",
           "-c",
-          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/qpf6s3glmb8anyj6hj8l55bxzmqw4smp-source#canivete.deploy.nixos.nodes.chilldom.profiles.system.raw.config.system.build.toplevel | \\\n    /nix/store/xg81izi6f47kqkdz18pfmrdc51dknlhw-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
+          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/p0j2bbxxsrvmi76jrhp150jpx05wq055-source#canivete.deploy.nixos.nodes.chilldom.profiles.system.raw.config.system.build.toplevel | \\\n    /nix/store/5dsicv93i37c4rqr08r1zdj8dwpa63nj-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
         ]
       },
       "nixos_sirver_system": {
         "program": [
-          "/nix/store/s30jrpgav677fpc9yvkqsib70xfmx7xi-bash-5.2p26/bin/bash",
+          "/nix/store/spyn2n8l9ca1pkqn20l40l424xmqwda4-bash-5.2p26/bin/bash",
           "-c",
-          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/qpf6s3glmb8anyj6hj8l55bxzmqw4smp-source#canivete.deploy.nixos.nodes.sirver.profiles.system.raw.config.system.build.toplevel | \\\n    /nix/store/xg81izi6f47kqkdz18pfmrdc51dknlhw-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
+          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/p0j2bbxxsrvmi76jrhp150jpx05wq055-source#canivete.deploy.nixos.nodes.sirver.profiles.system.raw.config.system.build.toplevel | \\\n    /nix/store/5dsicv93i37c4rqr08r1zdj8dwpa63nj-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
         ]
       }
     }
