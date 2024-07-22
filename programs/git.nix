@@ -20,7 +20,7 @@
         # TODO should I use git large file storage or prefer a different strategy?
         lfs.enable = false;
         extraConfig =
-          {
+          rec {
             push.autoSetupRemote = true;
             color.status = "always";
             init.defaultBranch = "trunk";
@@ -43,6 +43,7 @@
             user.signingKey = "${flake.inputs.self}/.canivete/sops/${config.home.username}.pub";
             gpg.format = "ssh";
             gpg.ssh.program = "${pkgs.openssh}/bin/ssh-keygen";
+            gpg.ssh.allowedSignersFile = toString (pkgs.writeText "allowed_signers" "* ${readFile user.signingKey}");
             commit.gpgSign = true;
             tag.gpgSign = true;
             push.gpgSign = "if-asked";
