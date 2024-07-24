@@ -66,7 +66,7 @@ with nix; {
   };
   flake.nixosModules.hyprland = {config, ...}: {
     config = mkIf config.dotfiles.graphical.enable {
-      services.xserver.displayManager.sddm.wayland.enable = true;
+      services.displayManager.sddm.wayland.enable = true;
       programs.hyprland.enable = true;
       programs.hyprland.xwayland.enable = true;
     };
