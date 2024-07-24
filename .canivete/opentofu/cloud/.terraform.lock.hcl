@@ -2,33 +2,33 @@
 # Manual edits may be lost in future updates.
 
 provider "registry.opentofu.org/backblaze/b2" {
-  version     = "0.8.9"
-  constraints = "0.8.9"
+  version     = "0.8.12"
+  constraints = "0.8.12"
   hashes = [
-    "h1:IcNzax4FngNctjBbYG3g62FIA8i1Ju0RTm8LPvs/7pM=",
+    "h1:GsIQpaQONnasM+yrB5FyohvNWH26k1f1lJOsK9mGGBw=",
   ]
 }
 
 provider "registry.opentofu.org/cloudflare/cloudflare" {
-  version     = "4.28.0"
-  constraints = "4.28.0"
+  version     = "4.37.0"
+  constraints = "4.37.0"
   hashes = [
-    "h1:8W0oS/r8E3QcXlTY3ZhsHrgwTqoeDoxIO9KcOHcuavg=",
+    "h1:eiYBUxnosXOX4tosMiwyNk6L6OqPe2i04QvHBYm+aXU=",
   ]
 }
 
 provider "registry.opentofu.org/gitlabhq/gitlab" {
-  version     = "16.10.0"
-  constraints = "16.10.0"
+  version     = "17.1.0"
+  constraints = "17.1.0"
   hashes = [
-    "h1:LbrvZOcwgatzJMfwXzpCGBdWUzRrTlU5Zi8l54GzxVA=",
+    "h1:OVPpY5gEIxckdvN28t2S/WUdLvka8CTsTBCzHy1uV7w=",
   ]
 }
 
 provider "registry.opentofu.org/integrations/github" {
-  version     = "6.2.1"
-  constraints = "6.2.1"
+  version     = "6.2.3"
+  constraints = "6.2.3"
   hashes = [
-    "h1:oJyNnCADFGTCRD6fKvR+UAx7a4uoVTCgI0ooSbEotkg=",
+    "h1:Bh12bx2xNmuD+UVEZTFetHIm98IEbm3M1OuMz9N9WH4=",
   ]
 }

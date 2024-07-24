@@ -93,19 +93,19 @@
     "required_providers": {
       "b2": {
         "source": "Backblaze/b2",
-        "version": "0.8.9"
+        "version": "0.8.12"
       },
       "cloudflare": {
         "source": "cloudflare/cloudflare",
-        "version": "4.28.0"
+        "version": "4.37.0"
       },
       "github": {
         "source": "integrations/github",
-        "version": "6.2.1"
+        "version": "6.2.3"
       },
       "gitlab": {
         "source": "gitlabhq/gitlab",
-        "version": "16.10.0"
+        "version": "17.1.0"
       }
     }
   }
