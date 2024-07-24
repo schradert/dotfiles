@@ -17,7 +17,7 @@
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
     sops-nix.inputs.nixpkgs-stable.follows = "nixpkgs-stable";
     gke-gcloud-auth-plugin-flake.url = github:christian-blades-cb/gke-gcloud-auth-plugin-nix;
-    spicetify-nix.url = github:the-argus/spicetify-nix;
+    spicetify-nix.url = github:Gerg-L/spicetify-nix;
     spicetify-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
   outputs = inputs:
