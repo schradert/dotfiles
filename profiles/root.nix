@@ -13,8 +13,8 @@ with nix; {
     plugins = ["Backblaze/b2"];
     modules.backblaze = {
       provider.b2 = {
-        application_key = "ref+sops://.canivete/sops/default.yaml#/backblaze/application_key";
-        application_key_id = "ref+sops://.canivete/sops/default.yaml#/backblaze/application_key_id";
+        application_key = vals.sops "default.yaml#/backblaze/application_key";
+        application_key_id = vals.sops "default.yaml#/backblaze/application_key_id";
       };
       resource.b2_bucket.main = {
         bucket_name = "t0rdos";

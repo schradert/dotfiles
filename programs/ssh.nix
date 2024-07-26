@@ -13,7 +13,7 @@ with nix; {
   perSystem.canivete.opentofu.workspaces.cloud = {
     plugins = ["integrations/github" "gitlabhq/gitlab" "cloudflare/cloudflare"];
     modules.default = {
-      provider.github.token = "ref+sops://.canivete/sops/default.yaml#/github_pat";
+      provider.github.token = vals.sops "default.yaml#/github_pat";
       resource.github_user_ssh_key = pipe config.people.users [
         (filterAttrs (_: hasAttrByPath ["accounts" "github"]))
         (mapAttrs (name: _: {
@@ -21,7 +21,7 @@ with nix; {
           key = readFile (inputs.self + "/.canivete/sops/${name}.pub");
         }))
       ];
-      provider.gitlab.token = "ref+sops://.canivete/sops/default.yaml#/gitlab_pat";
+      provider.gitlab.token = vals.sops "default.yaml#/gitlab_pat";
       resource.gitlab_user_sshkey = pipe config.people.users [
         (filterAttrs (_: hasAttrByPath ["accounts" "gitlab"]))
         (mapAttrs (name: _: {
@@ -29,7 +29,7 @@ with nix; {
           key = readFile (inputs.self + "/.canivete/sops/${name}.pub");
         }))
       ];
-      provider.cloudflare.api_token = "ref+sops://.canivete/sops/default.yaml#/cloudflare_pat";
+      provider.cloudflare.api_token = vals.sops "default.yaml#/cloudflare_pat";
       # TODO prevent this account name hardcoding
       data.cloudflare_accounts.main.name = "Tristanschrader@proton.me's Account";
       resource = {
@@ -39,7 +39,7 @@ with nix; {
         };
         cloudflare_record.base = {
           name = "@";
-          value = "ref+sops://.canivete/sops/default.yaml#/trdos_ip";
+          value = vals.sops "default.yaml#/trdos_ip";
           type = "A";
           zone_id = "\${ cloudflare_zone.trdos.id }";
         };
