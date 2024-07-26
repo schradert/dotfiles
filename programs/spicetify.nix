@@ -1,7 +1,10 @@
-{inputs, ...}: {
+{
+  inputs,
+  nix,
+  ...
+}: {
   flake.nixosModules.spicetify = {
     config,
-    nix,
     pkgs,
     ...
   }: {
