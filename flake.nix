@@ -30,7 +30,7 @@
       nix,
       ...
     }: {
-      imports = [inputs.nixos-flake.flakeModule ./work.nix ./deploy.nix ./canivete-deploy.nix];
+      imports = [inputs.nixos-flake.flakeModule ./work.nix ./canivete-deploy.nix];
 
       domain = "trdos.me";
       root = "sirver";
@@ -55,7 +55,6 @@
       };
       droid.boox = {};
       droid.mobile = {};
-      perSystem.canivete.devShell.name = "dot";
       perSystem.canivete.kubenix.clusters.prod = {
         deploy.fetchKubeconfig = "ssh sirver sudo k3s kubectl config view --raw | sed 's/127\.0\.0\.1/${config.domain}/'";
         modules.main = {

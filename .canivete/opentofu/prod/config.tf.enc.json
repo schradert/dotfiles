@@ -3,9 +3,9 @@
     "external": {
       "encrypt-kubeconfig": {
         "program": [
-          "/nix/store/s30jrpgav677fpc9yvkqsib70xfmx7xi-bash-5.2p26/bin/bash",
+          "/nix/store/spyn2n8l9ca1pkqn20l40l424xmqwda4-bash-5.2p26/bin/bash",
           "-c",
-          "ssh sirver sudo k3s kubectl config view --raw | sed 's/127.0.0.1/trdos.me/' | \\\n  /nix/store/klpam99gffi7n3892c71mrbzaf7r14ij-sops-3.8.1/bin/sops --encrypt --input-type binary --output-type binary /dev/stdin | \\\n  /nix/store/l77pjb83h8hdfsaicp2xlphskdcjhjrx-python3.11-yq-3.4.3/bin/yq --raw-input '{\"kubeconfig\":.}'\n"
+          "ssh sirver sudo k3s kubectl config view --raw | sed 's/127.0.0.1/trdos.me/' | \\\n  /nix/store/xfb4mnxhbfn1n8bazy90h3db6xh5s4x1-sops-3.9.0/bin/sops --encrypt --input-type binary --output-type binary /dev/stdin | \\\n  /nix/store/7wd5dn3p6czs3vjkpgadniv8r5jsbg6d-python3.12-yq-3.4.3/bin/yq --raw-input '{\"kubeconfig\":.}'\n"
         ]
       }
     }
