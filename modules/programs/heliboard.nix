@@ -1,5 +1,5 @@
 {nix, ...}: with nix; {
-  canivete.deploy.droid.modules = {config, pkgs, ...}: let
+  canivete.deploy.droid.modules.heliboard = {config, pkgs, ...}: let
     inherit (config.dotfiles.programs) heliboard;
   in {
     config = mkIf heliboard.enable {environment.packages = [heliboard.package];};
