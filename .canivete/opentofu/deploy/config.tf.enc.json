@@ -5,29 +5,89 @@
         "program": [
           "/nix/store/spyn2n8l9ca1pkqn20l40l424xmqwda4-bash-5.2p26/bin/bash",
           "-c",
-          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/23c9lia9c1fhics24pil9xr8j7jmmxql-source#canivete.deploy.darwin.nodes.morgenmuffel.profiles.system.raw.config.system.build.toplevel | \\\n    /nix/store/5dsicv93i37c4rqr08r1zdj8dwpa63nj-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
+          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/zw8cl6i8wlh338kzyw2lkjjfa5as5rvd-source#canivete.deploy.darwin.nodes.morgenmuffel.profiles.system.raw.config.system.build.toplevel | \\\n    /nix/store/5dsicv93i37c4rqr08r1zdj8dwpa63nj-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
         ]
       },
       "darwin_morgenmuffel_tristan": {
         "program": [
           "/nix/store/spyn2n8l9ca1pkqn20l40l424xmqwda4-bash-5.2p26/bin/bash",
           "-c",
-          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/23c9lia9c1fhics24pil9xr8j7jmmxql-source#canivete.deploy.darwin.nodes.morgenmuffel.profiles.tristan.raw.config.home.activationPackage | \\\n    /nix/store/5dsicv93i37c4rqr08r1zdj8dwpa63nj-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
+          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/zw8cl6i8wlh338kzyw2lkjjfa5as5rvd-source#canivete.deploy.darwin.nodes.morgenmuffel.profiles.tristan.raw.config.home.activationPackage | \\\n    /nix/store/5dsicv93i37c4rqr08r1zdj8dwpa63nj-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
+        ]
+      },
+      "droid_boox_system": {
+        "program": [
+          "/nix/store/spyn2n8l9ca1pkqn20l40l424xmqwda4-bash-5.2p26/bin/bash",
+          "-c",
+          "export NIX_SSHOPTS=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new\"\nnix --extra-experimental-features \"nix-command flakes\" --impure copy --to ssh-ng://boox /nix/store/zw8cl6i8wlh338kzyw2lkjjfa5as5rvd-source\nssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new boox nix --extra-experimental-features \"nix-command flakes\" --impure path-info --derivation /nix/store/zw8cl6i8wlh338kzyw2lkjjfa5as5rvd-source#canivete.deploy.droid.nodes.boox.profiles.system.raw.config.build.activationPackage | \\\n    /nix/store/5dsicv93i37c4rqr08r1zdj8dwpa63nj-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
+        ]
+      },
+      "droid_galaxy_system": {
+        "program": [
+          "/nix/store/spyn2n8l9ca1pkqn20l40l424xmqwda4-bash-5.2p26/bin/bash",
+          "-c",
+          "export NIX_SSHOPTS=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new\"\nnix --extra-experimental-features \"nix-command flakes\" --impure copy --to ssh-ng://galaxy /nix/store/zw8cl6i8wlh338kzyw2lkjjfa5as5rvd-source\nssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new galaxy nix --extra-experimental-features \"nix-command flakes\" --impure path-info --derivation /nix/store/zw8cl6i8wlh338kzyw2lkjjfa5as5rvd-source#canivete.deploy.droid.nodes.galaxy.profiles.system.raw.config.build.activationPackage | \\\n    /nix/store/5dsicv93i37c4rqr08r1zdj8dwpa63nj-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
         ]
       },
       "nixos_chilldom_system": {
         "program": [
           "/nix/store/spyn2n8l9ca1pkqn20l40l424xmqwda4-bash-5.2p26/bin/bash",
           "-c",
-          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/23c9lia9c1fhics24pil9xr8j7jmmxql-source#canivete.deploy.nixos.nodes.chilldom.profiles.system.raw.config.system.build.toplevel | \\\n    /nix/store/5dsicv93i37c4rqr08r1zdj8dwpa63nj-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
+          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/zw8cl6i8wlh338kzyw2lkjjfa5as5rvd-source#canivete.deploy.nixos.nodes.chilldom.profiles.system.raw.config.system.build.toplevel | \\\n    /nix/store/5dsicv93i37c4rqr08r1zdj8dwpa63nj-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
+        ]
+      },
+      "nixos_chilldom_system_install": {
+        "program": [
+          "/nix/store/spyn2n8l9ca1pkqn20l40l424xmqwda4-bash-5.2p26/bin/bash",
+          "-c",
+          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/zw8cl6i8wlh338kzyw2lkjjfa5as5rvd-source#canivete.deploy.nixos.nodes.chilldom.profiles.system.raw.config.system.build.diskoScript | \\\n    /nix/store/5dsicv93i37c4rqr08r1zdj8dwpa63nj-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
+        ]
+      },
+      "nixos_chilldom_system_save-keys": {
+        "program": [
+          "/nix/store/spyn2n8l9ca1pkqn20l40l424xmqwda4-bash-5.2p26/bin/bash",
+          "-c",
+          "echo \"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAfcKmSKVDQ+jMIP/dSbeG7QwzepO3CdUvXNi2iLhefl\n\" > tristan.pub\necho '{}'"
         ]
       },
       "nixos_sirver_system": {
         "program": [
           "/nix/store/spyn2n8l9ca1pkqn20l40l424xmqwda4-bash-5.2p26/bin/bash",
           "-c",
-          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/23c9lia9c1fhics24pil9xr8j7jmmxql-source#canivete.deploy.nixos.nodes.sirver.profiles.system.raw.config.system.build.toplevel | \\\n    /nix/store/5dsicv93i37c4rqr08r1zdj8dwpa63nj-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
+          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/zw8cl6i8wlh338kzyw2lkjjfa5as5rvd-source#canivete.deploy.nixos.nodes.sirver.profiles.system.raw.config.system.build.toplevel | \\\n    /nix/store/5dsicv93i37c4rqr08r1zdj8dwpa63nj-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
         ]
+      },
+      "nixos_sirver_system_install": {
+        "program": [
+          "/nix/store/spyn2n8l9ca1pkqn20l40l424xmqwda4-bash-5.2p26/bin/bash",
+          "-c",
+          "nix --extra-experimental-features \"nix-command flakes\" path-info --derivation /nix/store/zw8cl6i8wlh338kzyw2lkjjfa5as5rvd-source#canivete.deploy.nixos.nodes.sirver.profiles.system.raw.config.system.build.diskoScript | \\\n    /nix/store/5dsicv93i37c4rqr08r1zdj8dwpa63nj-jq-1.7.1-bin/bin/jq --raw-input '{\"drv\":.}'\n"
+        ]
+      },
+      "nixos_sirver_system_save-keys": {
+        "program": [
+          "/nix/store/spyn2n8l9ca1pkqn20l40l424xmqwda4-bash-5.2p26/bin/bash",
+          "-c",
+          "echo \"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAfcKmSKVDQ+jMIP/dSbeG7QwzepO3CdUvXNi2iLhefl\n\" > tristan.pub\necho '{}'"
+        ]
+      }
+    }
+  },
+  "locals": {
+    "nixos_chilldom_system": {
+      "keys": {
+        "etc/ssh/authorized_keys.d/tristan": {
+          "content": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAfcKmSKVDQ+jMIP/dSbeG7QwzepO3CdUvXNi2iLhefl\n",
+          "file": "tristan.pub"
+        }
+      }
+    },
+    "nixos_sirver_system": {
+      "keys": {
+        "etc/ssh/authorized_keys.d/tristan": {
+          "content": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAfcKmSKVDQ+jMIP/dSbeG7QwzepO3CdUvXNi2iLhefl\n",
+          "file": "tristan.pub"
+        }
       }
     }
   },
@@ -36,7 +96,7 @@
       "darwin_morgenmuffel_system": {
         "provisioner": {
           "local-exec": {
-            "command": "if [[ $(hostname) == morgenmuffel ]]; then\n    closure=$(nix-store --verbose --realise ${ data.external.darwin_morgenmuffel_system.result.drv })\nelse\n    export NIX_SSHOPTS=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new \"\n    nix --extra-experimental-features \"nix-command flakes\" copy --derivation --to ssh-ng://morgenmuffel ${ data.external.darwin_morgenmuffel_system.result.drv }\n    closure=$(ssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new morgenmuffel nix-store --verbose --realise ${ data.external.darwin_morgenmuffel_system.result.drv })\n    nix --extra-experimental-features \"nix-command flakes\" copy --from ssh-ng://morgenmuffel \"$closure\"\nfi\n\nif [[ $(hostname) == morgenmuffel ]]; then\n    sudo HOME=/var/root \"$closure/activate\"\nelse\n    export NIX_SSHOPTS=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new \"\n    nix --extra-experimental-features \"nix-command flakes\" copy --to ssh-ng://morgenmuffel \"$closure\"\n    ssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new morgenmuffel sudo HOME=/var/root \"$closure/activate\"\nfi\n"
+            "command": "if [[ $(hostname) == morgenmuffel ]]; then\n    closure=$(nix-store --verbose --realise ${ data.external.darwin_morgenmuffel_system.result.drv })\nelse\n    export NIX_SSHOPTS=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new\"\n    nix --extra-experimental-features \"nix-command flakes\" copy --derivation --to ssh-ng://morgenmuffel ${ data.external.darwin_morgenmuffel_system.result.drv }\n    closure=$(ssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new morgenmuffel nix-store --verbose --realise ${ data.external.darwin_morgenmuffel_system.result.drv })\n    nix --extra-experimental-features \"nix-command flakes\" copy --from ssh-ng://morgenmuffel \"$closure\"\nfi\n\nif [[ $(hostname) == morgenmuffel ]]; then\n    sudo HOME=/var/root \"$closure/activate\"\nelse\n    export NIX_SSHOPTS=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new\"\n    nix --extra-experimental-features \"nix-command flakes\" copy --to ssh-ng://morgenmuffel \"$closure\"\n    ssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new morgenmuffel sudo HOME=/var/root \"$closure/activate\"\nfi\n"
           }
         },
         "triggers": {
@@ -46,31 +106,85 @@
       "darwin_morgenmuffel_tristan": {
         "provisioner": {
           "local-exec": {
-            "command": "if [[ $(hostname) == morgenmuffel ]]; then\n    closure=$(nix-store --verbose --realise ${ data.external.darwin_morgenmuffel_tristan.result.drv })\nelse\n    export NIX_SSHOPTS=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new \"\n    nix --extra-experimental-features \"nix-command flakes\" copy --derivation --to ssh-ng://morgenmuffel ${ data.external.darwin_morgenmuffel_tristan.result.drv }\n    closure=$(ssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new morgenmuffel nix-store --verbose --realise ${ data.external.darwin_morgenmuffel_tristan.result.drv })\n    nix --extra-experimental-features \"nix-command flakes\" copy --from ssh-ng://morgenmuffel \"$closure\"\nfi\n\nif [[ $(hostname) == morgenmuffel ]]; then\n    \"$closure/activate\"\nelse\n    export NIX_SSHOPTS=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new \"\n    nix --extra-experimental-features \"nix-command flakes\" copy --to ssh-ng://morgenmuffel \"$closure\"\n    ssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new morgenmuffel \"$closure/activate\"\nfi\n"
+            "command": "if [[ $(hostname) == morgenmuffel ]]; then\n    closure=$(nix-store --verbose --realise ${ data.external.darwin_morgenmuffel_tristan.result.drv })\nelse\n    export NIX_SSHOPTS=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new\"\n    nix --extra-experimental-features \"nix-command flakes\" copy --derivation --to ssh-ng://morgenmuffel ${ data.external.darwin_morgenmuffel_tristan.result.drv }\n    closure=$(ssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new morgenmuffel nix-store --verbose --realise ${ data.external.darwin_morgenmuffel_tristan.result.drv })\n    nix --extra-experimental-features \"nix-command flakes\" copy --from ssh-ng://morgenmuffel \"$closure\"\nfi\n\nif [[ $(hostname) == morgenmuffel ]]; then\n    \"$closure/activate\"\nelse\n    export NIX_SSHOPTS=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new\"\n    nix --extra-experimental-features \"nix-command flakes\" copy --to ssh-ng://morgenmuffel \"$closure\"\n    ssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new morgenmuffel \"$closure/activate\"\nfi\n"
           }
         },
         "triggers": {
           "drv": "${ data.external.darwin_morgenmuffel_tristan.result.drv }"
         }
       },
-      "nixos_chilldom_system": {
+      "droid_boox_system": {
         "provisioner": {
           "local-exec": {
-            "command": "if [[ $(hostname) == chilldom ]]; then\n    closure=$(nix-store --verbose --realise ${ data.external.nixos_chilldom_system.result.drv })\nelse\n    export NIX_SSHOPTS=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new -J trdos.me\"\n    nix --extra-experimental-features \"nix-command flakes\" copy --derivation --to ssh-ng://chilldom ${ data.external.nixos_chilldom_system.result.drv }\n    closure=$(ssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new chilldom nix-store --verbose --realise ${ data.external.nixos_chilldom_system.result.drv })\n    nix --extra-experimental-features \"nix-command flakes\" copy --from ssh-ng://chilldom \"$closure\"\nfi\n\nif [[ $(hostname) == chilldom ]]; then\n    sudo nix-env --profile /nix/var/nix/profiles/system --set \"$closure\"\nsudo systemd-run --collect --no-ask-password --pipe --quiet --same-dir --wait --setenv LOCALE_ARCHIVE --setenv NIXOS_INSTALL_BOOTLOADER= --service-type exec --unit nixos-switch \"$closure/bin/switch-to-configuration\" switch\nelse\n    export NIX_SSHOPTS=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new \"\n    nix --extra-experimental-features \"nix-command flakes\" copy --to ssh-ng://chilldom \"$closure\"\n    ssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new chilldom sudo nix-env --profile /nix/var/nix/profiles/system --set \"$closure\"\nssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new chilldom sudo systemd-run --collect --no-ask-password --pipe --quiet --same-dir --wait --setenv LOCALE_ARCHIVE --setenv NIXOS_INSTALL_BOOTLOADER= --service-type exec --unit nixos-switch \"$closure/bin/switch-to-configuration\" switch\nfi\n"
+            "command": "ssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new boox nix --extra-experimental-features \"nix-command flakes\" --impure run /nix/store/zw8cl6i8wlh338kzyw2lkjjfa5as5rvd-source#inputs.nix-on-droid.packages.aarch64-linux.nix-on-droid -- switch --flake /nix/store/zw8cl6i8wlh338kzyw2lkjjfa5as5rvd-source#boox\n"
+          }
+        },
+        "triggers": {
+          "drv": "${ data.external.droid_boox_system.result.drv }"
+        }
+      },
+      "droid_galaxy_system": {
+        "provisioner": {
+          "local-exec": {
+            "command": "ssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new galaxy nix --extra-experimental-features \"nix-command flakes\" --impure run /nix/store/zw8cl6i8wlh338kzyw2lkjjfa5as5rvd-source#inputs.nix-on-droid.packages.aarch64-linux.nix-on-droid -- switch --flake /nix/store/zw8cl6i8wlh338kzyw2lkjjfa5as5rvd-source#galaxy\n"
+          }
+        },
+        "triggers": {
+          "drv": "${ data.external.droid_galaxy_system.result.drv }"
+        }
+      },
+      "nixos_chilldom_system": {
+        "depends_on": [
+          "null_resource.nixos_chilldom_system_install"
+        ],
+        "provisioner": {
+          "local-exec": {
+            "command": "if [[ $(hostname) == sirver ]]; then\n    closure=$(nix-store --verbose --realise ${ data.external.nixos_chilldom_system.result.drv })\nelse\n    export NIX_SSHOPTS=\"-J trdos.me\"\n    nix --extra-experimental-features \"nix-command flakes\" copy --derivation --to ssh-ng://sirver ${ data.external.nixos_chilldom_system.result.drv }\n    closure=$(ssh -J trdos.me sirver nix-store --verbose --realise ${ data.external.nixos_chilldom_system.result.drv })\n    nix --extra-experimental-features \"nix-command flakes\" copy --from ssh-ng://sirver \"$closure\"\nfi\n\nif [[ $(hostname) == chilldom ]]; then\n    sudo nix-env --profile /nix/var/nix/profiles/system --set \"$closure\"\nsudo systemd-run --collect --no-ask-password --pipe --quiet --same-dir --wait --setenv LOCALE_ARCHIVE --setenv NIXOS_INSTALL_BOOTLOADER= --service-type exec --unit nixos-switch \"$closure/bin/switch-to-configuration\" switch\nelse\n    export NIX_SSHOPTS=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new\"\n    nix --extra-experimental-features \"nix-command flakes\" copy --to ssh-ng://chilldom \"$closure\"\n    ssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new chilldom sudo nix-env --profile /nix/var/nix/profiles/system --set \"$closure\"\nssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new chilldom sudo systemd-run --collect --no-ask-password --pipe --quiet --same-dir --wait --setenv LOCALE_ARCHIVE --setenv NIXOS_INSTALL_BOOTLOADER= --service-type exec --unit nixos-switch \"$closure/bin/switch-to-configuration\" switch\nfi\n"
           }
         },
         "triggers": {
           "drv": "${ data.external.nixos_chilldom_system.result.drv }"
         }
       },
-      "nixos_sirver_system": {
+      "nixos_chilldom_system_install": {
+        "depends_on": [
+          "data.external.nixos_chilldom_system_save-keys"
+        ],
         "provisioner": {
           "local-exec": {
-            "command": "if [[ $(hostname) == sirver ]]; then\n    closure=$(nix-store --verbose --realise ${ data.external.nixos_sirver_system.result.drv })\nelse\n    export NIX_SSHOPTS=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new \"\n    nix --extra-experimental-features \"nix-command flakes\" copy --derivation --to ssh-ng://sirver ${ data.external.nixos_sirver_system.result.drv }\n    closure=$(ssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new sirver nix-store --verbose --realise ${ data.external.nixos_sirver_system.result.drv })\n    nix --extra-experimental-features \"nix-command flakes\" copy --from ssh-ng://sirver \"$closure\"\nfi\n\nif [[ $(hostname) == sirver ]]; then\n    sudo nix-env --profile /nix/var/nix/profiles/system --set \"$closure\"\nsudo systemd-run --collect --no-ask-password --pipe --quiet --same-dir --wait --setenv LOCALE_ARCHIVE --setenv NIXOS_INSTALL_BOOTLOADER= --service-type exec --unit nixos-switch \"$closure/bin/switch-to-configuration\" switch\nelse\n    export NIX_SSHOPTS=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new \"\n    nix --extra-experimental-features \"nix-command flakes\" copy --to ssh-ng://sirver \"$closure\"\n    ssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new sirver sudo nix-env --profile /nix/var/nix/profiles/system --set \"$closure\"\nssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new sirver sudo systemd-run --collect --no-ask-password --pipe --quiet --same-dir --wait --setenv LOCALE_ARCHIVE --setenv NIXOS_INSTALL_BOOTLOADER= --service-type exec --unit nixos-switch \"$closure/bin/switch-to-configuration\" switch\nfi\n"
+            "command": "set -euo pipefail\n\nextra_files_dir=$(mktemp -d)\ntrap 'rm -rf \"$extra_files_dir\"' EXIT\n\nmkdir -p \"$(dirname \"$extra_files_dir/etc/ssh/authorized_keys.d/tristan\")\"\ninstall -m444 \"tristan.pub\" \"$extra_files_dir/etc/ssh/authorized_keys.d/tristan\"\n\n\n/nix/store/gw1g52l810r5slllh8cnhxd5n70znvfn-nixos-anywhere-1.3.0/bin/nixos-anywhere \\\n    --flake /nix/store/zw8cl6i8wlh338kzyw2lkjjfa5as5rvd-source#nixos_chilldom_system \\\n    --extra-files \"$extra_files_dir\" \\\n    --build-on-remote \\\n    --debug \\\n    --ssh-option ControlMaster=auto --ssh-option ControlPath=/tmp/%C --ssh-option ControlPersist=60 --ssh-option StrictHostKeyChecking=accept-new \\\n    \"root@chilldom\"\n"
+          }
+        },
+        "triggers": {
+          "drv": "${ data.external.nixos_chilldom_system_install.result.drv }",
+          "keys": "${ sha256(jsonencode({ for k, a in local.nixos_chilldom_system.keys: k => a.content })) }"
+        }
+      },
+      "nixos_sirver_system": {
+        "depends_on": [
+          "null_resource.nixos_sirver_system_install"
+        ],
+        "provisioner": {
+          "local-exec": {
+            "command": "if [[ $(hostname) == sirver ]]; then\n    closure=$(nix-store --verbose --realise ${ data.external.nixos_sirver_system.result.drv })\nelse\n    export NIX_SSHOPTS=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new\"\n    nix --extra-experimental-features \"nix-command flakes\" copy --derivation --to ssh-ng://sirver ${ data.external.nixos_sirver_system.result.drv }\n    closure=$(ssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new sirver nix-store --verbose --realise ${ data.external.nixos_sirver_system.result.drv })\n    nix --extra-experimental-features \"nix-command flakes\" copy --from ssh-ng://sirver \"$closure\"\nfi\n\nif [[ $(hostname) == sirver ]]; then\n    sudo nix-env --profile /nix/var/nix/profiles/system --set \"$closure\"\nsudo systemd-run --collect --no-ask-password --pipe --quiet --same-dir --wait --setenv LOCALE_ARCHIVE --setenv NIXOS_INSTALL_BOOTLOADER= --service-type exec --unit nixos-switch \"$closure/bin/switch-to-configuration\" switch\nelse\n    export NIX_SSHOPTS=\"-o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new\"\n    nix --extra-experimental-features \"nix-command flakes\" copy --to ssh-ng://sirver \"$closure\"\n    ssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new sirver sudo nix-env --profile /nix/var/nix/profiles/system --set \"$closure\"\nssh -o ControlMaster=auto -o ControlPath=/tmp/%C -o ControlPersist=60 -o StrictHostKeyChecking=accept-new sirver sudo systemd-run --collect --no-ask-password --pipe --quiet --same-dir --wait --setenv LOCALE_ARCHIVE --setenv NIXOS_INSTALL_BOOTLOADER= --service-type exec --unit nixos-switch \"$closure/bin/switch-to-configuration\" switch\nfi\n"
           }
         },
         "triggers": {
           "drv": "${ data.external.nixos_sirver_system.result.drv }"
+        }
+      },
+      "nixos_sirver_system_install": {
+        "depends_on": [
+          "data.external.nixos_sirver_system_save-keys"
+        ],
+        "provisioner": {
+          "local-exec": {
+            "command": "set -euo pipefail\n\nextra_files_dir=$(mktemp -d)\ntrap 'rm -rf \"$extra_files_dir\"' EXIT\n\nmkdir -p \"$(dirname \"$extra_files_dir/etc/ssh/authorized_keys.d/tristan\")\"\ninstall -m444 \"tristan.pub\" \"$extra_files_dir/etc/ssh/authorized_keys.d/tristan\"\n\n\n/nix/store/gw1g52l810r5slllh8cnhxd5n70znvfn-nixos-anywhere-1.3.0/bin/nixos-anywhere \\\n    --flake /nix/store/zw8cl6i8wlh338kzyw2lkjjfa5as5rvd-source#nixos_sirver_system \\\n    --extra-files \"$extra_files_dir\" \\\n    --build-on-remote \\\n    --debug \\\n    --ssh-option ControlMaster=auto --ssh-option ControlPath=/tmp/%C --ssh-option ControlPersist=60 --ssh-option StrictHostKeyChecking=accept-new \\\n    \"root@sirver\"\n"
+          }
+        },
+        "triggers": {
+          "drv": "${ data.external.nixos_sirver_system_install.result.drv }",
+          "keys": "${ sha256(jsonencode({ for k, a in local.nixos_sirver_system.keys: k => a.content })) }"
         }
       }
     }

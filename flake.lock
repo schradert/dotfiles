@@ -89,7 +89,6 @@
         "nix-on-droid": "nix-on-droid",
         "nix-topology": "nix-topology",
         "nixos-anywhere": "nixos-anywhere",
-        "nixos-flake": "nixos-flake",
         "nixos-generators": "nixos-generators",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-stable": "nixpkgs-stable",
@@ -104,11 +103,11 @@
         "terranix": "terranix"
       },
       "locked": {
-        "lastModified": 1721969521,
-        "narHash": "sha256-WfSL/NDCgAYjUG6hM7S8XSS2YFhNT9yEQnlatjLItvc=",
+        "lastModified": 1722486947,
+        "narHash": "sha256-Y8cmCfg9RqOleRTt7rTw+yQxaAFelymLyJX1235Qqak=",
         "owner": "schradert",
         "repo": "canivete",
-        "rev": "6c63ddf2de2e157a10cc1fc620b4744158509517",
+        "rev": "1017b22389f298555531f381727c88ea4d0996b2",
         "type": "github"
       },
       "original": {
@@ -963,21 +962,6 @@
       "original": {
         "owner": "nix-community",
         "repo": "nixos-anywhere",
-        "type": "github"
-      }
-    },
-    "nixos-flake": {
-      "locked": {
-        "lastModified": 1720281493,
-        "narHash": "sha256-Lic3N1H2k5RsYDtfbmfO+9K2u7uwyXIj+aCaTj2/zSY=",
-        "owner": "srid",
-        "repo": "nixos-flake",
-        "rev": "cab6539d198792f94fbac029e5a63523604fd172",
-        "type": "github"
-      },
-      "original": {
-        "owner": "srid",
-        "repo": "nixos-flake",
         "type": "github"
       }
     },
