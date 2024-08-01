@@ -1,18 +1,52 @@
-{nix, ...}: {
-  canivete.deploy.droid.modules.default = {
-    config,
-    options,
-    ...
-  }: {
-    environment.etcBackupExtension = ".bak";
-    home-manager = {
-      backupFileExtension = "hm-bak";
-      useGlobalPkgs = true;
-      sharedModules = nix.toList {
-        options.dotfiles = options.dotfiles;
-        config.dotfiles = config.dotfiles;
+{nix, ...}:
+with nix; {
+  canivete.deploy.droid = {
+    # TODO convert to gradle build in nix
+    # NOTE how to use gradlew? do I need gradle2nix/v2? can I do it from scratch?
+    homeModules.apk = {
+      config,
+      lib,
+      pkgs,
+      ...
+    }: let
+      inherit (config.dotfiles) apk;
+      apks = pipe apk.programs [
+        (filterAttrs (getAttr "enable"))
+        (mapAttrsToList (_: getAttr "apk"))
+        (concatStringsSep " ")
+      ];
+    in {
+      options.dotfiles.apk = {
+        enable = mkEnabledOption "APK installation step";
+        programs = mkOption {
+          type = attrsOf (submodule ({name, ...}: {
+            options.enable = mkEnabledOption name;
+            options.apk = mkOption {type = package;};
+          }));
+          default = {};
+        };
+      };
+      config = mkIf apk.enable {
+        home.activation.apkInstallation = lib.hm.dag.entryAfter ["writeBoundary"] ''
+          ${pkgs.android-tools}/bin/adb install-multiple ${apks}
+        '';
       };
     };
-    system.stateVersion = "23.05";
+    modules.default = {
+      config,
+      options,
+      ...
+    }: {
+      environment.etcBackupExtension = ".bak";
+      home-manager = {
+        backupFileExtension = "hm-bak";
+        useGlobalPkgs = true;
+        sharedModules = toList {
+          options.dotfiles = options.dotfiles;
+          config.dotfiles = config.dotfiles;
+        };
+      };
+      system.stateVersion = "23.05";
+    };
   };
 }
