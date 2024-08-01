@@ -2,7 +2,8 @@
 with nix; {
   canivete.deploy.nixos = {
     modules.hyprland = {config, ...}: {
-      config = mkIf config.dotfiles.graphical.enable {
+      options.dotfiles.graphical.wayland.enable = mkEnableOption "Wayland configuration";
+      config = mkIf config.dotfiles.graphical.wayland.enable {
         services.displayManager.sddm.wayland.enable = true;
         programs.hyprland.enable = true;
         programs.hyprland.xwayland.enable = true;
@@ -13,7 +14,7 @@ with nix; {
       pkgs,
       ...
     }: {
-      config = mkIf config.dotfiles.graphical.enable (mkMerge [
+      config = mkIf config.dotfiles.graphical.wayland.enable (mkMerge [
         {
           home.packages = [pkgs.swaynotificationcenter];
           xdg.configFile."swaync/config.json" = {

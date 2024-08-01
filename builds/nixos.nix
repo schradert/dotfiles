@@ -25,8 +25,7 @@
     };
     systeamadeck.profiles.system.module = {
       imports = [inputs.jovian.nixosModules.jovian];
-      # TODO decouple Wayland compositors from graphical before activating here
-      # dotfiles.graphical.enable = true;
+      dotfiles.graphical.enable = true;
       # TODO do I need to extract mura correction images?
       # NOTE https://github.com/Jovian-Experiments/Jovian-NixOS/issues/227
       # NOTE https://github.com/Jovian-Experiments/Jovian-NixOS/pull/229
