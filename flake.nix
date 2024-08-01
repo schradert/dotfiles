@@ -2,23 +2,30 @@
   description = "System configuration";
   inputs = {
     canivete.url = github:schradert/canivete;
-    nixpkgs.follows = "canivete/nixpkgs";
-    nixpkgs-stable.follows = "canivete/nixpkgs-stable";
 
-    # nix-doom-emacs marked as broken for now
     # TODO keep tabs on this project to see if it's evolving enough to try to use
+    # NOTE nix-doom-emacs marked as broken for now so we use overlay
     nix-doom-emacs.url = github:nix-community/nix-doom-emacs;
-    nix-doom-emacs.inputs.nixpkgs.follows = "nixpkgs";
+    nix-doom-emacs.inputs.nixpkgs.follows = "canivete/nixpkgs";
     emacs-overlay.url = github:nix-community/emacs-overlay;
-    emacs-overlay.inputs.nixpkgs.follows = "nixpkgs";
-    emacs-overlay.inputs.nixpkgs-stable.follows = "nixpkgs-stable";
+    emacs-overlay.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    emacs-overlay.inputs.nixpkgs-stable.follows = "canivete/nixpkgs-stable";
 
+    # Secret management in Nix deployments
     sops-nix.url = github:Mic92/sops-nix;
-    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
-    sops-nix.inputs.nixpkgs-stable.follows = "nixpkgs-stable";
+    sops-nix.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    sops-nix.inputs.nixpkgs-stable.follows = "canivete/nixpkgs-stable";
+
+    # Authenticate with GKE clusters using kubectl
     gke-gcloud-auth-plugin-flake.url = github:christian-blades-cb/gke-gcloud-auth-plugin-nix;
+
+    # Spotify ecosystem
     spicetify-nix.url = github:Gerg-L/spicetify-nix;
-    spicetify-nix.inputs.nixpkgs.follows = "nixpkgs";
+    spicetify-nix.inputs.nixpkgs.follows = "canivete/nixpkgs";
+
+    # NixOS on steamdeck
+    jovian.url = github:Jovian-Experiments/Jovian-NixOS;
+    jovian.inputs.nixpkgs.follows = "canivete/nixpkgs";
   };
   outputs = inputs:
     inputs.canivete.lib.mkFlake {

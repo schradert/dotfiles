@@ -243,9 +243,11 @@
       "inputs": {
         "flake-utils": "flake-utils_4",
         "nixpkgs": [
+          "canivete",
           "nixpkgs"
         ],
         "nixpkgs-stable": [
+          "canivete",
           "nixpkgs-stable"
         ]
       },
@@ -735,6 +737,28 @@
         "type": "github"
       }
     },
+    "jovian": {
+      "inputs": {
+        "nix-github-actions": "nix-github-actions",
+        "nixpkgs": [
+          "canivete",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1722491724,
+        "narHash": "sha256-pvZ0sqDNhcUzYXrCF9UYZBf+qd3ri/0fT0b4mFqVuBs=",
+        "owner": "Jovian-Experiments",
+        "repo": "Jovian-NixOS",
+        "rev": "ff83ee27a56651dcd6d4c9b3e3b7c08267dc52ae",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Jovian-Experiments",
+        "repo": "Jovian-NixOS",
+        "type": "github"
+      }
+    },
     "kubenix": {
       "inputs": {
         "flake-compat": "flake-compat",
@@ -796,6 +820,7 @@
         "format-all": "format-all",
         "nix-straight": "nix-straight",
         "nixpkgs": [
+          "canivete",
           "nixpkgs"
         ],
         "nose": "nose",
@@ -849,6 +874,28 @@
       "original": {
         "owner": "Gerschtli",
         "repo": "nix-formatter-pack",
+        "type": "github"
+      }
+    },
+    "nix-github-actions": {
+      "inputs": {
+        "nixpkgs": [
+          "jovian",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1690328911,
+        "narHash": "sha256-fxtExYk+aGf2YbjeWQ8JY9/n9dwuEt+ma1eUFzF8Jeo=",
+        "owner": "zhaofengli",
+        "repo": "nix-github-actions",
+        "rev": "96df4a39c52f53cb7098b923224d8ce941b64747",
+        "type": "github"
+      },
+      "original": {
+        "owner": "zhaofengli",
+        "ref": "matrix-name",
+        "repo": "nix-github-actions",
         "type": "github"
       }
     },
@@ -1378,15 +1425,8 @@
         "canivete": "canivete",
         "emacs-overlay": "emacs-overlay",
         "gke-gcloud-auth-plugin-flake": "gke-gcloud-auth-plugin-flake",
+        "jovian": "jovian",
         "nix-doom-emacs": "nix-doom-emacs",
-        "nixpkgs": [
-          "canivete",
-          "nixpkgs"
-        ],
-        "nixpkgs-stable": [
-          "canivete",
-          "nixpkgs-stable"
-        ],
         "sops-nix": "sops-nix",
         "spicetify-nix": "spicetify-nix"
       }
@@ -1480,9 +1520,11 @@
     "sops-nix": {
       "inputs": {
         "nixpkgs": [
+          "canivete",
           "nixpkgs"
         ],
         "nixpkgs-stable": [
+          "canivete",
           "nixpkgs-stable"
         ]
       },
@@ -1504,6 +1546,7 @@
       "inputs": {
         "flake-compat": "flake-compat_4",
         "nixpkgs": [
+          "canivete",
           "nixpkgs"
         ]
       },
