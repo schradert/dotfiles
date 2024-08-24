@@ -39,7 +39,6 @@
       direnv.enable = true;
       direnv.nix-direnv.enable = true;
       eza.enable = true;
-      fzf.enable = true;
       gpg.enable = true;
       home-manager.enable = true;
       htop.enable = true;

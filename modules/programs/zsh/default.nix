@@ -28,15 +28,6 @@ with nix; {
           file = ".p10k.zsh";
         }
         {
-          name = "fzf-tab";
-          src = fetchFromGitHub {
-            owner = "Aloxaf";
-            repo = "fzf-tab";
-            rev = "master";
-            sha256 = "ilUavAIWmLiMh2PumtErMCpOcR71ZMlQkKhVOTDdHZw=";
-          };
-        }
-        {
           name = "fast-syntax-highlighting";
           src = fetchFromGitHub {
             owner = "zdharma-continuum";
@@ -123,15 +114,6 @@ with nix; {
           # set list-colors to enable filename colorizing
           zstyle ':completion:*' list-colors $LS_COLORS  # ''${(s.:.)LS_COLORS}
           fpath+=($ZSH/custom/plugins/zsh-completions/src)
-          ${optionalString fzf.enable ''
-            bindkey '^R' fzf-history-widget
-            # switch group using `,` and `.`
-            zstyle ':fzf-tab:*' switch-group ',' '.'
-            ${optionalString eza.enable ''
-              # preview directory's content with exa when completing cd
-              zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
-            ''}
-          ''}
         '';
       config.programs.zsh = {
         enable = true;
@@ -164,7 +146,6 @@ with nix; {
             "ripgrep"
             "rsync"
             (optionals gh.enable ["gh"])
-            (optionals fzf.enable ["fzf"])
             (optionals git.enable ["git git-auto-fetch"])
             (optionals tmux.enable ["tmux"])
             (optionals k9s.enable ["helm" "kubectl"])
