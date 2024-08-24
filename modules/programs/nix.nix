@@ -6,7 +6,7 @@
 }:
 with nix; let
   inherit (config.canivete.people) me;
-  buildMachines = flip mapAttrs config.canivete.deploy.nixos.nodes (name: machine: {
+  buildMachines = flip mapAttrsToList config.canivete.deploy.nixos.nodes (name: machine: {
     hostName = name;
     protocol = "ssh-ng";
     sshUser = me;
@@ -28,12 +28,7 @@ with nix; let
   key = readFile (inputs.self + "/.canivete/sops/${me}.pub");
 in {
   canivete.deploy = {
-    system.homeModules.nix = {pkgs, ...}: {
-      nix = {
-        package = pkgs.nixVersions.latest;
-        inherit (common) settings gc extraOptions;
-      };
-    };
+    system.homeModules.nix.nix = {inherit (common) settings gc extraOptions;};
     system.modules.nix = {pkgs, ...}: {nix.package = pkgs.nixVersions.latest;};
     nixos.modules.nix.nix = mkMerge [
       common
