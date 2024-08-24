@@ -25,11 +25,11 @@ in {
       text = ''
         set -euo pipefail
 
-        echo "${readFile (inputs.self + "/.canivete/sops/${me}.pub")}" > ~/.ssh/${name}.pub
+        echo "${fileContents (inputs.self + "/.canivete/sops/${me}.pub")}" > ~/.ssh/${name}.pub
         cp -f /canivete/secrets/data.external.age-me ~/.config/sops/age/keys.txt
         cp -f "/canivete/secrets/data.external.ssh-key-${me}" ~/.ssh/${name}
 
-        git config user.name ${full_name}
+        git config user.name "${full_name}"
         git config user.email ${email}
         ssh-add ~/.ssh/${name}
 

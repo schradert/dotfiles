@@ -9,7 +9,7 @@
     with nix; let
       inherit (config.home) username homeDirectory;
       my = flake.config.canivete.people.users.${username};
-      key = readFile (flake.inputs.self + "/.canivete/sops/${username}.pub");
+      key = fileContents (flake.inputs.self + "/.canivete/sops/${username}.pub");
     in {
       dotfiles.zsh.initExtraLines = optional config.programs.git.enable ''
         # disable sort when completing `git checkout`

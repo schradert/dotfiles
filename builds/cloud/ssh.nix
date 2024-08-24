@@ -13,7 +13,7 @@ with nix; {
         (filterAttrs (_: hasAttrByPath ["accounts" "github"]))
         (mapAttrs (name: _: {
           title = "dotfiles";
-          key = readFile (inputs.self + "/.canivete/sops/${name}.pub");
+          key = fileContents (inputs.self + "/.canivete/sops/${name}.pub");
         }))
       ];
       provider.gitlab.token = vals.sops "default.yaml#/gitlab_pat";
@@ -21,7 +21,7 @@ with nix; {
         (filterAttrs (_: hasAttrByPath ["accounts" "gitlab"]))
         (mapAttrs (name: _: {
           title = "dotfiles";
-          key = readFile (inputs.self + "/.canivete/sops/${name}.pub");
+          key = fileContents (inputs.self + "/.canivete/sops/${name}.pub");
         }))
       ];
     };

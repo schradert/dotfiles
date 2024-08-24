@@ -25,7 +25,7 @@ with nix; let
     gc.automatic = true;
     optimise.automatic = true;
   };
-  key = readFile (inputs.self + "/.canivete/sops/${me}.pub");
+  key = fileContents (inputs.self + "/.canivete/sops/${me}.pub");
 in {
   canivete.deploy = {
     system.homeModules.nix = {pkgs, ...}: {
