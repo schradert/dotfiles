@@ -45,7 +45,6 @@
       htop.enable = true;
       jq.enable = true;
       navi.enable = true;
-      wezterm.enable = true;
       zoxide.enable = true;
     };
   };
