@@ -6,6 +6,9 @@ trdos_ip: ENC[AES256_GCM,data:r0Az4licj1sme+VfLkY=,iv:dEf51wlEgQnujmG5IN88QrW4Eh
 backblaze:
     application_key: ENC[AES256_GCM,data:OerPMCCqBWI2j6TaqI5yex/OaF2jlxlMjYANG9Nj66jey0J5WUxpMJI/,iv:dcbFqalGI3M55fUYwSPYBiQ88xNloEs1omNl8fX7Feg=,tag:diYfbv+EI29+/esIQuGpyg==,type:str]
     application_key_id: ENC[AES256_GCM,data:sOjG9FqxEzvChbbB,iv:kg0lwWEkQa98j85C2yA0mC+07XtYUj+OxdyxhjmdzC0=,tag:jU5LEAyD7fXaCWsQ9rIS6Q==,type:str]
+bitwarden:
+    id: ENC[AES256_GCM,data:6HOysrFcoxxL7v9ju7027eLB/ndQKOQu1yrDTfyVbGYuXnWM,iv:jEkQO/x8GZNKCM2+0H1iTM2zFhiV0QFPLgS0Y6YpzCk=,tag:CkWH7EYdRYEniwNcNFvlCA==,type:str]
+    key: ENC[AES256_GCM,data:QDTrPmFW5LmuFHFkl0sA5McBwu0=,iv:1ZMIiV/UIwZmefua25NUJTgOX6fmtHIlVDHpIlveVOM=,tag:aT5B3aJ3t78ScZ3LT0lX+g==,type:str]
 sops:
     kms: []
     gcp_kms: []
@@ -21,8 +24,8 @@ sops:
             RUVzTGVCL0p0bSs5d2Jpc3p0ZldtYUkKS9vx8/HR9ZeH0GB34mCBDDhCm2XLLCWX
             VDKZ48OMnlRRAFin9X/wj6RyUJlk0AWG6wgnlsLqnxE8m0+D1U2PDA==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2024-07-24T02:43:18Z"
-    mac: ENC[AES256_GCM,data:zIYACA8sPBcUppRNUqMjpfcU/c5v+/1zqWGkDtbE/nNfOA545QIEi9mw/Hlrgey7CS5oAfb37W25qcfHR3RjUChpy6nZ4b18U5+d8U/3SxkK+s68zGHv/Z6zllRy2NKLuRIV1kHpNO6NKNCMYikZMXVraCout28wwD7ifng71V0=,iv:UbOMt2+1D41AERzd8/BvUXnYuVkjMDU5dWzV4cugj0o=,tag:MUFRgn7ZDxcnFz1cuL4XSg==,type:str]
+    lastmodified: "2024-08-18T00:30:46Z"
+    mac: ENC[AES256_GCM,data:wUw6kmcZrcktSvtuyVTZfkfoNe2D2q2TNmZqGgObykJeNQO2igEdokolxZWMcOaN9JGLgwpV1qlxv8vQXVYbVLXfzYqScNObjmWDQD6SpAn/LJGlVAx6L21Z1cyO09fktCxvQ6N1j/g6oBqyfirtSuxDDKT9kfhJx5Ih8MxSBLg=,iv:CTU6qj5oRZTkXdz5gwrm0yv2+bRpUONrQFu1W2qfEcs=,tag:vfPKgPfFIuEAezfIMAFqtg==,type:str]
     pgp: []
     unencrypted_suffix: _unencrypted
     version: 3.9.0
