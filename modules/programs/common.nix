@@ -1,5 +1,5 @@
 {
-  canivete.deploy.home.modules.common = {pkgs, ...}: {
+  canivete.deploy.system.homeModules.common = {pkgs, ...}: {
     home.packages = with pkgs; [
       aria2
       cheat

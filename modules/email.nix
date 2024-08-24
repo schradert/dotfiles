@@ -1,6 +1,6 @@
 {nix, ...}: {
   canivete.deploy = {
-    home.modules.email = {pkgs, ...}: {
+    system.homeModules.email = {pkgs, ...}: {
       home.packages = with pkgs; [mu mu.mu4e isync hydroxide];
       accounts.email.accounts.Proton = {
         # TODO alot contact completion

@@ -1,5 +1,5 @@
 {
-  canivete.deploy.home.modules.git = {
+  canivete.deploy.system.homeModules.git = {
     config,
     flake,
     nix,
