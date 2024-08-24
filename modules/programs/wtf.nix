@@ -21,7 +21,7 @@ with nix; {
         default =
           if wtf.config == null
           then wtf.basePackage
-          else pkgs.wrapFlags wtf.basePackage "--add-flags \"--config=${wtf.config}\"";
+          else pkgs.wrapProgram wtf.basePackage "wtfutil" "wtfutil" "--add-flags \"--config=${wtf.config}\"" {};
       };
     };
     config = {
