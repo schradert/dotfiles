@@ -1,8 +1,12 @@
-{config, nix, ...}:
+{
+  config,
+  nix,
+  ...
+}:
 with nix; let
   inherit (config.dotfiles) domain;
 in {
-   perSystem = {
+  perSystem = {
     config,
     inputs',
     pkgs,
@@ -30,6 +34,10 @@ in {
             type = package;
             default = self'.packages.${name} or pkgs.${name};
           };
+          tag = mkOption {
+            type = str;
+            default = config.package.version;
+          };
           args = mkOption {
             type = attrsOf anything;
             default = {};
@@ -39,6 +47,7 @@ in {
             default = pipe config.args [
               (recursiveUpdate {
                 name = "${config.registry}/${config.repository}";
+                inherit (config) tag;
                 config.entrypoint = [(getExe config.package)];
               })
               inputs'.nix2container.packages.nix2container.buildImage
