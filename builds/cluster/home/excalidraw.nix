@@ -1,7 +1,5 @@
-{config, ...}: let
-  inherit (config.dotfiles) domain;
-in {
-  perSystem.canivete.kubenix.clusters.prod.modules.excalidraw = {helm, nix, ...}: {
+{
+  perSystem.canivete.kubenix.clusters.prod.modules.excalidraw = {helm, ...}: {
     kubernetes.helm.releases.excalidraw = {
       chart = helm.fetch {
         repo = "https://gitlab.com/api/v4/projects/43892189/packages/helm/stable";

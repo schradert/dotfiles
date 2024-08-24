@@ -41,7 +41,11 @@
     inputs.canivete.lib.mkFlake {
       inherit inputs;
       everything = [./modules ./builds];
-    } ({config, nix, ...}:
+    } ({
+      config,
+      nix,
+      ...
+    }:
       with nix; {
         dotfiles.domain = "trdos.me";
         canivete.root = "sirver";
@@ -68,7 +72,11 @@
             "steam"
             "steamdeck-hw-theme"
           ];
-        perSystem = {config, pkgs, ...}: {
+        perSystem = {
+          config,
+          pkgs,
+          ...
+        }: {
           packages.default = pkgs.wrapFlags config.packages.opentofu "--add-flags \"deploy\"";
           canivete.pre-commit.languages.shell.enable = true;
           canivete.pre-commit.settings = {
@@ -76,8 +84,22 @@
             # TODO extract these tool configurations into options
             hooks.lychee.settings.configPath = toString (pkgs.writers.writeTOML "lychee.toml" {
               exclude_path = ["^\./modules/programs/emacs/config\.org$"];
-              # This helm repository doesn't have parent pages
-              exclude = ["https://seaweedfs.github.io/seaweedfs/helm"];
+              exclude = [
+                # These helm repositories don't have parent pages
+                "https://seaweedfs.github.io/seaweedfs/helm"
+                "https://seaweedfs.github.io/seaweedfs-csi-driver/helm"
+                "https://charts.rook.io/release"
+                "https://kubernetes-sigs.github.io/descheduler"
+                "https://kubernetes-sigs.github.io/node-feature-discovery/charts"
+                "https://k8tz.github.io/k8tz"
+                "https://opensource.zalando.com/postgres-operator/charts/postgres-operator"
+                "https://opensource.zalando.com/postgres-operator/charts/postgres-operator-ui"
+                "https://gitlab.com/api/v4/projects/43892189/packages/helm/stable"
+                # Cluster local addresses
+                "svc.cluster.local"
+                # URLs built with substitution
+                "^.+\${.+}.+$"
+              ];
             });
             # Used in vim configuration
             hooks.typos.settings.configPath = toString (pkgs.writers.writeTOML "_typos.toml" {default.extend-words.enew = "enew";});

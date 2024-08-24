@@ -1,4 +1,3 @@
-
 {
   # https://github.com/spegel-org/spegel
   perSystem.dotfiles.helm.spegel = {

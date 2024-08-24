@@ -1,4 +1,9 @@
-{config, nix, ...}: with nix; let
+{
+  config,
+  nix,
+  ...
+}:
+with nix; let
   port = 8888;
   metricsPort = 8080;
   inherit (config.dotfiles) domain;

@@ -1,8 +1,13 @@
-{nix, ...}: with nix; {
-  perSystem = {config, pkgs, ...}: {
+{nix, ...}:
+with nix; {
+  perSystem = {
+    config,
+    pkgs,
+    ...
+  }: {
     options.dotfiles.helm = mkOption {
       default = {};
-      type = attrsOf (submodule ({name, config, ...}: {
+      type = attrsOf (submodule {
         freeformType = anything;
         options = {
           chart = mkOption {
@@ -18,7 +23,7 @@
             default = {};
           };
         };
-      }));
+      });
     };
     config.canivete.kubenix.clusters.prod.modules.helm = {helm, ...}: {
       config = mkMerge (flip mapAttrsToList config.dotfiles.helm (name: cfg: {

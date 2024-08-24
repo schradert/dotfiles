@@ -1,4 +1,5 @@
-{nix, ...}: with nix; {
+{nix, ...}:
+with nix; {
   # [ ] [descheduler](https://github.com/kubernetes-sigs/descheduler)
   perSystem.dotfiles.helm.descheduler = {
     namespace = "kube-system";

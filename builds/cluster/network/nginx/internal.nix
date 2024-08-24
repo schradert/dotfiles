@@ -1,7 +1,6 @@
-{nix, ...}: with nix; {
-  perSystem = {config, ...}: let
-    inherit (config.dotfiles.nix2container.nginx) registry repository image;
-  in {
+{nix, ...}:
+with nix; {
+  perSystem = {
     dotfiles.nix2container.nginx = {};
     dotfiles.helm.nginx-internal = {
       namespace = "network";

@@ -1,4 +1,8 @@
-{config, nix, ...}: let
+{
+  config,
+  nix,
+  ...
+}: let
   port = 7878;
   subdomain = "sonarr.${config.dotfiles.domain}";
 in {

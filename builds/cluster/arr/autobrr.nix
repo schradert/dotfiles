@@ -1,4 +1,8 @@
-{config, nix, ...}: let
+{
+  config,
+  nix,
+  ...
+}: let
   subdomain = "autobrr.${config.dotfiles.domain}";
   port = 7878;
 in {

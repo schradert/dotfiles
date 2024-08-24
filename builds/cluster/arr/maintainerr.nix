@@ -1,4 +1,9 @@
-{config, nix, ...}: with nix; {
+{
+  config,
+  nix,
+  ...
+}:
+with nix; {
   # https://github.com/jorenn92/Maintainerr
   perSystem.dotfiles.helm.maintainerr = {
     namespace = "arr";

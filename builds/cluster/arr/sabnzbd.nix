@@ -1,4 +1,9 @@
-{config, nix, ...}: with nix; let
+{
+  config,
+  nix,
+  ...
+}:
+with nix; let
   port = 8080;
   subdomain = "sabnzbd.${config.dotfiles.domain}";
 in {

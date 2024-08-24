@@ -1,9 +1,6 @@
-{config, ...}: let
-  inherit (config.dotfiles) domain;
-in {
+{
   perSystem.canivete.kubenix.clusters.prod.modules.actualbudget = {
     helm,
-    nix,
     pkgs,
     ...
   }: {

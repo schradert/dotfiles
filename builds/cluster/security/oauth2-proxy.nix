@@ -1,22 +1,5 @@
-{config, ...}: let
-  inherit (config.dotfiles) domain;
-in {
-  perSystem.canivete.kubenix.clusters.prod.modules.oauth2-proxy = {helm, nix, ...}: {
-    # kubernetes.resources = {
-    #   ingressroutes.oauth2-proxy.metadata.namespace = "oauth2-proxy";
-    #   ingressroutes.oauth2-proxy.spec = {
-    #     entryPoints = ["websecure"];
-    #     tls.certResolver = "letsencrypt-staging-tls";
-    #     routes = nix.toList {
-    #       match = "Host(`oauth2-proxy.${domain}`)";
-    #       kind = "Rule";
-    #       services = nix.toList {
-    #         name = "oauth2-proxy";
-    #         port = 80;
-    #       };
-    #     };
-    #   };
-    # };
+{
+  perSystem.canivete.kubenix.clusters.prod.modules.oauth2-proxy = {helm, ...}: {
     kubernetes.helm.releases.oauth2-proxy = {
       chart = helm.fetch {
         repo = "https://oauth2-proxy.github.io/manifests";

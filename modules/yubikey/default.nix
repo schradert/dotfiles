@@ -17,7 +17,7 @@
     pkgs,
     ...
   }: {
-    config = lib.mkIf (config.dotfiles.graphical.enable) {
+    config = lib.mkIf config.dotfiles.graphical.enable {
       environment.systemPackages = [pkgs.yubioath-flutter];
       programs.gnupg.agent = {
         enable = true;

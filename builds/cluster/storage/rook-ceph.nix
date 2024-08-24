@@ -1,5 +1,10 @@
 # https://github.com/rook/rook/blob/master/Documentation/Helm-Charts/ceph-cluster-chart.md
-{config, nix, ...}: with nix; let
+{
+  config,
+  nix,
+  ...
+}:
+with nix; let
   subdomain = "rook.${config.dotfiles.domain}";
 in {
   # Kubenix bug means fields outside of expected spec won't register, so we define them here
@@ -26,7 +31,7 @@ in {
           metadata.labels."canivete/chart" = mkForce "rook-ceph";
           metadata.labels."helm.sh/chart" = mkForce "rook-ceph-v1.15.0";
         };
-        rook-ceph-osd= {
+        rook-ceph-osd = {
           metadata.labels."canivete/chart" = mkForce "rook-ceph";
           metadata.labels."helm.sh/chart" = mkForce "rook-ceph-v1.15.0";
         };

@@ -1,9 +1,12 @@
-{config, nix, ...}: with nix; let
-  inherit (config.dotfiles) domain;
-  inherit (config.canivete.people.my.profiles.default) email;
-  subdomain = "bitwarden.${domain}";
+{
+  config,
+  nix,
+  ...
+}:
+with nix; let
+  subdomain = "bitwarden.${config.dotfiles.domain}";
 in {
-  perSystem.canivete.kubenix.clusters.prod.modules.bitwarden = {helm, nix, ...}: {
+  perSystem.canivete.kubenix.clusters.prod.modules.bitwarden = {helm, ...}: {
     kubernetes.resources = {
       # Required secret
       secrets.bitwarden.metadata.namespace = "bitwarden";

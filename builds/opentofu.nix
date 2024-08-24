@@ -1,4 +1,9 @@
-{self, nix, ...}: with nix; {
+{
+  self,
+  nix,
+  ...
+}:
+with nix; {
   flake.lib.nixToEnv = flip pipe [
     toUpper
     (replaceStrings ["." "-"] ["__" "_"])

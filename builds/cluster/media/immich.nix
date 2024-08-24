@@ -4,7 +4,11 @@
   # NOTE https://github.com/immich-app/immich
   perSystem.canivete.dream2nix.packages = {
     # NOTE currently failing with @msgpackr-extract/msgpackr-extract-darwin-x64 not found in package-lock.json""
-    immich.module = {config, dream2nix, ...}: let
+    immich.module = {
+      config,
+      dream2nix,
+      ...
+    }: let
       inherit (config) version deps mkDerivation;
       inherit (deps) fetchFromGitHub;
       inherit (mkDerivation) src;
@@ -27,7 +31,11 @@
     # ERROR: No matching distribution found for python"
     # while running "bash -c $(nix-build ...refresh.drv --no-link)/bin/refresh"
     # TODO pass poetry.lock to pin dependencies
-    immich-machine-learning.module = {config, dream2nix, ...}: let
+    immich-machine-learning.module = {
+      config,
+      dream2nix,
+      ...
+    }: let
       inherit (config) deps mkDerivation version;
       inherit (mkDerivation) src;
       inherit (deps) fetchFromGitHub python;

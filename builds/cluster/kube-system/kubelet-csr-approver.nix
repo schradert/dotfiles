@@ -1,4 +1,9 @@
-{nix, self, ...}: with nix; {
+{
+  nix,
+  self,
+  ...
+}:
+with nix; {
   # [ ] [kubelet-csr-approver](https://github.com/postfinance/kubelet-csr-approver)
   perSystem.dotfiles.helm.kubelet-csr-approver = {
     namespace = "kube-system";

@@ -1,4 +1,9 @@
-{config, nix, ...}: with nix; {
+{
+  config,
+  nix,
+  ...
+}:
+with nix; {
   perSystem.dotfiles = {
     opentofu.passwords.unpackerr-api-key = {
       length = 21;

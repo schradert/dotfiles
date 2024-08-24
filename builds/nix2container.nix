@@ -1,10 +1,26 @@
-{config, nix, ...}: with nix; let
+{
+  config,
+  nix,
+  ...
+}:
+with nix; let
   subdomain = "harbor.${config.dotfiles.domain}";
 in {
-  perSystem = {config, inputs', pkgs, self', system, ...}: {
+  perSystem = {
+    config,
+    inputs',
+    pkgs,
+    self',
+    system,
+    ...
+  }: {
     options.dotfiles.nix2container = mkOption {
       default = {};
-      type = attrsOf (submodule ({name, config, ...}: {
+      type = attrsOf (submodule ({
+        name,
+        config,
+        ...
+      }: {
         options = {
           registry = mkOption {
             type = str;
@@ -53,7 +69,7 @@ in {
             registry=${container.registry} \
             repository=${container.repository} \
             fullRepository=${container.registry}/${container.repository}
-          ${getExe pkgs.jq} --null-input '$ARGS.positional | map({(.):env[.]}) | add' --args drv tag registry repository fullRespository
+          ${getExe pkgs.jq} --null-input '$ARGS.positional | map({(.):env[.]}) | add' --args drv tag registry repository fullRepository
         '';
         resource.null_resource.${name} = {
           triggers.drv = "\${ data.external.${name}.result.drv }";

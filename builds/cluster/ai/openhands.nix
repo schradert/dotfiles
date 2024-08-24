@@ -1,4 +1,3 @@
-
 {
   # NOTE https://github.com/All-Hands-AI/OpenHands
   # NOTE https://docs.all-hands.dev/modules/usage/how-to/openshift-example

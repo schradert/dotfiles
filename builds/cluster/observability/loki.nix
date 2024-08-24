@@ -1,5 +1,3 @@
-
 {
- #[ ] [Loki](https://github.com/grafana/loki)
-
+  #[ ] [Loki](https://github.com/grafana/loki)
 }

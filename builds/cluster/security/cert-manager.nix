@@ -1,4 +1,8 @@
-{config, nix, ...}: let
+{
+  config,
+  nix,
+  ...
+}: let
   inherit (config.canivete.people.my.profiles.default) email;
   inherit (config.dotfiles) domain;
   domainName = nix.replaceStrings ["."] ["-"] domain;
@@ -28,7 +32,7 @@ in {
     };
     values = {
       crds.enabled = true;
-      dns01RecursiveNameservers = "https://1.1.1.1:443/dns-query,https://1.0.0.1:443/dns-query";
+      dns01RecursiveNameservers = nix.concatStringsSep "," ["https://1.1.1.1:443/dns-query" "https://1.0.0.1:443/dns-query"];
       dns01RecursiveNameserversOnly = true;
       prometheus.enabled = true;
       prometheus.servicemonitor.enabled = true;

@@ -1,4 +1,3 @@
-
 {
   # https://github.com/bmpi-dev/logseq.xyz
   # https://github.com/logseq/logseq

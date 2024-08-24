@@ -1,4 +1,10 @@
-{config, inputs, nix, ...}: with nix; let
+{
+  config,
+  inputs,
+  nix,
+  ...
+}:
+with nix; let
   name = "devops";
   inherit (config.canivete.people) me my;
   full_name = my.name;
@@ -7,7 +13,12 @@
   url = "git@github.com:schradert/dotfiles";
   branch = "trunk";
 in {
-  canivete.deploy.nixos.modules.${name} = {config, lib, pkgs, ...}: let
+  canivete.deploy.nixos.modules.${name} = {
+    config,
+    lib,
+    pkgs,
+    ...
+  }: let
     script = pkgs.writeShellApplication {
       inherit name;
       runtimeInputs = with pkgs; [git openssh];

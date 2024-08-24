@@ -1,4 +1,9 @@
-{config, nix, ...}: with nix; {
+{
+  config,
+  nix,
+  ...
+}:
+with nix; {
   # TODO plex token?
   # TODO should I use subcleaner https://github.com/KBlixt/subcleaner
   perSystem.dotfiles.nix2container.bazarr = {};

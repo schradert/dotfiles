@@ -1,6 +1,5 @@
 {
   config,
-  inputs,
   nix,
   ...
 }: let

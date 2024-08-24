@@ -1,4 +1,3 @@
-
 {
   # https://github.com/bbeesley/trakt-to-letterboxd
   # https://gist.github.com/darekkay/ff1c5aadf31588f11078

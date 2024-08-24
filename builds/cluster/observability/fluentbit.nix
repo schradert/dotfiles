@@ -1,4 +1,3 @@
-
 {
   # https://fluentbit.io/
 }

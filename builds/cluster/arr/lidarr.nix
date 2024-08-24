@@ -1,4 +1,9 @@
-{config, nix, ...}: with nix; let
+{
+  config,
+  nix,
+  ...
+}:
+with nix; let
   port = 7878;
   subdomain = "lidarr.${config.dotfiles.domain}";
 in {

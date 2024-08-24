@@ -1,7 +1,7 @@
 # NOTE https://github.com/bjw-s/home-ops/blob/main/kubernetes/main/apps/network/multus/ks.yaml
 #
 {
-  perSystem = {pkgs, ...}: {
+  perSystem = {
     dotfiles.helm.multus = {
       namespace = "network";
       # resources.imports = [

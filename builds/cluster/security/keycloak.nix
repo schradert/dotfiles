@@ -1,4 +1,10 @@
-{config, nix, self, ...}: with nix; let
+{
+  config,
+  nix,
+  self,
+  ...
+}:
+with nix; let
   subdomain = config.dotfiles.domain;
   passwords = map (prefix "keycloak-") ["superadmin" "postgres-postgres" "postgres-admin" "tristan" "tahoe" "oauth2_proxy-secret"];
 in {

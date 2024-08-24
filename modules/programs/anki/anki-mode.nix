@@ -1,4 +1,3 @@
-
 {
   # https://github.com/davidshepherd7/anki-mode
   # https://github.com/Ajatt-Tools/mpvacious

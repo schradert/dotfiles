@@ -1,4 +1,8 @@
-{config, nix, ...}: let
+{
+  config,
+  nix,
+  ...
+}: let
   port = 7878;
   subdomain = "radarr.${config.dotfiles.domain}";
 in {

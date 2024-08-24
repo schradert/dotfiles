@@ -1,4 +1,9 @@
-{config, nix, ...}: with nix; let
+{
+  config,
+  nix,
+  ...
+}:
+with nix; let
   port = 9696;
   subdomain = "prowlarr.${config.dotfiles.domain}";
 in {

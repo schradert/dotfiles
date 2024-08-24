@@ -15,8 +15,7 @@
         # disable sort when completing `git checkout`
         zstyle ':completion:*:git-checkout:*' sort false
       '';
-      programs.git = let
-      in {
+      programs.git = {
         enable = true;
         userName = my.name;
         userEmail = my.profiles.${config.dotfiles.profile}.email;

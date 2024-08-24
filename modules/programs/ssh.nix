@@ -10,21 +10,24 @@ with nix; let
 in {
   perSystem = {pkgs, ...}: {
     canivete.opentofu.workspaces.deploy.modules.ssh-key.data.external = let
-      decrypt = file: pkgs.execBash ''
-        ${getExe pkgs.sops} --decrypt ${sshFile file} | \
-          ${getExe pkgs.jq} --null-input --rawfile contents /dev/stdin '{"contents":$contents}'
-      '';
-    in mkMerge [
-      (flip mapAttrs' users (name: cfg: nameValuePair "ssh-key-${name}" {program = decrypt name;}))
-      {age-me.program = decrypt "${me}.txt";}
-    ];
+      decrypt = file:
+        pkgs.execBash ''
+          ${getExe pkgs.sops} --decrypt ${sshFile file} | \
+            ${getExe pkgs.jq} --null-input --rawfile contents /dev/stdin '{"contents":$contents}'
+        '';
+    in
+      mkMerge [
+        (flip mapAttrs' users (name: _: nameValuePair "ssh-key-${name}" {program = decrypt name;}))
+        {age-me.program = decrypt "${me}.txt";}
+      ];
   };
   canivete.deploy = {
     system.modules.ssh.canivete.secrets = mkMerge [
-      (flip mapAttrs' users (name: _: nameValuePair "data.external.ssh-key-${name}" {
-        attr = "result.contents";
-        owner = "${name}:${name}";
-      }))
+      (flip mapAttrs' users (name: _:
+        nameValuePair "data.external.ssh-key-${name}" {
+          attr = "result.contents";
+          owner = "${name}:${name}";
+        }))
       {
         "data.external.age-me" = {
           attr = "result.contents";
@@ -32,7 +35,12 @@ in {
         };
       }
     ];
-    system.homeModules.ssh = {config, lib, pkgs, ...}: let
+    system.homeModules.ssh = {
+      config,
+      lib,
+      pkgs,
+      ...
+    }: let
       inherit (config.home) username homeDirectory;
     in {
       options.dotfiles.hostname = mkOption {
@@ -83,7 +91,8 @@ in {
               then "Library/Application Support"
               else ".config";
           in "~/${directoryConfig}/sops/age/keys.txt";
-        in mkIf (username == me) (lib.hm.dag.entryAfter ["writeBoundary"] "cp -f /run/secrets/data.external.age-me ${agePath}");
+        in
+          mkIf (username == me) (lib.hm.dag.entryAfter ["writeBoundary"] "cp -f /run/secrets/data.external.age-me ${agePath}");
       };
     };
     nixos.homeModules.ssh.services.ssh-agent.enable = true;

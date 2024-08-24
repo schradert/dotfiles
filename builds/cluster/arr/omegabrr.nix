@@ -1,4 +1,9 @@
-{config, nix, ...}: with nix; {
+{
+  config,
+  nix,
+  ...
+}:
+with nix; {
   # https://github.com/autobrr/omegabrr
   perSystem.dotfiles.helm.omegabrr = {
     namespace = "arr";

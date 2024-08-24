@@ -1,4 +1,4 @@
-{config, nix, ...}: {
+{
   perSystem.dotfiles.nix2container.recyclarr = {};
   perSystem.dotfiles.helm.recyclarr.namespace = "arr";
   perSystem.dotfiles.helm.recyclarr.values = {

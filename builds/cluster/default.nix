@@ -1,4 +1,9 @@
-{config, nix, ...}: with nix; let
+{
+  config,
+  nix,
+  ...
+}:
+with nix; let
   command = "ssh ${config.canivete.root} sudo k3s kubectl config view --raw | sed 's/127\.0\.0\.1/${config.dotfiles.domain}/'";
 in {
   perSystem.canivete.kubenix.clusters.prod = {

@@ -28,11 +28,11 @@ with nix; {
           gracefulNodeShutdown.enable = true;
         }
         (mkIfElse cfg.root {
-          clusterInit = true;
-          role = "server";
-        } {
-          serverAddr = "https://${domain}:6443";
-        })
+            clusterInit = true;
+            role = "server";
+          } {
+            serverAddr = "https://${domain}:6443";
+          })
         (mkIf (cfg_k3s.role == "server") {
           configPath = pkgs.writers.writeYAML "k3s.yaml" {
             disable = ["traefik"];

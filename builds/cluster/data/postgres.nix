@@ -1,4 +1,9 @@
-{config, nix, ...}: with nix; let
+{
+  config,
+  nix,
+  ...
+}:
+with nix; let
   subdomain = "data.${config.dotfiles.domain}";
 in {
   # OperatorConfiguration has a configuration field, not spec, so we need this to pass validation
