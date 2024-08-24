@@ -80,6 +80,7 @@ in {
   canivete.deploy.nixos.modules.kubernetes = {
     config,
     pkgs,
+    perSystem,
     ...
   }: let
     cfg = config.dotfiles.kubernetes;
@@ -113,6 +114,9 @@ in {
             disable-helm-controller = true;
             tls-san = [domain];
           };
+        })
+        (mkIf (cfg_k3s.disableAgent -> cfg_k3s.role == "agent") {
+          images = mapAttrsToList (_: getAttr "image") perSystem.config.dotfiles.nix2container;
         })
       ];
     };
