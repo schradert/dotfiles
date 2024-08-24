@@ -18,8 +18,8 @@
       # };
     };
   canivete.deploy = {
-    home.modules.podman = {pkgs, ...}: {
-      home.file.".local/bin/docker".source = "${pkgs.podman}/bin/podman";
+    system.homeModules.podman = {pkgs, ...}: {
+      home.shellAliases.docker = "${pkgs.podman}/bin/podman";
       home.packages = with pkgs; [podman podman-compose podman-tui];
     };
     darwin.homeModules.podman = {
