@@ -5,10 +5,12 @@
   ...
 }:
 with nix; let
+  inherit (config.dotfiles) domain;
   darwin = config.canivete.deploy.darwin.nodes.morgenmuffel.profiles.system.raw;
 in {
   flake.overlays.gke-gcloud-auth-plugin = inputs.gke-gcloud-auth-plugin-flake.overlays.default;
   canivete.deploy.darwin.nodes.morgenmuffel = {
+    target.sshOptions = ["ProxyJump=${domain}"];
     profiles.system.module = {
       dotfiles.graphical.enable = true;
       homebrew.enable = true;
