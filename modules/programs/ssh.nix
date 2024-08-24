@@ -6,11 +6,34 @@ flake @ {
 }:
 with nix; let
   inherit (config.canivete.people) me users;
-  sshFile = name: "${inputs.self}/.canivete/sops/${name}";
+  sshFile = name: inputs.self + "/.canivete/sops/${name}";
 in {
+  perSystem = {pkgs, ...}: {
+    canivete.opentofu.workspaces.deploy.modules.ssh-key.data.external = let
+      decrypt = file: pkgs.execBash ''
+        ${getExe pkgs.sops} --decrypt ${sshFile file} | \
+          ${getExe pkgs.jq} --null-input --rawfile contents /dev/stdin '{"contents":$contents}'
+      '';
+    in mkMerge [
+      (flip mapAttrs' users (name: cfg: nameValuePair "ssh-key-${name}" {program = decrypt name;}))
+      {age-me.program = decrypt "${me}.txt";}
+    ];
+  };
   canivete.deploy = {
-    system.homeModules.ssh = {config, ...}: let
-      inherit (config.home) username;
+    system.modules.ssh.canivete.secrets = mkMerge [
+      (flip mapAttrs' users (name: _: nameValuePair "data.external.ssh-key-${name}" {
+        attr = "result.contents";
+        owner = "${name}:${name}";
+      }))
+      {
+        "data.external.age-me" = {
+          attr = "result.contents";
+          owner = "${me}:${me}";
+        };
+      }
+    ];
+    system.homeModules.ssh = {config, lib, pkgs, ...}: let
+      inherit (config.home) username homeDirectory;
     in {
       options.dotfiles.hostname = mkOption {
         type = str;
@@ -51,31 +74,27 @@ in {
               ]
           ))
         ];
-        sops.secrets.ssh = {
-          format = "binary";
-          sopsFile = sshFile username;
-        };
-        # TODO still not working
-        # home.file.".ssh/${user}".source = home.config.sops.secrets.ssh.path;
         home.file.".ssh/${username}.pub".source = sshFile "${username}.pub";
+        home.activation.sshKeyLinking = lib.hm.dag.entryAfter ["writeBoundary"] "cp -f /run/secrets/data.external.ssh-key-${username} ${homeDirectory}/.ssh/${username}";
+        home.activation.ageKeyLinking = let
+          agePath = let
+            directoryConfig =
+              if pkgs.stdenv.isDarwin
+              then "Library/Application Support"
+              else ".config";
+          in "~/${directoryConfig}/sops/age/keys.txt";
+        in mkIf (username == me) (lib.hm.dag.entryAfter ["writeBoundary"] "cp -f /run/secrets/data.external.age-me ${agePath}");
       };
     };
     nixos.homeModules.ssh.services.ssh-agent.enable = true;
     nixos.modules.ssh = {config, ...}: {
       home-manager.sharedModules = toList {dotfiles.hostname = config.networking.hostName;};
       services.openssh.enable = true;
-      security.pam.sshAgentAuth = {
-        enable = true;
-        authorizedKeysFiles = mkForce ["/etc/ssh/authorized_keys.d/%u"];
-      };
+      security.pam.sshAgentAuth.enable = true;
       security.polkit.enable = true;
       users.users = mkMerge [
-        (flip mapAttrs users (name: _: {
-          openssh.authorizedKeys.keyFiles = [(sshFile "${name}.pub")];
-        }))
-        {
-          root.openssh.authorizedKeys.keyFiles = config.users.users.${me}.openssh.authorizedKeys.keyFiles;
-        }
+        (flip mapAttrs users (name: _: {openssh.authorizedKeys.keyFiles = [(sshFile "${name}.pub")];}))
+        {root.openssh.authorizedKeys.keyFiles = config.users.users.${me}.openssh.authorizedKeys.keyFiles;}
       ];
     };
   };
