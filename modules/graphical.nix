@@ -66,7 +66,7 @@ with nix; {
       config = mkIf config.dotfiles.graphical.enable {
         fonts.packages = [pkgs.meslo-lgs-nf];
         home-manager.sharedModules = [{dotfiles.graphical.enable = true;}];
-        services.displayManager.sddm.enable = true;
+        services.displayManager.sddm.enable = mkDefault true;
         services.xserver = {
           enable = true;
           xkb.layout = "us";

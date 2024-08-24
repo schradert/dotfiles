@@ -38,6 +38,7 @@
     } ({nix, ...}:
       with nix; {
         dotfiles.domain = "trdos.me";
+        canivete.root = "sirver";
         canivete.people = {
           me = "tristan";
           users.tristan = {
@@ -56,6 +57,10 @@
             "slack"
             "spotify"
             "beeper"
+            "steam-run"
+            "steam-jupiter-original"
+            "steam"
+            "steamdeck-hw-theme"
           ];
         perSystem = {pkgs, ...}: {
           canivete.pre-commit = {
