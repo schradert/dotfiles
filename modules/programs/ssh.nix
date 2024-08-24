@@ -26,12 +26,12 @@ in {
       (flip mapAttrs' users (name: _:
         nameValuePair "data.external.ssh-key-${name}" {
           attr = "result.contents";
-          owner = "${name}:${name}";
+          owner = "${name}:root";
         }))
       {
         "data.external.age-me" = {
           attr = "result.contents";
-          owner = "${me}:${me}";
+          owner = "${me}:root";
         };
       }
     ];

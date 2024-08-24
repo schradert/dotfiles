@@ -51,13 +51,12 @@ in {
   in {
     options.dotfiles.${name}.enable = lib.mkEnableOption name;
     config = lib.mkIf config.dotfiles.${name}.enable {
-      users.groups.${me} = {};
       users.users.${name} = {
         createHome = true;
         isSystemUser = true;
-        group = me;
+        group = "root";
       };
-      systemd.tmpfiles.rules = ["d ${dir} 0700 ${name} ${me} - -"];
+      systemd.tmpfiles.rules = ["d ${dir} 0700 ${name} root - -"];
       systemd.services.${name} = {
         after = ["network.target"];
         wantedBy = ["multi-user.target"];
