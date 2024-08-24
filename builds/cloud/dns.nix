@@ -26,6 +26,12 @@
           type = "CNAME";
           zone_id = "\${ cloudflare_zone.trdos.id }";
         };
+        cloudflare_record.wildcard = {
+          name = "*";
+          value = nix.vals.sops "default.yaml#/trdos_ip";
+          type = "A";
+          zone_id = "\${ cloudflare_zone.trdos.id }";
+        };
       };
     };
   };
