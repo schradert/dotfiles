@@ -83,7 +83,7 @@ in {
           ))
         ];
         home.file.".ssh/${username}.pub".source = sshFile "${username}.pub";
-        home.activation.sshKeyLinking = lib.hm.dag.entryAfter ["writeBoundary"] "cp -f /run/secrets/data.external.ssh-key-${username} ${homeDirectory}/.ssh/${username}";
+        home.activation.sshKeyLinking = lib.hm.dag.entryAfter ["writeBoundary"] "cp -f /canivete/secrets/data.external.ssh-key-${username} ${homeDirectory}/.ssh/${username}";
         home.activation.ageKeyLinking = let
           agePath = let
             directoryConfig =
@@ -92,7 +92,7 @@ in {
               else ".config";
           in "~/${directoryConfig}/sops/age/keys.txt";
         in
-          mkIf (username == me) (lib.hm.dag.entryAfter ["writeBoundary"] "cp -f /run/secrets/data.external.age-me ${agePath}");
+          mkIf (username == me) (lib.hm.dag.entryAfter ["writeBoundary"] "cp -f /canivete/secrets/data.external.age-me ${agePath}");
       };
     };
     nixos.homeModules.ssh.services.ssh-agent.enable = true;
