@@ -6,13 +6,16 @@
     pkgs,
     ...
   }:
-    with nix; {
+    with nix; let
+      inherit (config.home) username homeDirectory;
+      my = flake.config.canivete.people.users.${username};
+      key = readFile (flake.inputs.self + "/.canivete/sops/${username}.pub");
+    in {
       dotfiles.zsh.initExtraLines = optional config.programs.git.enable ''
         # disable sort when completing `git checkout`
         zstyle ':completion:*:git-checkout:*' sort false
       '';
       programs.git = let
-        my = flake.config.canivete.people.users.${config.home.username};
       in {
         enable = true;
         userName = my.name;
@@ -44,10 +47,10 @@
             maintenance.repo = map (dir: "${config.home.homeDirectory}/${dir}") ["dotfiles" "sage" "alexandria" "basement" "canivete" "umomi" "VILF" "dyspraxis" "sandbox" "sabedoria"];
 
             # Signing
-            user.signingKey = "${flake.inputs.self}/.canivete/sops/${config.home.username}.pub";
+            user.signingKey = key;
             gpg.format = "ssh";
             gpg.ssh.program = "${pkgs.openssh}/bin/ssh-keygen";
-            gpg.ssh.allowedSignersFile = toString (pkgs.writeText "allowed_signers" "* ${readFile user.signingKey}");
+            gpg.ssh.allowedSignersFile = toString (pkgs.writeText "allowed_signers" "* ${key}");
             commit.gpgSign = true;
             tag.gpgSign = true;
             push.gpgSign = "if-asked";
