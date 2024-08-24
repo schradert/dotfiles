@@ -1,4 +1,10 @@
-{config, inputs, nix, ...}: with nix; let
+{
+  config,
+  inputs,
+  nix,
+  ...
+}:
+with nix; let
   inherit (config.canivete.people) me;
   buildMachines = flip mapAttrs config.canivete.deploy.nixos.nodes (name: machine: {
     hostName = name;
