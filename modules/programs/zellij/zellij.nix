@@ -3,11 +3,9 @@
     programs.zellij = {
       enable = true;
       enableZshIntegration = true;
-      settings = {
-        theme = "dracula";
-        layout_dir = toString ./layouts;
-      };
+      settings.theme = "dracula";
     };
+    xdg.configFile."zellij/layouts".source = ./layouts;
     xdg.configFile."zellij/themes/dracula.kdl".source = let
       source = pkgs.fetchFromGitHub {
         owner = "dracula";
