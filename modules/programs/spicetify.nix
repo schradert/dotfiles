@@ -49,7 +49,7 @@
               owner = "Vexcited";
               repo = "better-spotify-genres";
               rev = "build";
-              hash = "sha256-Z4u/RK/lb7kkB4f4MTXh7sPXDFV37ZoUxwdHA3BnSDg=";
+              hash = "sha256-eaHOJKoVf4HzhZEJiMRCDyEYUroI4/daC6CD4z0E16Y=";
             };
           }
         ];
