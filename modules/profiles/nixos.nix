@@ -45,14 +45,6 @@ in {
     };
     swapDevices = [{device = "/dev/disk/by-label/swap";}];
     system.stateVersion = "22.11";
-    system.autoUpgrade = {
-      enable = true;
-      allowReboot = true;
-      flake = "github:schradert/dotfiles";
-      persistent = true;
-      rebootWindow.lower = "05:00";
-      rebootWindow.upper = "06:00";
-    };
     systemd.services = flip mapAttrs' config.home-manager.users (username: _: nameValuePair "home-manager-${username}" {serviceConfig.TimeoutStartSec = mkForce "10m";});
     time.timeZone = "America/Los_Angeles";
     users.mutableUsers = true;
