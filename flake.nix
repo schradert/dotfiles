@@ -26,6 +26,10 @@
     # NixOS on steamdeck
     jovian.url = github:Jovian-Experiments/Jovian-NixOS;
     jovian.inputs.nixpkgs.follows = "canivete/nixpkgs";
+
+    # Docker images
+    nix2container.url = github:nlewo/nix2container;
+    nix2container.inputs.nixpkgs.follows = "canivete/nixpkgs";
   };
   outputs = inputs:
     inputs.canivete.lib.mkFlake {
