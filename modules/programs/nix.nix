@@ -28,7 +28,13 @@ with nix; let
   key = readFile (inputs.self + "/.canivete/sops/${me}.pub");
 in {
   canivete.deploy = {
-    system.homeModules.nix.nix = {inherit (common) settings gc extraOptions;};
+    system.homeModules.nix = {pkgs, ...}: {
+      nix = {
+        inherit (common) settings gc extraOptions;
+        # Some conflict from home-manager managing itself, but it must be specified
+        package = mkForce pkgs.nixVersions.latest;
+      };
+    };
     system.modules.nix = {pkgs, ...}: {nix.package = pkgs.nixVersions.latest;};
     nixos.modules.nix.nix = mkMerge [
       common
