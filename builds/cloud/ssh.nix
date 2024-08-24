@@ -5,7 +5,7 @@
   ...
 }:
 with nix; {
-  perSystem.canivete.opentofu.workspaces.cloud = {
+  perSystem.canivete.opentofu.workspaces.deploy = {
     plugins = ["integrations/github" "gitlabhq/gitlab"];
     modules.default = {
       provider.github.token = vals.sops "default.yaml#/github_pat";

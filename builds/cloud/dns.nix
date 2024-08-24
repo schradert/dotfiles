@@ -3,7 +3,7 @@
   nix,
   ...
 }: {
-  perSystem.canivete.opentofu.workspaces.cloud = {
+  perSystem.canivete.opentofu.workspaces.deploy = {
     plugins = ["cloudflare/cloudflare"];
     modules.dns = {
       provider.cloudflare.api_token = nix.vals.sops "default.yaml#/cloudflare_pat";
