@@ -78,6 +78,7 @@ in {
                   hostname = host;
                   user = username;
                   identityFile = "~/.ssh/${username}";
+                  extraOptions.StrictHostKeyChecking = "accept-new";
                 })
               ]
           ))
