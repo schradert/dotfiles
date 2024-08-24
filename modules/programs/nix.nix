@@ -1,18 +1,62 @@
-{config, ...}: let
+{config, inputs, nix, ...}: with nix; let
   inherit (config.canivete.people) me;
+  buildMachines = flip mapAttrs config.canivete.deploy.nixos.nodes (name: machine: {
+    hostName = name;
+    protocol = "ssh-ng";
+    sshUser = me;
+    inherit (machine) system;
+  });
+  common = {
+    inherit buildMachines;
+    distributedBuilds = true;
+    settings.trusted-users = [me];
+    settings.auto-optimise-store = true;
+    extraOptions = ''
+      experimental-features = nix-command flakes auto-allocate-uids
+      keep-outputs = true
+      keep-derivations = true
+    '';
+    gc.automatic = true;
+    optimise.automatic = true;
+  };
+  key = readFile (inputs.self + "/.canivete/sops/${me}.pub");
 in {
   canivete.deploy = {
-    system.modules.nix = {pkgs, ...}: {
-      nix.extraOptions = "experimental-features = nix-command flakes auto-allocate-uids";
-      nix.package = pkgs.nixVersions.latest;
+    system.homeModules.nix = {pkgs, ...}: {
+      nix = {
+        package = pkgs.nixVersions.latest;
+        inherit (common) settings gc extraOptions;
+      };
     };
-    nixos.modules.nix.nix.settings.trusted-users = [me];
-    darwin.modules.nix.nix = {
-      settings.trusted-users = [me];
-      useDaemon = true;
-      linux-builder.enable = true;
-      linux-builder.systems = ["aarch64-linux"];
-    };
-    droid.modules.nix.nix.extraOptions = "trusted-users = ${me}";
+    system.modules.nix = {pkgs, ...}: {nix.package = pkgs.nixVersions.latest;};
+    nixos.modules.nix.nix = mkMerge [
+      common
+      {
+        settings.trusted-users = ["nix-ssh"];
+        sshServe = {
+          enable = true;
+          write = true;
+          protocol = "ssh-ng";
+          keys = [key];
+        };
+      }
+    ];
+    darwin.modules.nix.nix = mkMerge [
+      common
+      {
+        configureBuildUsers = true;
+        useDaemon = true;
+        linux-builder.enable = true;
+        linux-builder.systems = ["aarch64-linux"];
+        linux-builder.maxJobs = 4;
+      }
+    ];
+    droid.modules.nix.nix.extraOptions = ''
+      experimental-features = nix-command flakes auto-allocate-uids
+      keep-outputs = true
+      keep-derivations = true
+      auto-optimise-store = true
+      trusted-users = ${me}
+    '';
   };
 }
