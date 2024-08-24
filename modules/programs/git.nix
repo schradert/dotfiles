@@ -26,8 +26,9 @@
         delta.options = {};
         # TODO should I use git large file storage or prefer a different strategy?
         lfs.enable = false;
-        extraConfig =
-          rec {
+        extraConfig = mkMerge [
+          (mapAttrs (_: setAttrByPath ["user"]) my.accounts)
+          {
             push.autoSetupRemote = true;
             color.status = "always";
             init.defaultBranch = "trunk";
@@ -44,7 +45,7 @@
             maintenance.strategy = "incremental";
             # TODO run `git maintenance start` in all of these repositories
             # TODO convert repositories to modules, maybe with categories?
-            maintenance.repo = map (dir: "${config.home.homeDirectory}/${dir}") ["dotfiles" "sage" "alexandria" "basement" "canivete" "umomi" "VILF" "dyspraxis" "sandbox" "sabedoria"];
+            maintenance.repo = map (prefix "${homeDirectory}/") ["dotfiles" "sage" "alexandria" "basement" "canivete" "umomi" "VILF" "dyspraxis" "sandbox" "sabedoria"];
 
             # Signing
             user.signingKey = key;
@@ -55,7 +56,7 @@
             tag.gpgSign = true;
             push.gpgSign = "if-asked";
           }
-          // mapAttrs (_: setAttrByPath ["user"]) my.accounts;
+        ];
         aliases.stash = "stash --all";
       };
       programs.gh = {

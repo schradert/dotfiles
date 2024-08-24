@@ -1,7 +1,11 @@
 keys:
   - &tristan age198yu3najdv79x087fa9qnl9x0pctugcl08ccc3cjpxd6h8ygp57sjglj0k
 creation_rules:
-  - path_regex: (^/dev/stdin|\.canivete/(sops/(default\.yaml|tristan)|opentofu/.+/kubeconfig(\.enc)?))$
+  - path_regex: ^(/dev/stdin|\.canivete/(sops/default\.yaml|opentofu/[^/]+/terraform\.tfstate.*))$
+    key_groups:
+      - age:
+          - *tristan
+  - path_regex: ^\.canivete/sops/tristan.*$
     key_groups:
       - age:
           - *tristan

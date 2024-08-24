@@ -1,5 +1,5 @@
 {
-  canivete.deploy.home.modules.k9s = {pkgs, ...}: {
+  canivete.deploy.system.homeModules.k9s = {pkgs, ...}: {
     home.packages = with pkgs; [kubectl kubernetes-helm];
     programs.k9s.enable = true;
     # Reference "https://github.com/derailed/k9s/blob/master/skins/dracula.yaml"

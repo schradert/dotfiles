@@ -4,7 +4,7 @@
   ...
 }:
 with nix; let
-  inherit (config.people) users;
+  inherit (config.canivete.people) users;
 in {
   canivete.deploy.system.homeModules.auth = {config, ...}: {
     options.dotfiles.profile = mkOption {

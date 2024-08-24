@@ -1,11 +1,13 @@
 {
   config,
+  inputs,
   nix,
   ...
 }:
 with nix; let
   inherit (config.canivete.people) me users;
 in {
+  # TODO investigate [ ] [sysdig](https://github.com/draios/sysdig)
   canivete.deploy.nixos.modules.default = {
     config,
     options,
@@ -42,8 +44,6 @@ in {
     };
     boot = {
       initrd.availableKernelModules = ["ahci" "usb_storage" "sd_mod"];
-      kernelModules = ["kvm-intel"];
-      loader.efi.efiSysMountPoint = "/boot";
       loader.systemd-boot.enable = true;
       loader.efi.canTouchEfiVariables = true;
     };
@@ -64,7 +64,6 @@ in {
         options = ["NOPASSWD"];
       };
     };
-    system.stateVersion = "22.11";
     systemd.services = flip mapAttrs' config.home-manager.users (username: _: nameValuePair "home-manager-${username}" {serviceConfig.TimeoutStartSec = mkForce "10m";});
     time.timeZone = "America/Los_Angeles";
     users.mutableUsers = true;

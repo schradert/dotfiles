@@ -1,4 +1,0 @@
-.terraform/
-config.tf.json
-config.yaml
-kubeconfig

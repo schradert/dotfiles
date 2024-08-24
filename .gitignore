@@ -3,4 +3,3 @@
 *.swp
 result
 /.pre-commit-config.yaml
-/run/
