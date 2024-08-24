@@ -11,20 +11,41 @@ in {
     options,
     ...
   }: {
+    imports = [inputs.disko.nixosModules.disko];
+    disko.devices.disk.base = {
+      device = mkDefault "/dev/sda";
+      type = "disk";
+      content.type = "gpt";
+      content.partitions = {
+        ESP = {
+          type = "EF00";
+          size = "500M";
+          content.type = "filesystem";
+          content.format = "vfat";
+          content.mountpoint = "/boot";
+        };
+        root = {
+          end = "-1G";
+          content.type = "filesystem";
+          content.format = "ext4";
+          content.mountpoint = "/";
+        };
+        swap = {
+          size = "100%";
+          content = {
+            type = "swap";
+            discardPolicy = "both";
+            resumeDevice = true;
+          };
+        };
+      };
+    };
     boot = {
       initrd.availableKernelModules = ["ahci" "usb_storage" "sd_mod"];
       kernelModules = ["kvm-intel"];
       loader.efi.efiSysMountPoint = "/boot";
       loader.systemd-boot.enable = true;
       loader.efi.canTouchEfiVariables = true;
-    };
-    fileSystems."/" = {
-      device = "/dev/disk/by-label/nixos";
-      fsType = "ext4";
-    };
-    fileSystems."/boot" = {
-      device = "/dev/disk/by-label/boot";
-      fsType = "vfat";
     };
     hardware.enableRedistributableFirmware = mkDefault true;
     hardware.cpu.intel.updateMicrocode = mkDefault config.hardware.enableRedistributableFirmware;
@@ -43,7 +64,6 @@ in {
         options = ["NOPASSWD"];
       };
     };
-    swapDevices = [{device = "/dev/disk/by-label/swap";}];
     system.stateVersion = "22.11";
     systemd.services = flip mapAttrs' config.home-manager.users (username: _: nameValuePair "home-manager-${username}" {serviceConfig.TimeoutStartSec = mkForce "10m";});
     time.timeZone = "America/Los_Angeles";
