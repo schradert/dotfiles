@@ -7,6 +7,21 @@ flake @ {
 with nix; let
   inherit (config.canivete.people) me users;
   sshFile = name: inputs.self + "/.canivete/sops/${name}";
+  linkSecrets = home: let
+    inherit (home.config.home) username homeDirectory;
+    directoryConfig =
+      if home.pkgs.stdenv.isDarwin
+      then "Library/Application Support"
+      else ".config";
+    agePath = "${homeDirectory}/${directoryConfig}/sops/age/keys.txt";
+  in home.pkgs.writeShellApplication {
+    name = "link-secrets";
+    text = ''
+      ln -sf "/canivete/secrets/data.external.ssh-key-${username}" "${homeDirectory}/.ssh/${username}"
+      mkdir -p "${dirOf agePath}"
+      ln -sf /canivete/secrets/data.external.age-me "${agePath}"
+    '';
+  };
 in {
   perSystem = {pkgs, ...}: {
     canivete.opentofu.workspaces.deploy.modules.ssh-key.data.external = let
@@ -26,22 +41,22 @@ in {
       (flip mapAttrs' users (name: _:
         nameValuePair "data.external.ssh-key-${name}" {
           attr = "result.contents";
-          owner = "${name}:root";
+          owner = "${name}:${name}";
         }))
       {
         "data.external.age-me" = {
           attr = "result.contents";
-          owner = "${me}:root";
+          owner = "${me}:${me}";
         };
       }
     ];
-    system.homeModules.ssh = {
+    system.homeModules.ssh = home @ {
       config,
       lib,
       pkgs,
       ...
     }: let
-      inherit (config.home) username homeDirectory;
+      inherit (config.home) username;
     in {
       options.dotfiles.hostname = mkOption {
         type = str;
@@ -49,54 +64,62 @@ in {
         example = "another-server";
       };
       config = {
-        programs.ssh.enable = true;
-        programs.ssh.forwardAgent = true;
-        programs.ssh.matchBlocks = pipe flake.config.canivete.deploy [
-          # Attrset of all nodes (excluding "system")
-          (flip removeAttrs ["system"])
-          (mapAttrs (_: getAttr "nodes"))
-          attrValues
-          mergeAttrsList
-          # Build SSH config block
-          (mapAttrs (
-            _: node: let
-              inherit (node.target) host sshOptions;
-            in
-              pipe sshOptions [
-                (map (flip pipe [
-                  # Key-value pair from SSH option like ProxyJump=<url>
-                  (match "^(.+)=(.+)$")
-                  (evalWithAll nameValuePair)
-                ]))
-                listToAttrs
-                # Exclude non-interactive options
-                (flip removeAttrs ["ControlMaster" "ControlPath" "ControlPersist" "StrictHostKeyChecking"])
-                # Home-manager defines these attributes in camelCase
-                (mapAttrNames pascalToCamel)
-                # Include sensible defaults
-                (mergeAttrs {
-                  hostname = host;
-                  user = username;
-                  identityFile = "~/.ssh/${username}";
-                  extraOptions.StrictHostKeyChecking = "accept-new";
-                })
-              ]
-          ))
-        ];
         home.file.".ssh/${username}.pub".source = sshFile "${username}.pub";
-        home.activation.sshKeyLinking = lib.hm.dag.entryAfter ["writeBoundary"] "cp -f \"/canivete/secrets/data.external.ssh-key-${username}\" \"${homeDirectory}/.ssh/${username}\"";
-        home.activation.ageKeyLinking = let
-          agePath = let
-            directoryConfig =
-              if pkgs.stdenv.isDarwin
-              then "Library/Application Support"
-              else ".config";
-          in "~/${directoryConfig}/sops/age/keys.txt";
-        in
-          mkIf (username == me) (lib.hm.dag.entryAfter ["writeBoundary"] "mkdir -p \"${dirOf agePath}\" && cp -f /canivete/secrets/data.external.age-me \"${agePath}\"");
+        programs.ssh = {
+          enable = true;
+          forwardAgent = true;
+          addKeysToAgent = "yes";
+          matchBlocks = pipe flake.config.canivete.deploy [
+            # Attrset of all nodes (excluding "system")
+            (flip removeAttrs ["system"])
+            (mapAttrs (_: getAttr "nodes"))
+            attrValues
+            mergeAttrsList
+            # Build SSH config block
+            (mapAttrs (
+              _: node: let
+                inherit (node.target) host sshOptions;
+              in
+                pipe sshOptions [
+                  (map (flip pipe [
+                    # Key-value pair from SSH option like ProxyJump=<url>
+                    (match "^(.+)=(.+)$")
+                    (evalWithAll nameValuePair)
+                  ]))
+                  listToAttrs
+                  # Exclude non-interactive options
+                  (flip removeAttrs ["ControlMaster" "ControlPath" "ControlPersist" "StrictHostKeyChecking"])
+                  # Home-manager defines these attributes in camelCase
+                  (mapAttrNames pascalToCamel)
+                  # Include sensible defaults
+                  (mergeAttrs {
+                    hostname = host;
+                    user = username;
+                    identityFile = "~/.ssh/${username}";
+                    extraOptions.StrictHostKeyChecking = "accept-new";
+                  })
+                ]
+            ))
+          ];
+        };
       };
     };
-    nixos.homeModules.ssh.services.ssh-agent.enable = true;
+    nixos.homeModules.ssh = home @ {pkgs, ...}: {
+      services.ssh-agent.enable = true;
+      systemd.user.services.secrets = {
+        Install.WantedBy = ["default.target"];
+        Service.RemainAfterExit = "yes";
+        Service.Type = "oneshot";
+        Service.ExecStart = getExe (linkSecrets home);
+      };
+    };
+    darwin.homeModules.ssh = home @ {pkgs, ...}: {
+      launchd.agents.secrets = {
+        enable = true;
+        config.RunAtLoad = true;
+        config.Program = getExe (linkSecrets home);
+      };
+    };
     nixos.modules.ssh = {config, ...}: {
       home-manager.sharedModules = toList {dotfiles.hostname = config.networking.hostName;};
       services.openssh.enable = true;

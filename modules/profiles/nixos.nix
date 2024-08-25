@@ -67,11 +67,12 @@ in {
     systemd.services = flip mapAttrs' config.home-manager.users (username: _: nameValuePair "home-manager-${username}" {serviceConfig.TimeoutStartSec = mkForce "10m";});
     time.timeZone = "America/Los_Angeles";
     users.mutableUsers = true;
+    users.groups = mapAttrs (username: _: {}) users;
     users.users = flip mapAttrs users (username: user: {
       isNormalUser = true;
       home = "/home/${username}";
       description = user.name;
-      extraGroups = ["wheel" "tty" "networkmanager"];
+      extraGroups = ["wheel" "tty" "networkmanager" username];
     });
   };
 }
