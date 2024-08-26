@@ -28,6 +28,11 @@ in {
         "cfergeau/crc"
         # "dracula/install"
       ];
+      security.pam.enableSudoTouchIdAuth = true;
+      security.sudo.extraConfig = ''
+        root ALL=(ALL) NOPASSWD: ALL
+        %admin ALL=(ALL) NOPASSWD: ALL
+      '';
       services.karabiner-elements.enable = true;
       system.defaults.dock = {
         autohide = true;
