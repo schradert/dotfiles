@@ -9,31 +9,39 @@ with nix; let
   sshFile = name: inputs.self + "/.canivete/sops/${name}";
   linkSecrets = system: let
     inherit (system.pkgs.stdenv) isDarwin;
-    configDirectory = if isDarwin then "Library/Application Support" else ".config";
-    users = system.config.home-manager.users or (
-      let node = config.canivete.deploy.darwin.nodes.${system.config.networking.hostName};
-      in mapAttrs (name: _: node.profiles.${name}.raw.config) node.home
-    );
+    configDirectory =
+      if isDarwin
+      then "Library/Application Support"
+      else ".config";
+    users =
+      system.config.home-manager.users
+      or (
+        let
+          node = config.canivete.deploy.darwin.nodes.${system.config.networking.hostName};
+        in
+          mapAttrs (name: _: node.profiles.${name}.raw.config) node.home
+      );
     commands = pipe users [
       (mapAttrsToList (_: home: with home.home; "_install \"${username}\" \"data.external.ssh-key-${username}\" \"${homeDirectory}/.ssh/${username}\""))
       (with users.${me}.home; concat ["_install \"${username}\" \"data.external.age-me\" \"${homeDirectory}/${configDirectory}/sops/age/keys.txt\""])
       (concatStringsSep "\n")
     ];
-  in system.pkgs.writeShellApplication {
-    name = "link-secrets";
-    runtimeInputs = optional (!isDarwin) system.pkgs.sudo;
-    text = ''
-      _install() {
-          local username="$1"
-          local secret="/private/canivete/secrets/$2"
-          local symlink="$3"
-          chown "$username" "$secret"
-          sudo -u "$username" mkdir -p "$(dirname "$symlink")"
-          sudo -u "$username" ln -sf "$secret" "$symlink"
-      }
-      ${commands}
-    '';
-  };
+  in
+    system.pkgs.writeShellApplication {
+      name = "link-secrets";
+      runtimeInputs = optional (!isDarwin) system.pkgs.sudo;
+      text = ''
+        _install() {
+            local username="$1"
+            local secret="/private/canivete/secrets/$2"
+            local symlink="$3"
+            chown "$username" "$secret"
+            sudo -u "$username" mkdir -p "$(dirname "$symlink")"
+            sudo -u "$username" ln -sf "$secret" "$symlink"
+        }
+        ${commands}
+      '';
+    };
 in {
   perSystem = {pkgs, ...}: {
     canivete.opentofu.workspaces.deploy.modules.ssh-key.data.external = let
@@ -50,15 +58,10 @@ in {
   };
   canivete.deploy = {
     system.modules.ssh.canivete.secrets = mkMerge [
-      (flip mapAttrs' users (name: _: nameValuePair "data.external.ssh-key-${name}" "result.contents" ))
+      (flip mapAttrs' users (name: _: nameValuePair "data.external.ssh-key-${name}" "result.contents"))
       {"data.external.age-me" = "result.contents";}
     ];
-    system.homeModules.ssh = home @ {
-      config,
-      lib,
-      pkgs,
-      ...
-    }: let
+    system.homeModules.ssh = {config, ...}: let
       inherit (config.home) username;
     in {
       options.dotfiles.hostname = mkOption {
@@ -114,7 +117,11 @@ in {
       };
     };
     nixos.homeModules.ssh.services.ssh-agent.enable = true;
-    nixos.modules.ssh = nixos @ {config, pkgs, ...}: {
+    nixos.modules.ssh = nixos @ {
+      config,
+      pkgs,
+      ...
+    }: {
       home-manager.sharedModules = toList {dotfiles.hostname = config.networking.hostName;};
       services.openssh.enable = true;
       security.pam.sshAgentAuth.enable = true;

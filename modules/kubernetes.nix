@@ -5,13 +5,13 @@
 }:
 with nix; let
   inherit (config.dotfiles) domain;
+  # TODO how can I bootstrap images onto the server to allow every other deployment to use this?
 in {
   perSystem = {
     config,
     inputs',
     pkgs,
     self',
-    system,
     ...
   }: {
     options.dotfiles.nix2container = mkOption {
@@ -24,7 +24,9 @@ in {
         options = {
           registry = mkOption {
             type = str;
-            default = "harbor.${domain}";
+            # TODO bootstrap
+            # default = "harbor.${domain}";
+            default = "docker.io";
           };
           repository = mkOption {
             type = str;
@@ -63,7 +65,8 @@ in {
           path = "dotfiles.x86_64-linux.nix2container.${name}.image";
         in {
           resource.null_resource.kubernetes = {
-            depends_on = ["null_resource.${name}"];
+            # TODO bootstrap
+            # depends_on = ["null_resource.${name}"];
             provisioner.local-exec.environment = pipe ["tag" "registry" "repository" "fullRepository"] [
               (flip genAttrs (attr: "\${ data.external.${name}.result.${attr} }"))
               (mapAttrNames (key: "${toUpper name}_IMAGE_${toUpper key}"))
@@ -78,10 +81,11 @@ in {
               fullRepository=${container.registry}/${container.repository}
             ${getExe pkgs.jq} --null-input '$ARGS.positional | map({(.):env[.]}) | add' --args drv tag registry repository fullRepository
           '';
-          resource.null_resource.${name} = {
-            triggers.drv = "\${ data.external.${name}.result.drv }";
-            provisioner.local-exec.command = "nix run .#${path}.copyToRegistry";
-          };
+          # TODO bootstrap
+          # resource.null_resource.${name} = {
+          #   triggers.drv = "\${ data.external.${name}.result.drv }";
+          #   provisioner.local-exec.command = "nix run .#${path}.copyToRegistry";
+          # };
         }));
       };
     };
