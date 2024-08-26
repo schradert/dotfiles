@@ -107,7 +107,7 @@ in {
       services.k3s = mkMerge [
         {
           enable = true;
-          tokenFile = "/canivete/secrets/random_password.k3s-token";
+          tokenFile = "/private/canivete/secrets/random_password.k3s-token";
           role = mkDefault "agent";
           gracefulNodeShutdown.enable = true;
         }

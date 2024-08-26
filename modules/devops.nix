@@ -12,7 +12,6 @@ with nix; let
 in {
   canivete.deploy.nixos.modules.${name} = {
     config,
-    lib,
     pkgs,
     ...
   }: let
@@ -37,17 +36,16 @@ in {
       '';
     };
   in {
-    options.dotfiles.${name}.enable = lib.mkEnableOption name;
-    config = lib.mkIf config.dotfiles.${name}.enable {
-      home-manager.users.${me} = {config, ...}: {
-        systemd.user.services.${name} = {
-          Install.WantedBy = ["default.target"];
-          Unit.Requires = ["secrets.service" "ssh-agent.service"];
-          Unit.After = ["secrets.service" "ssh-agent.service"];
-          Service.Restart = "on-failure";
-          Service.WorkingDirectory = "${config.xdg.dataHome}/devops";
-          Service.ExecStart = lib.getExe script;
-        };
+    options.dotfiles.${name}.enable = mkEnableOption name;
+    config = mkIf config.dotfiles.${name}.enable {
+      systemd.services.${name} = {
+        wantedBy = ["default.target"];
+        script = getExe script;
+        requires = ["secrets.service" "ssh-agent.service"];
+        after = ["secrets.service" "ssh-agent.service"];
+        serviceConfig.Restart = "on-failure";
+        serviceConfig.WorkingDirectory = "${config.home-manager.users.${me}.xdg.dataHome}/devops";
+        serviceConfig.User = me;
       };
     };
   };

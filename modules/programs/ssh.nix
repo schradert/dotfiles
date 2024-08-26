@@ -7,19 +7,31 @@ flake @ {
 with nix; let
   inherit (config.canivete.people) me users;
   sshFile = name: inputs.self + "/.canivete/sops/${name}";
-  linkSecrets = home: let
-    inherit (home.config.home) username homeDirectory;
-    directoryConfig =
-      if home.pkgs.stdenv.isDarwin
-      then "Library/Application Support"
-      else ".config";
-    agePath = "${homeDirectory}/${directoryConfig}/sops/age/keys.txt";
-  in home.pkgs.writeShellApplication {
+  linkSecrets = system: let
+    inherit (system.pkgs.stdenv) isDarwin;
+    configDirectory = if isDarwin then "Library/Application Support" else ".config";
+    users = system.config.home-manager.users or (
+      let node = config.canivete.deploy.darwin.nodes.${system.config.networking.hostName};
+      in mapAttrs (name: _: node.profiles.${name}.raw.config) node.home
+    );
+    commands = pipe users [
+      (mapAttrsToList (_: home: with home.home; "_install \"${username}\" \"data.external.ssh-key-${username}\" \"${homeDirectory}/.ssh/${username}\""))
+      (with users.${me}.home; concat ["_install \"${username}\" \"data.external.age-me\" \"${homeDirectory}/${configDirectory}/sops/age/keys.txt\""])
+      (concatStringsSep "\n")
+    ];
+  in system.pkgs.writeShellApplication {
     name = "link-secrets";
+    runtimeInputs = optional (!isDarwin) system.pkgs.sudo;
     text = ''
-      ln -sf "/canivete/secrets/data.external.ssh-key-${username}" "${homeDirectory}/.ssh/${username}"
-      mkdir -p "${dirOf agePath}"
-      ln -sf /canivete/secrets/data.external.age-me "${agePath}"
+      _install() {
+          local username="$1"
+          local secret="/private/canivete/secrets/$2"
+          local symlink="$3"
+          chown "$username" "$secret"
+          sudo -u "$username" mkdir -p "$(dirname "$symlink")"
+          sudo -u "$username" ln -sf "$secret" "$symlink"
+      }
+      ${commands}
     '';
   };
 in {
@@ -38,17 +50,8 @@ in {
   };
   canivete.deploy = {
     system.modules.ssh.canivete.secrets = mkMerge [
-      (flip mapAttrs' users (name: _:
-        nameValuePair "data.external.ssh-key-${name}" {
-          attr = "result.contents";
-          owner = "${name}:${name}";
-        }))
-      {
-        "data.external.age-me" = {
-          attr = "result.contents";
-          owner = "${me}:${me}";
-        };
-      }
+      (flip mapAttrs' users (name: _: nameValuePair "data.external.ssh-key-${name}" "result.contents" ))
+      {"data.external.age-me" = "result.contents";}
     ];
     system.homeModules.ssh = home @ {
       config,
@@ -104,23 +107,14 @@ in {
         };
       };
     };
-    nixos.homeModules.ssh = home @ {pkgs, ...}: {
-      services.ssh-agent.enable = true;
-      systemd.user.services.secrets = {
-        Install.WantedBy = ["default.target"];
-        Service.RemainAfterExit = "yes";
-        Service.Type = "oneshot";
-        Service.ExecStart = getExe (linkSecrets home);
-      };
-    };
-    darwin.homeModules.ssh = home @ {pkgs, ...}: {
+    darwin.modules.ssh = darwin @ {pkgs, ...}: {
       launchd.agents.secrets = {
-        enable = true;
-        config.RunAtLoad = true;
-        config.Program = getExe (linkSecrets home);
+        command = getExe (linkSecrets darwin);
+        serviceConfig.RunAtLoad = true;
       };
     };
-    nixos.modules.ssh = {config, ...}: {
+    nixos.homeModules.ssh.services.ssh-agent.enable = true;
+    nixos.modules.ssh = nixos @ {config, pkgs, ...}: {
       home-manager.sharedModules = toList {dotfiles.hostname = config.networking.hostName;};
       services.openssh.enable = true;
       security.pam.sshAgentAuth.enable = true;
@@ -129,6 +123,10 @@ in {
         (flip mapAttrs users (name: _: {openssh.authorizedKeys.keyFiles = [(sshFile "${name}.pub")];}))
         {root.openssh.authorizedKeys.keyFiles = config.users.users.${me}.openssh.authorizedKeys.keyFiles;}
       ];
+      systemd.services.secrets = {
+        script = getExe (linkSecrets nixos);
+        wantedBy = ["multi-user.target"];
+      };
     };
   };
 }
