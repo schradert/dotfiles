@@ -60,7 +60,7 @@ in {
       k3s-token.resource.random_password.k3s-token.length = 21;
       nix2container = {
         config = mkMerge (flip mapAttrsToList config.dotfiles.nix2container (name: container: let
-          path = "dotfiles.${replaceStrings ["darwin"] ["linux"] system}.nix2container.${name}.image";
+          path = "dotfiles.x86_64-linux.nix2container.${name}.image";
         in {
           resource.null_resource.kubernetes = {
             depends_on = ["null_resource.${name}"];
@@ -72,7 +72,7 @@ in {
           data.external.${name}.program = pkgs.execBash ''
             export \
               drv=$(nix path-info --derivation .#${path}) \
-              tag=$(nix eval --raw .#${path}.imageTag) \
+              tag=${container.tag} \
               registry=${container.registry} \
               repository=${container.repository} \
               fullRepository=${container.registry}/${container.repository}
