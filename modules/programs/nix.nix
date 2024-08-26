@@ -16,7 +16,6 @@ with nix; let
     inherit buildMachines;
     distributedBuilds = true;
     settings.trusted-users = [me];
-    settings.auto-optimise-store = true;
     extraOptions = ''
       experimental-features = nix-command flakes auto-allocate-uids
       keep-outputs = true
