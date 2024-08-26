@@ -48,7 +48,7 @@ in {
               (recursiveUpdate {
                 name = "${config.registry}/${config.repository}";
                 inherit (config) tag;
-                config.entrypoint = [(getExe config.package)];
+                config.entrypoint = ["${config.package}/bin/${config.package.meta.mainProgram or name}"];
               })
               inputs'.nix2container.packages.nix2container.buildImage
             ];
