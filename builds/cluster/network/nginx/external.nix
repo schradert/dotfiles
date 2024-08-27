@@ -1,5 +1,6 @@
-{nix, ...}:
-with nix; {
+{config, nix, ...}: with nix; let
+  inherit (config.dotfiles) domain;
+in {
   perSystem = {
     dotfiles.nix2container.nginx = {};
     dotfiles.helm.nginx-external = {
@@ -35,6 +36,7 @@ with nix; {
             ssl-protocols = "TLSv1.3 TLSv1.2";
             use-forwarded-headers = "true";
           };
+          service.annotations."external-dns.alpha.kubernetes.io/hostname" = "external.${domain}";
           replicaCount = 2;
           ingressClassResource.name = "external";
           ingressClassResource.default = false;
@@ -45,9 +47,12 @@ with nix; {
             values = ["external"];
           };
           metrics.enabled = true;
-          metrics.serviceMonitor.enabled = true;
-          metrics.serviceMonitor.namespaceSelector.any = true;
-          extraArgs.default-ssl-certificate = "security/trdos-me-tls";
+          metrics.serviceMonitor = {
+            enabled = true;
+            namespace = "network";
+            namespaceSelector.any = true;
+          };
+          extraArgs.default-ssl-certificate = "security/${replaceStrings ["."] ["-"] domain}-tls";
           allowSnippetAnnotations = true;
           enableAnnotationValidations = true;
           topologySpreadConstraints = toList {
