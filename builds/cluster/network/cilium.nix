@@ -55,10 +55,8 @@ in {
       endpointRoutes.enabled = true;
       envoy.enabled = false;
       ipam.mode = "kubernetes";
-      # TODO should I use a native routing CIDR
-      # ipv4NativeRoutingCIDR = "";
-      # TODO is this correct? do I even have to set this?
-      k8sServiceHost = "127.0.0.1";
+      ipv4NativeRoutingCIDR = "10.42.0.0/16";
+      k8sServiceHost = domain;
       k8sServicePort = 6443;
       kubeProxyReplacement = true;
       kubeProxyReplacementHealthzBindAddr = "0.0.0.0:10256";
