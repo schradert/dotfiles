@@ -13,7 +13,7 @@
       solvers = nix.toList {
         dns01.cloudflare = {
           inherit email;
-          apiKeySecretRef.name = "cloudflare";
+          apiKeySecretRef.name = "cert-manager";
           apiKeySecretRef.key = "cloudflare_api_key";
         };
         selector.dnsZones = [domain];
@@ -37,7 +37,7 @@ in {
       prometheus.enabled = true;
       prometheus.servicemonitor.enabled = true;
     };
-    resources.secrets.cloudflare.stringData.cloudflare_api_key = nix.vals.sops "default.yaml#/cloudflare/api_key";
+    resources.secrets.cert-manager.stringData.cloudflare_api_key = nix.vals.sops "default.yaml#/cloudflare/api_key";
     resources.clusterissuers = {
       letsencrypt-production = mkClusterIssuer "letsencrypt-production" "https://acme-v02.api.letsencrypt.org/directory";
       letsencrypt-staging = mkClusterIssuer "letsencrypt-staging" "https://acme-staging-v02.api.letsencrypt.org/directory";
