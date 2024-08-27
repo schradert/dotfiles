@@ -2,13 +2,16 @@
   config,
   nix,
   ...
-}: {
+}: let
+  inherit (config.dotfiles) domain;
+  inherit (config.canivete.people.my.profiles.default) email;
+in {
   perSystem.canivete.opentofu.workspaces.deploy = {
     plugins = ["cloudflare/cloudflare"];
     modules.dns = {
-      provider.cloudflare.api_token = nix.vals.sops "default.yaml#/cloudflare_pat";
+      provider.cloudflare.api_token = nix.vals.sops "default.yaml#/cloudflare/pat";
       # TODO prevent this account name hardcoding
-      data.cloudflare_accounts.main.name = "Tristanschrader@proton.me's Account";
+      data.cloudflare_accounts.main.name = email;
       resource = {
         cloudflare_zone.trdos = {
           account_id = "\${ data.cloudflare_accounts.main.accounts[0].id }";
