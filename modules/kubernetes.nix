@@ -58,6 +58,26 @@ in {
         };
       }));
     };
+    options.dotfiles.helm = mkOption {
+      default = {};
+      type = attrsOf (submodule {
+        freeformType = anything;
+        options = {
+          chart = mkOption {
+            type = attrsOf anything;
+            default = {};
+          };
+          values = mkOption {
+            inherit (pkgs.formats.yaml {}) type;
+            default = {};
+          };
+          resources = mkOption {
+            inherit (pkgs.formats.yaml {}) type;
+            default = {};
+          };
+        };
+      });
+    };
     config.canivete.opentofu.workspaces.deploy.modules = {
       k3s-token.resource.random_password.k3s-token.length = 21;
       nix2container = {
@@ -88,6 +108,38 @@ in {
           # };
         }));
       };
+    config.canivete.kubenix.clusters = let
+      mapReleases = releases: helm: mkMerge (flip mapAttrsToList releases (name: cfg: {
+        kubernetes = {
+          resources = mkMerge [
+            cfg.resources
+            # TODO fix this with resources.imports
+            (flip mapAttrs cfg.resources (_: type:
+              flip mapAttrs type (_: _: {
+                metadata.namespace = mkDefault cfg.namespace;
+                metadata.labels."canivete/chart" = mkDefault name;
+              })))
+          ];
+          helm.releases.${name} = mkMerge [
+            (removeAttrs cfg ["chart" "resources" "bootstrap"])
+            {
+              chart = pipe cfg.chart [
+                # Good template chart to make deployment easier and more powerful
+                (mergeAttrs {
+                  repo = "https://bjw-s.github.io/helm-charts";
+                  chart = "app-template";
+                  version = "3.3.2";
+                  sha256 = "9Lx3jPGiLaE+joGy2GWxLzjWDu8wCa+4DrS9atf2zug=";
+                })
+                helm.fetch
+              ];
+            }
+          ];
+        };
+      }));
+      fetchKubeconfig = "ssh ${root} sudo k3s kubectl config view --raw | sed 's/127\.0\.0\.1/${domain}/'";
+      prod.modules.helm = {helm, ...}: {config = mapReleases config.dotfiles.helm helm;};
+      prod.deploy.fetchKubeconfig = fetchKubeconfig;
     };
   };
   canivete.deploy.nixos.modules.kubernetes = {
