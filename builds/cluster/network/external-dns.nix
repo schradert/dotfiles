@@ -1,3 +1,40 @@
-{
+{config, nix, ...}: with nix; let
+  secret.name = "external-dns";
+  secret.key = "cloudflare_pat";
+in {
   # [ ] [external-dns](https://github.com/kubernetes-sigs/external-dns)
+  perSystem.dotfiles.helm.external-dns = {
+    namespace = "network";
+    chart = {
+      repo = "https://kubernetes-sigs.github.io/external-dns";
+      chart = "external-dns";
+      version = "1.14.5";
+      sha256 = "2kGZredY6Iw4ucAdG9DOkWbznsOT+AhynSgJdHxlMZQ=";
+    };
+    resources.secrets.${secret.name}.stringData.${secret.key} = vals.sops "default.yaml#/cloudflare/pat";
+    values = {
+      provider.name = "cloudflare";
+      env = toList {
+        name = "CF_API_TOKEN";
+        valueFrom.secretKeyRef = secret;
+      };
+      extraArgs = [
+        "--cloudflare-dns-records-per-page=1000"
+        "--crd-source-apiversion=externaldns.k8s.io/v1alpha1"
+        "--crd-source-kind=DNSEndpoint"
+        "--events"
+        "--ignore-ingress-tls-spec"
+        "--ingress-class=external"
+        # TODO should I use cloudflare proxy for CDN?
+      ];
+      # TODO how should I handle the policy
+      # policy = "sync"; or upsert-only
+      sources = ["crd" "ingress"];
+      txtOwnerId = "default";
+      txtPrefix = "k8s.";
+      domainFilters = [config.dotfiles.domain];
+      serviceMonitor.enabled = true;
+      podAnnotations."secret.reloader.stakater.com/reload" = secret.name;
+    };
+  };
 }
