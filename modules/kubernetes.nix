@@ -119,6 +119,7 @@ in {
                 metadata.namespace = mkDefault cfg.namespace;
                 metadata.labels."canivete/chart" = mkDefault name;
               })))
+            (mkIf (cfg ? namespace) {namespaces.${cfg.namespace} = {};})
           ];
           helm.releases.${name} = mkMerge [
             (removeAttrs cfg ["chart" "resources" "bootstrap"])
