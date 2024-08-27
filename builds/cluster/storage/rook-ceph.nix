@@ -54,6 +54,7 @@ in {
       };
     };
   };
+  perSystem.dotfiles.opentofu.passwords.rook-ceph-dashboard-password.length = 21;
   perSystem.dotfiles.helm = {
     rook-ceph = {
       namespace = "storage";
@@ -69,6 +70,7 @@ in {
         serviceMonitor.enabled = true;
       };
       values.monitoring.enabled = true;
+      resources.secrets.rook-ceph-dashboard-password.stringData.password = "ref+envsubst://ROOK_CEPH_DASHBOARD_PASSWORD";
     };
     rook-ceph-cluster = {
       namespace = "storage";
