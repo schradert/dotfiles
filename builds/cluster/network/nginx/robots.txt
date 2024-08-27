@@ -21,7 +21,6 @@ GPTBot
 ~*GPTBot*
 img2dataset
 omgili
-omgilibot
 Omgilibot
 ~*Omgilibot*
 peer39_crawler
