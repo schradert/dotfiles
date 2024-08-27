@@ -187,7 +187,7 @@ in {
           })
         (mkIf (cfg_k3s.role == "server") {
           configPath = pkgs.writers.writeYAML "k3s.yaml" {
-            disable = ["traefik"];
+            disable = ["traefik" "servicelb" "coredns"];
             disable-helm-controller = true;
             tls-san = [domain];
           };
