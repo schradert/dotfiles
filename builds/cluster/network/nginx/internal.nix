@@ -16,7 +16,7 @@ with nix; {
         controller = {
           config = {
             # NOTE https://github.com/superseriousbusiness/gotosocial/blob/main/internal/web/robots.go
-            block-user-agents = replaceStrings ["\n"] [","] (readFile ./robots.txt);
+            block-user-agents = replaceStrings ["\n"] [","] (fileContents ./robots.txt);
             client-body-buffer-size = "100M";
             client-body-timeout = 120;
             client-header-timeout = 120;
@@ -29,7 +29,7 @@ with nix; {
             keep-alive = 120;
             keep-alive-requests = 10000;
             log-format-escape-json = "true";
-            log-format-upstream = replaceStrings ["\n" " "] ["" ""] (readFile ./logs.json);
+            log-format-upstream = replaceStrings ["\n" " "] ["" ""] (fileContents ./logs.json);
             proxy-body-size = 0;
             proxy-buffer-size = "16k";
             ssl-protocols = "TLSv1.3 TLSv1.2";
