@@ -6,6 +6,7 @@
   # [ ] [prometheus-smartctl-exporter](https://github.com/prometheus-community/smartctl_exporter)
   # [ ] [prometheus-snmp-exporter](https://github.com/prometheus/snmp_exporter)
   perSystem.dotfiles.helm.prometheus = {
+    bootstrap = true;
     namespace = "observability";
     chart = {
       repo = "https://prometheus-community.github.io/helm-charts";

@@ -5,6 +5,7 @@
 }:
 with nix; let
   inherit (config.dotfiles) domain;
+  inherit (config.canivete) root;
   # TODO how can I bootstrap images onto the server to allow every other deployment to use this?
 in {
   perSystem = {
@@ -75,6 +76,7 @@ in {
             inherit (pkgs.formats.yaml {}) type;
             default = {};
           };
+          bootstrap = mkEnableOption "bootstrapping this deployment on cluster start";
         };
       });
     };
@@ -108,6 +110,11 @@ in {
           # };
         }));
       };
+      bootstrap.resource.null_resource = {
+        bootstrap = config.canivete.opentofu.workspaces.bootstrap.composition.config.resource.null_resource.kubernetes;
+        kubernetes.depends_on = ["null_resource.bootstrap"];
+      };
+    };
     config.canivete.kubenix.clusters = let
       mapReleases = releases: helm: mkMerge (flip mapAttrsToList releases (name: cfg: {
         kubernetes = {
@@ -139,6 +146,10 @@ in {
         };
       }));
       fetchKubeconfig = "ssh ${root} sudo k3s kubectl config view --raw | sed 's/127\.0\.0\.1/${domain}/'";
+    in {
+      bootstrap.opentofuWorkspace = "bootstrap";
+      bootstrap.deploy.fetchKubeconfig = fetchKubeconfig;
+      bootstrap.modules.helm = {helm, ...}: {config = mapReleases (filterAttrs (_: getAttr "bootstrap") config.dotfiles.helm) helm;};
       prod.modules.helm = {helm, ...}: {config = mapReleases config.dotfiles.helm helm;};
       prod.deploy.fetchKubeconfig = fetchKubeconfig;
     };

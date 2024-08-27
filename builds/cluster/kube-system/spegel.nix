@@ -1,6 +1,7 @@
 {
   # https://github.com/spegel-org/spegel
   perSystem.dotfiles.helm.spegel = {
+    bootstrap = true;
     namespace = "kube-system";
     chart = {
       chartUrl = "oci://ghcr.io/spegel-org/helm-charts/spegel";

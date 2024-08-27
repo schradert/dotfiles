@@ -3,6 +3,7 @@
 in {
   # NOTE https://github.com/cilium/cilium
   perSystem.dotfiles.helm.cilium = {
+    bootstrap = true;
     namespace = "network";
     chart = {
       repo = "https://helm.cilium.io";

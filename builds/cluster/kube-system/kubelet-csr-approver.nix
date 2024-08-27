@@ -6,6 +6,7 @@
 with nix; {
   # [ ] [kubelet-csr-approver](https://github.com/postfinance/kubelet-csr-approver)
   perSystem.dotfiles.helm.kubelet-csr-approver = {
+    bootstrap = true;
     namespace = "kube-system";
     chart = {
       repo = "https://postfinance.github.io/kubelet-csr-approver";
