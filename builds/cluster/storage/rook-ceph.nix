@@ -93,8 +93,7 @@ in {
         cephClusterSpec = {
           dashboard.urlPrefix = "/";
           dashboard.ssl = false;
-          # TODO do I need this? I wasn't specified in the Helm chart
-          # dashboard.prometheusEndpoint = "http://prometheus-operated.observability.svc.cluster.local:9090";
+          dashboard.prometheusEndpoint = "http://prometheus-operated.observability.svc.cluster.local:9090";
           mgr.modules = toList {
             name = "pg_autoscaler";
             enabled = true;
