@@ -192,7 +192,7 @@ in {
             tls-san = [domain];
           };
         })
-        (mkIf (cfg_k3s.disableAgent -> cfg_k3s.role == "agent") {
+        (mkIf (cfg_k3s.role == "agent" || !cfg_k3s.disableAgent) {
           images = mapAttrsToList (_: getAttr "image") perSystem.config.dotfiles.nix2container;
         })
       ];
