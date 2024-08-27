@@ -102,6 +102,8 @@
                 "svc.cluster.local"
                 # URLs built with substitution
                 "^.+\${.+}.+$"
+                # DNS authority
+                "^.+/dns-query$"
               ];
             });
             # Used in vim configuration

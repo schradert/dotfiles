@@ -31,10 +31,11 @@ with nix; {
           resources = mkMerge [
             cfg.resources
             # TODO fix this with resources.imports
-            (flip mapAttrs cfg.resources (_: type: flip mapAttrs type (_: _: {
-              metadata.namespace = mkDefault cfg.namespace;
-              metadata.labels."canivete/chart" = mkDefault name;
-            })))
+            (flip mapAttrs cfg.resources (_: type:
+              flip mapAttrs type (_: _: {
+                metadata.namespace = mkDefault cfg.namespace;
+                metadata.labels."canivete/chart" = mkDefault name;
+              })))
           ];
           helm.releases.${name} = mkMerge [
             (removeAttrs cfg ["chart" "resources"])
