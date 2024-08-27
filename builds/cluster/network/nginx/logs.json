@@ -16,6 +16,4 @@
   "method": "$request_method",
   "http_referrer": "$http_referer",
   "http_user_agent": "$http_user_agent",
-  "country_code": "$geoip2_city_country_code",
-  "country_name": "$geoip2_city_country_name"
 }
