@@ -21,7 +21,6 @@ with nix; let
       keep-outputs = true
       keep-derivations = true
     '';
-    gc.automatic = true;
     optimise.automatic = true;
   };
   key = fileContents (inputs.self + "/.canivete/sops/${me}.pub");
@@ -29,7 +28,7 @@ in {
   canivete.deploy = {
     system.homeModules.nix = {pkgs, ...}: {
       nix = {
-        inherit (common) settings gc extraOptions;
+        inherit (common) settings extraOptions;
         # Some conflict from home-manager managing itself, but it must be specified
         package = mkForce pkgs.nixVersions.latest;
       };
