@@ -150,7 +150,7 @@ in {
       bootstrap.opentofuWorkspace = "bootstrap";
       bootstrap.deploy.fetchKubeconfig = fetchKubeconfig;
       bootstrap.modules.helm = {helm, ...}: {config = mapReleases (filterAttrs (_: getAttr "bootstrap") config.dotfiles.helm) helm;};
-      prod.modules.helm = {helm, ...}: {config = mapReleases config.dotfiles.helm helm;};
+      prod.modules.helm = {helm, ...}: {config = mapReleases (filterAttrs (_: release: !release.bootstrap) config.dotfiles.helm) helm;};
       prod.deploy.fetchKubeconfig = fetchKubeconfig;
     };
   };
@@ -166,36 +166,51 @@ in {
     options.dotfiles.kubernetes = {
       enable = mkEnableOption "kubernetes as a service";
       root = mkEnableOption "node as kubernetes main control plane";
+      k3s = mkOption {
+        inherit (pkgs.formats.yaml {}) type;
+        description = "Settings for /etc/rancher/k3s/config.yaml";
+        default = {};
+      };
     };
-    config = mkIf cfg.enable {
-      canivete.secrets."random_password.k3s-token" = "result";
-      environment.systemPackages = [pkgs.k3s];
-      networking.firewall.allowedTCPPorts = [6443];
-      networking.firewall.allowedUDPPorts = [8472];
-      services.k3s = mkMerge [
-        {
+    config = mkIf cfg.enable (mkMerge [
+      {
+        canivete.secrets."random_password.k3s-token" = "result";
+        dotfiles.kubernetes.k3s = {
+          selinux = true;
+          token-file = "/private/canivete/secrets/random_password.k3s-token";
+        };
+        environment.etc."rancher/k3s/config.yaml".source = pkgs.writers.writeYAML "k3s.yaml" cfg.k3s;
+        environment.systemPackages = [pkgs.k3s];
+        services.k3s = {
           enable = true;
-          tokenFile = "/private/canivete/secrets/random_password.k3s-token";
           role = mkDefault "agent";
+          configPath = "/etc/rancher/k3s/config.yaml";
           gracefulNodeShutdown.enable = true;
-        }
-        (mkIfElse cfg.root {
-            clusterInit = true;
-            role = "server";
-          } {
-            serverAddr = "https://${domain}:6443";
-          })
-        (mkIf (cfg_k3s.role == "server") {
-          configPath = pkgs.writers.writeYAML "k3s.yaml" {
-            disable = ["traefik" "servicelb" "coredns"];
-            disable-helm-controller = true;
-            tls-san = [domain];
-          };
-        })
-        (mkIf (cfg_k3s.role == "agent" || !cfg_k3s.disableAgent) {
-          images = mapAttrsToList (_: getAttr "image") perSystem.config.dotfiles.nix2container;
-        })
-      ];
-    };
+        };
+        virtualisation.containerd.enable = true;
+      }
+      (mkIfElse cfg.root {
+        services.k3s.role = "server";
+        services.k3s.clusterInit = true;
+      } {
+        dotfiles.kubernetes.k3s.server = "https://${domain}:6443";
+      })
+      (mkIf (cfg_k3s.role == "server") {
+        dotfiles.kubernetes.k3s = {
+          # Barebones
+          disable = ["traefik" "servicelb" "local-storage" "metrics-server" "coredns"];
+          flannel-backend = "none";
+          disable-kube-proxy = true;
+          disable-network-policy = true;
+          disable-helm-controller = true;
+          # Server only
+          etcd-expose-metrics = true;
+          tls-san = [domain];
+        };
+      })
+      # (mkIf (cfg_k3s.role == "agent" || !cfg_k3s.disableAgent) {
+      #   services.k3s.images = mapAttrsToList (_: getAttr "image") perSystem.config.dotfiles.nix2container;
+      # })
+    ]);
   };
 }
