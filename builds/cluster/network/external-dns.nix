@@ -20,6 +20,7 @@ in {
       };
       extraArgs = [
         "--cloudflare-dns-records-per-page=1000"
+        "--cloudflare-proxied"
         "--crd-source-apiversion=externaldns.k8s.io/v1alpha1"
         "--crd-source-kind=DNSEndpoint"
         "--events"
