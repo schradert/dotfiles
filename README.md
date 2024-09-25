@@ -4,6 +4,7 @@
 
 1. prometheus-crds
 2. cilium
+3. coredns
 ## TODOs
 
 [ ] Why doesn't cilium agent run on axolotl?
