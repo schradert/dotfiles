@@ -1,11 +1,43 @@
-{
-  perSystem.canivete.kubenix.clusters.prod.modules.excalidraw = {helm, ...}: {
-    kubernetes.helm.releases.excalidraw = {
-      chart = helm.fetch {
-        repo = "https://gitlab.com/api/v4/projects/43892189/packages/helm/stable";
-        chart = "excalidraw";
-        version = "0.1.4";
-        sha256 = "mFTSDKfYfGujNizrKao7PdsHYsKuDd81lrDb/BBRcAQ=";
+{config, nix, ...}: let
+  inherit (config.dotfiles) domain;
+  inherit (nix) toList;
+in {
+  # TODO user accounts?
+  # TODO what about collaboration with excalidraw-room?
+  # TODO mermaid-to-excalidraw?
+  # TODO find a wrapper application!
+  perSystem.dotfiles.helm.excalidraw = {
+    namespace = "home";
+    values = {
+      controllers.excalidraw.annotations."reloader.stakater.com/auto" = "true";
+      controllers.excalidraw.containers.excalidraw = {
+        image.repository = "excalidraw/excalidraw";
+        image.tag = "latest@sha256:fae667864717a415e7474b5f757ffb50e63a81cfc1a2fbcf905ecbd137d0dbba";
+        probes.liveness.enabled = true;
+        probes.readiness.enabled = true;
+        probes.startup.enabled = true;
+        resources.requests.cpu = "100m";
+        resources.requests.memory = "128Mi";
+        resources.limits.memory = "512Mi";
+      };
+      service.excalidraw.controller = "excalidraw";
+      service.excalidraw.ports.http.port = 80;
+      serviceAccount.create = true;
+      ingress.excalidraw = {
+        annotations = {
+          "external-dns.alpha.kubernetes.io/target" = "external.${domain}";
+          "nginx.ingress.kubernetes.io/auth-url" = "https://oauth2-proxy.${domain}/oauth2/auth?allowed_groups=/family";
+          "nginx.ingress.kubernetes.io/auth-signin" = "https://oauth2-proxy.${domain}/oauth2/start?rd=$scheme://$host$request_uri";
+        };
+        className = "external";
+        hosts = toList {
+          host = "excalidraw.${domain}";
+          paths = toList {
+            path = "/";
+            service.identifier = "excalidraw";
+            service.port = "http";
+          };
+        };
       };
     };
   };
