@@ -44,7 +44,7 @@ in {
     };
     resources.certificates.${domainName}.spec = {
       secretName = "${domainName}-tls";
-      issuerRef.name = "letsencrypt-staging";
+      issuerRef.name = "letsencrypt-production";
       issuerRef.kind = "ClusterIssuer";
       commonName = domain;
       dnsNames = [domain "*.${domain}"];
