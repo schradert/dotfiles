@@ -1,5 +1,8 @@
 # Dotfiles
 
+## Order
+
+1. prometheus-crds
 ## TODOs
 
 [ ] persistence
