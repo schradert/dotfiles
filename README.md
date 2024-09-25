@@ -5,6 +5,7 @@
 1. prometheus-crds
 2. cilium
 3. coredns
+4. kubelet-csr-approver
 ## TODOs
 
 [ ] Why doesn't cilium agent run on axolotl?
