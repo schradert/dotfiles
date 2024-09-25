@@ -11,6 +11,8 @@
 7. external-dns
 8. nginx-internal
 9. nginx-external
+10. snapshot-controller
+11. volsync
 ## TODOs
 
 [ ] Why doesn't cilium agent run on axolotl?
