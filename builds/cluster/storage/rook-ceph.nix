@@ -1,12 +1,37 @@
 # https://github.com/rook/rook/blob/master/Documentation/Helm-Charts/ceph-cluster-chart.md
+# TODO why does the CephBlockPool sit in Failed phase? signal interrupt for creation
 {
   config,
   nix,
   ...
 }:
 with nix; let
-  subdomain = "rook.${config.dotfiles.domain}";
+  inherit (config.dotfiles) domain;
+  subdomain = "rook.${domain}";
+  nodeAffinity.preferredDuringSchedulingIgnoredDuringExecution = toList {
+    weight = 1;
+    preference.matchExpressions = toList {
+      key = "kubernetes.io/hostname";
+      operator = "In";
+      values = ["sirver" "octopus"];
+    };
+  };
+  topologySpreadConstraints = value: toList {
+    maxSkew = 1;
+    topologyKey = "kubernetes.io/hostname";
+    whenUnsatisfiable = "ScheduleAnyway";
+    labelSelector.matchExpressions = toList {
+      key = "app";
+      operator = "In";
+      values = [value];
+    };
+  };
+  placement = value: {
+    inherit nodeAffinity;
+    topologySpreadConstraints = topologySpreadConstraints value;
+  };
 in {
+  canivete.deploy.nixos.modules.rook-ceph.boot.kernelModules = ["nbd" "rbd"];
   # Kubenix bug means fields outside of expected spec won't register, so we define them here
   # NOTE https://github.com/hall/kubenix/issues/34
   perSystem.canivete.kubenix.clusters.prod.modules.rook-ceph-patch = {
@@ -70,7 +95,7 @@ in {
         serviceMonitor.enabled = true;
       };
       values.monitoring.enabled = true;
-      resources.secrets.rook-ceph-dashboard-password.stringData.password = "ref+envsubst://ROOK_CEPH_DASHBOARD_PASSWORD";
+      resources.secrets.rook-ceph-dashboard-password.stringData.password = vals.sops "default.yaml#/passwords/rook-ceph-dashboard-password";
     };
     rook-ceph-cluster = {
       namespace = "storage";
@@ -90,6 +115,7 @@ in {
           host.path = "/";
         };
         toolbox.enabled = true;
+        cephBlockPoolsVolumeSnapshotClass.enabled = true;
         cephClusterSpec = {
           dashboard.urlPrefix = "/";
           dashboard.ssl = false;
@@ -98,14 +124,67 @@ in {
             name = "pg_autoscaler";
             enabled = true;
           };
+          network.hostNetwork = false;
           network.provider = "host";
           network.connections.requireMsgr2 = true;
-          storage.config.osdsPerDevice = "1";
+          placement.osd = placement "rook-ceph-osd";
+          storage.storageClassDeviceSets = toList {
+            count = 3;
+            name = "rook-ceph-osd-lvm";
+            placement = placement "rook-ceph-osd-prepare";
+            portable = false;
+            preparePlacement = placement "rook-ceph-osd-prepare";
+            resources.limits.memory = "4Gi";
+            resources.requests.cpu = "500m";
+            resources.requests.memory = "4Gi";
+            volumeClaimTemplates = toList {
+              metadata.name = "data";
+              spec = {
+                accessModes = ["ReadWriteOnce"];
+                resources.requests.storage = "20Gi";
+                storageClassName = "openebs-lvm";
+                volumeMode = "Block";
+              };
+            };
+          };
         };
-        cephBlockPoolsVolumeSnapshotClass.enabled = true;
         cephFileSystemVolumeSnapshotClass.enabled = true;
         cephFileSystemVolumeSnapshotClass.isDefault = false;
-        cephObjectStores = [];
+        cephObjectStores = toList {
+          name = "ceph-objectstore";
+          spec = {
+            metadataPool.failureDomain = "host";
+            metadataPool.replicated.size = 3;
+            dataPool.failureDomain = "host";
+            dataPool.erasureCoded.dataChunks = 2;
+            dataPool.erasureCoded.codingChunks = 1;
+            preservePoolsOnDelete = true;
+            gateway = {
+              hostNetwork = false;
+              port = 80;
+              resources.requests.cpu = "100m";
+              resources.requests.memory = "1Gi";
+              resources.limits.memory = "2Gi";
+              instances = 1;
+              priorityClassName = "system-cluster-critical";
+            };
+            healthCheck.bucket.interval = "60s";
+          };
+          storageClass = {
+            enabled = true;
+            name = "ceph-bucket";
+            reclaimPolicy = "Delete";
+            volumeBindingMode = "Immediate";
+            parameters.region = "us-west-1";
+          };
+          ingress = {
+            enabled = true;
+            ingressClassName = "internal";
+            host.name = "radosgw.${domain}";
+            host.path = "/";
+            annotations."external-dns.alpha.kubernetes.io/target" = "internal.${domain}";
+          };
+        };
       };
     };
   };

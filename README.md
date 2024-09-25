@@ -20,6 +20,7 @@
 16. openebs
 17. prometheus
 18. grafana
+19. rook-ceph + rook-ceph-cluster
 ## TODOs
 
 [ ] Why doesn't cilium agent run on axolotl?
