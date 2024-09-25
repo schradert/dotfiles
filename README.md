@@ -3,7 +3,10 @@
 ## Order
 
 1. prometheus-crds
+2. cilium
 ## TODOs
+
+[ ] Why doesn't cilium agent run on axolotl?
 
 [ ] persistence
 [ ] annotations
