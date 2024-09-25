@@ -9,6 +9,8 @@
 5. spegel
 6. cert-manager
 7. external-dns
+8. nginx-internal
+9. nginx-external
 ## TODOs
 
 [ ] Why doesn't cilium agent run on axolotl?
