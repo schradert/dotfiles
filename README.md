@@ -13,6 +13,10 @@
 9. nginx-external
 10. snapshot-controller
 11. volsync
+12. reloader
+13. descheduler
+14. node-feature-discovery
+15. k8tz
 ## TODOs
 
 [ ] Why doesn't cilium agent run on axolotl?
