@@ -18,6 +18,8 @@
 14. node-feature-discovery
 15. k8tz
 16. openebs
+17. prometheus
+18. grafana
 ## TODOs
 
 [ ] Why doesn't cilium agent run on axolotl?
