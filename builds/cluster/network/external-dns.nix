@@ -25,16 +25,18 @@ in {
         "--events"
         "--ignore-ingress-tls-spec"
         "--ingress-class=external"
-        # TODO should I use cloudflare proxy for CDN?
       ];
-      # TODO how should I handle the policy
-      # policy = "sync"; or upsert-only
+      policy = "sync";
       sources = ["crd" "ingress"];
-      txtOwnerId = "default";
+      txtOwnerId = "main";
       txtPrefix = "k8s.";
       domainFilters = [config.dotfiles.domain];
       serviceMonitor.enabled = true;
       podAnnotations."secret.reloader.stakater.com/reload" = secret.name;
+      resources.requests.cpu = "13m";
+      resources.requests.memory = "42M";
+      resources.limits.memory = "42M";
+      # TODO spec.template.spec.enableServiceLinks false for deployment?
     };
   };
 }
