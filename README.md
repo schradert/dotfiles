@@ -6,6 +6,7 @@
 2. cilium
 3. coredns
 4. kubelet-csr-approver
+5. spegel
 ## TODOs
 
 [ ] Why doesn't cilium agent run on axolotl?
