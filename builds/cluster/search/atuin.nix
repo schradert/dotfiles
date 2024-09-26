@@ -2,31 +2,62 @@
   config,
   nix,
   ...
-}:
-with nix; let
+}: let
   port = 8888;
   metricsPort = 8080;
+  inherit (nix) toList toString;
   inherit (config.dotfiles) domain;
 in {
-  # [ ] [atuin](https://github.com/atuinsh/atuin) can i synchronize over all computers?
   perSystem.dotfiles.nix2container.atuin = {};
-  perSystem.dotfiles.helm.atuin.values = {
-    controllers.atuin.containers.atuin = {
-      image.repository = "ref+envsubst://ATUIN_IMAGE_FULLREPOSITORY+";
-      image.tag = "ref+envsubst://ATUIN_IMAGE_TAG";
-      args = ["server" "start"];
-      envFrom = [
-        {secret = "atuin";}
-        {configMapRef.name = "atuin";}
-      ];
-      probes.liveness.enabled = true;
-      probes.readiness.enabled = true;
-      probes.startup.enabled = true;
+  perSystem.dotfiles.helm.postgres.resources.postgresqls.main.spec = {
+    users.atuin = ["createdb"];
+    databases.atuin = "atuin";
+  };
+  perSystem.dotfiles.helm.atuin = {
+    namespace = "search";
+    values = {
+      controllers.atuin.annotations."reloader.stakater.com/auto" = "true";
+      controllers.atuin.containers.atuin = {
+        image.repository = "ghcr.io/atuinsh/atuin";
+        image.tag = "18.3.0";
+        args = ["server" "start"];
+        envFrom = [
+          {secret = "atuin-secret";}
+          {configMapRef.name = "atuin-configmap";}
+        ];
+        probes.liveness.enabled = true;
+        probes.readiness.enabled = true;
+        probes.startup.enabled = true;
+        resources.requests.cpu = "10m";
+        resources.requests.memory = "128Mi";
+        resources.limits.memory = "512Mi";
+      };
+      service.atuin.controller = "atuin";
+      service.atuin.ports = {
+        http.primary = true;
+        http.port = port;
+        metrics.port = metricsPort;
+      };
+      serviceMonitor.atuin.serviceName = "atuin";
+      serviceMonitor.atuin.endpoints = toList {
+        port = "metrics";
+        scheme = "http";
+        path = "/metrics";
+        interval = "1m";
+        scrapeTimeout = "10s";
+      };
+      ingress.atuin.className = "internal";
+      ingress.atuin.hosts = toList {
+        host = "atuin.${domain}";
+        paths = toList {
+          path = "/";
+          service.identifier = "atuin";
+          service.port = "http";
+        };
+      };
+      persistence.config.type = "emptyDir";
     };
-    secrets.atuin.enabled = true;
-    secrets.atuin.stringData = {};
-    configMaps.atuin.enabled = true;
-    configMaps.atuin.data = {
+    resources.configMaps.atuin-configmap.data = {
       ATUIN_HOST = "0.0.0.0";
       ATUIN_PORT = toString port;
       ATUIN_OPEN_REGISTRATION = "true";
@@ -35,26 +66,15 @@ in {
       ATUIN_METRICS__HOST = "0.0.0.0";
       ATUIN_METRICS__PORT = toString metricsPort;
     };
-    service.atuin.controller = "atuin";
-    service.atuin.ports = {
-      http.primary = true;
-      http.port = port;
-      metrics.port = metricsPort;
-    };
-    serviceMonitor.atuin.serviceName = "atuin";
-    serviceMonitor.atuin.endpoints = toList {
-      port = "metrics";
-      scheme = "http";
-      path = "/metrics";
-    };
-    ingress.atuin.className = "internal";
-    ingress.atuin.hosts = toList {
-      host = "atuin.${domain}";
-      paths = toList {
-        path = "/";
-        service.identifier = "atuin";
-        service.port = "http";
+    resources.externalsecrets.atuin.spec = {
+      dataFrom = toList {
+        extract.key = "atuin.main.credentials.postgresql.acid.zalan.do";
+        sourceRef.storeRef.kind = "ClusterSecretStore";
+        sourceRef.storeRef.name = "kubernetes-storage";
       };
+      target.name = "atuin-secret";
+      target.template.engineVersion = "v2";
+      target.template.data.ATUIN_DB_URI = "postgres://atuin:{{ .password }}@main.storage.svc.cluster.local:5432/atuin";
     };
   };
 }
