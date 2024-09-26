@@ -16,11 +16,9 @@ in {
     values = {
       controllers.actual.annotations."reloader.stakater.com/auto" = "true";
       controllers.actual.containers.actual = {
-        # image.repository = "ref+envsubst://ACTUAL_IMAGE_FULLREPOSITORY+";
-        # image.tag = "ref+envsubst://ACTUAL_IMAGE_TAG";
         image.repository = "ghcr.io/actualbudget/actual-server";
         image.tag = "24.9.0";
-        envFrom = toList {configMapRef.name = "actual";};
+        envFrom = toList {configMapRef.name = "actual-configmap";};
         probes.liveness.enabled = true;
         probes.readiness.enabled = true;
         probes.startup.enabled = true;
