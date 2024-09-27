@@ -10,7 +10,7 @@ in {
   perSystem = {
     dotfiles.nix2container.sabnzbd = {};
     dotfiles.helm.sabnzbd = {
-      namespace = "arr";
+      namespace = "media";
       values = {
         controllers.sabnzbd.containers.sabnzbd = {
           image.repository = "ref+envsubst://SABNZBD_IMAGE_FULLREPOSITORY+";

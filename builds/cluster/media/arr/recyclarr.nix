@@ -1,6 +1,6 @@
 {
   perSystem.dotfiles.nix2container.recyclarr = {};
-  perSystem.dotfiles.helm.recyclarr.namespace = "arr";
+  perSystem.dotfiles.helm.recyclarr.namespace = "media";
   perSystem.dotfiles.helm.recyclarr.values = {
     secrets.recyclarr.enabled = true;
     secrets.recyclarr.stringData = {

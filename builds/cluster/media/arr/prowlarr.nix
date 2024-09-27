@@ -15,12 +15,12 @@ in {
     };
     opentofu.passwords.prowlarr-postgres-password.length = 21;
     nix2container.prowlarr = {};
-    helm.postgres.resources.postgresqls.main.spec = {
-      users.prowlarr = ["superuser" "createdb"];
-      databases.prowlarr = "prowlarr";
-    };
+    # helm.postgres.resources.postgresqls.main.spec = {
+    #   users.prowlarr = ["superuser" "createdb"];
+    #   databases.prowlarr = "prowlarr";
+    # };
     helm.prowlarr = {
-      namespace = "arr";
+      namespace = "media";
       values = {
         controllers.prowlarr.containers.prowlarr = {
           image.repository = "ref+envsubst://PROWLARR_IMAGE_FULLREPOSITORY+";

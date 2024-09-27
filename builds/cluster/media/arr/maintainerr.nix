@@ -6,7 +6,7 @@
 with nix; {
   # https://github.com/jorenn92/Maintainerr
   perSystem.dotfiles.helm.maintainerr = {
-    namespace = "arr";
+    namespace = "media";
     values = {
       controllers.maintainerr.containers.maintainerr = {
         image.repository = "ghcr.io/jorenn92/maintainerr";

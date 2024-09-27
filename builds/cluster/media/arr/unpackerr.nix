@@ -11,7 +11,7 @@ with nix; {
       special = false;
     };
     nix2container.unpackerr = {};
-    helm.unpackerr.namespace = "arr";
+    helm.unpackerr.namespace = "media";
     helm.unpackerr.values = {
       secrets.unpackerr.enabled = true;
       secrets.unpackerr.stringData = {

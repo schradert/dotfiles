@@ -14,7 +14,7 @@ in {
       special = false;
     };
     nix2container.lidarr = {};
-    helm.lidarr.namespace = "arr";
+    helm.lidarr.namespace = "media";
     helm.lidarr.values = {
       secrets.lidarr.enabled = true;
       secrets.lidarr.stringData.LIDARR__AUTH__APIKEY = "ref+envsubst://LIDARR_API_KEY";

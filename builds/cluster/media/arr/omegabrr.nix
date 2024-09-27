@@ -6,7 +6,7 @@
 with nix; {
   # https://github.com/autobrr/omegabrr
   perSystem.dotfiles.helm.omegabrr = {
-    namespace = "arr";
+    namespace = "media";
     values = {
       controllers.omegabrr.containers.omegabrr = {
         image.repository = "ghcr.io/autobrr/omegabrr";

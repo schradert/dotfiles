@@ -13,7 +13,7 @@ in {
       special = false;
     };
     nix2container.radarr = {};
-    helm.radarr.namespace = "arr";
+    helm.radarr.namespace = "media";
     helm.radarr.values = {
       secrets.radarr.enabled = true;
       secrets.radarr.stringData.RADARR__AUTH__APIKEY = "ref+envsubst://RADARR_API_KEY";

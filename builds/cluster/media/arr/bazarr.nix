@@ -8,7 +8,7 @@ with nix; {
   # TODO should I use subcleaner https://github.com/KBlixt/subcleaner
   perSystem.dotfiles.nix2container.bazarr = {};
   perSystem.dotfiles.helm.bazarr = {
-    namespace = "arr";
+    namespace = "media";
     values = {
       controllers.bazarr.containers.bazarr = {
         image.repository = "ref+envsubst://BAZARR_IMAGE_FULLREPOSITORY+";

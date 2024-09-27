@@ -12,7 +12,7 @@ in {
     special = false;
   };
   perSystem.dotfiles.nix2container.sonarr = {};
-  perSystem.dotfiles.helm.sonarr.namespace = "arr";
+  perSystem.dotfiles.helm.sonarr.namespace = "media";
   perSystem.dotfiles.helm.sonarr.values = {
     secrets.sonarr.enabled = true;
     secrets.sonarr.stringData.SONARR__AUTH__APIKEY = "ref+envsubst://SONARR_API_KEY";

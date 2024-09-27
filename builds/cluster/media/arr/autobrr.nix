@@ -12,7 +12,7 @@ in {
     autobrr-postgres-password.length = 21;
   };
   perSystem.dotfiles.helm.autobrr = {
-    namespace = "arr";
+    namespace = "media";
     values = {
       controllers.autobrr.containers.autobrr = {
         image.repository = "ghcr.io/autobrr/autobrr";
