@@ -36,6 +36,11 @@
     # Docker images
     nix2container.url = github:nlewo/nix2container;
     nix2container.inputs.nixpkgs.follows = "canivete/nixpkgs";
+
+    # More useful modules
+    devusb.url = github:devusb/nix-packages;
+    devusb.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    devusb.inputs.flake-parts.follows = "canivete/flake-parts";
   };
   outputs = inputs:
     inputs.canivete.lib.mkFlake {
