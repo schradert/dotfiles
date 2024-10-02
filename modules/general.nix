@@ -7,9 +7,11 @@ in {
     type = strMatching "^[a-z0-9\-]+\.[a-z]{2,}$";
     description = "Base domain for exposing nodes and services";
   };
-  canivete.deploy.system.homeModules.general = {config, ...}: {
+  canivete.deploy.system.homeModules.general = {config, pkgs, ...}: let
+    inherit (config.home) username homeDirectory;
+  in {
     options.dotfiles.profile = mkOption {
-      type = enum (attrNames users.${config.home.username}.profiles);
+      type = enum (attrNames users.${username}.profiles);
       example = "work";
       description = "The dotfiles profile to use for this configuration";
       default = "default";
@@ -20,5 +22,7 @@ in {
       example = "emacs";
       description = "Default editor to use for profile";
     };
+    config.home.homeDirectory = "/${if pkgs.stdenv.isDarwin then "Users" else "home"}/${username}";
+    config.home.sessionVariables.XDG_RUNTIME_DIR = "${homeDirectory}/.run";
   };
 }

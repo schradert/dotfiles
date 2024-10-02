@@ -1,5 +1,6 @@
-{nix, ...}:
-with nix; {
+{lib, ...}: let
+  inherit (lib) mkDefault mkEnableOption mkIf toList;
+in {
   canivete.deploy = {
     system.modules.graphical.options.dotfiles.graphical.enable = mkEnableOption "graphical tools (i.e. not headless)";
     system.homeModules.graphical = {
@@ -38,26 +39,6 @@ with nix; {
         ];
       };
     };
-    nixos.homeModules.graphical = {
-      config,
-      pkgs,
-      ...
-    }: {
-      config = mkIf config.dotfiles.graphical.enable {
-        home.packages = with pkgs; [
-          android-studio
-          anki
-          beeper
-          bitwarden
-          brave
-          element-desktop
-          godot_4
-          protonvpn-gui
-          session-desktop
-          signal-desktop
-        ];
-      };
-    };
     nixos.modules.graphical = {
       config,
       pkgs,
@@ -65,7 +46,20 @@ with nix; {
     }: {
       config = mkIf config.dotfiles.graphical.enable {
         fonts.packages = [pkgs.meslo-lgs-nf];
-        home-manager.sharedModules = [{dotfiles.graphical.enable = true;}];
+        home-manager.sharedModules = toList {
+          home.packages = with pkgs; [
+            android-studio
+            anki
+            beeper
+            bitwarden
+            brave
+            element-desktop
+            godot_4
+            protonvpn-gui
+            session-desktop
+            signal-desktop
+          ];
+        };
         services.displayManager.sddm.enable = mkDefault true;
         services.xserver = {
           enable = true;
