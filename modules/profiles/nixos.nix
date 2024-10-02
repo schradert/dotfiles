@@ -34,6 +34,7 @@ in {
         options = ["NOPASSWD"];
       };
     };
+    services.earlyoom.enable = true;
     system.stateVersion = "24.05";
     systemd.services = flip mapAttrs' config.home-manager.users (username: _: nameValuePair "home-manager-${username}" {serviceConfig.TimeoutStartSec = mkForce "10m";});
     time.timeZone = "America/Los_Angeles";
