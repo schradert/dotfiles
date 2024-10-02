@@ -8,27 +8,27 @@
 with nix; let
   inherit (config.dotfiles) domain;
   subdomain = "rook.${domain}";
-  nodeAffinity.preferredDuringSchedulingIgnoredDuringExecution = toList {
-    weight = 1;
-    preference.matchExpressions = toList {
-      key = "kubernetes.io/hostname";
-      operator = "In";
-      values = ["sirver" "octopus"];
-    };
-  };
-  topologySpreadConstraints = value: toList {
-    maxSkew = 1;
+  placement = nodes: label: let
     topologyKey = "kubernetes.io/hostname";
-    whenUnsatisfiable = "ScheduleAnyway";
     labelSelector.matchExpressions = toList {
       key = "app";
       operator = "In";
-      values = [value];
+      values = [label];
     };
-  };
-  placement = value: {
-    inherit nodeAffinity;
-    topologySpreadConstraints = topologySpreadConstraints value;
+  in {
+    nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms = toList {
+      matchExpressions = toList {
+        key = topologyKey;
+        operator = "In";
+        values = nodes;
+      };
+    };
+    podAntiAffinity.requiredDuringSchedulingIgnoredDuringExecution = toList {inherit topologyKey labelSelector;};
+    topologySpreadConstraints = toList {
+      inherit topologyKey labelSelector;
+      maxSkew = 1;
+      whenUnsatisfiable = "DoNotSchedule";
+    };
   };
 in {
   canivete.deploy.nixos.modules.rook-ceph.boot.kernelModules = ["nbd" "rbd"];
@@ -177,12 +177,12 @@ in {
           network.hostNetwork = false;
           network.provider = "host";
           network.connections.requireMsgr2 = true;
-          placement.osd = placement ["sirver" "octopus" "bonobo" "chinchilla" "dingo"] "app" "rook-ceph-osd";
+          placement.osd = placement ["sirver" "octopus" "bonobo" "chinchilla" "dingo"] "rook-ceph-osd";
           storage.storageClassDeviceSets = [
             {
               count = 4;
               name = "rook-ceph-osd-lvm-big";
-              placement = placement ["sirver" "octopus"] "ceph.rook.io/DeviceSet" "rook-ceph-osd-lvm-big";
+              placement = placement ["sirver" "octopus"] "rook-ceph-osd-prepare";
               resources.limits.memory = "4Gi";
               resources.requests.cpu = "500m";
               resources.requests.memory = "4Gi";
@@ -199,7 +199,7 @@ in {
             {
               count = 3;
               name = "rook-ceph-osd-lvm-small";
-              placement = placement ["bonobo" "chinchilla" "dingo"] "ceph.rook.io/DeviceSet" "rook-ceph-osd-lvm-small";
+              placement = placement ["bonobo" "chinchilla" "dingo"] "rook-ceph-osd-prepare";
               resources.limits.memory = "4Gi";
               resources.requests.cpu = "500m";
               resources.requests.memory = "4Gi";
