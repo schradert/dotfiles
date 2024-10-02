@@ -157,26 +157,43 @@ in {
           network.hostNetwork = false;
           network.provider = "host";
           network.connections.requireMsgr2 = true;
-          placement.osd = placement "rook-ceph-osd";
-          storage.storageClassDeviceSets = toList {
-            count = 3;
-            name = "rook-ceph-osd-lvm";
-            placement = placement "rook-ceph-osd-prepare";
-            portable = false;
-            preparePlacement = placement "rook-ceph-osd-prepare";
-            resources.limits.memory = "4Gi";
-            resources.requests.cpu = "500m";
-            resources.requests.memory = "4Gi";
-            volumeClaimTemplates = toList {
-              metadata.name = "data";
-              spec = {
-                accessModes = ["ReadWriteOnce"];
-                resources.requests.storage = "20Gi";
-                storageClassName = "openebs-lvm";
-                volumeMode = "Block";
+          placement.osd = placement ["sirver" "octopus" "bonobo" "chinchilla" "dingo"] "app" "rook-ceph-osd";
+          storage.storageClassDeviceSets = [
+            {
+              count = 4;
+              name = "rook-ceph-osd-lvm-big";
+              placement = placement ["sirver" "octopus"] "ceph.rook.io/DeviceSet" "rook-ceph-osd-lvm-big";
+              resources.limits.memory = "4Gi";
+              resources.requests.cpu = "500m";
+              resources.requests.memory = "4Gi";
+              volumeClaimTemplates = toList {
+                metadata.name = "data";
+                spec = {
+                  accessModes = ["ReadWriteOnce"];
+                  resources.requests.storage = "93Gi";
+                  storageClassName = "openebs-lvm";
+                  volumeMode = "Block";
+                };
               };
-            };
-          };
+            }
+            {
+              count = 3;
+              name = "rook-ceph-osd-lvm-small";
+              placement = placement ["bonobo" "chinchilla" "dingo"] "ceph.rook.io/DeviceSet" "rook-ceph-osd-lvm-small";
+              resources.limits.memory = "4Gi";
+              resources.requests.cpu = "500m";
+              resources.requests.memory = "4Gi";
+              volumeClaimTemplates = toList {
+                metadata.name = "data";
+                spec = {
+                  accessModes = ["ReadWriteOnce"];
+                  resources.requests.storage = "46Gi";
+                  storageClassName = "openebs-lvm";
+                  volumeMode = "Block";
+                };
+              };
+            }
+          ];
         };
         cephFileSystemVolumeSnapshotClass.enabled = true;
         cephFileSystemVolumeSnapshotClass.isDefault = false;
