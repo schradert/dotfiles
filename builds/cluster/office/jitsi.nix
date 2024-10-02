@@ -4,7 +4,7 @@
   inherit (vals) sops;
   subdomain = "jitsi.${domain}";
 in {
-  # TODO prosody-data-jitsi-prosody-0 won't mount (ceph-filesystem issue maybe?)
+  # TODO integrate with excalidraw https://github.com/jitsi/excalidraw-backend
   perSystem.dotfiles.opentofu.passwords = {
     jitsi-jigasi.length = 10;
     jitsi-jigasi.special = false;
