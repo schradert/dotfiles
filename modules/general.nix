@@ -1,11 +1,12 @@
-{
-  config,
-  nix,
-  ...
-}:
-with nix; let
+{config, lib, ...}: let
   inherit (config.canivete.people) users;
+  inherit (lib) attrNames mkOption types;
+  inherit (types) strMatching enum;
 in {
+  options.dotfiles.domain = mkOption {
+    type = strMatching "^[a-z0-9\-]+\.[a-z]{2,}$";
+    description = "Base domain for exposing nodes and services";
+  };
   canivete.deploy.system.homeModules.auth = {config, ...}: {
     options.dotfiles.profile = mkOption {
       type = enum (attrNames users.${config.home.username}.profiles);
