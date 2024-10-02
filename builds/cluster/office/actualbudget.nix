@@ -52,7 +52,6 @@ in {
     resources = {
       configMaps.actual-configmap.data = {
         ACTUAL_PORT = toString port;
-        ACTUAL_HOSTNAME = subdomain;
         ACTUAL_LOGIN_METHOD = "header";
       };
       objectbucketclaims.actual-bucket.spec = {
