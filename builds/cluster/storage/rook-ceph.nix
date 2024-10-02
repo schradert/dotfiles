@@ -140,19 +140,29 @@ in {
         monitoring.enabled = true;
         monitoring.createPrometheusRules = true;
         ingress.dashboard = {
-          ingressClassName = "internal";
+          ingressClassName = "external";
+          annotations."external-dns.alpha.kubernetes.io/target" = "external.${domain}";
+          annotations."nginx.ingress.kubernetes.io/auth-url" = "https://oauth2-proxy.${domain}/oauth2/auth?allowed_emails=me@trdos.me";
+          annotations."nginx.ingress.kubernetes.io/auth-signin" = "https://oauth2-proxy.${domain}/oauth2/start?rd=$scheme://$host$request_uri";
           host.name = subdomain;
           host.path = "/";
         };
         toolbox.enabled = true;
+        configOverride = ''
+          [mgr]
+          mgr/dashboard/standby_behaviour = "error"
+          mgr/dashboard/standby_error_status_code = 503
+        '';
+          # mgr/dashboard/redirect_resolve_ip_addr = true
         cephBlockPoolsVolumeSnapshotClass.enabled = true;
         cephClusterSpec = {
-          dashboard.urlPrefix = "/";
-          dashboard.ssl = false;
-          dashboard.prometheusEndpoint = "http://prometheus-operated.observability.svc.cluster.local:9090";
-          mgr.modules = toList {
-            name = "pg_autoscaler";
+          removeOSDsIfOutAndSafeToRemove = true;
+          crashCollector.disable = false;
+          dashboard = {
             enabled = true;
+            ssl = false;
+            urlPrefix = "/";
+            prometheusEndpoint = "http://prometheus-operated.observability.svc.cluster.local:9090";
           };
           mgr.modules = [
             {
