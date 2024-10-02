@@ -51,6 +51,7 @@ in {
         options.dotfiles = darwin.options.dotfiles;
         config.dotfiles = darwin.config.dotfiles;
       };
+      dotfiles.email = true;
       dotfiles.graphical.enable = true;
       dotfiles.profile = "work";
       dotfiles.zsh.initExtraLines = nix.toList ''

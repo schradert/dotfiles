@@ -1,63 +1,64 @@
-{nix, ...}: {
-  canivete.deploy = {
-    system.homeModules.email = {pkgs, ...}: {
-      home.packages = with pkgs; [mu mu.mu4e isync hydroxide];
-      accounts.email.accounts.Proton = {
-        # TODO alot contact completion
-        # TODO connect this to people
-        # TODO add more accounts
-        # TODO can I use a shared mbsync config?
-        # TODO activate msmtp and SMTP hydroxide server
-        primary = true;
-        address = "tristanschrader@proton.me";
-        aliases = ["t0rdos@pm.me"];
-        realName = "Tristan Schrader";
-        userName = "tristanschrader";
-        passwordCommand = "${pkgs.bitwarden-cli}/bin/bw get password \"proton (main)\"";
-        # msmtp.enable = true;
-        mbsync = {
-          enable = true;
-          create = "both";
-          expunge = "both";
-          remove = "both";
+{config, lib, ...}: let
+  inherit (config.canivete.people) users;
+  inherit (lib) getExe mapAttrs mkEnableOption mkIf mkMerge;
+in {
+  canivete.deploy.system.homeModules.email = {config, pkgs, ...}: let
+    inherit (pkgs) mu isync hydroxide stdenv;
+    user = users.${config.home.username};
+  in {
+    options.dotfiles.email = mkEnableOption "local email services";
+    config = mkIf config.dotfiles.email (mkMerge [
+      {
+        home.packages = [mu mu.mu4e isync hydroxide];
+        accounts.email.accounts = mapAttrs user.profiles (name: cfg: {
+          # TODO alot contact completion
+          # TODO can I use a shared mbsync config?
+          # TODO activate msmtp and SMTP hydroxide server
+          # TODO add aliases, username, and password config to people
+          # inherit (cfg) aliases userName passwordCommand;
+          primary = name == config.dotfiles.profile;
+          address = cfg.email;
+          realName = user.name;
+          mbsync = {
+            enable = true;
+            create = "both";
+            expunge = "both";
+            remove = "both";
+          };
+          mu.enable = true;
+          imap.host = "127.0.0.1";
+          imap.port = 1143;
+        });
+        programs.mbsync.enable = true;
+        programs.mu.enable = true;
+      }
+      (mkIf stdenv.isLinux {
+        services.mbsync.enable = true;
+        services.mbsync.postExec = "${getExe mu} index";
+      })
+      (mkIf stdenv.isDarwin {
+        launchd.agents = {
+          hydroxide.enable = true;
+          hydroxide.config = {
+            RunAtLoad = true;
+            KeepAlive.Crashed = true;
+            Program = getExe hydroxide;
+            ProgramArguments = ["imap"];
+          };
+          mbsync.enable = true;
+          mbsync.config = {
+            StartInterval = 900;
+            Program = getExe isync;
+            ProgramArguments = ["--all" "--verbose"];
+          };
+          mu-index.enable = true;
+          mu-index.config = {
+            StartInterval = 900;
+            Program = getExe mu;
+            ProgramArguments = ["index"];
+          };
         };
-        mu.enable = true;
-        imap = {
-          host = "127.0.0.1";
-          port = 1143;
-        };
-      };
-      # programs.msmtp.enable = true;
-      programs.mbsync.enable = true;
-      programs.mu.enable = true;
-    };
-    nixos.homeModules.email = {pkgs, ...}: {
-      # TODO what else to configure
-      services.mbsync = {
-        enable = true;
-        postExec = "${pkgs.mu}/bin/mu index";
-      };
-    };
-    darwin.homeModules.email = {pkgs, ...}: {
-      launchd.agents.hydroxide = {
-        enable = true;
-        config.RunAtLoad = true;
-        config.KeepAlive.Crashed = true;
-        config.Program = nix.getExe pkgs.hydroxide;
-        config.ProgramArguments = ["imap"];
-      };
-      launchd.agents.mbsync = {
-        enable = true;
-        config.StartInterval = 900;
-        config.Program = "${pkgs.isync}/bin/mysnc";
-        config.ProgramArguments = ["--all" "--verbose"];
-      };
-      launchd.agents.mu-index = {
-        enable = true;
-        config.StartInterval = 900;
-        config.Program = "${pkgs.mu}/bin/mu";
-        config.ProgramArguments = ["index"];
-      };
-    };
+      })
+    ]);
   };
 }

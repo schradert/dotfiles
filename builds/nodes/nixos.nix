@@ -99,7 +99,10 @@ in {
           };
         };
         powerManagement.cpuFreqGovernor = "powersave";
-        home-manager.sharedModules = toList {dotfiles.macchina.networkInterface = "enp0s31f6";};
+        home-manager.sharedModules = toList {
+          dotfiles.email = true;
+          dotfiles.macchina.networkInterface = "enp0s31f6";
+        };
       };
     };
     bonobo = {
