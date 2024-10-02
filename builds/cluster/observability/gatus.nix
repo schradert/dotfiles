@@ -52,7 +52,7 @@ in {
           interval = "1m";
           client.dns-resolver = "tcp://1.1.1.1:53";
           conditions = ["[STATUS] == 200"];
-          # alerts = [{type = "pushover";}]; FIXME
+          # alerts = [{type = "custom";}]; FIXME
         };
       };
     };

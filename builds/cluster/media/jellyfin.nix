@@ -6,9 +6,7 @@
   perSystem.canivete.arion.modules.jellyfin.services.jellyfin = {
     nixos.configuration.services = {
       jellyfin.enable = true;
-      jellyfin.openFirewall = true;
       jellyseer.enable = true;
-      jellyseer.openFirewall = true;
     };
     nixos.useSystemd = true;
   };

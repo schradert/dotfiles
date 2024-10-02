@@ -5,7 +5,6 @@
   perSystem.canivete.arion.modules.homepage-dashboard.services.homepage-dashboard = {
     nixos.configuration.services.homepage-dashboard = {
       enable = true;
-      openFirewall = true;
       # TODO how do I configure this?!
       # NOTE https://gethomepage.dev/latest/configs/docker/
       # docker = {};

@@ -64,6 +64,7 @@
     };
   };
   perSystem.dotfiles.helm.immich = {
+    namespace = "media";
     resources.persistentVolumeClaims.immich = {
       metadata.namespace = "immich";
       spec.accessModes = ["ReadWriteOnce"];

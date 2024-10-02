@@ -5,7 +5,6 @@
     nixos.configuration.services.home-assistant = {
       # NOTE https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/services/home-automation/home-assistant.nix
       enable = true;
-      openFirewall = true;
       # TODO COMPONENTS
       # NOTE https://www.home-assistant.io/integrations/
       # extraComponents = [];

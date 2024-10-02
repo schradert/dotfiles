@@ -20,8 +20,6 @@ in {
       values = {
         controllers.mealie.annotations."reloader.stakater.com/auto" = "true";
         controllers.mealie.containers.mealie = {
-          # image.repository = "ref+envsubst://MEALIE_IMAGE_FULLREPOSITORY+";
-          # image.tag = "ref+envsubst://MEALIE_IMAGE_TAG";
           image.repository = "ghcr.io/mealie-recipes/mealie";
           image.tag = "v1.12.0";
           envFrom = [
