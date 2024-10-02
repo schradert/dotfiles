@@ -7,7 +7,7 @@ in {
     type = strMatching "^[a-z0-9\-]+\.[a-z]{2,}$";
     description = "Base domain for exposing nodes and services";
   };
-  canivete.deploy.system.homeModules.general = {config, pkgs, ...}: let
+  config.canivete.deploy.system.homeModules.general = {config, pkgs, ...}: let
     inherit (config.home) username homeDirectory;
   in {
     options.dotfiles.profile = mkOption {

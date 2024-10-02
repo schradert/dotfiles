@@ -1,6 +1,6 @@
 {config, lib, ...}: let
   inherit (config.canivete.people) users;
-  inherit (lib) getExe mapAttrs mkEnableOption mkIf mkMerge;
+  inherit (lib) flip getExe mapAttrs mkEnableOption mkIf mkMerge;
 in {
   canivete.deploy.system.homeModules.email = {config, pkgs, ...}: let
     inherit (pkgs) mu isync hydroxide stdenv;
@@ -10,15 +10,18 @@ in {
     config = mkIf config.dotfiles.email (mkMerge [
       {
         home.packages = [mu mu.mu4e isync hydroxide];
-        accounts.email.accounts = mapAttrs user.profiles (name: cfg: {
+        accounts.email.accounts = flip mapAttrs user.profiles (name: cfg: {
           # TODO alot contact completion
           # TODO can I use a shared mbsync config?
           # TODO activate msmtp and SMTP hydroxide server
-          # TODO add aliases, username, and password config to people
-          # inherit (cfg) aliases userName passwordCommand;
           primary = name == config.dotfiles.profile;
           address = cfg.email;
           realName = user.name;
+          # TODO add aliases, username, and password config to people
+          # NOTE inherit (cfg) aliases userName passwordCommand;
+          aliases = [];
+          userName = "";
+          passwordCommand = "";
           mbsync = {
             enable = true;
             create = "both";

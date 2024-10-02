@@ -26,10 +26,7 @@ in {
   in {
     imports = [inputs.disko.nixosModules.disko];
     config = mkMerge ((mapAttrsToList mkUserModule users) ++ toList {
-      dotfiles.common = true;
       dotfiles.containers = true;
-      dotfiles.programs.git.enable = true;
-      dotfiles.programs.wordnet.enable = true;
       boot.initrd.availableKernelModules = ["ahci" "usb_storage" "sd_mod"];
       boot.loader.systemd-boot.enable = true;
       boot.loader.efi.canTouchEfiVariables = true;
@@ -37,11 +34,18 @@ in {
       hardware.cpu.intel.updateMicrocode = mkDefault config.hardware.enableRedistributableFirmware;
       hardware.cpu.amd.updateMicrocode = mkDefault config.hardware.enableRedistributableFirmware;
       home-manager.useGlobalPkgs = true;
-      home-manager.sharedModules = toList {
-        options.dotfiles = options.dotfiles;
-        config.dotfiles = config.dotfiles;
-        config.home.stateVersion = "24.05";
-      };
+      home-manager.sharedModules = [
+        {
+          options.dotfiles = options.dotfiles;
+          config.dotfiles = config.dotfiles;
+          config.home.stateVersion = "24.05";
+        }
+        {
+          dotfiles.common = true;
+          dotfiles.programs.git.enable = true;
+          dotfiles.programs.wordnet.enable = true;
+        }
+      ];
       i18n.defaultLocale = "en_US.UTF-8";
       networking.useDHCP = mkDefault true;
       security.sudo.extraRules = toList {
