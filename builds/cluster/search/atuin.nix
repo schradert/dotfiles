@@ -3,12 +3,25 @@
   nix,
   ...
 }: let
-  port = 8888;
-  metricsPort = 8080;
   inherit (nix) toList toString;
   inherit (config.dotfiles) domain;
+  subdomain = "atuin.${domain}";
+  port = 8888;
+  metricsPort = 8080;
 in {
   perSystem.dotfiles.nix2container.atuin = {};
+  perSystem.dotfiles.helm.gatus.values.config.endpoints = toList {
+    name = "atuin";
+    group = "internal";
+    url = "1.1.1.1";
+    interval = "1m";
+    ui.hide-hostname = true;
+    ui.hide-url = true;
+    dns.query-name = subdomain;
+    dns.query-type = "A";
+    conditions = ["len([BODY]) == 0"];
+    # alerts = [{type = "custom";}]; FIXME
+  };
   perSystem.dotfiles.helm.postgres.resources.postgresqls.main.spec = {
     users.atuin = ["createdb"];
     databases.atuin = "atuin";
@@ -46,13 +59,18 @@ in {
         interval = "1m";
         scrapeTimeout = "10s";
       };
-      ingress.atuin.className = "internal";
-      ingress.atuin.hosts = toList {
-        host = "atuin.${domain}";
-        paths = toList {
-          path = "/";
-          service.identifier = "atuin";
-          service.port = "http";
+      ingress.atuin = {
+        annotations."external-dns.alpha.kubernetes.io/target" = "external.${domain}";
+        annotations."nginx.ingress.kubernetes.io/auth-url" = "https://oauth2-proxy.${domain}/oauth2/auth?allowed_emails=me@trdos.me";
+        annotations."nginx.ingress.kubernetes.io/auth-signin" = "https://oauth2-proxy.${domain}/oauth2/start?rd=$scheme://$host$request_uri";
+        className = "external";
+        hosts = toList {
+          host = subdomain;
+          paths = toList {
+            path = "/";
+            service.identifier = "atuin";
+            service.port = "http";
+          };
         };
       };
       persistence.config.type = "emptyDir";
