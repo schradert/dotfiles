@@ -91,6 +91,36 @@ in {
       };
       values.csi = {
         cephFSKernelMountOptions = "ms_mode=prefer-crc";
+        csiRBDPluginVolume = [
+          {
+            name = "lib-modules";
+            hostPath.path = "/run/current-system/kernel-modules/lib/modules/";
+          }
+          {
+            name = "host-nix";
+            hostPath.path = "/nix";
+          }
+        ];
+        csiRBDPluginVolumeMount = toList {
+          name = "host-nix";
+          mountPath = "/nix";
+          readOnly = true;
+        };
+        csiCephFSPluginVolume = [
+          {
+            name = "lib-modules";
+            hostPath.path = "/run/current-system/kernel-modules/lib/modules/";
+          }
+          {
+            name = "host-nix";
+            hostPath.path = "/nix";
+          }
+        ];
+        csiCephFSPluginVolumeMount = toList {
+          name = "host-nix";
+          mountPath = "/nix";
+          readOnly = true;
+        };
         enableliveness = true;
         serviceMonitor.enabled = true;
       };
