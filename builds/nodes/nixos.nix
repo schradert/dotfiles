@@ -90,6 +90,7 @@ in {
       profiles.system.sshProtocol = "ssh";
       profiles.system.module = {
         dotfiles.graphical.enable = true;
+        dotfiles.graphical.sound.enable = true;
         dotfiles.kubernetes.enable = true;
         boot.initrd.availableKernelModules = ["xhci_pci" "nvme" "rtsx_pci_sdmmc"];
         disko = recursiveUpdate lvmDisko {
@@ -170,6 +171,8 @@ in {
         boot.initrd.availableKernelModules = ["nvme" "xhci_pci" "usbhid" "sdhci_pci"];
         boot.kernelModules = ["kvm-amd"];
         disko = recursiveUpdate disko {devices.disk.base.device = "/dev/disk/by-id/nvme-Phison_ESMP001TMN48C3-E21TS_23445M001T05978";};
+        dotfiles.graphical.enable = true;
+        dotfiles.graphical.sound.enable = true;
         environment.systemPackages = [pkgs.steamtinkerlaunch pkgs.chiaki4deck];
         # TODO do I need to extract mura correction images?
         # NOTE https://github.com/Jovian-Experiments/Jovian-NixOS/issues/227
