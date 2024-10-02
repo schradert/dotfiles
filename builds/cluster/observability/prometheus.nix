@@ -8,26 +8,6 @@ in {
   # [ ] [prometheus-smartctl-exporter](https://github.com/prometheus-community/smartctl_exporter)
   # [ ] [prometheus-snmp-exporter](https://github.com/prometheus/snmp_exporter)
   perSystem.dotfiles.helm = {
-    prometheus-crds = {
-      bootstrap = true;
-      namespace = "observability";
-      chart = {
-        repo = "https://prometheus-community.github.io/helm-charts";
-        chart = "prometheus-operator-crds";
-        version = "14.0.0";
-        sha256 = "VvKrmn5Aml7KeIFJFGYJLqgKahKMn27a7LjH0kx0PBk=";
-      };
-    };
-    # TODO fix this stupid workaround right here (keep all CRDs under ownership of kube-prometheus-stack)
-    prometheus-crds-main = {
-      namespace = "observability";
-      chart = {
-        repo = "https://prometheus-community.github.io/helm-charts";
-        chart = "prometheus-operator-crds";
-        version = "14.0.0";
-        sha256 = "VvKrmn5Aml7KeIFJFGYJLqgKahKMn27a7LjH0kx0PBk=";
-      };
-    };
     prometheus = {
       namespace = "observability";
       chart = {
@@ -37,7 +17,8 @@ in {
         sha256 = "U5BvJnBbgGe1KFS2nFd8Bc3v+sqjR1CWQDCzDlq6ebk=";
       };
       values = rec {
-        crds.enabled = false;
+        # crds.enabled = false;
+        crds.enabled = true;
         cleanPrometheusOperatorObjectNames = true;
         alertmanager.ingress = {
           enabled = true;
