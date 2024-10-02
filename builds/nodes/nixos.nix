@@ -1,5 +1,6 @@
 {
   config,
+  inputs,
   nix,
   ...
 }: with nix; let
@@ -56,6 +57,12 @@ in {
     nixos_chinchilla_system_install.provisioner.local-exec.command = mkForce "echo";
     nixos_dingo_system_install.provisioner.local-exec.command = mkForce "echo";
     nixos_octopus_system_install.provisioner.local-exec.command = mkForce "echo";
+    nixos_systeamadeck_system_install.provisioner.local-exec.command = mkForce "echo";
+  };
+  flake.overlays.gamescope = final: prev: {
+    gamescope = prev.gamescope.overrideAttrs (old: {
+      nativeBuildInputs = old.nativeBuildInputs ++ [prev.git];
+    });
   };
   canivete.deploy.nixos.nodes = {
     sirver = {
@@ -152,32 +159,34 @@ in {
         };
       };
     };
-    # systeamadeck = {
-    #   install.host = "";
-    #   target.sshOptions = sshOptions;
-    #   profiles.system.module = {
-    #     imports = [inputs.jovian.nixosModules.jovian];
-    #     dotfiles.graphical.enable = true;
-    #     # TODO do I need to extract mura correction images?
-    #     # NOTE https://github.com/Jovian-Experiments/Jovian-NixOS/issues/227
-    #     # NOTE https://github.com/Jovian-Experiments/Jovian-NixOS/pull/229
-    #     jovian.decky-loader.enable = true;
-    #     jovian.devices.steamdeck = {
-    #       enable = true;
-    #       autoUpdate = true;
-    #       enableGyroDsuService = true;
-    #     };
-    #     jovian.steam = {
-    #       enable = true;
-    #       autoStart = true;
-    #       desktopSession = "plasma";
-    #       user = config.canivete.people.me;
-    #     };
-    #     networking.networkmanager.enable = true;
-
-    #     # jovian.steam.autoStart conflicts
-    #     services.displayManager.sddm.enable = false;
-    #   };
-    # };
+    systeamadeck = {
+      install.host = "192.168.50.176";
+      build.sshOptions = sshOptions;
+      profiles.system.module = {pkgs, ...}: {
+        imports = [inputs.jovian.nixosModules.jovian];
+        boot.initrd.availableKernelModules = ["nvme" "xhci_pci" "usbhid" "sdhci_pci"];
+        boot.kernelModules = ["kvm-amd"];
+        disko = recursiveUpdate disko {devices.disk.base.device = "/dev/disk/by-id/nvme-Phison_ESMP001TMN48C3-E21TS_23445M001T05978";};
+        environment.systemPackages = [pkgs.steamtinkerlaunch pkgs.chiaki4deck];
+        # TODO do I need to extract mura correction images?
+        # NOTE https://github.com/Jovian-Experiments/Jovian-NixOS/issues/227
+        # NOTE https://github.com/Jovian-Experiments/Jovian-NixOS/pull/229
+        jovian.decky-loader.enable = true;
+        jovian.devices.steamdeck = {
+          enable = true;
+          autoUpdate = true;
+          enableGyroDsuService = true;
+        };
+        jovian.steam = {
+          enable = true;
+          autoStart = true;
+          desktopSession = "plasma";
+          user = config.canivete.people.me;
+        };
+        networking.networkmanager.enable = true;
+        services.xserver.enable = true;
+        services.xserver.desktopManager.plasma6.enable = true;
+      };
+    };
   };
 }
