@@ -154,6 +154,16 @@ in {
             name = "pg_autoscaler";
             enabled = true;
           };
+          mgr.modules = [
+            {
+              name = "pg_autoscaler";
+              enabled = true;
+            }
+            {
+              name = "rook";
+              enabled = true;
+            }
+          ];
           network.hostNetwork = false;
           network.provider = "host";
           network.connections.requireMsgr2 = true;
