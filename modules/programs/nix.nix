@@ -15,11 +15,12 @@ with nix; let
   common = {
     inherit buildMachines;
     distributedBuilds = true;
-    settings.trusted-users = [me];
     extraOptions = ''
       experimental-features = nix-command flakes auto-allocate-uids
       keep-outputs = true
       keep-derivations = true
+      warn-dirty = false
+      trusted-users = ${me}
     '';
     optimise.automatic = true;
   };
@@ -28,7 +29,7 @@ in {
   canivete.deploy = {
     system.homeModules.nix = {pkgs, ...}: {
       nix = {
-        inherit (common) settings extraOptions;
+        inherit (common) extraOptions;
         # Some conflict from home-manager managing itself, but it must be specified
         package = mkForce pkgs.nixVersions.latest;
       };
@@ -56,12 +57,6 @@ in {
         linux-builder.maxJobs = 4;
       }
     ];
-    droid.modules.nix.nix.extraOptions = ''
-      experimental-features = nix-command flakes auto-allocate-uids
-      keep-outputs = true
-      keep-derivations = true
-      auto-optimise-store = true
-      trusted-users = ${me}
-    '';
+    droid.modules.nix.nix.extraOptions = common.extraOptions;
   };
 }
