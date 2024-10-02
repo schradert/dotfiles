@@ -1,9 +1,12 @@
 {
-  canivete.deploy.nixos.modules.pxe = {config, flake, lib, pkgs, ...}: with lib; let
+  canivete.deploy.nixos.modules.pxe = {config, flake, lib, pkgs, ...}: let
+    inherit (config.dotfiles.pxe) client server;
     inherit (flake.config.canivete.people) me;
-    inherit (config.dotfiles) pxe;
-    base = flake.inputs.nixpkgs.lib.nixosSystem {
-      inherit (pkgs) system;
+    inherit (flake.inputs) nixpkgs self;
+    inherit (lib) toList mkIf mkMerge mkEnableOption;
+    inherit (pkgs) ipxe grub2 system;
+    inherit (nixpkgs.lib.nixosSystem {
+      inherit system;
       modules = toList ({modulesPath, ...}: {
         imports = [(modulesPath + "/installer/netboot/netboot-niminal.nix")];
         services.openssh = {
@@ -12,9 +15,9 @@
           settings.PasswordAuthentication = false;
           settings.KbdInteractiveAuthentication = false;
         };
-        users.users.root.openssh.authorizedKeys.keyFiles = [(flake.inputs.self + "/.canivete/sops/${me}.pub")];
+        users.users.root.openssh.authorizedKeys.keyFiles = [(self + "/.canivete/sops/${me}.pub")];
       });
-    };
+    }) kernel netbootRamdisk toplevel;
   in {
     # TODO figure out running this on a vpn cloud machine
     # TODO convert this to systemd-boot before attempting (or maybe I should use GRUB?)
@@ -23,25 +26,25 @@
       client = mkEnableOption "Netboot with chainloaded iPXE";
     };
     config = mkMerge [
-      (mkIf pxe.server {
+      (mkIf server {
         services.pixiecore = {
           enable = true;
           openFirewall = true;
           dhcpNoBind = true;
           mode = "boot";
-          kernel = "${base.kernel}/bzImage";
-          initrd = "${base.netbootRamdisk}/initrd";
-          cmdLine = "init=${base.toplevel}/init loglevel=4";
+          kernel = "${kernel}/bzImage";
+          initrd = "${netbootRamdisk}/initrd";
+          cmdLine = "init=${toplevel}/init loglevel=4";
           debug = true;
         };
       })
-      (mkIf pxe.client {
-        environment.shellAliases.reboot2PXE = "${pkgs.grub2}/bin/grub-editenv /boot/grub/grubenv set entry=ipxe && reboot";
+      (mkIf client {
+        environment.shellAliases.reboot2PXE = "${grub2}/bin/grub-editenv /boot/grub/grubenv set entry=ipxe && reboot";
         boot.loader.grub = {
           enable = true;
           efiSupport = true;
           device = "nodev";
-          extraFiles."ipxe.efi" = "${pkgs.ipxe}/ipxe.efi";
+          extraFiles."ipxe.efi" = "${ipxe}/ipxe.efi";
           extraConfig = ''
             if [ "''${entry}" = "ipxe" ]; then
               set entry=""
