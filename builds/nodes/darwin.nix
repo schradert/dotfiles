@@ -95,8 +95,6 @@ in {
         protonvpn.config = config // {Program = "/Applications/ProtonVPN.app/Contents/MacOS/ProtonVPN";};
         raycast.enable = true;
         raycast.config = config // {Program = "${pkgs.raycast}/Applications/Raycast.app/Contents/MacOS/Raycast";};
-        wezterm.enable = true;
-        wezterm.config = config // {Program = "${pkgs.wezterm}/Applications/WezTerm.app/Contents/MacOS/WezTerm";};
       };
       programs.zsh.oh-my-zsh.plugins = ["brew" "gcloud"];
     };

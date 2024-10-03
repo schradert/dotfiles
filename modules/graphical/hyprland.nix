@@ -58,7 +58,6 @@
             settings = {
               "$mainMod" = "SUPER";
               exec-once = ["dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP" "polkit-kde-authentication-agent-1"];
-              # "$terminal" = "wezterm";
               # bind = ["$mainMod, SPC, exec, $terminal"];
             };
           };

@@ -2,12 +2,6 @@
   description = "System configuration";
   inputs = {
     canivete.url = github:schradert/canivete;
-    # 2024/08/14 broken mealie build
-    # canivete.inputs.nixpkgs.url = github:nixos/nixpkgs/b73c2221a46c13557b1b3be9c2070cc42cf01eb3;
-    # 2024/08/15 broken delta build
-    # canivete.inputs.nixpkgs.url = github:nixos/nixpkgs/195662d20d9c35f988d0122d34479f90da709e0;
-    # 2024/08/16 broken wezterm build
-    canivete.inputs.nixpkgs.url = github:nixos/nixpkgs/e57228512561add2e46812f3e61a7304b46a7958;
 
     # TODO keep tabs on this project to see if it's evolving enough to try to use
     # NOTE nix-doom-emacs marked as broken for now so we use overlay
@@ -41,6 +35,10 @@
     devusb.url = github:devusb/nix-packages;
     devusb.inputs.nixpkgs.follows = "canivete/nixpkgs";
     devusb.inputs.flake-parts.follows = "canivete/flake-parts";
+
+    # WezTerm nightly
+    wezterm.url = github:wez/wezterm/main?dir=nix;
+    wezterm.inputs.nixpkgs.follows = "canivete/nixpkgs";
   };
   outputs = inputs:
     inputs.canivete.lib.mkFlake {
