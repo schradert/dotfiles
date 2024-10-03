@@ -164,9 +164,13 @@ in {
         };
       };
     };
+    # TODO moonlight-qt for to use axolotl as gaming server
+    # NOTE https://moonlight-stream.org/
+    # NOTE add libplacebo and vulkan-headers for HDR support
     systeamadeck = {
       install.host = "192.168.50.176";
       build.sshOptions = sshOptions;
+      profiles.system.sshProtocol = "ssh";
       profiles.system.module = {pkgs, ...}: {
         imports = [inputs.jovian.nixosModules.jovian];
         boot.initrd.availableKernelModules = ["nvme" "xhci_pci" "usbhid" "sdhci_pci"];
@@ -174,7 +178,8 @@ in {
         disko = recursiveUpdate disko {devices.disk.base.device = "/dev/disk/by-id/nvme-Phison_ESMP001TMN48C3-E21TS_23445M001T05978";};
         dotfiles.graphical.enable = true;
         dotfiles.graphical.sound.enable = true;
-        environment.systemPackages = [pkgs.steamtinkerlaunch pkgs.chiaki4deck];
+        environment.systemPackages = [pkgs.steamtinkerlaunch pkgs.chiaki-ng];
+        home-manager.sharedModules = toList {dotfiles.email = true;};
         # TODO do I need to extract mura correction images?
         # NOTE https://github.com/Jovian-Experiments/Jovian-NixOS/issues/227
         # NOTE https://github.com/Jovian-Experiments/Jovian-NixOS/pull/229
@@ -191,8 +196,7 @@ in {
           user = config.canivete.people.me;
         };
         networking.networkmanager.enable = true;
-        services.xserver.enable = true;
-        services.xserver.desktopManager.plasma6.enable = true;
+        services.displayManager.sddm.enable = false;
       };
     };
   };
