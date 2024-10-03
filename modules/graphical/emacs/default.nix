@@ -25,13 +25,14 @@ with nix; {
         home = let
           emacs = "${config.xdg.configHome}/emacs";
         in {
+          # TODO why do I need to deactivate doom sync? seems to fail on some nodes...
           activation.doomInstallation = lib.hm.dag.entryAfter ["writeBoundary"] ''
             export PATH=$PATH:${config.programs.emacs.package}/bin:${pkgs.git}/bin:${emacs}/bin
             if [[ ! -d ${emacs} ]]; then
               git clone --depth 1 https://github.com/doomemacs/doomemacs ${emacs}
               doom install
-            else
-              doom sync
+            # else
+              # doom sync
             fi
           '';
           file.".doom.d/init.el".source = ./init.el;

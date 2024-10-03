@@ -52,6 +52,7 @@
 in {
   # TODO why the fuck do I have to keep doing this?
   perSystem.canivete.opentofu.workspaces.deploy.modules.install-override.resource.null_resource = {
+    nixos_sirver_system_install.provisioner.local-exec.command = mkForce "echo";
     nixos_axolotl_system_install.provisioner.local-exec.command = mkForce "echo";
     nixos_bonobo_system_install.provisioner.local-exec.command = mkForce "echo";
     nixos_chinchilla_system_install.provisioner.local-exec.command = mkForce "echo";

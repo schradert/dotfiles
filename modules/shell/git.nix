@@ -15,7 +15,7 @@
   in {
     options.dotfiles.programs.git.enable = mkEnableOption "Git configuration";
     config = mkIf dotfiles.programs.git.enable {
-      dotfiles.zsh.initExtraLines = ''
+      dotfiles.zsh.initExtraLines = toList ''
         # disable sort when completing `git checkout`
         zstyle ':completion:*:git-checkout:*' sort false
       '';
