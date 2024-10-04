@@ -61,9 +61,8 @@ in {
     nixos_systeamadeck_system_install.provisioner.local-exec.command = mkForce "echo";
   };
   flake.overlays.gamescope = final: prev: {
-    gamescope = prev.gamescope.overrideAttrs (old: {
-      nativeBuildInputs = old.nativeBuildInputs ++ [prev.git];
-    });
+    gamescope = prev.gamescope.overrideAttrs (old: {nativeBuildInputs = old.nativeBuildInputs ++ [prev.git];});
+    chiaki-ng = prev.chiaki-ng.overrideAttrs (old: {buildInputs = old.buildInputs ++ [prev.libplacebo prev.vulkan-headers];});
   };
   canivete.deploy.nixos.nodes = {
     sirver = {
