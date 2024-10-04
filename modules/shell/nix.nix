@@ -11,11 +11,16 @@ with nix; let
     protocol = "ssh-ng";
     sshUser = me;
     inherit (machine) system;
+    maxJobs = 10;
+    speedFactor = 1000;
+    supportedFeatures = ["nixos-test" "benchmark" "big-parallel" "kvm"];
+    mandatoryFeatures = [];
   });
   common = {
     inherit buildMachines;
     distributedBuilds = true;
     extraOptions = ''
+      builders-use-substitutes = true
       experimental-features = nix-command flakes auto-allocate-uids
       keep-outputs = true
       keep-derivations = true
