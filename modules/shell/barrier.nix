@@ -1,7 +1,7 @@
 {
   # TODO convert to input-leap
   # TODO build to work on darwin
-  canivete.deploy.nixos.modules.barrier = {config, flake, lib, pkgs, ...}: let
+  canivete.deploy.nixos.homeModules.barrier = {config, flake, lib, pkgs, ...}: let
     inherit (flake.config.dotfiles) domain;
     inherit (lib) mkEnableOption mkIf mkMerge;
     inherit (pkgs) barrier stdenv;
