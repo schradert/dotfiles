@@ -20,7 +20,7 @@ in {
         isNormalUser = true;
         home = "/home/${username}";
         description = user.name;
-        extraGroups = ["wheel" "tty" "networkmanager" username];
+        extraGroups = ["wheel" "tty" "networkmanager" "audio" "video" username];
       };
     };
   in {
