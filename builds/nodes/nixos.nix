@@ -100,10 +100,17 @@ in {
             content.partitions.root.end = "-101G";
           };
         };
-        powerManagement.cpuFreqGovernor = "powersave";
         home-manager.sharedModules = toList {
           dotfiles.email = true;
           dotfiles.macchina.networkInterface = "enp0s31f6";
+        };
+        # Deactivate auto sleep
+        services.logind.lidSwitch = "ignore";
+        systemd.targets = {
+          sleep.enable = false;
+          suspend.enable = false;
+          hibernate.enable = false;
+          hybrid-sleep.enable = false;
         };
       };
     };
