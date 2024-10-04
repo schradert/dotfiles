@@ -175,6 +175,7 @@ in {
     # NOTE add libplacebo and vulkan-headers for HDR support
     systeamadeck = {
       install.host = "192.168.50.176";
+      build.host = root;
       build.sshOptions = sshOptions;
       profiles.system.sshProtocol = "ssh";
       profiles.system.module = {pkgs, ...}: {
