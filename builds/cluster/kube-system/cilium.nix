@@ -1,7 +1,8 @@
 {config, nix, ...}: with nix; let
   # NOTE https://github.com/cilium/cilium
   inherit (config.dotfiles) domain;
-  devices = "eno+";
+  # most are eno1, sirver = eno4, axolotl = enp0s31f6
+  devices = "en+";
   namespace = "kube-system";
   chart = {
     repo = "https://helm.cilium.io";
