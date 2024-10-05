@@ -50,6 +50,8 @@
 [ ] add firefly multi-user configuration to terraform
 [ ] remove extra fields from external-secrets
 
+[ ] fix rook-ceph OSDs to be correctly distributed
+
 ## Bugs
 
 [ ] Why does nix.mkIf create infinite recursion?
