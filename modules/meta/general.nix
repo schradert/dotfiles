@@ -23,6 +23,5 @@ in {
       description = "Default editor to use for profile";
     };
     config.home.homeDirectory = "/${if pkgs.stdenv.isDarwin then "Users" else "home"}/${username}";
-    config.home.sessionVariables.XDG_RUNTIME_DIR = "${homeDirectory}/.run";
   };
 }

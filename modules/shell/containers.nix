@@ -28,10 +28,11 @@ in {
           home.packages = with pkgs; [k3d podman podman-compose podman-tui lazydocker];
         }
         (mkIf pkgs.stdenv.isDarwin {
+          # TODO make sure that the podman socket is found
           home.activation.podmanMacInstallation = lib.hm.dag.entryAfter ["writeBoundary"] ''
             rootSock=/var/run/docker.sock
             dockerSockDir="${config.home.homeDirectory}/.docker/run"
-            podmanSockDir="${config.home.sessionVariables.XDG_RUNTIME_DIR}/podman"
+            podmanSockDir="${config.home.homeDirectory}/.run/podman"
             mkdir -p "$dockerSockDir" "$podmanSockDir"
             ln -sf $rootSock "$dockerSockDir/docker.sock"
             ln -sf $rootSock "$podmanSockDir/podman.sock"
