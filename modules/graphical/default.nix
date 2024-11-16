@@ -45,7 +45,6 @@ in {
       ...
     }: {
       config = mkIf config.dotfiles.graphical.enable {
-        fonts.packages = [pkgs.meslo-lgs-nf];
         home-manager.sharedModules = toList {
           home.packages = with pkgs; [
             android-studio

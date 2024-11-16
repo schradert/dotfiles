@@ -115,6 +115,7 @@ with nix; {
           zstyle ':completion:*' list-colors $LS_COLORS  # ''${(s.:.)LS_COLORS}
           fpath+=($ZSH/custom/plugins/zsh-completions/src)
         '';
+      config.home.packages = [pkgs.meslo-lgs-nf];
       config.programs.zsh = {
         enable = true;
         autosuggestion.enable = true;

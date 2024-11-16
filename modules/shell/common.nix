@@ -29,6 +29,7 @@
         unzip
         xplr
       ];
+      fonts.fontconfig.enable = true;
       programs = {
         bash.enable = true;
         bat.enable = true;
