@@ -52,6 +52,8 @@
 
 [ ] fix rook-ceph OSDs to be correctly distributed
 
+[ ] fix bluetooth delay for Between Micro and Steam Deck + axolotl (https://nixos.wiki/wiki/Bluetooth)
+
 ## Bugs
 
 [ ] Why does nix.mkIf create infinite recursion?
