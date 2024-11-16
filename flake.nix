@@ -99,6 +99,7 @@
               "steam"
               "steamcmd"
               "steamdeck-hw-theme"
+              "steam-original"
               # Sabnzbd only supports unrar currently, but unar is a better alternative to keep track of
               # NOTE https://github.com/sabnzbd/sabnzbd/issues/1120
               "unrar"

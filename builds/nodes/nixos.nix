@@ -92,7 +92,7 @@ in {
       build.host = root;
       build.sshOptions = sshOptions;
       profiles.system.sshProtocol = "ssh";
-      profiles.system.module = {
+      profiles.system.module = {pkgs, ...}: {
         dotfiles.graphical.enable = true;
         dotfiles.graphical.sound.enable = true;
         dotfiles.kubernetes.enable = true;
@@ -106,7 +106,20 @@ in {
         home-manager.sharedModules = toList {
           dotfiles.email = true;
           dotfiles.macchina.networkInterface = "enp0s31f6";
+          dotfiles.programs.steam.external = {
+            enable = true;
+            srm.userAccounts = ["supertriggy"];
+            runescape.runelite.enable = true;
+          };
         };
+
+        # Gaming
+        programs.steam.enable = true;
+        programs.steam.extraCompatPackages = with pkgs; [proton-ge-bin steamtinkerlaunch steam-play-none];
+        programs.steam.protontricks.enable = true;
+        programs.gamemode.enable = true;
+        programs.gamemode.enableRenice = true;
+
         # Deactivate auto sleep
         services.logind.lidSwitch = "ignore";
         systemd.targets = {
