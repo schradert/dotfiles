@@ -59,11 +59,11 @@ in {
             signal-desktop
           ];
         };
+        services.desktopManager.plasma6.enable = true;
         services.displayManager.sddm.enable = mkDefault true;
         services.xserver = {
           enable = true;
           xkb.layout = "us";
-          desktopManager.plasma5.enable = true;
         };
       };
     };
