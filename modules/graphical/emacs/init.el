@@ -57,7 +57,7 @@
        word-wrap
 
        :emacs
-       (dired +icons +ranger)
+       (dired +icons)
        electric
        (ibuffer +icons)
        (undo +tree)
@@ -68,9 +68,7 @@
 
        :checkers
        (syntax +childframe)
-       ;; TODO figure out why flyspell-lazy is freaking out
-       ;; (spell +flyspell)
-       spell
+       (spell +aspell +everywhere +flyspell)
        grammar
 
        :tools

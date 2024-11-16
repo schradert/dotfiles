@@ -19,6 +19,7 @@
 (package! kubernetes-evil)
 (package! jq-mode)
 (package! graphql-mode)
+(package! nose :disable t)
 (package! sops :recipe (:host github :repo "djgoku/sops") :pin "b7b6784")
 (unpin! code-review)
 #+end_src
