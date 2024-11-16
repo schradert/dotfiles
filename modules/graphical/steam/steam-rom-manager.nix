@@ -93,6 +93,7 @@
             categories = ["Game"];
           })
         ];
+        meta.mainProgram = "steam-rom-manager";
       }) {};
   };
   canivete.deploy.nixos.homeModules.steam-rom-manager = {
