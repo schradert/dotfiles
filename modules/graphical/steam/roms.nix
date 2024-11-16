@@ -371,21 +371,10 @@ in {
         }))
         (pkgs.linkFarm "SteamConsoleBIOS")
       ];
-      home.file.".local/share/Cemu/keys.txt".source = pkgs.callPackage ({
-        stdenv,
-        fetchurl,
-        unar,
-      }:
-        stdenv.mkDerivation {
-          name = "keys.txt";
-          src = fetchurl {
-            url = "https://download2288.mediafire.com/y3hz6nde72tg_rUU6kOGYpkU9g-gkyfF4hriJJguyv5mSZ1f-KXCJ4HhxWD0B3MCzCz7dFk5UZk5W-r7_iLCC-WdyBfZkS_UYeY_HSZuX8WkaMg7R0Sp0qgkqru9QVReJonVRwdYx3nWrkDFJeqUJvOFplcjNdMqKF0SoeW5HCMCe_tJ/efu4ry9147fw2ol/Newestkeys.rar";
-            hash = "sha256-H8RTlIVpjowKUunSB7+y2nhMmjfW7fsi1/VnsGuGUHY=";
-          };
-          dontUnpack = true;
-          buildPhase = "${getExe unar} $src";
-          installPhase = "install Newestkeys/keys.txt $out";
-        }) {};
+      home.file.".local/share/Cemu/keys.txt".source = pkgs.fetchurl {
+        url = "https://drive.google.com/uc?id=1869wHy8omyBJVX7bnfLQ-nwsnW3d95V4";
+        hash = "sha256-HQpqkrmgy/2o1zKcTb6UU37/Vro8BuvsB9bu8lLI874=";
+      };
     };
   };
 }
