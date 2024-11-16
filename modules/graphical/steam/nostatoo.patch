@@ -1,0 +1,65 @@
+--- a/nostatoo.rb
++++ b/nostatoo.rb
+@@ -367,6 +367,51 @@
+
+     write_shortcuts(shortcuts)
+   end
++
++  def remove_asset(*args)
++    if args.length != 2
++      puts <<~DESC
++        nostatoo remove-asset <appid> <type>
++
++        Type is one of: horizontal_capsule, vertical_capsule, logo, or hero
++      DESC
++      exit 1
++    end
++
++    appid, type = args
++    image_name = asset_names_for_appid(appid)[type]
++
++    unless image_name
++      $stderr.puts "Image type '#{type}' unknown."
++      exit 1
++    end
++
++    file = File.join(grid_dir, image_name)
++    FileUtils.rm_f(file)
++
++    puts "Removed #{type} asset from non-steam game #{appid}."
++  end
++
++  def remove_non_steam_game(appid = nil)
++    if !appid
++      puts "nostatoo remove-non-steam-game <appid>"
++      exit 1
++    end
++
++    shortcuts = read_shortcuts()
++    id, shortcut = select_appid(appid, shortcuts["shortcuts"])
++    app_fail "No game found for appid #{appid}." unless shortcut
++
++    remove_asset(appid, "horizontal_capsule")
++    remove_asset(appid, "vertical_capsule")
++    remove_asset(appid, "logo")
++    remove_asset(appid, "hero")
++    shortcuts["shortcuts"].delete(id)
++
++    write_shortcuts(shortcuts)
++
++    puts "Removed non-steam game #{appid}."
++  end
+ end
+
+ if ARGV.empty?
+@@ -391,6 +436,10 @@
+   Nostatoo.dump_non_steam_games(*ARGV)
+ when "import-non-steam-games"
+   Nostatoo.import_non_steam_games(*ARGV)
++when "remove-non-steam-game"
++  Nostatoo.remove_non_steam_game(*ARGV)
++when "remove-asset"
++  Nostatoo.remove_asset(*ARGV)
+ else
+   $stderr.puts "Unexpected command #{command.dump}"
+   Nostatoo.usage()
