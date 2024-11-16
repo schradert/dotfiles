@@ -1,0 +1,14 @@
+--- a/Saradomin/Saradomin.csproj
++++ b/Saradomin/Saradomin.csproj
+@@ -26,7 +26,7 @@
+     <ItemGroup>
+-        <PackageReference Include="Avalonia" Version="11.0.10" />
+-        <PackageReference Include="Avalonia.Desktop" Version="11.0.10" />
++        <PackageReference Include="Avalonia" Version="11.2.0" />
++        <PackageReference Include="Avalonia.Desktop" Version="11.2.0" />
+         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.10" />
+-        <PackageReference Include="Avalonia.Themes.Simple" Version="11.0.10" />
++        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.0" />
++        <PackageReference Include="Avalonia.Themes.Simple" Version="11.2.0" />
+         <PackageReference Include="GitLabApiClient" Version="1.8.0" />
