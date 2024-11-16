@@ -12,6 +12,7 @@ in {
   canivete.deploy.darwin.nodes.morgenmuffel = {
     target.sshOptions = ["ProxyJump=${domain}"];
     profiles.system.module = {
+      dotfiles.containers = true;
       dotfiles.graphical.enable = true;
       homebrew.enable = true;
       homebrew.brews = ["libtool" "vfkit"];
@@ -51,8 +52,11 @@ in {
         options.dotfiles = darwin.options.dotfiles;
         config.dotfiles = darwin.config.dotfiles;
       };
+      dotfiles.common = true;
       dotfiles.email = true;
       dotfiles.graphical.enable = true;
+      dotfiles.programs.git.enable = true;
+      dotfiles.programs.wordnet.enable = true;
       dotfiles.profile = "work";
       dotfiles.zsh.initExtraLines = nix.toList ''
         fixaudio() {
