@@ -16,82 +16,90 @@
       unixtools,
       makeWrapper,
       stripJavaArchivesHook,
-    }: stdenv.mkDerivation rec {
-      pname = "rscplus";
-      version = lib.substring 0 7 src.rev;
-      src = fetchFromGitHub {
-        owner = "RSCPlus";
-        repo = "rscplus";
-        rev = "8880399c8fc9dc742755aa46e5d12f9142ab71c1";
-        hash = "sha256-mbE4KjmwdhRGDCpXc4Q3ko+3pvoR4oTaVHRmUeaVG3A=";
-      };
-      nativeBuildInputs = [ant jdk unixtools.whereis stripJavaArchivesHook makeWrapper];
-      buildPhase = ''
-        runHook preBuild
-        ant dist
-        runHook postBuild
-      '';
-      installPhase = ''
-        runHook preInstall
-        mkdir -p $out/{bin,share/java}
-        install --mode 644 dist/rscplus.jar $out/share/java/rscplus.jar
-        makeWrapper ${jre}/bin/java $out/bin/rscplus --add-flags "-jar $out/share/java/rscplus.jar"
-        runHook postInstall
-      '';
-      meta.mainProgram = "rscplus";
-    }) {};
+    }:
+      stdenv.mkDerivation rec {
+        pname = "rscplus";
+        version = lib.substring 0 7 src.rev;
+        src = fetchFromGitHub {
+          owner = "RSCPlus";
+          repo = "rscplus";
+          rev = "8880399c8fc9dc742755aa46e5d12f9142ab71c1";
+          hash = "sha256-mbE4KjmwdhRGDCpXc4Q3ko+3pvoR4oTaVHRmUeaVG3A=";
+        };
+        nativeBuildInputs = [ant jdk unixtools.whereis stripJavaArchivesHook makeWrapper];
+        buildPhase = ''
+          runHook preBuild
+          ant dist
+          runHook postBuild
+        '';
+        installPhase = ''
+          runHook preInstall
+          mkdir -p $out/{bin,share/java}
+          install --mode 644 dist/rscplus.jar $out/share/java/rscplus.jar
+          makeWrapper ${jre}/bin/java $out/bin/rscplus --add-flags "-jar $out/share/java/rscplus.jar"
+          runHook postInstall
+        '';
+        meta.mainProgram = "rscplus";
+      }) {};
     saradomin = final.callPackage ({
       lib,
       buildDotnetModule,
       fetchFromGitLab,
       fetchFromGitHub,
-    }: buildDotnetModule rec {
-      pname = "saradomin";
-      version = lib.substring 0 7 src.rev;
-      # NOTE fetchSubmodules not working with upstream because Glitonea submodule path is missing .git suffix
-      src = fetchFromGitLab {
-        owner = "2009Scape";
-        repo = "Saradomin-Launcher";
-        rev = "ec6d05f098e32daf478ef698717183e7a125ae16";
-        hash = "sha256-XDCX07BsR0iUoCkLk06AEV2DAbIlaxMjNe8t/Toq3U8=";
-      };
-      Glitonea = fetchFromGitHub {
-        owner = "Ciastex";
-        repo = "Glitonea";
-        rev = "9fb6de8da53dbdde9d782ce4ab1c36c61d98ff71";
-        hash = "sha256-6nef6E4SXFrSZuvhPCeafHVTX+0u6ObG3mpIZzMA8u0=";
-      };
-      prePatch = "cp -R ${Glitonea}/* Glitonea";
-      # NOTE using a list with fetchNuGet did not actually work...
-      nugetDeps = ../../../saradomin-deps.nix;
-      executables = ["Saradomin"];
-      meta.mainProgram = "Saradomin";
-    }) {};
+    }:
+      buildDotnetModule rec {
+        pname = "saradomin";
+        version = lib.substring 0 7 src.rev;
+        # NOTE fetchSubmodules not working with upstream because Glitonea submodule path is missing .git suffix
+        src = fetchFromGitLab {
+          owner = "2009Scape";
+          repo = "Saradomin-Launcher";
+          rev = "ec6d05f098e32daf478ef698717183e7a125ae16";
+          hash = "sha256-XDCX07BsR0iUoCkLk06AEV2DAbIlaxMjNe8t/Toq3U8=";
+        };
+        Glitonea = fetchFromGitHub {
+          owner = "Ciastex";
+          repo = "Glitonea";
+          rev = "9fb6de8da53dbdde9d782ce4ab1c36c61d98ff71";
+          hash = "sha256-6nef6E4SXFrSZuvhPCeafHVTX+0u6ObG3mpIZzMA8u0=";
+        };
+        prePatch = "cp -R ${Glitonea}/* Glitonea";
+        # NOTE using a list with fetchNuGet did not actually work...
+        nugetDeps = ../../../saradomin-deps.nix;
+        executables = ["Saradomin"];
+        meta.mainProgram = "Saradomin";
+      }) {};
     hdos = final.callPackage ({
       stdenv,
       fetchurl,
       jre,
       makeWrapper,
-    }: stdenv.mkDerivation rec {
-      pname = "hdos";
-      version = "20241106";
-      src = fetchurl {
-        url = "https://cdn.hdos.dev/launcher/latest/hdos-launcher.jar";
-        hash = "sha256-00ddeR+ov6Tjrn+pscXoao4C0ek/iP9Hdlgq946pL8A=";
-      };
-      dontUnpack = true;
-      nativeBuildInputs = [makeWrapper];
-      installPhase = ''
-        runHook preInstall
-        mkdir -p $out/{bin,share/java}
-        install --mode 644 $src $out/share/java/hdos.jar
-        makeWrapper ${jre}/bin/java $out/bin/hdos --add-flags "-jar $out/share/java/hdos.jar"
-        runHook postInstall
-      '';
-      meta.mainProgram = "hdos";
-    }) {};
+    }:
+      stdenv.mkDerivation rec {
+        pname = "hdos";
+        version = "20241106";
+        src = fetchurl {
+          url = "https://cdn.hdos.dev/launcher/latest/hdos-launcher.jar";
+          hash = "sha256-00ddeR+ov6Tjrn+pscXoao4C0ek/iP9Hdlgq946pL8A=";
+        };
+        dontUnpack = true;
+        nativeBuildInputs = [makeWrapper];
+        installPhase = ''
+          runHook preInstall
+          mkdir -p $out/{bin,share/java}
+          install --mode 644 $src $out/share/java/hdos.jar
+          makeWrapper ${jre}/bin/java $out/bin/hdos --add-flags "-jar $out/share/java/hdos.jar"
+          runHook postInstall
+        '';
+        meta.mainProgram = "hdos";
+      }) {};
   };
-  canivete.deploy.nixos.homeModules.runescape = {config, lib, pkgs, ...}: let
+  canivete.deploy.nixos.homeModules.runescape = {
+    config,
+    lib,
+    pkgs,
+    ...
+  }: let
     inherit (lib) mkEnableOption mkPackageOption getExe mkIf mkMerge;
     inherit (config.dotfiles.programs.steam.external.runescape) hdos rscplus saradomin runelite;
     rscplusPath = ".config/RSCPlus/rscplus";

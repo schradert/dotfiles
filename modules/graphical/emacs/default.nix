@@ -1,7 +1,11 @@
 {inputs, ...}: {
   flake.overlays.emacs = inputs.emacs-overlay.overlay;
   canivete.deploy = {
-    nixos.homeModules.emacs = {config, lib, ...}: {
+    nixos.homeModules.emacs = {
+      config,
+      lib,
+      ...
+    }: {
       services.emacs = {
         enable = lib.mkDefault true;
         defaultEditor = config.dotfiles.editor == "emacs";

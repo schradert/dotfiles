@@ -1,5 +1,10 @@
 {
-  canivete.deploy.system.homeModules.common = {config, lib, pkgs, ...}: {
+  canivete.deploy.system.homeModules.common = {
+    config,
+    lib,
+    pkgs,
+    ...
+  }: {
     options.dotfiles.common = lib.mkEnableOption "common shell utilities";
     config = lib.mkIf config.dotfiles.common {
       home.packages = with pkgs; [

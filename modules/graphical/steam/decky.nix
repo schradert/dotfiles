@@ -40,27 +40,34 @@
   # 1. Outrun
   # 2. Round
   # 3. ArtHero
-  canivete.deploy.nixos.modules.decky-plugins = {config, flake, lib, pkgs, ...}: let
+  canivete.deploy.nixos.modules.decky-plugins = {
+    config,
+    flake,
+    lib,
+    pkgs,
+    ...
+  }: let
     json = pkgs.formats.json {};
   in {
     options.jovian.decky-loader.plugins = let
       inherit (lib) mkOption mkEnableOption mkPackageOption literalExpression types;
       inherit (types) attrsOf submodule;
-    in mkOption {
-      type = attrsOf (submodule ({name, ...}: {
-        options.enable = mkEnableOption name;
-        options.package = mkPackageOption pkgs ["deckyLoaderPlugins" name] {};
-        options.settings = mkOption {
-          type = submodule {freeformType = json.type;};
-          default = {};
-          example = literalExpression "{}";
-          description = "Unique settings for the ${name} plugin. Accepts valid JSON by default.";
-        };
-      }));
-      default = {};
-      example = literalExpression "{css-loader.enable = true;}";
-      description = "Plugins with configuration to install alongside decky-loader";
-    };
+    in
+      mkOption {
+        type = attrsOf (submodule ({name, ...}: {
+          options.enable = mkEnableOption name;
+          options.package = mkPackageOption pkgs ["deckyLoaderPlugins" name] {};
+          options.settings = mkOption {
+            type = submodule {freeformType = json.type;};
+            default = {};
+            example = literalExpression "{}";
+            description = "Unique settings for the ${name} plugin. Accepts valid JSON by default.";
+          };
+        }));
+        default = {};
+        example = literalExpression "{css-loader.enable = true;}";
+        description = "Plugins with configuration to install alongside decky-loader";
+      };
     # TODO handle non-jovian more cleanly
     config = let
       inherit (lib) attrValues concatStringsSep filter flatten forEach getAttr getExe mkIf;
@@ -76,54 +83,58 @@
       };
       loaderPath = "${stateDir}/settings/loader.json";
       jq = getExe pkgs.jq;
-    in mkIf (config.jovian.decky-loader.enable or false) {
-      # jovian.decky-loader.extraPythonPackages = ps: flatten (forEach enabledPlugins (plugin: plugin.package.extraPythonPackages ps));
-      # jovian.decky-loader.extraPackages = flatten (forEach enabledPlugins (plugin: plugin.package.extraPackages));
-      # Jovian adds their package overlay here, so we need to also provide our own to ensure plugins exist
-      nixpkgs.overlays = [flake.self.overlays.decky];
-      systemd.services.decky-loader.preStart = ''
-        rm -rf ${stateDir}/{plugins,settings}
-        mkdir -p ${stateDir}/{plugins,settings}
-        chown -R ${user}: ${stateDir}
-        cp ${loaderJSON} ${loaderPath}
-        ${concatStringsSep "\n" (forEach enabledPlugins (plugin: let
-          inherit (plugin.package) pname;
-          settingsJSON = json.generate "${pname}-settings.json" plugin.settings;
-          queryPluginName = "${jq} --raw-output '.name' ${stateDir}/plugins/${pname}/plugin.json";
-        in ''
-          mkdir -p ${stateDir}/{plugins,settings}/${pname}
-          cp -R ${plugin.package}/* ${stateDir}/plugins/${pname}
-          cp ${settingsJSON} ${stateDir}/settings/${pname}/config.json
-          ${jq} --arg plugin "$(${queryPluginName})" '.pluginOrder += [$plugin]' ${loaderPath} \
-              | ${pkgs.moreutils}/bin/sponge ${loaderPath}
-        ''))}
-      '';
-    };
+    in
+      mkIf (config.jovian.decky-loader.enable or false) {
+        # jovian.decky-loader.extraPythonPackages = ps: flatten (forEach enabledPlugins (plugin: plugin.package.extraPythonPackages ps));
+        # jovian.decky-loader.extraPackages = flatten (forEach enabledPlugins (plugin: plugin.package.extraPackages));
+        # Jovian adds their package overlay here, so we need to also provide our own to ensure plugins exist
+        nixpkgs.overlays = [flake.self.overlays.decky];
+        systemd.services.decky-loader.preStart = ''
+          rm -rf ${stateDir}/{plugins,settings}
+          mkdir -p ${stateDir}/{plugins,settings}
+          chown -R ${user}: ${stateDir}
+          cp ${loaderJSON} ${loaderPath}
+          ${concatStringsSep "\n" (forEach enabledPlugins (plugin: let
+            inherit (plugin.package) pname;
+            settingsJSON = json.generate "${pname}-settings.json" plugin.settings;
+            queryPluginName = "${jq} --raw-output '.name' ${stateDir}/plugins/${pname}/plugin.json";
+          in ''
+            mkdir -p ${stateDir}/{plugins,settings}/${pname}
+            cp -R ${plugin.package}/* ${stateDir}/plugins/${pname}
+            cp ${settingsJSON} ${stateDir}/settings/${pname}/config.json
+            ${jq} --arg plugin "$(${queryPluginName})" '.pluginOrder += [$plugin]' ${loaderPath} \
+                | ${pkgs.moreutils}/bin/sponge ${loaderPath}
+          ''))}
+        '';
+      };
   };
   flake.overlays.decky = final: prev: let
     inherit (prev) decky-loader fetchFromGitHub lib nodejs pnpm stdenv;
     inherit (lib) recursiveUpdate substring;
     # TODO pin python dependencies?
-    mkDeckyPlugin = attrs: stdenv.mkDerivation (finalAttrs: recursiveUpdate {
-      pnpmDeps = pnpm.fetchDeps {
-        inherit (finalAttrs) pname src version;
-        hash = finalAttrs.pnpmLockHash;
-      };
-      nativeBuildInputs = [nodejs pnpm.configHook];
-      buildPhase = "pnpm build";
-      # Ignore zero glob matches
-      installPhase = ''
-        runHook preInstall
+    mkDeckyPlugin = attrs:
+      stdenv.mkDerivation (finalAttrs:
+        recursiveUpdate {
+          pnpmDeps = pnpm.fetchDeps {
+            inherit (finalAttrs) pname src version;
+            hash = finalAttrs.pnpmLockHash;
+          };
+          nativeBuildInputs = [nodejs pnpm.configHook];
+          buildPhase = "pnpm build";
+          # Ignore zero glob matches
+          installPhase = ''
+            runHook preInstall
 
-        mkdir -p $out/dist
-        shopt -s nullglob
-        cp -R ./dist *.py *.json LICENSE* README* $out || true
+            mkdir -p $out/dist
+            shopt -s nullglob
+            cp -R ./dist *.py *.json LICENSE* README* $out || true
 
-        runHook postInstall
-      '';
-      passthru.extraPackages = [];
-      passthru.extraPythonPackages = _: [];
-    } attrs);
+            runHook postInstall
+          '';
+          passthru.extraPackages = [];
+          passthru.extraPythonPackages = _: [];
+        }
+        attrs);
   in {
     deckyLoaderPlugins = {
       inherit mkDeckyPlugin;

@@ -1,4 +1,8 @@
-{config, nix, ...}: let
+{
+  config,
+  nix,
+  ...
+}: let
   inherit (config.dotfiles) domain;
   inherit (nix) toList vals;
   port = 8096;

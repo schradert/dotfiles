@@ -3,7 +3,8 @@
   inputs,
   nix,
   ...
-}: with nix; let
+}:
+with nix; let
   inherit (config.canivete) root;
   sshOptions = ["ProxyJump=${config.dotfiles.domain}"];
   # Disko does not actually merge NixOS modules (major bummer!)
@@ -190,7 +191,11 @@ in {
         dotfiles.graphical.enable = true;
         dotfiles.graphical.sound.enable = true;
         environment.systemPackages = with pkgs; [maliit-keyboard maliit-framework];
-        home-manager.sharedModules = toList ({config, lib, ...}: {
+        home-manager.sharedModules = toList ({
+          config,
+          lib,
+          ...
+        }: {
           dotfiles.email = true;
           home.packages = with pkgs; [heroic steam-tui];
           # TODO modules
@@ -207,12 +212,13 @@ in {
               name = "AddOns";
               paths = [ConsolePort];
             };
-          in lib.hm.dag.entryAfter ["writeBoundary"] ''
-            appid=$(${getExe pkgs.nostatoo} list-non-steam-games | ${pkgs.gawk}/bin/awk -F': ' '/Battle.Net/ {print $2}')
-            dest="${config.home.homeDirectory}/.local/share/Steam/steamapps/compatdata/$appid/pfx/drive_c/Program Files (x86)/World of Warcraft/_retail_/Interface/AddOns"
-            mkdir -p "$(dirname "$dest")"
-            ln -sfn ${AddOns} "$dest"
-          '';
+          in
+            lib.hm.dag.entryAfter ["writeBoundary"] ''
+              appid=$(${getExe pkgs.nostatoo} list-non-steam-games | ${pkgs.gawk}/bin/awk -F': ' '/Battle.Net/ {print $2}')
+              dest="${config.home.homeDirectory}/.local/share/Steam/steamapps/compatdata/$appid/pfx/drive_c/Program Files (x86)/World of Warcraft/_retail_/Interface/AddOns"
+              mkdir -p "$(dirname "$dest")"
+              ln -sfn ${AddOns} "$dest"
+            '';
           dotfiles.programs.steam.external = {
             enable = true;
             srm.userAccounts = ["supertriggy"];

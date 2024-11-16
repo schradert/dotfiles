@@ -1,4 +1,8 @@
-{config, lib, ...}: let
+{
+  config,
+  lib,
+  ...
+}: let
   inherit (config.canivete.people) users;
   inherit (lib) attrNames mkOption types;
   inherit (types) strMatching enum;
@@ -7,7 +11,11 @@ in {
     type = strMatching "^[a-z0-9\-]+\.[a-z]{2,}$";
     description = "Base domain for exposing nodes and services";
   };
-  config.canivete.deploy.system.homeModules.general = {config, pkgs, ...}: let
+  config.canivete.deploy.system.homeModules.general = {
+    config,
+    pkgs,
+    ...
+  }: let
     inherit (config.home) username homeDirectory;
   in {
     options.dotfiles.profile = mkOption {
@@ -22,6 +30,10 @@ in {
       example = "emacs";
       description = "Default editor to use for profile";
     };
-    config.home.homeDirectory = "/${if pkgs.stdenv.isDarwin then "Users" else "home"}/${username}";
+    config.home.homeDirectory = "/${
+      if pkgs.stdenv.isDarwin
+      then "Users"
+      else "home"
+    }/${username}";
   };
 }

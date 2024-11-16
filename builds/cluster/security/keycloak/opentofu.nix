@@ -1,4 +1,8 @@
-{config, nix, ...}: let
+{
+  config,
+  nix,
+  ...
+}: let
   inherit (nix) flip mapAttrs vals;
   users = {
     tristan = {

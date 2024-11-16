@@ -21,7 +21,12 @@ in {
     };
   canivete.deploy = {
     system.modules.containers.options.dotfiles.containers = mkEnableOption "containerization tooling";
-    system.homeModules.containers = {config, lib, pkgs, ...}: {
+    system.homeModules.containers = {
+      config,
+      lib,
+      pkgs,
+      ...
+    }: {
       config = mkIf config.dotfiles.containers (mkMerge [
         {
           home.shellAliases.docker = getExe pkgs.podman;

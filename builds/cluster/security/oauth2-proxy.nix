@@ -1,4 +1,8 @@
-{config, nix, ...}: {
+{
+  config,
+  nix,
+  ...
+}: {
   perSystem = {pkgs, ...}: let
     inherit (config.dotfiles) domain;
     inherit (nix) getExe readFile vals;

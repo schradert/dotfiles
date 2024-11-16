@@ -17,71 +17,78 @@ in {
       # libiberty,
       # xorg,
       # vulkan-loader
-    }: clangStdenv.mkDerivation rec {
-      pname = "xenia-canary";
-      version = lib.substring 0 7 src.rev;
-      src = fetchFromGitHub {
-        owner = "xenia-canary";
-        repo = "xenia-canary";
-        rev = "764f230dd9883bfb63e3aea7642aac26f010e1bb";
-        hash = "sha256-sMankinz4vYnmuKyUgETOgOgaW8ezQc3galGP1mLw24=";
-        fetchSubmodules = true;
-      };
-      nativeBuildInputs = [
-        python3
-        pkg-config
-      ];
-      buildInputs = [
-        gtk3
-        SDL2
-      #   lz4
-      #   libunwind
-      #   libiberty
-      #   xorg.libX11
-      #   xorg.libxcb
-      ];
-      # dontConfigure = true;
-      NIX_CFLAGS_COMPILE = [
-        "-Wno-error=implicit-function-declaration"
-      #   "-Wno-error=unused-result"
-      #   "-fno-lto"
-      ];
-      buildPhase = ''
-        runHook preBuild
-        python3 ./xb setup
-        python3 ./xb build --config release -j $NIX_BUILD_CORES
-        runHook postBuild
-      '';
-      # installPhase = ''
-      #   runHook preInstall
-      #   mkdir -p $out/bin
-      #   cp -a ./build/bin/*/*/xenia $out/bin/
-      #   runHook postInstall
-      # '';
-      # postFixup = "patchelf --add-rpath ${vulkan-loader}/lib $out/bin/xenia";
-    }) {};
-    myrient = let
-      builderFor = consolePaths: attrs: flip final.callPackage {} ({
-        stdenv,
-        fetchzip,
-      }: stdenv.mkDerivation (finalAttrs: flip recursiveUpdate attrs {
-        src = fetchzip {
-          inherit (finalAttrs) name hash;
-          url = "https://myrient.erista.me/files/${escapeURL consolePaths.${finalAttrs.console}}/${escapeURL finalAttrs.name}.zip";
-          stripRoot = false;
+    }:
+      clangStdenv.mkDerivation rec {
+        pname = "xenia-canary";
+        version = lib.substring 0 7 src.rev;
+        src = fetchFromGitHub {
+          owner = "xenia-canary";
+          repo = "xenia-canary";
+          rev = "764f230dd9883bfb63e3aea7642aac26f010e1bb";
+          hash = "sha256-sMankinz4vYnmuKyUgETOgOgaW8ezQc3galGP1mLw24=";
+          fetchSubmodules = true;
         };
-        installPhase = ''
-          mkdir -p $out
-          cp -R ./* $out
+        nativeBuildInputs = [
+          python3
+          pkg-config
+        ];
+        buildInputs = [
+          gtk3
+          SDL2
+          #   lz4
+          #   libunwind
+          #   libiberty
+          #   xorg.libX11
+          #   xorg.libxcb
+        ];
+        # dontConfigure = true;
+        NIX_CFLAGS_COMPILE = [
+          "-Wno-error=implicit-function-declaration"
+          #   "-Wno-error=unused-result"
+          #   "-fno-lto"
+        ];
+        buildPhase = ''
+          runHook preBuild
+          python3 ./xb setup
+          python3 ./xb build --config release -j $NIX_BUILD_CORES
+          runHook postBuild
         '';
-      }));
+        # installPhase = ''
+        #   runHook preInstall
+        #   mkdir -p $out/bin
+        #   cp -a ./build/bin/*/*/xenia $out/bin/
+        #   runHook postInstall
+        # '';
+        # postFixup = "patchelf --add-rpath ${vulkan-loader}/lib $out/bin/xenia";
+      }) {};
+    myrient = let
+      builderFor = consolePaths: attrs:
+        flip final.callPackage {} ({
+          stdenv,
+          fetchzip,
+        }:
+          stdenv.mkDerivation (finalAttrs:
+            flip recursiveUpdate attrs {
+              src = fetchzip {
+                inherit (finalAttrs) name hash;
+                url = "https://myrient.erista.me/files/${escapeURL consolePaths.${finalAttrs.console}}/${escapeURL finalAttrs.name}.zip";
+                stripRoot = false;
+              };
+              installPhase = ''
+                mkdir -p $out
+                cp -R ./* $out
+              '';
+            }));
       buildWith = builder: let
         buildAttrs = hashOrAttrs:
-          if isString hashOrAttrs then {hash = hashOrAttrs;}
-          else if isAttrs hashOrAttrs then hashOrAttrs
+          if isString hashOrAttrs
+          then {hash = hashOrAttrs;}
+          else if isAttrs hashOrAttrs
+          then hashOrAttrs
           else throw "Argument of buildAttrs must be a string or attrset";
         wrappedBuilder = console: name: hashOrAttrs: builder (buildAttrs hashOrAttrs // {inherit console name;});
-      in mapAttrs (flip pipe [wrappedBuilder mapAttrs]);
+      in
+        mapAttrs (flip pipe [wrappedBuilder mapAttrs]);
     in {
       # ROMS
       buildROM = builderFor {
@@ -182,7 +189,12 @@ in {
       };
     };
   };
-  canivete.deploy.nixos.homeModules.roms = {config, lib, pkgs, ...}: let
+  canivete.deploy.nixos.homeModules.roms = {
+    config,
+    lib,
+    pkgs,
+    ...
+  }: let
     inherit (types) str nullOr attrsOf package listOf either submodule;
     inherit (config.dotfiles.programs.steam) external;
     ini = pkgs.formats.ini {};
@@ -333,9 +345,11 @@ in {
           inherit name;
           path = pkgs.buildEnv {
             inherit name;
-            paths = forEach console.programs (nameOrPackage:
-              if isString nameOrPackage then pkgs.myrient.roms.${name}.${nameOrPackage}
-              else nameOrPackage
+            paths = forEach console.programs (
+              nameOrPackage:
+                if isString nameOrPackage
+                then pkgs.myrient.roms.${name}.${nameOrPackage}
+                else nameOrPackage
             );
           };
         }))
@@ -347,9 +361,11 @@ in {
           inherit name;
           path = pkgs.buildEnv {
             inherit name;
-            paths = forEach console.bios (nameOrPackage:
-              if isString nameOrPackage then pkgs.myrient.bios.${name}.${nameOrPackage}
-              else nameOrPackage
+            paths = forEach console.bios (
+              nameOrPackage:
+                if isString nameOrPackage
+                then pkgs.myrient.bios.${name}.${nameOrPackage}
+                else nameOrPackage
             );
           };
         }))
@@ -359,16 +375,17 @@ in {
         stdenv,
         fetchurl,
         unar,
-      }: stdenv.mkDerivation {
-        name = "keys.txt";
-        src = fetchurl {
-          url = "https://download2288.mediafire.com/y3hz6nde72tg_rUU6kOGYpkU9g-gkyfF4hriJJguyv5mSZ1f-KXCJ4HhxWD0B3MCzCz7dFk5UZk5W-r7_iLCC-WdyBfZkS_UYeY_HSZuX8WkaMg7R0Sp0qgkqru9QVReJonVRwdYx3nWrkDFJeqUJvOFplcjNdMqKF0SoeW5HCMCe_tJ/efu4ry9147fw2ol/Newestkeys.rar";
-          hash = "sha256-H8RTlIVpjowKUunSB7+y2nhMmjfW7fsi1/VnsGuGUHY=";
-        };
-        dontUnpack = true;
-        buildPhase = "${getExe unar} $src";
-        installPhase = "install Newestkeys/keys.txt $out";
-      }) {};
+      }:
+        stdenv.mkDerivation {
+          name = "keys.txt";
+          src = fetchurl {
+            url = "https://download2288.mediafire.com/y3hz6nde72tg_rUU6kOGYpkU9g-gkyfF4hriJJguyv5mSZ1f-KXCJ4HhxWD0B3MCzCz7dFk5UZk5W-r7_iLCC-WdyBfZkS_UYeY_HSZuX8WkaMg7R0Sp0qgkqru9QVReJonVRwdYx3nWrkDFJeqUJvOFplcjNdMqKF0SoeW5HCMCe_tJ/efu4ry9147fw2ol/Newestkeys.rar";
+            hash = "sha256-H8RTlIVpjowKUunSB7+y2nhMmjfW7fsi1/VnsGuGUHY=";
+          };
+          dontUnpack = true;
+          buildPhase = "${getExe unar} $src";
+          installPhase = "install Newestkeys/keys.txt $out";
+        }) {};
     };
   };
 }

@@ -1,4 +1,9 @@
-{config, nix, ...}: with nix; let
+{
+  config,
+  nix,
+  ...
+}:
+with nix; let
   inherit (config.dotfiles) domain;
   subdomain = "mealie.${domain}";
 in {

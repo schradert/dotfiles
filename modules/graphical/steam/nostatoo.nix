@@ -6,7 +6,12 @@
       meta.mainProgram = "nostatoo";
     });
   };
-  canivete.deploy.nixos.homeModules.nostatoo = {config, lib, pkgs, ...}: let
+  canivete.deploy.nixos.homeModules.nostatoo = {
+    config,
+    lib,
+    pkgs,
+    ...
+  }: let
     json = pkgs.formats.json {};
     inherit (lib) attrValues concatStringsSep flip getExe mkOption mkIf mkMerge mkPackageOption literalExpression pipe mapAttrsToList toList types;
     inherit (types) attrsOf submodule str path pathInStore;
@@ -26,7 +31,10 @@
               freeformType = json.type;
               options.appname = mkOption {type = str;};
               options.Exe = mkOption {type = path;};
-              options.StartDir = mkOption {type = str; default = "./";};
+              options.StartDir = mkOption {
+                type = str;
+                default = "./";
+              };
               config.appname = name;
             };
           };
@@ -49,16 +57,17 @@
           # TODO local images?
           # TODO should I use this or nostatoo? nostatoo at least allows adding image derivations
           programs = flip mapAttrsToList config.dotfiles.programs.steam.external.manual (
-            name: game: pkgs.linkFarm name (toList {
-              inherit name;
-              path = json.generate "${name}.manifest.json" {
-                title = name;
-                target = game.shortcut.Exe;
-                startIn = game.shortcut.StartDir;
-                launchOptions = "";
-                appendArgsToExecutable = true;
-              };
-            })
+            name: game:
+              pkgs.linkFarm name (toList {
+                inherit name;
+                path = json.generate "${name}.manifest.json" {
+                  title = name;
+                  target = game.shortcut.Exe;
+                  startIn = game.shortcut.StartDir;
+                  launchOptions = "";
+                  appendArgsToExecutable = true;
+                };
+              })
           );
         };
       }

@@ -1,5 +1,10 @@
 {
-  canivete.deploy.nixos.homeModules.chiaki = {config, lib, pkgs, ...}: let
+  canivete.deploy.nixos.homeModules.chiaki = {
+    config,
+    lib,
+    pkgs,
+    ...
+  }: let
     inherit (config.dotfiles.programs.steam.external.chiaki) enable package;
     inherit (lib) mkEnableOption mkIf mkPackageOption getExe;
     images = pkgs.stdenv.mkDerivation {
