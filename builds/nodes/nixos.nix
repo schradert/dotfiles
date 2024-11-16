@@ -122,6 +122,7 @@ in {
 
         # Deactivate auto sleep
         services.logind.lidSwitch = "ignore";
+        services.xserver.videoDrivers = ["displaylink" "modesetting"];
         systemd.targets = {
           sleep.enable = false;
           suspend.enable = false;

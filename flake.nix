@@ -90,6 +90,7 @@
               "android-studio-stable"
               "aspell-dict-en-science"
               "discord"
+              "displaylink"
               "raycast"
               "slack"
               "spotify"
