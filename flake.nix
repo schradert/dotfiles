@@ -5,8 +5,11 @@
 
     # TODO keep tabs on this project to see if it's evolving enough to try to use
     # NOTE nix-doom-emacs marked as broken for now so we use overlay
+    # NOTE nix-doom-emacs-unstraightened might work better, but currently doesn't support org-roam
     nix-doom-emacs.url = github:nix-community/nix-doom-emacs;
     nix-doom-emacs.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    # nix-doom-emacs-unstraightened.url = github:marienz/nix-doom-emacs-unstraightened;
+    # nix-doom-emacs-unstraightened.inputs.nixpkgs.follows = "canivete/nixpkgs";
     emacs-overlay.url = github:nix-community/emacs-overlay;
     emacs-overlay.inputs.nixpkgs.follows = "canivete/nixpkgs";
     emacs-overlay.inputs.nixpkgs-stable.follows = "canivete/nixpkgs-stable";
@@ -39,6 +42,25 @@
     # WezTerm nightly
     wezterm.url = github:wez/wezterm/main?dir=nix;
     wezterm.inputs.nixpkgs.follows = "canivete/nixpkgs";
+
+    # Steam library manager
+    nostatoo.url = github:samueldr/nostatoo;
+    nostatoo.flake = false;
+
+    # Umu game launcher
+    umu.url = github:Open-Wine-Components/umu-launcher?dir=packaging/nix&submodules=1;
+    umu.inputs.nixpkgs.follows = "canivete/nixpkgs";
+
+    # mkWindowsApp
+    erosanix.url = github:emmanuelrosa/erosanix;
+    erosanix.inputs.nixpkgs.follows = "canivete/nixpkgs";
+
+    # TODO FHS compatibility with envfs and nix-ld
+    # NOTE https://github.com/nix-community/nix-ld
+    # NOTE https://github.com/Mic92/envfs
+    # NOTE Mic92's example: https://github.com/Mic92/dotfiles/blob/main/machines/modules/fhs-compat.nix
+    #
+    # TODO fix wiimmfi login
   };
   outputs = inputs:
     inputs.canivete.lib.mkFlake {
@@ -62,22 +84,26 @@
             profiles.work.email = "tristan@climaxfoods.com";
           };
         };
-        canivete.pkgs.config.allowUnfreePredicate = pkg:
-          elem (getName pkg) [
-            "android-studio-stable"
-            "discord"
-            "raycast"
-            "slack"
-            "spotify"
-            "beeper"
-            "steam-run"
-            "steam-jupiter-original"
-            "steam"
-            "steamdeck-hw-theme"
-            # Sabnzbd only supports unrar currently, but unar is a better alternative to keep track of
-            # NOTE https://github.com/sabnzbd/sabnzbd/issues/1120
-            "unrar"
-          ];
+        canivete.pkgs.config = {
+          allowUnfreePredicate = pkg:
+            elem (getName pkg) [
+              "android-studio-stable"
+              "aspell-dict-en-science"
+              "discord"
+              "raycast"
+              "slack"
+              "spotify"
+              "beeper"
+              "steam-run"
+              "steam-jupiter-original"
+              "steam"
+              "steamcmd"
+              "steamdeck-hw-theme"
+              # Sabnzbd only supports unrar currently, but unar is a better alternative to keep track of
+              # NOTE https://github.com/sabnzbd/sabnzbd/issues/1120
+              "unrar"
+            ];
+        };
         perSystem = {
           config,
           pkgs,
