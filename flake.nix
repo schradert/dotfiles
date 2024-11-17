@@ -55,6 +55,14 @@
     erosanix.url = github:emmanuelrosa/erosanix;
     erosanix.inputs.nixpkgs.follows = "canivete/nixpkgs";
 
+    # Hyprland
+    hyprland.url = github:hyprwm/Hyprland;
+    # TODO when should I start building my own?
+    # hyprland.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    hyprland-plugins.url = github:hyprwm/hyprland-plugins;
+    hyprland-plugins.inputs.hyprland.follows = "hyprland";
+    hypr-darkwindow.url = github:micha4w/Hypr-DarkWindow/v0.45.0;
+    hypr-darkwindow.inputs.hyprland.follows = "hyprland";
     # TODO FHS compatibility with envfs and nix-ld
     # NOTE https://github.com/nix-community/nix-ld
     # NOTE https://github.com/Mic92/envfs

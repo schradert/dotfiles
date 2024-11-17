@@ -16,7 +16,7 @@
           config.Program = "${config.programs.wezterm.package}/Applications/WezTerm.app/Contents/MacOS/WezTerm";
         };
       })
-      (mkIf config.dotfiles.graphical.wayland.enable {
+      (mkIf config.dotfiles.graphical.hyprland.enable {
         wayland.windowManager.hyprland.settings."$terminal" = "wezterm";
       })
     ]);

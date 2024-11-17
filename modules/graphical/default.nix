@@ -58,6 +58,7 @@ in {
             session-desktop
             signal-desktop
           ];
+          wayland.windowManager.hyprland.settings."$browser" = "brave";
         };
         services.desktopManager.plasma6.enable = true;
         services.displayManager.sddm.enable = mkDefault true;

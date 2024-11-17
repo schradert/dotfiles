@@ -95,6 +95,7 @@ in {
       profiles.system.module = {pkgs, ...}: {
         dotfiles.graphical.enable = true;
         dotfiles.graphical.sound.enable = true;
+        dotfiles.graphical.hyprland.enable = true;
         dotfiles.kubernetes.enable = true;
         boot.initrd.availableKernelModules = ["xhci_pci" "nvme" "rtsx_pci_sdmmc"];
         disko = recursiveUpdate lvmDisko {
