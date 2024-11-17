@@ -36,8 +36,7 @@ in {
           enable = true;
           # TODO do I need to enable autostart?
           systemd.enableXdgAutostart = false;
-          # TODO will applications share data properly if I pass all variables?
-          # systemd.variables = ["--all"];
+          systemd.variables = ["--all"];
           plugins = with hyprlandPlugins; [
             # hy3
             # hyprbars
@@ -48,11 +47,7 @@ in {
           ];
           settings = {
             "$mod" = "SUPER";
-            exec-once = [
-              # TODO what is this accomplishing? Do I need to add DISPLAY and HYPRLAND_INSTANCE_SIGNATURE?
-              "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
-              "polkit-kde-authentication-agent-1"
-            ];
+            exec-once = ["polkit-kde-authentication-agent-1"];
             bind = mkMerge [
               [
                 # TODO why doesn't variables like $terminal and $browser work?
