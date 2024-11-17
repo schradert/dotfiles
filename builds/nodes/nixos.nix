@@ -94,6 +94,7 @@ in {
       profiles.system.sshProtocol = "ssh";
       profiles.system.module = {pkgs, ...}: {
         dotfiles.graphical.enable = true;
+        dotfiles.graphical.monitors = true;
         dotfiles.graphical.sound.enable = true;
         dotfiles.graphical.hyprland.enable = true;
         dotfiles.kubernetes.enable = true;
@@ -113,6 +114,9 @@ in {
             runescape.runelite.enable = true;
           };
         };
+
+        location.latitude = 37.8;
+        location.longitude = -122.4;
 
         # Gaming
         programs.steam.enable = true;

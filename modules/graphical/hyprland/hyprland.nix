@@ -53,11 +53,6 @@ in {
               "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
               "polkit-kde-authentication-agent-1"
             ];
-            monitor = [
-              "DVI-I-1, 3840x2160@60.00, 0x0, 1, transform, 1"
-              "DVI-I-2, 3840x2160@60.00, 2160x400, 1"
-              "eDP-1, 1920x1080@60.02, 6000x800, 1"
-            ];
             bind = mkMerge [
               [
                 # TODO why doesn't variables like $terminal and $browser work?
