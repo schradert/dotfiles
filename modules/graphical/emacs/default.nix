@@ -7,9 +7,8 @@
       ...
     }: {
       services.emacs = {
-        enable = lib.mkDefault true;
+        inherit (config.dotfiles.programs.emacs) enable package;
         defaultEditor = config.dotfiles.editor == "emacs";
-        inherit (config.dotfiles.programs.emacs) package;
         client.enable = true;
       };
     };
@@ -19,7 +18,8 @@
       pkgs,
       ...
     }: let
-      inherit (lib) concatStringsSep flatten getExe makeBinPath mkIf mkDefault mkOption hm types;
+      inherit (config.dotfiles.programs) emacs;
+      inherit (lib) concatStringsSep flatten getExe makeBinPath mkEnableOption mkIf mkDefault mkOption mkPackageOption hm types;
       inherit (pkgs) fetchFromGitHub wrapProgram emacs-unstable-pgtk nerdfonts;
       src = fetchFromGitHub {
         owner = "doomemacs";
@@ -30,6 +30,7 @@
       };
       path = makeBinPath (flatten [
         config.programs.git.package
+        emacs.finalPackage
         (with pkgs; [
           (aspellWithDicts (dicts: with dicts; [ar de en es fi fr la pt_BR pt_PT ru tr en-computers en-science]))
           cargo
@@ -75,7 +76,7 @@
       doomDir = "${config.xdg.configHome}/${doomDirRelative}";
       args = concatStringsSep " " [
         "--prefix PATH : ${path}"
-        "--set EMACS ${getExe config.dotfiles.programs.emacs.package}"
+        "--set EMACS ${getExe emacs.finalPackage}"
         "--set EMACSDIR ${emacsDir}"
         "--set DOOMDIR \"${doomDir}\""
         "--set DOOMPROFILELOADFILE \"${loadFile}\""
@@ -83,18 +84,22 @@
       ];
       doom = wrapProgram src "doom" "doom" args {};
     in {
-      options.dotfiles.programs.emacs.package = mkOption {
-        type = types.package;
-        description = "Final Emacs package with overrides";
-        default = wrapProgram config.programs.emacs.package "emacs" "emacs" "--add-flags \"--init-directory ${emacsDir}\"" {};
+      options.dotfiles.programs.emacs = {
+        enable = mkEnableOption "Graphical emacs";
+        package = mkPackageOption pkgs "emacs-unstable-pgtk" {};
+        finalPackage = mkOption {
+          type = types.package;
+          readOnly = true;
+          description = "Final Emacs package with overrides";
+          default = wrapProgram emacs.package "emacs" "emacs" "--add-flags \"--init-directory ${emacsDir}\"" {};
+        };
       };
-      config = mkIf config.programs.emacs.enable {
+      config = mkIf emacs.enable {
         # TODO why is the loadFile not created? why am I having so much issue with running this basic command?
         # home.activation.doom = hm.dag.entryAfter ["writeBoundary"] "${getExe doom} $([[ ! -f ${loadFile} ]] && echo install --no-env || echo sync)";
         home.activation.doom = hm.dag.entryAfter ["writeBoundary"] "${getExe doom} $([[ ! -d ${doomDir} ]] && echo install --no-env || echo sync)";
         # NOTE fonts only detected in home.packages
         home.packages = [doom (nerdfonts.override {fonts = ["NerdFontsSymbolsOnly"];})];
-        programs.emacs.package = mkDefault emacs-unstable-pgtk;
         programs.git.extraConfig.safe.directory = emacsDir;
         xdg.configFile."${doomDirRelative}/config.org".source = ./config.org;
         xdg.configFile."${doomDirRelative}/init.el".source = ./init.el;

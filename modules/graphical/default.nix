@@ -11,7 +11,7 @@ in {
       config = mkIf config.dotfiles.graphical.enable {
         dotfiles.editor = "emacs";
         dotfiles.programs.wezterm.enable = true;
-        programs.emacs.enable = true;
+        dotfiles.programs.emacs.enable = true;
         home.packages = with pkgs; [
           discord
           gnutls
