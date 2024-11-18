@@ -3,8 +3,8 @@
 in {
   flake.overlays.hyprland = overlays.default;
   canivete.deploy.nixos.modules.hyprland = {config, lib, pkgs, ...}: let
-    inherit (lib) flatten genList getExe mkEnableOption mkIf mkMerge pipe toList;
-    inherit (pkgs) hyprlandPlugins kitty libsForQt5 qt6;
+    inherit (lib) flatten genList getExe getExe' mkEnableOption mkIf mkMerge pipe toList;
+    inherit (pkgs) hyprlandPlugins hyprpolkitagent kitty libsForQt5 qt6 systemd;
   in {
     imports = [nixosModules.default];
     options.dotfiles.graphical.hyprland.enable = mkEnableOption "Hyprland configuration";
@@ -23,10 +23,8 @@ in {
         # TODO research a good window management utility
         # TODO why do a lot of common shortcuts not work in emacs?
         # TODO do I actually HAVE to enable kitty? I can't even get it to work seemingly...
-        # TODO what is the polkit auth agent helping with?
-        # TODO why do I have weird lag issues?
+        # TODO why do I have weird lag issues randomly (mostly in brave)?
         home.packages = [
-          libsForQt5.polkit-kde-agent
           libsForQt5.qt5.qtwayland
           qt6.qtwayland
         ];
@@ -47,7 +45,7 @@ in {
           ];
           settings = {
             "$mod" = "SUPER";
-            exec-once = ["polkit-kde-authentication-agent-1"];
+            exec-once = ["${getExe' systemd "systemctl"} --user start ${getExe hyprpolkitagent}"];
             bind = mkMerge [
               [
                 # TODO why doesn't variables like $terminal and $browser work?
