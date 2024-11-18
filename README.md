@@ -30,8 +30,40 @@
 
 ## TODOs
 
-[ ] Why doesn't cilium agent run on axolotl?
+### Devices
 
+[ ] Nix build machines (distributed)!
+[ ] how to keep ssh agent alive?!
+[ ] longer timeouts for screen lock
+[ ] decky-loader plugins
+[ ] window management in hyprland
+[ ] full hyprland config
+[ ] integrate nvd
+[ ] fix auto-zellij
+[ ] guarantee spicetify works
+[ ] YubiKey login/lock
+[ ] doom as application
+[ ] merge changes into canivete
+[ ] create open PRs on jovian, nixpkgs, home-manager, steam-rom-manager, nostatoo, etc.
+[ ] VNC
+[ ] VPN
+[ ] separate nostatoo install from final executable
+[ ] allow package installation after initial game launch in steam
+[ ] DECIDE nostatoo vs steam-rom-manager for manual programs
+[ ] steam controller VDF configuration
+[ ] Steam Deck memory card!
+[ ] Steam Deck dock memory!
+[ ] Steam Deck remote play games on desktop (how to work with autosleep/wake?)
+[ ] mobile-nixos on S21 FE
+[ ] asahi-nixos on one of the old Macs
+[ ] make a nix store binary bucket on backblazes
+[ ] add images for manual programs
+[ ] fix monitor resolution on axolotl
+[ ] allow ME to rebuild without sudo
+
+### Services
+
+[ ] Why doesn't cilium agent run on axolotl?
 [ ] persistence
 [ ] annotations
 [ ] resources
@@ -41,17 +73,14 @@
 [ ] VLANs
 [ ] instructions for setting up new nodes
 [ ] Create a repair command for nix after macOS update per [this working solution](https://discourse.nixos.org/t/nix-commands-missing-after-macos-12-1-version-upgrade/16679/5)
-
 [ ] [rke2](https://search.nixos.org/options?channel=unstable&from=0&size=50&sort=alpha_asc&type=packages&query=rke2)
 [ ] network bonding
-[ ] Pushover
+[ ] Pushover/notification system
 [ ] add tristanschrader.com redirect and email obfuscation deactivation to opentofu
 [ ] add keycloak client creation to opentofu
 [ ] add firefly multi-user configuration to terraform
 [ ] remove extra fields from external-secrets
-
 [ ] fix rook-ceph OSDs to be correctly distributed
-
 [ ] fix bluetooth delay for Between Micro and Steam Deck + axolotl (https://nixos.wiki/wiki/Bluetooth)
 
 ## Bugs

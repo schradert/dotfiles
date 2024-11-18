@@ -119,6 +119,7 @@
               "beeper"
               "steam-run"
               "steam-jupiter-original"
+              "steam-jupiter-unwrapped"
               "steam"
               "steamcmd"
               "steamdeck-hw-theme"
