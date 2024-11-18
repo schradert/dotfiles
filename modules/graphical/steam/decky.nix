@@ -109,17 +109,18 @@
       };
   };
   flake.overlays.decky = final: prev: let
-    inherit (prev) decky-loader fetchFromGitHub lib nodejs pnpm stdenv;
+    # NOTE Pnpm pinned to version 8 because pnpm.fetchDeps is unstable to changes in pnpm registry tools, which broke recently
+    inherit (prev) decky-loader fetchFromGitHub lib nodejs pnpm_8 stdenv;
     inherit (lib) recursiveUpdate substring;
     # TODO pin python dependencies?
     mkDeckyPlugin = attrs:
       stdenv.mkDerivation (finalAttrs:
         recursiveUpdate {
-          pnpmDeps = pnpm.fetchDeps {
+          pnpmDeps = pnpm_8.fetchDeps {
             inherit (finalAttrs) pname src version;
             hash = finalAttrs.pnpmLockHash;
           };
-          nativeBuildInputs = [nodejs pnpm.configHook];
+          nativeBuildInputs = [nodejs pnpm_8.configHook];
           buildPhase = "pnpm build";
           # Ignore zero glob matches
           installPhase = ''
