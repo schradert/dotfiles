@@ -29,7 +29,7 @@ def add_assets(incoming; appid):
         select(.[1] == null)
         | .[0]
         | [
-            (.shortcut | "appid=$(\($nostatoo) add-non-steam-game \(.appname) \(.Exe) \(.StartDir))"),
+            (.shortcut | "appid=$(\($nostatoo) add-non-steam-game \(.appname | @sh) \(.Exe | @sh) \(.StartDir | @sh))"),
             edit(.; "$appid"),
             add_assets(.; "$appid")
           ]
