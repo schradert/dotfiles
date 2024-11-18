@@ -3,6 +3,16 @@
   inputs = {
     canivete.url = github:schradert/canivete;
 
+    # TODO move these dependency shifts upstream
+    nixpkgs.url = github:nixos/nixpkgs/nixos-unstable;
+    home-manager.url = github:nix-community/home-manager;
+    home-manager.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    nix-darwin.url = github:LnL7/nix-darwin;
+    nix-darwin.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    canivete.inputs.nixpkgs.follows = "nixpkgs";
+    canivete.inputs.home-manager.follows = "home-manager";
+    canivete.inputs.nix-darwin.follows = "nix-darwin";
+
     # TODO keep tabs on this project to see if it's evolving enough to try to use
     # NOTE nix-doom-emacs marked as broken for now so we use overlay
     # NOTE nix-doom-emacs-unstraightened might work better, but currently doesn't support org-roam
@@ -42,6 +52,10 @@
     # WezTerm nightly
     wezterm.url = github:wez/wezterm/main?dir=nix;
     wezterm.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    # NOTE WezTerm rust-overlay conflict (they did update it, but maybe it's a nixpkgs/nixos problem?)
+    rust-overlay.url = github:oxalica/rust-overlay;
+    rust-overlay.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    wezterm.inputs.rust-overlay.follows = "rust-overlay";
 
     # Steam library manager
     nostatoo.url = github:samueldr/nostatoo;
