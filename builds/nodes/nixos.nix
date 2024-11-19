@@ -261,9 +261,7 @@ in {
               };
               # TODO declarative game controls
               # TODO how can I install interactively and set launcher afterwards?
-              # "The Legend of Pirates Online".shortcut.Exe = "/home/tristan/Desktop/The Legend of Pirates Online.lnk";
-              # "The.Legend.of.Pirates.Online".shortcut.Exe = "/home/tristan/.local/share/Steam/steamapps/compatdata/2272265478/pfx/drive_c/Program Files/TLOPO/launcher.exe";
-              "The Legend of Pirates Online".shortcut.Exe = inputs.erosanix.lib.${pkgs.system}.mkWindowsApp rec {
+              "The Legend of Pirates Online".shortcut.exe = getExe (inputs.erosanix.lib.${pkgs.system}.mkWindowsApp rec {
                 pname = "The.Legend.of.Pirates.Online";
                 version = "1.4.1";
                 wine = pkgs.wineWowPackages.full;
@@ -273,15 +271,18 @@ in {
                   hash = "sha256-8xx2HJi5sbJBpnRLMLVroNQ+ykNprA45xWPw+x6QRVA=";
                 };
                 dontUnpack = true;
-                winAppInstall = "wine ${src} /S";
-                winAppRun = "wine start \"$WINEPREFIX/drive_c/Program Files/TLOPO/launcher.exe\"";
+                winAppInstall = ''
+                  $WINE start /unix ${src} /S
+                  wineserver -w
+                '';
+                winAppRun = "$WINE start /unix \"$WINEPREFIX/drive_c/Program Files/TLOPO/launcher.exe\"";
                 installPhase = ''
                   runHook preInstall
                   ln -s $out/bin/.launcher $out/bin/TLOPO
                   runHook postInstall
                 '';
                 meta.mainProgram = "TLOPO";
-              };
+              });
               # TODO why are these invalid when fetched?
               # NOTE upstream is obscured with browser request IDs giving 403, so I am hosting a mirror
               "Wizard 101".shortcut.Exe = pkgs.fetchurl {
