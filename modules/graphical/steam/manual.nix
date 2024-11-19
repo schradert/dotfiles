@@ -58,18 +58,19 @@
       };
       dotfiles.programs.steam.external.consoles.Manual = {
         parsers.Manual.overrides.parserInputs.manualManifests = "\${romsdirglobal}\${/}Manual";
+        # TODO connect local images to parserInputs
         programs = flip mapAttrsToList external.manual (
           name: game:
-            pkgs.linkFarm name (toList {
-              inherit name;
-              path = json.generate "${name}.manifest.json" {
-                title = name;
-                target = game.shortcut.exe;
-                startIn = game.shortcut.StartDir;
-                launchOptions = "";
-                appendArgsToExecutable = true;
-              };
-            })
+          pkgs.linkFarm "${name}.json" (toList {
+            name = "${name}.json";
+            path = json.generate "${name}.manifest.json" (toList {
+              title = name;
+              target = game.shortcut.exe;
+              startIn = game.shortcut.StartDir;
+              launchOptions = "";
+              appendArgsToExecutable = true;
+            });
+          })
         );
       };
     };
