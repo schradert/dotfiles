@@ -70,12 +70,12 @@
       # TODO how to connect chiaki device declaratively?
       dotfiles.programs.steam.external.manual.chiaki-ng = {
         shortcut.exe = getExe (pkgs.wrapFlags launcher "--add-flags \"--conf ${conf}\"");
-        shortcut.icon = images + "/steam_icon.png";
         assets = {
+          icon = images + "/steam_icon.png";
           logo = images + "/steam_logo.png";
           hero = images + "/steam_hero.png";
-          horizontal_capsule = images + "/steam_landscape.png";
-          vertical_capsule = images + "/steam_portrait.png";
+          banner = images + "/steam_landscape.png";
+          portrait = images + "/steam_portrait.png";
         };
       };
     };
