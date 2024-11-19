@@ -5,7 +5,7 @@ def edit(incoming; appid):
   | to_entries
   | map("\(.key)=\(.value)" | @sh)
   | join(" ")
-  | "\($nostatoo) edit-non-steam-game \(appid) nostatoo=true \(.)"
+  | "\($nostatoo) edit-non-steam-game \(appid) \(.)"
   ;
 
 def add_assets(incoming; appid):
@@ -18,7 +18,7 @@ def add_assets(incoming; appid):
   ;
 
 .
-  | ($previous_dump | .shortcuts | map(select(.nostatoo))) as $previous
+  | ($previous_dump | .shortcuts | map(select(.appname | endswith(" (Nostatoo)")))) as $previous
   # FULL OUTER JOIN is not supported, so we do a left outer and right outer as "incoming" and "previous" respectively
   # NOTE https://github.com/jqlang/jq/issues/1090
   # NOTE Joins must be surrounded with [] because they generate streams that must be collected to avoid --slurp
@@ -29,7 +29,7 @@ def add_assets(incoming; appid):
         select(.[1] == null)
         | .[0]
         | [
-            (.shortcut | "appid=$(\($nostatoo) add-non-steam-game \(.appname | @sh) \(.exe | @sh) \(.StartDir | @sh))"),
+            (.shortcut | "appid=$(\($nostatoo) add-non-steam-game \((.appname + " (Nostatoo)") | @sh) \(.exe | @sh) \(.StartDir | @sh))"),
             edit(.; "$appid"),
             add_assets(.; "$appid")
           ]
