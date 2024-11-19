@@ -1,7 +1,7 @@
 {
   # TODO override runescape-launcher that isn't available on internet archive anymore
   # NOTE learn about buildFHSEnv
-  # runescape.shortcut.Exe = getExe pkgs.runescape;
+  # runescape.shortcut.exe = getExe pkgs.runescape;
   # canivete.pkgs.config.permittedInsecurePackages = ["openssl-1.1.1w"];
   # canivete.pkgs.config.allowUnfreePredicate = pkg: elem (getName pkg) ["RuneScape" "runescape-launcher"];
   # environment.systemPackages = [pkgs.runescape];
@@ -118,11 +118,11 @@
       # NOTE RSC+ seems to rely on the location of the executable to generate data/caching
       home.file.${rscplusPath}.source = rscplus.package;
       dotfiles.programs.steam.external.manual = mkMerge [
-        (mkIf rscplus.enable {"RSC+".shortcut.Exe = "${config.home.homeDirectory}/${rscplusPath}/bin/rscplus";})
-        (mkIf saradomin.enable {Saradomin.shortcut.Exe = getExe saradomin.package;})
-        (mkIf hdos.enable {HDOS.shortcut.Exe = getExe hdos.package;})
+        (mkIf rscplus.enable {"RSC+".shortcut.exe = "${config.home.homeDirectory}/${rscplusPath}/bin/rscplus";})
+        (mkIf saradomin.enable {Saradomin.shortcut.exe = getExe saradomin.package;})
+        (mkIf hdos.enable {HDOS.shortcut.exe = getExe hdos.package;})
         # TODO why doesn't runelite close properly?
-        (mkIf runelite.enable {RuneLite.shortcut.Exe = getExe runelite.package;})
+        (mkIf runelite.enable {RuneLite.shortcut.exe = getExe runelite.package;})
       ];
     };
   };

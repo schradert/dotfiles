@@ -249,10 +249,10 @@ in {
               hdos.enable = true;
             };
             manual = {
-              Kodi.shortcut.Exe = getExe pkgs.kodi;
+              Kodi.shortcut.exe = getExe pkgs.kodi;
               # TODO find a proper way to add browser to game mode (brave/chromium seems to fail)
-              # brave.shortcut.Exe = getExe pkgs.brave;
-              "Battle.Net".shortcut.Exe = pkgs.fetchurl {
+              # brave.shortcut.exe = getExe pkgs.brave;
+              "Battle.Net".shortcut.exe = pkgs.fetchurl {
                 name = "Battle.net-Setup.exe";
                 # https://www.battle.net/download/getInstallerForGame?os=win&gameProgram=BATTLENET_APP&version=Live
                 url = "https://downloader.battle.net/download/getInstaller?os=win&installer=Battle.net-Setup.exe";
@@ -285,13 +285,13 @@ in {
               });
               # TODO why are these invalid when fetched?
               # NOTE upstream is obscured with browser request IDs giving 403, so I am hosting a mirror
-              "Wizard 101".shortcut.Exe = pkgs.fetchurl {
+              "Wizard 101".shortcut.exe = pkgs.fetchurl {
                 name = "InstallWizard101.exe";
                 url = "https://drive.google.com/uc?id=1iVWSiEcGjwk_LKcp1937y4q3N3rt_JmQ";
                 hash = "sha256-2ftofsBYx1PIeUvuBrieB3/AWJlvp36HtFd/xSk0jUs=";
                 executable = true;
               };
-              "Pirate 101".shortcut.Exe = pkgs.fetchurl {
+              "Pirate 101".shortcut.exe = pkgs.fetchurl {
                 name = "InstallPirate101.exe";
                 url = "https://drive.google.com/uc?id=1Nk_WThZYfW5xJII7G-JiL2rATpU3mA3k";
                 hash = "sha256-+9gnfENkaN1wMs5vAG1CNKxToyNpT5XWWTRtdL+oZFw=";

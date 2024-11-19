@@ -30,7 +30,7 @@
             type = submodule {
               freeformType = json.type;
               options.appname = mkOption {type = str;};
-              options.Exe = mkOption {type = path;};
+              options.exe = mkOption {type = path;};
               options.StartDir = mkOption {
                 type = str;
                 default = "./";
@@ -46,7 +46,7 @@
           };
         }));
         default = {};
-        example = literalExpression "{chiaki-ng.Exe = ./chiaki-launcher.sh;}";
+        example = literalExpression "{chiaki-ng.exe = ./chiaki-launcher.sh;}";
         description = "Executables to add to steam library as non-steam games";
       };
     };
@@ -62,7 +62,7 @@
                 inherit name;
                 path = json.generate "${name}.manifest.json" {
                   title = name;
-                  target = game.shortcut.Exe;
+                  target = game.shortcut.exe;
                   startIn = game.shortcut.StartDir;
                   launchOptions = "";
                   appendArgsToExecutable = true;

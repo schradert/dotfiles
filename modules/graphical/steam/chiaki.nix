@@ -69,7 +69,7 @@
       # TODO extend this to allow multiple consoles and remote connection
       # TODO how to connect chiaki device declaratively?
       dotfiles.programs.steam.external.manual.chiaki-ng = {
-        shortcut.Exe = getExe (pkgs.wrapFlags launcher "--add-flags \"--conf ${conf}\"");
+        shortcut.exe = getExe (pkgs.wrapFlags launcher "--add-flags \"--conf ${conf}\"");
         shortcut.icon = images + "/steam_icon.png";
         assets = {
           logo = images + "/steam_logo.png";
