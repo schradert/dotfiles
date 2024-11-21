@@ -237,6 +237,13 @@ in {
     };
     config = mkIf external.enable {
       dotfiles.programs.steam.external = {
+        manual = {
+          RetroArch.shortcut.exe = getExe external.retroarch.package;
+          Cemu.shortcut.exe = getExe pkgs.cemu;
+          DuckStation.shortcut.exe = getExe pkgs.duckstation;
+          RPCS3.shortcut.exe = getExe pkgs.rpcs3;
+          Xemu.shortcut.exe = getExe pkgs.xemu;
+        };
         retroarch.package = pkgs.retroarch.override {
           cores = pipe external.consoles [
             (filterAttrs (_: getAttr "retroarch"))

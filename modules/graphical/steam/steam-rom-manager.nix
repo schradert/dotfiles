@@ -300,6 +300,7 @@
       };
     };
     config = mkIf external.enable {
+      dotfiles.programs.steam.external.manual."Steam ROM Manager".shortcut.exe = getExe srm.package;
       # TODO get parser definitions to work
       # NOTE open enhancement request: https://github.com/SteamGridDB/steam-rom-manager/issues/720
       # TODO how can I prefix these commands with a virtual headless display
