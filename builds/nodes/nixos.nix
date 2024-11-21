@@ -271,11 +271,8 @@ in {
                   hash = "sha256-8xx2HJi5sbJBpnRLMLVroNQ+ykNprA45xWPw+x6QRVA=";
                 };
                 dontUnpack = true;
-                winAppInstall = ''
-                  $WINE start /unix ${src} /S
-                  wineserver -w
-                '';
-                winAppRun = "$WINE start /unix \"$WINEPREFIX/drive_c/Program Files/TLOPO/launcher.exe\"";
+                winAppInstall = "$WINE start /unix ${src} /S";
+                winAppRun = "$WINE start /unix \"$WINEPREFIX/drive_c/Program Files/TLOPO/launcher.exe\" \"$ARGS\"";
                 installPhase = ''
                   runHook preInstall
                   ln -s $out/bin/.launcher $out/bin/TLOPO
