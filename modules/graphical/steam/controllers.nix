@@ -594,4 +594,28 @@
       };
     })
   ];
-in {}
+in {
+  flake.overlays.json2vdf = final: _: {
+    json2vdf = final.writers.writePython3Bin "json2vdf" {libraries = [final.python3Packages.vdf];} ''
+      from json import loads
+      from sys import stdin, stdout
+      from vdf import dumps, VDFDict
+
+
+      def recurse(obj, key=None):
+          if isinstance(obj, list):
+              return [(key, recurse(val, key)[0][1]) for val in obj]
+          elif isinstance(obj, dict):
+              value = VDFDict([
+                  pair for _key, val in obj.items()
+                  for pair in recurse(val, _key)
+              ])
+              return [(key, value)] if key else value
+          return [(key, obj)]
+
+
+      data = recurse(loads(stdin.read()))
+      stdout.write(dumps(data, pretty=True))
+    '';
+  };
+}
