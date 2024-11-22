@@ -1,4 +1,5 @@
-{lib, pkgs, ...}: let
+{lib, inputs, ...}: let
+  pkgs = {};
   inherit (lib) any evalModules flip mapAttrsToList mkOption types toLower nameValuePair imap0 pipe listToAttrs setAttrByPath imap1 attrNames removeAttrs concat mergeAttrs getAttr flatten optional attrVals;
   inherit (types) anything coercedTo str int submodule listOf attrsOf nullOr enum package oneOf;
   inherit ((evalModules {inherit modules;}).config.out) json;
@@ -260,6 +261,17 @@
       };
     };
   };
+  groups = oneOf [
+    four_buttons
+    dpad
+    trigger
+    reference
+    touch_menu
+    scrollwheel
+    joystick_mouse
+    absolute_mouse
+    switches
+  ];
   modules = [
     {
       menus.Skills.touch = [
@@ -396,27 +408,12 @@
                 };
               });
             };
-            group = mkOption {
-              type = listOf (oneOf [
-                four_buttons
-                dpad
-                trigger
-                reference
-                touch_menu
-                scrollwheel
-                joystick_mouse
-                absolute_mouse
-                switches
-              ]);
-            };
+            group = mkOption {type = listOf groups;};
           };
           config = {
-            # TODO generate creator and url dynamically
-            # TODO where does creator come from?
+            # seems like creator and progenitor are not necessary
+            # progenitor = "template://controller_neptune_wasd.vdf";
             # creator = "76561198274817622";
-            # url = "autosave:///home/tristan/.local/share/Steam/steamapps/common/Steam Controller Configs/314551894/config/${toLower title}/controller_neptune.vdf";
-            # TODO is progenitor necessary?
-            progenitor = "template://controller_neptune_wasd.vdf";
             major_revision = "0";
             minor_revision = "0";
             Timestamp = "0";
@@ -447,11 +444,8 @@
       config.out.raw.group = flip mapAttrsToList config.menus (name: menu: {
         mode = "touch_menu";
         inherit name;
-        description = "";
-        settings.gyro_button = "1";
         inputs = pipe menu.touch [
           (imap0 (i: binding: nameValuePair "touch_menu_button_${i}" {
-            disabled_activators = {};
             activators.Full_Press.bindings.binding = "${binding}, , ";
             activators.Full_Press.settings.haptic_intensity = "2";
           }))
@@ -462,19 +456,7 @@
     ({config, ...}: let
       basicButton = mkOption {
         default = null;
-        type = nullOr (coercedTo str (setAttrByPath ["binding"]) (submodule {
-          freeformType = str;
-          options.binding = mkOption {type = nullOr str;};
-        }));
-      };
-      ABXY = mkOption {
-        default = null;
-        type = nullOr (coercedTo (submodule {
-
-        }) (binding: {
-          activators.Full_Press.bindings = [{binding = "${binding}, , ";}];
-          activators.Full_Press.settings.repeat_rate = 99;
-        }) button);
+        type = nullOr (coercedTo str (binding: {activators.Full_Press.bindings = [{binding = "${binding}, , ";}];}) button);
       };
       actions = pipe config.sets [
         (flip removeAttrs ["Default"])
@@ -510,39 +492,6 @@
           (getAttr "layers")
           (mapAttrsToList (title: layer: [
             (pipe layer [
-              (attrVals ["A" "B" "X" "Y"])
-              (any notNull)
-              (flip optional {
-                mode = "four_buttons";
-                settings.button_size = "17994";
-                settings.button_dist = "19994";
-                inputs = {
-                  button_a = layer.A;
-                  button_b = layer.B;
-                  button_x = layer.X;
-                  button_y = layer.Y;
-                };
-              })
-            ])
-            (pipe layer [
-              (attrVals ["MENU" "ESC" "LB" "RB" "L5" "R5" "L4" "R4" "RT"])
-              (any notNull)
-              (flip optional {
-                mode = "switches";
-                inputs = {
-                  button_escape = layer.ESC;
-                  button_menu = layer.MENU;
-                  left_bumper = layer.LB;
-                  right_bumper = layer.RB;
-                  button_back_left = layer.L5;
-                  button_back_right = layer.R5;
-                  button_back_left_upper = layer.L4;
-                  button_back_right_upper = layer.R4;
-                  right_trigger = layer.RT;
-                };
-              })
-            ])
-            (pipe layer [
               (attrVals ["LT"])
               (any notNull)
               (flip optional {
@@ -555,6 +504,120 @@
         flatten
         (imap0 (id: mergeAttrs {inherit id;}))
       ];
+      button_diamond = submodule ({config, ...}: {
+        options = let
+          ABXY = mkOption {
+            default = null;
+            # TODO convert to more than a string
+            type = nullOr (coercedTo str (binding: {
+              activators.Full_Press.bindings = [{binding = "${binding}, , ";}];
+              activators.Full_Press.settings.repeat_rate = 99;
+            }) button);
+          };
+        in {
+          A = ABXY;
+          B = ABXY;
+          X = ABXY;
+          Y = ABXY;
+        };
+        config.groups.button_diamond = {
+          mode = "four_buttons";
+          settings.button_size = "17994";
+          settings.button_dist = "19994";
+          inputs = {
+            button_a = config.A;
+            button_b = config.B;
+            button_x = config.X;
+            button_y = config.Y;
+          };
+        };
+      });
+      button_dpad = submodule ({config, ...}: {
+        options = {
+          DN = basicButton;
+          DS = basicButton;
+          DE = basicButton;
+          DW = basicButton;
+        };
+        config.groups.dpad = {
+          mode = "dpad";
+          inputs = {
+            dpad_north = config.DN;
+            dpad_south = config.DS;
+            dpad_east = config.DE;
+            dpad_west = config.DW;
+          };
+        };
+      });
+      button_switches = submodule ({config, ...}: {
+        options = {
+          MENU = basicButton;
+          ESC = basicButton;
+          LB = basicButton;
+          L4 = basicButton;
+          L5 = basicButton;
+          RB = basicButton;
+          R4 = basicButton;
+          R5 = basicButton;
+        };
+        config.groups.switches = {
+          mode = "switches";
+          inputs = {
+            button_escape = config.ESC;
+            button_menu = config.MENU;
+            left_bumper = config.LB;
+            right_bumper = config.RB;
+            button_back_left = config.L5;
+            button_back_right = config.R5;
+            button_back_left_upper = config.L4;
+            button_back_right_upper = config.R4;
+          };
+        };
+      });
+      left_joystick = submodule ({config, ...}: {
+        options.LJ = basicButton;
+        options.L3 = basicButton;
+        config.groups.left_joystick = {
+          mode = "";
+          inputs = {};
+        };
+      });
+      right_joystick = submodule ({config, ...}: {
+        options.RJ = basicButton;
+        options.R3 = basicButton;
+        config.groups.right_joystick = {
+          mode = "";
+          inputs = {};
+        };
+      });
+      left_trackpad = submodule ({config, ...}: {
+        options.LT = basicButton;
+        config.groups.left_trackpad = {
+          mode = "";
+          inputs = {};
+        };
+      });
+      right_trackpad = submodule ({config, ...}: {
+        options.RP = basicButton;
+        config.groups.right_trackpad = {
+          mode = "";
+          inputs = {};
+        };
+      });
+      left_trigger = submodule ({config, ...}: {
+        options.LT = basicButton;
+        config.groups.left_trigger = {
+          mode = "trigger";
+          inputs = {};
+        };
+      });
+      right_trigger = submodule ({config, ...}: {
+        options.RT = basicButton;
+        config.groups.right_trigger = {
+          mode = "trigger";
+          inputs = {};
+        };
+      });
     in {
       config.sets.Default.layers.Default = {};
       config.out.raw = {inherit actions action_layers preset group;};
@@ -562,31 +625,22 @@
         type = attrsOf (submodule {
           options.layers = mkOption {
             type = attrsOf (submodule {
+              imports = [
+                button_diamond
+                button_dpad
+                button_switches
+                left_joystick
+                left_trackpad
+                left_trigger
+                right_joystick
+                right_trackpad
+                right_trigger
+              ];
               options = {
-                MENU = basicButton;
-                ESC = basicButton;
-                A = ABXY;
-                B = ABXY;
-                X = ABXY;
-                Y = ABXY;
-                DN = basicButton;
-                DS = basicButton;
-                DE = basicButton;
-                DW = basicButton;
-                RB = basicButton;
-                RT = basicButton;
-                R3 = basicButton;
-                R4 = basicButton;
-                R5 = basicButton;
-                RJ = basicButton;
-                RP = basicButton;
-                LB = basicButton;
-                LT = basicButton;
-                L3 = basicButton;
-                L4 = basicButton;
-                L5 = basicButton;
-                LJ = basicButton;
-                LP = basicButton;
+                groups = mkOption {
+                  type = attrsOf groups;
+                  default = {};
+                };
               };
             });
           };
