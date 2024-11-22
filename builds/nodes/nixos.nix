@@ -238,6 +238,21 @@ in {
               mkdir -p "$(dirname "$dest")"
               ln -sfn ${AddOns} "$dest"
             '';
+          # TODO convert to declarative module
+          # TODO better installation method?
+          # TODO how to generate name? spaces were preserved in one but not the other?!
+          home.activation.tlopo-controls = lib.hm.dag.entryAfter ["writeBoundary"] ''
+            dest="$HOME/.steam/steam/steamapps/common/Steam Controller Configs/$(basename "$HOME"/.steam/steam/userdata/*)/config/the legend of pirates online/controller_neptune.vdf"
+            src=${(pkgs.formats.json {}).generate "wizard101.controls.json" (import (inputs.self + "/tlopo-controls.nix"))}
+            mkdir -p "$(dirname "$dest")"
+            ${getExe pkgs.json2vdf} > "$dest" < <(${getExe pkgs.jq} ".controller_mappings += {url: \"autosave:$dest\"}" $src)
+          '';
+          home.activation.wizard101-controls = lib.hm.dag.entryAfter ["writeBoundary"] ''
+            dest="$HOME/.steam/steam/steamapps/common/Steam Controller Configs/$(basename "$HOME"/.steam/steam/userdata/*)/config/wizard 101/controller_neptune.vdf"
+            src=${(pkgs.formats.json {}).generate "wizard101.controls.json" (import (inputs.self + "/wizard101-controls.nix"))}
+            mkdir -p "$(dirname "$dest")"
+            ${getExe pkgs.json2vdf} > "$dest" < <(${getExe pkgs.jq} ".controller_mappings += {url: \"autosave:$dest\"}" $src)
+          '';
           dotfiles.programs.steam.external = {
             enable = true;
             srm.userAccounts = ["supertriggy"];
@@ -249,18 +264,15 @@ in {
               hdos.enable = true;
             };
             manual = {
-              Kodi.shortcut.exe = getExe pkgs.kodi;
               # TODO find a proper way to add browser to game mode (brave/chromium seems to fail)
               # brave.shortcut.exe = getExe pkgs.brave;
+              Kodi.shortcut.exe = getExe pkgs.kodi;
               "Battle.Net".shortcut.exe = pkgs.fetchurl {
                 name = "Battle.net-Setup.exe";
-                # https://www.battle.net/download/getInstallerForGame?os=win&gameProgram=BATTLENET_APP&version=Live
                 url = "https://downloader.battle.net/download/getInstaller?os=win&installer=Battle.net-Setup.exe";
                 hash = "sha256-FVeo035liq7s4MGpKp0yeVP1h/OkSnsQri55g6TQk+8=";
                 executable = true;
               };
-              # TODO declarative game controls
-              # TODO how can I install interactively and set launcher afterwards?
               "The Legend of Pirates Online".shortcut.exe = getExe (inputs.erosanix.lib.${pkgs.system}.mkWindowsApp rec {
                 pname = "The.Legend.of.Pirates.Online";
                 version = "1.4.1";
