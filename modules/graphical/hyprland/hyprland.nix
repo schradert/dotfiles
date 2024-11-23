@@ -3,8 +3,8 @@
 in {
   flake.overlays.hyprland = overlays.default;
   canivete.deploy.nixos.modules.hyprland = {config, lib, pkgs, ...}: let
-    inherit (lib) flatten genList getExe getExe' mkEnableOption mkIf mkMerge pipe toList;
-    inherit (pkgs) hyprlandPlugins hyprpolkitagent kitty libsForQt5 qt6 systemd;
+    inherit (lib) flatten genList mkEnableOption mkIf mkMerge pipe toList;
+    inherit (pkgs) hyprlandPlugins kitty libsForQt5 qt6 systemd;
   in {
     imports = [nixosModules.default];
     options.dotfiles.graphical.hyprland.enable = mkEnableOption "Hyprland configuration";
@@ -45,7 +45,6 @@ in {
           ];
           settings = {
             "$mod" = "SUPER";
-            exec-once = ["${getExe' systemd "systemctl"} --user start ${getExe hyprpolkitagent}"];
             bind = mkMerge [
               [
                 # TODO why doesn't variables like $terminal and $browser work?
