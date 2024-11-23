@@ -5,8 +5,12 @@
     options.dotfiles.programs.wezterm.enable = mkEnableOption "Wezterm";
     config = mkIf config.dotfiles.programs.wezterm.enable (mkMerge [
       {
-        programs.wezterm.enable = true;
-        programs.wezterm.package = perSystem.inputs'.wezterm.packages.default;
+        programs.wezterm = {
+          enable = true;
+          package = perSystem.inputs'.wezterm.packages.default;
+          # Prevent WezTerm from overriding SSH_AUTH_SOCK from ssh-agent service
+          extraConfig = "return {mux_enable_ssh_agent = false}";
+        };
       }
       (mkIf pkgs.stdenv.isDarwin {
         launchd.agents.wezterm = {
