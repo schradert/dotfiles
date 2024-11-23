@@ -45,6 +45,7 @@ in {
       ...
     }: {
       config = mkIf config.dotfiles.graphical.enable {
+        dotfiles.services.yubikey.enable = mkDefault true;
         home-manager.sharedModules = toList {
           home.packages = with pkgs; [
             android-studio
