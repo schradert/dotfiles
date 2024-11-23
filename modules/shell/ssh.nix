@@ -124,6 +124,7 @@ in {
     }: {
       home-manager.sharedModules = toList {dotfiles.hostname = config.networking.hostName;};
       services.openssh.enable = true;
+      security.pam.rssh.enable = true;
       security.pam.sshAgentAuth.enable = true;
       security.polkit.enable = true;
       users.users = mkMerge [
