@@ -128,7 +128,7 @@ in {
 
         # Deactivate auto sleep
         services.logind.lidSwitch = "ignore";
-        services.xserver.videoDrivers = ["displaylink" "modesetting"];
+        services.xserver.videoDrivers = ["radeon" "i915" "displaylink" "modesetting" "fbdev"];
         systemd.targets = {
           sleep.enable = false;
           suspend.enable = false;
