@@ -96,8 +96,9 @@
       };
       config = mkIf emacs.enable {
         # TODO why is the loadFile not created? why am I having so much issue with running this basic command?
+        # TODO why am I getting "cannot resolve host: github.com when running doom sync? seems like some packages are picked up just fine
         # home.activation.doom = hm.dag.entryAfter ["writeBoundary"] "${getExe doom} $([[ ! -f ${loadFile} ]] && echo install --no-env || echo sync)";
-        home.activation.doom = hm.dag.entryAfter ["writeBoundary"] "${getExe doom} $([[ ! -d ${doomDir} ]] && echo install --no-env || echo sync)";
+        # home.activation.doom = hm.dag.entryAfter ["writeBoundary"] "${getExe doom} $([[ ! -d ${doomDir} ]] && echo install --no-env || echo sync)";
         # NOTE fonts only detected in home.packages
         home.packages = [doom (nerdfonts.override {fonts = ["NerdFontsSymbolsOnly"];})];
         programs.git.extraConfig.safe.directory = emacsDir;
