@@ -749,6 +749,27 @@
         "type": "indirect"
       }
     },
+    "flake-parts_5": {
+      "inputs": {
+        "nixpkgs-lib": [
+          "walker",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1719994518,
+        "narHash": "sha256-pQMhCCHyQGRzdfAkdJ4cIWiw+JNuWsTX7f0ZYSyz0VY=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "9227223f6d922fee3c7b190b2cc238a99527bbb7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "type": "github"
+      }
+    },
     "flake-schemas": {
       "locked": {
         "lastModified": 1721999734,
@@ -2176,6 +2197,7 @@
         "sops-nix": "sops-nix",
         "spicetify-nix": "spicetify-nix",
         "umu": "umu",
+        "walker": "walker",
         "wezterm": "wezterm"
       }
     },
@@ -2638,6 +2660,28 @@
         "dir": "packaging/nix",
         "owner": "Open-Wine-Components",
         "repo": "umu-launcher",
+        "type": "github"
+      }
+    },
+    "walker": {
+      "inputs": {
+        "flake-parts": "flake-parts_5",
+        "nixpkgs": [
+          "canivete",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1732432406,
+        "narHash": "sha256-RhfrsPNbzx2paAKmAP6crDNJrgLTOKt6Gc0pNfRNmb4=",
+        "owner": "abenz1267",
+        "repo": "walker",
+        "rev": "255ea8bd8785c3e547df53619c3aba4b17a5ef60",
+        "type": "github"
+      },
+      "original": {
+        "owner": "abenz1267",
+        "repo": "walker",
         "type": "github"
       }
     },
