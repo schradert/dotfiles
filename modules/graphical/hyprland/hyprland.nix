@@ -34,8 +34,8 @@ in {
           systemd.enableXdgAutostart = false;
           systemd.variables = ["--all"];
           plugins = with hyprlandPlugins; [
+            hyprexpo
             # hyprbars
-            # hyprexpo
             # hyprtrails
             # hyprwinwrap
             # borders-plus-plus
@@ -72,11 +72,17 @@ in {
               "$mod, F8, workspace, 18"
               "$mod, F9, workspace, 19"
               "$mod, F10, workspace, 20"
+
+              "$mod+SHIFT, Tab, hyprexpo:expo, toggle"
             ];
             bindm = [
               "$mod, mouse:272, movewindow"
               "$mod, mouse:273, resizewindow"
             ];
+            plugin.hyprexpo = {
+              columns = 2;
+              gesture_positive = false;
+            };
           };
         };
         # Use KDE file picker
