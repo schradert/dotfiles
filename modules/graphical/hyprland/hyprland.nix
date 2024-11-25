@@ -3,7 +3,7 @@
 in {
   flake.overlays.hyprland = overlays.default;
   canivete.deploy.nixos.modules.hyprland = {config, lib, pkgs, ...}: let
-    inherit (lib) flatten genList mkEnableOption mkIf mkMerge pipe toList;
+    inherit (lib) flatten mkEnableOption mkIf toList;
     inherit (pkgs) hyprlandPlugins kitty libsForQt5 qt6 systemd;
   in {
     imports = [nixosModules.default];
@@ -36,7 +36,6 @@ in {
           systemd.enableXdgAutostart = false;
           systemd.variables = ["--all"];
           plugins = with hyprlandPlugins; [
-            # hy3
             # hyprbars
             # hyprexpo
             # hyprtrails
@@ -45,23 +44,42 @@ in {
           ];
           settings = {
             "$mod" = "SUPER";
-            bind = mkMerge [
-              [
-                # TODO why doesn't variables like $terminal and $browser work?
-                "$mod, B, exec, brave"
-                "$mod, T, exec, wezterm"
-                # TODO how can I test that this works?
-                ", Print, exec, grimblast copy area"
-              ]
-              # TODO why doesn't this work? keybinding conflicts? should I even keep this?
-              # Workspace management shortcuts
-              (pipe 9 [
-                (genList (i: [
-                  "$mod, code:1${toString i}, workspace, ${toString (i+1)}"
-                  "$mod SHIFT, code:1${toString i}, movetoworkspace, ${toString (i+1)}"
-                ]))
-               flatten
-              ])
+            bind = [
+              # TODO why don't variables like $terminal and $browser work?
+              "$mod, grave, exec, brave"
+              "$mod, return, exec, wezterm"
+              "$mod+SHIFT, return, exec, doom run"
+
+              "$mod, f, fullscreen, 1"
+              "$mod+SHIFT, f, fullscreen, 0"
+
+              "$mod, Tab, overview:toggle"
+              "$mod+SHIFT, Tab, togglefloating"
+
+              "$mod, 1, workspace, 01"
+              "$mod, 2, workspace, 02"
+              "$mod, 3, workspace, 03"
+              "$mod, 4, workspace, 04"
+              "$mod, 5, workspace, 05"
+              "$mod, 6, workspace, 06"
+              "$mod, 7, workspace, 07"
+              "$mod, 8, workspace, 08"
+              "$mod, 9, workspace, 09"
+              "$mod, 0, workspace, 10"
+              "$mod, F1, workspace, 11"
+              "$mod, F2, workspace, 12"
+              "$mod, F3, workspace, 13"
+              "$mod, F4, workspace, 14"
+              "$mod, F5, workspace, 15"
+              "$mod, F6, workspace, 16"
+              "$mod, F7, workspace, 17"
+              "$mod, F8, workspace, 18"
+              "$mod, F9, workspace, 19"
+              "$mod, F10, workspace, 20"
+            ];
+            bindm = [
+              "$mod, mouse:272, movewindow"
+              "$mod, mouse:273, resizewindow"
             ];
           };
         };
