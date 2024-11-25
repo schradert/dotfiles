@@ -50,9 +50,7 @@ in {
 
               "$mod, f, fullscreen, 1"
               "$mod+SHIFT, f, fullscreen, 0"
-
-              "$mod, Tab, overview:toggle"
-              "$mod+SHIFT, Tab, togglefloating"
+              "$mod+CONTROL, f, togglefloating"
 
               "$mod, 1, workspace, 01"
               "$mod, 2, workspace, 02"

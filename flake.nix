@@ -78,6 +78,8 @@
     hy3.inputs.hyprland.follows = "hyprland";
     walker.url = github:abenz1267/walker;
     walker.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    hyprspace.url = github:KZDKM/Hyprspace;
+    hyprspace.inputs.hyprland.follows = "hyprland";
     hypr-darkwindow.url = github:micha4w/Hypr-DarkWindow/v0.45.0;
     hypr-darkwindow.inputs.hyprland.follows = "hyprland";
     # TODO FHS compatibility with envfs and nix-ld
