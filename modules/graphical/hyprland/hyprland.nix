@@ -9,8 +9,6 @@ in {
     imports = [nixosModules.default];
     options.dotfiles.graphical.hyprland.enable = mkEnableOption "Hyprland configuration";
     config = mkIf config.dotfiles.graphical.hyprland.enable {
-      nix.settings.substituters = ["https://hyprland.cachix.org"];
-      nix.settings.trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
       services.displayManager.sddm.wayland.enable = true;
       environment.sessionVariables.NIXOS_OZONE_WL = "1";
       environment.systemPackages = [kitty];

@@ -70,10 +70,9 @@
     erosanix.inputs.nixpkgs.follows = "canivete/nixpkgs";
 
     # Hyprland
-    hyprland.url = github:hyprwm/Hyprland;
-    # TODO when should I start building my own?
-    # hyprland.inputs.nixpkgs.follows = "canivete/nixpkgs";
-    hyprland-plugins.url = github:hyprwm/hyprland-plugins;
+    hyprland.url = github:hyprwm/Hyprland/v0.45.0;
+    hyprland.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    hyprland-plugins.url = github:hyprwm/hyprland-plugins/v0.45.0;
     hyprland-plugins.inputs.hyprland.follows = "hyprland";
     hy3.url = github:outfoxxed/hy3/hl0.45.0;
     hy3.inputs.hyprland.follows = "hyprland";
