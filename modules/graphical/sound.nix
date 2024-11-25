@@ -33,10 +33,6 @@
             ", XF86AudioRaiseVolume, exec, wpctl set-volume --limit 1.2 @DEFAULT_AUDIO_SINK@ 5%+"
             ", XF86AudioLowerVolume, exec, wpctl set-volume --limit 1.2 @DEFAULT_AUDIO_SINK@ 5%-"
           ];
-          bindeol = [
-            ", XF86AudioNext, exec, playerctl position 5+"
-            ", XF86AudioPrev, exec, playerctl position 5-"
-          ];
         };
       };
     };
