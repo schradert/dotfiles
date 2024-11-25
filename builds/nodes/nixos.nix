@@ -260,7 +260,10 @@ in {
             chiaki.enable = true;
             runescape = {
               rscplus.enable = true;
-              saradomin.enable = true;
+              # TODO fix this build and reactivate
+              #    > /build/nuget.e1hUB6/fallback/avalonia/11.0.10/buildTransitive/AvaloniaBuildTasks.targets(81,5): error MSB4018: The "GenerateAvaloniaResourcesTask" task failed unexpectedly. [/build/source/Glitonea/Glitonea.csproj]
+              #    > /build/nuget.e1hUB6/fallback/avalonia/11.0.10/buildTransitive/AvaloniaBuildTasks.targets(81,5): error MSB4018: System.IO.IOException: The process cannot access the file '/build/source/Glitonea/obj/Release/netstandard2.0/Avalonia/resources' because it is being used by another process. [/build/source/Glitonea/Glitonea.csproj]
+              saradomin.enable = false;
               runelite.enable = true;
               hdos.enable = true;
             };
