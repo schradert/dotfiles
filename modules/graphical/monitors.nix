@@ -18,14 +18,43 @@
         users.users.${flake.config.canivete.people.me}.extraGroups = ["i2c"];
       };
     };
-    homeModules.monitors = {config, lib, ...}: {
+    homeModules.monitors = {config, lib, pkgs, ...}: let
+      inherit (lib) flip getExe mkIf concatStringsSep map pipe;
+    in {
       config = lib.mkIf config.dotfiles.graphical.monitors {
-        wayland.windowManager.hyprland.settings.monitor = [
-          "DVI-I-1, 3840x2160@60.00, 0x0, 1, transform, 1"
-          "DVI-I-2, 3840x2160@60.00, 2160x400, 1"
-          # TODO will this work generally?
-          "eDP-1, 1920x1080@60.02, 6000x800, 1"
-        ];
+        wayland.windowManager.hyprland.settings = let
+          LGW = 3840;
+          LGH = 2160;
+          offsetY = 400;
+          base = 1.50;
+          zoom = 3.00;
+          monitorCfgs = scale: [
+            "DVI-I-1, ${toString LGW}x${toString LGH}@60.00, 0x0, ${toString scale}, transform, 1"
+            "DVI-I-2, ${toString LGW}x${toString LGH}@60.00, ${toString (LGH / scale)}x${toString (offsetY / scale)}, ${toString scale}"
+            "eDP-1, 1920x1080@60.02, ${toString ((LGH + LGW) / scale)}x${toString (2 * offsetY / scale)}, ${toString scale}"
+          ];
+          monitorCmds = flip pipe [
+            monitorCfgs
+            (map (monitor: "keyword monitor \"${monitor}\""))
+            (concatStringsSep " ; ")
+          ];
+          script = pkgs.writeShellApplication {
+            name = "hyprland-scale-monitors";
+            runtimeInputs = [pkgs.jq config.wayland.windowManager.hyprland.finalPackage];
+            text = ''
+              hyprctl --batch "$(
+                  if [[ "$(hyprctl -j monitors eDP-1 | jq ".[0].scale")" == "$(printf "%.2f" "${toString base}")" ]]; then
+                      echo "${monitorCmds zoom}"
+                  else
+                      echo "${monitorCmds base}"
+                  fi
+              )"
+            '';
+          };
+        in {
+          monitor = monitorCfgs base;
+          bind = ["$mod+SHIFT, z, exec, ${getExe script}"];
+        };
       };
     };
   };
