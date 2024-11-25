@@ -11,6 +11,12 @@
         defaultEditor = config.dotfiles.editor == "emacs";
         client.enable = true;
       };
+      # TODO should I try out exwm?
+      # NOTE this guy has some example code: https://github.com/martinbaillie/dotfiles
+      # services.xserver.windowManager.session = lib.singleton {
+      #   name = "exwm";
+      #   start = "${lib.getExe doom} run";
+      # };
     };
     system.homeModules.emacs = {
       config,
