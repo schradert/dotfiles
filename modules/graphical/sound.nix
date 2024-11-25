@@ -18,6 +18,27 @@
         pulse.enable = true;
         jack.enable = true;
       };
+      home-manager.sharedModules = lib.toList {
+        home.packages = [pkgs.playerctl];
+        services.playerctld.enable = true;
+        wayland.windowManager.hyprland.settings = {
+          bindl = [
+            ", XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+            ", XF86AudioNext, exec, playerctl next"
+            ", XF86AudioPrev, exec, playerctl previous"
+            ", XF86AudioStop, exec, playerctl --all-players stop"
+            ", XF86AudioPlay, exec, playerctl play-pause"
+          ];
+          bindel = [
+            ", XF86AudioRaiseVolume, exec, wpctl set-volume --limit 1.2 @DEFAULT_AUDIO_SINK@ 5%+"
+            ", XF86AudioLowerVolume, exec, wpctl set-volume --limit 1.2 @DEFAULT_AUDIO_SINK@ 5%-"
+          ];
+          bindeol = [
+            ", XF86AudioNext, exec, playerctl position 5+"
+            ", XF86AudioPrev, exec, playerctl position 5-"
+          ];
+        };
+      };
     };
   };
 }
