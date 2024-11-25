@@ -1138,6 +1138,27 @@
         "type": "github"
       }
     },
+    "hy3": {
+      "inputs": {
+        "hyprland": [
+          "hyprland"
+        ]
+      },
+      "locked": {
+        "lastModified": 1731228735,
+        "narHash": "sha256-b3PuEtRHTSxV809RLUiZVQhDQZ8NxxpWUjboTe9QAAY=",
+        "owner": "outfoxxed",
+        "repo": "hy3",
+        "rev": "7e792f712a2a896bd8d3174780c8944ef5ae7931",
+        "type": "github"
+      },
+      "original": {
+        "owner": "outfoxxed",
+        "ref": "hl0.45.0",
+        "repo": "hy3",
+        "type": "github"
+      }
+    },
     "hypr-darkwindow": {
       "inputs": {
         "hyprland": [
@@ -2184,6 +2205,7 @@
         "erosanix": "erosanix",
         "gke-gcloud-auth-plugin-flake": "gke-gcloud-auth-plugin-flake",
         "home-manager": "home-manager_2",
+        "hy3": "hy3",
         "hypr-darkwindow": "hypr-darkwindow",
         "hyprland": "hyprland",
         "hyprland-plugins": "hyprland-plugins",

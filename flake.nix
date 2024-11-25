@@ -75,6 +75,8 @@
     # hyprland.inputs.nixpkgs.follows = "canivete/nixpkgs";
     hyprland-plugins.url = github:hyprwm/hyprland-plugins;
     hyprland-plugins.inputs.hyprland.follows = "hyprland";
+    hy3.url = github:outfoxxed/hy3/hl0.45.0;
+    hy3.inputs.hyprland.follows = "hyprland";
     walker.url = github:abenz1267/walker;
     walker.inputs.nixpkgs.follows = "canivete/nixpkgs";
     hypr-darkwindow.url = github:micha4w/Hypr-DarkWindow/v0.45.0;
