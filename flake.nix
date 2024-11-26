@@ -69,25 +69,58 @@
     erosanix.url = github:emmanuelrosa/erosanix;
     erosanix.inputs.nixpkgs.follows = "canivete/nixpkgs";
 
-    # Hyprland
-    hyprland.url = github:hyprwm/Hyprland/v0.45.0;
-    hyprland.inputs.nixpkgs.follows = "canivete/nixpkgs";
-    hyprland-plugins.url = github:hyprwm/hyprland-plugins/v0.45.0;
-    hyprland-plugins.inputs.hyprland.follows = "hyprland";
-    hy3.url = github:outfoxxed/hy3/hl0.45.0;
-    hy3.inputs.hyprland.follows = "hyprland";
+    # Wayland launcher
     walker.url = github:abenz1267/walker;
     walker.inputs.nixpkgs.follows = "canivete/nixpkgs";
-    hyprspace.url = github:KZDKM/Hyprspace;
+
+    # Hyprland
+    hyprland.url = github:hyprwm/Hyprland;
+    hyprland.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    hyprland-plugins.url = github:hyprwm/hyprland-plugins;
+    hyprland-plugins.inputs.hyprland.follows = "hyprland";
+    hyprland-plugins.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    # TODO track PR https://github.com/outfoxxed/hy3/pull/156 to revert to master
+    hy3.url = github:outfoxxed/hy3/36340e627d1b9c844ce73443db042c953ffdd1bf;
+    hy3.inputs.hyprland.follows = "hyprland";
+    # TODO track PR https://github.com/KZDKM/Hyprspace/pull/111 to revert to master
+    hyprspace.url = github:KZDKM/Hyprspace/2f239d0569f8c380338bbd5aef99e7e8c41b9a09;
     hyprspace.inputs.hyprland.follows = "hyprland";
-    hypr-darkwindow.url = github:micha4w/Hypr-DarkWindow/v0.45.0;
-    hypr-darkwindow.inputs.hyprland.follows = "hyprland";
+    # TODO revert to version pinning
+    aquamarine.url = github:hyprwm/aquamarine;
+    aquamarine.inputs.nixpkgs.follows = "hyprland/nixpkgs";
+    aquamarine.inputs.hyprutils.follows = "hyprland/hyprutils";
+    aquamarine.inputs.hyprwayland-scanner.follows = "hyprland/hyprwayland-scanner";
+    hyprland.inputs.aquamarine.follows = "aquamarine";
+    hyprcursor.url = github:hyprwm/hyprcursor;
+    hyprcursor.inputs.nixpkgs.follows = "hyprland/nixpkgs";
+    hyprcursor.inputs.hyprlang.follows = "hyprland/hyprlang";
+    hyprland.inputs.hyprcursor.follows = "hyprcursor";
+    hyprland-protocols.url = github:hyprwm/hyprland-protocols;
+    hyprland-protocols.inputs.nixpkgs.follows = "hyprland/nixpkgs";
+    hyprland.inputs.hyprland-protocols.follows = "hyprland-protocols";
+    hyprlang.url = github:hyprwm/hyprlang;
+    hyprlang.inputs.nixpkgs.follows = "hyprland/nixpkgs";
+    hyprlang.inputs.hyprutils.follows = "hyprland/hyprutils";
+    hyprland.inputs.hyprlang.follows = "hyprlang";
+    hyprutils.url = github:hyprwm/hyprutils;
+    hyprutils.inputs.nixpkgs.follows = "hyprland/nixpkgs";
+    hyprland.inputs.hyprutils.follows = "hyprutils";
+    hyprwayland-scanner.url = github:hyprwm/hyprwayland-scanner;
+    hyprwayland-scanner.inputs.nixpkgs.follows = "hyprland/nixpkgs";
+    hyprland.inputs.hyprwayland-scanner.follows = "hyprwayland-scanner";
+    xdph.url = github:hyprwm/xdg-desktop-portal-hyprland;
+    xdph.inputs.nixpkgs.follows = "hyprland/nixpkgs";
+    xdph.inputs.hyprutils.follows = "hyprland/hyprutils";
+    xdph.inputs.hyprlang.follows = "hyprland/hyprlang";
+    xdph.inputs.hyprwayland-scanner.follows = "hyprland/hyprwayland-scanner";
+    xdph.inputs.hyprland-protocols.follows = "hyprland/hyprland-protocols";
+    hyprland.inputs.xdph.follows = "xdph";
+
+    # TODO fix wiimmfi login
     # TODO FHS compatibility with envfs and nix-ld
     # NOTE https://github.com/nix-community/nix-ld
     # NOTE https://github.com/Mic92/envfs
     # NOTE Mic92's example: https://github.com/Mic92/dotfiles/blob/main/machines/modules/fhs-compat.nix
-    #
-    # TODO fix wiimmfi login
   };
   outputs = inputs:
     inputs.canivete.lib.mkFlake {
