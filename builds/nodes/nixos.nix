@@ -98,7 +98,7 @@ in {
         dotfiles.graphical.sound.enable = true;
         dotfiles.graphical.hyprland.enable = true;
         dotfiles.kubernetes.enable = true;
-        dotfiles.services.yubikey.enable = false;
+        dotfiles.services.yubikey.enable = true;
         boot.initrd.availableKernelModules = ["xhci_pci" "nvme" "rtsx_pci_sdmmc"];
         disko = recursiveUpdate lvmDisko {
           devices.disk.base = {

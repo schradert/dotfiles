@@ -4,6 +4,8 @@
     pkgs,
     ...
   }: {
+    # TODO figure out how to configure this automatically -- should this be done every time?
+    # Seems like this has to run with pcscd running
     packages.yubikey = config.canivete.scripts.yubikey.package;
     canivete.scripts.yubikey = {
       script = ./yubikey.sh;
@@ -38,6 +40,7 @@
         pcscd.enable = true;
         udev.packages = [pkgs.yubikey-personalization];
         # Lock screen when unplugged
+        # TODO is there a better way to lock like with hyprlock?
         udev.extraRules = ''
           ACTION=="remove",\
             ENV{ID_BUS}=="usb",\
