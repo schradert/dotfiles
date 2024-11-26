@@ -97,9 +97,6 @@ in {
         dotfiles.graphical.monitors = true;
         dotfiles.graphical.sound.enable = true;
         dotfiles.graphical.hyprland.enable = true;
-        # TODO get plugin to load properly
-        # NOTE https://github.com/outfoxxed/hy3/issues/155
-        dotfiles.graphical.hyprland.plugins.hy3.enable = false;
         dotfiles.kubernetes.enable = true;
         dotfiles.services.yubikey.enable = false;
         boot.initrd.availableKernelModules = ["xhci_pci" "nvme" "rtsx_pci_sdmmc"];

@@ -2,6 +2,7 @@
   inherit (inputs.hyprland) nixosModules homeManagerModules overlays;
 in {
   flake.overlays.hyprland = overlays.default;
+  flake.overlays.hyprland-plugins = inputs.hyprland-plugins.overlays.default;
   canivete.deploy.nixos.modules.hyprland = {config, lib, pkgs, ...}: let
     inherit (lib) flatten mkEnableOption mkIf toList;
     inherit (pkgs) hyprlandPlugins kitty libsForQt5 qt6 systemd;
@@ -22,6 +23,7 @@ in {
         # TODO why do a lot of common shortcuts not work in emacs?
         # TODO do I actually HAVE to enable kitty? I can't even get it to work seemingly...
         # TODO why do I have weird lag issues randomly (mostly in brave)?
+        # TODO use hyprwinwrap (kitty --config ... --class kitty-bg <script>) to run something as a background wallpaper...
         home.packages = [
           libsForQt5.qt5.qtwayland
           qt6.qtwayland
@@ -35,9 +37,9 @@ in {
           systemd.variables = ["--all"];
           plugins = with hyprlandPlugins; [
             hyprexpo
+            hyprwinwrap
             # hyprbars
             # hyprtrails
-            # hyprwinwrap
             # borders-plus-plus
           ];
           settings = {
