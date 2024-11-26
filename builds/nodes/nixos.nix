@@ -114,6 +114,7 @@ in {
             srm.userAccounts = ["supertriggy"];
             runescape.runelite.enable = true;
           };
+          dotfiles.programs.silly = true;
         };
 
         location.latitude = 37.8;
