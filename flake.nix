@@ -79,6 +79,8 @@
     hyprland-plugins.url = github:hyprwm/hyprland-plugins;
     hyprland-plugins.inputs.hyprland.follows = "hyprland";
     hyprland-plugins.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    hyprfocus.url = github:pyt0xic/hyprfocus;
+    hyprfocus.inputs.hyprland.follows = "hyprland";
     # TODO track PR https://github.com/outfoxxed/hy3/pull/156 to revert to master
     hy3.url = github:outfoxxed/hy3/36340e627d1b9c844ce73443db042c953ffdd1bf;
     hy3.inputs.hyprland.follows = "hyprland";
