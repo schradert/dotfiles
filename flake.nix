@@ -73,6 +73,12 @@
     walker.url = github:abenz1267/walker;
     walker.inputs.nixpkgs.follows = "canivete/nixpkgs";
 
+    # AGS GTK widget design
+    astal.url = github:aylur/astal;
+    astal.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    ags.url = github:aylur/ags;
+    ags.inputs.nixpkgs.follows = "canivete/nixpkgs";
+
     # Hyprland
     hyprland.url = github:hyprwm/Hyprland;
     hyprland.inputs.nixpkgs.follows = "canivete/nixpkgs";
@@ -81,10 +87,8 @@
     hyprland-plugins.inputs.nixpkgs.follows = "canivete/nixpkgs";
     hyprfocus.url = github:pyt0xic/hyprfocus;
     hyprfocus.inputs.hyprland.follows = "hyprland";
-    astal.url = github:aylur/astal;
-    astal.inputs.nixpkgs.follows = "canivete/nixpkgs";
-    ags.url = github:aylur/ags;
-    ags.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    hyprsplit.url = github:shezdy/hyprsplit;
+    hyprsplit.inputs.hyprland.follows = "hyprland";
     # TODO track PR https://github.com/outfoxxed/hy3/pull/156 to revert to master
     hy3.url = github:outfoxxed/hy3/36340e627d1b9c844ce73443db042c953ffdd1bf;
     hy3.inputs.hyprland.follows = "hyprland";
