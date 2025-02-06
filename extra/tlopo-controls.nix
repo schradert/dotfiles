@@ -64,7 +64,7 @@
         name = "";
         description = "";
         inputs = {
-           dpad_north.activators.Full_Press = {
+          dpad_north.activators.Full_Press = {
             bindings.binding = ["key_press W, , "];
             settings.repeat_rate = "99";
             settings.haptic_intensity = "1";
