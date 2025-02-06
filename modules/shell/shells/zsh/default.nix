@@ -1,22 +1,26 @@
 {
-  config,
-  nix,
-  ...
-}:
-with nix; {
+  # TODO do i need this for lazy loading completions
+  # NOTE https://news.ycombinator.com/item?id=40140873
   canivete.deploy = {
-    nixos.modules.zsh = {pkgs, ...}: {
+    nixos.modules.zsh = {
+      flake,
+      pkgs,
+      ...
+    }: {
       environment.pathsToLink = ["/share/zsh"];
       environment.shells = [pkgs.zsh];
       programs.zsh.enable = true;
-      users.users.${config.canivete.people.me}.shell = pkgs.zsh;
+      users.users.${flake.config.canivete.people.me}.shell = pkgs.zsh;
     };
     system.homeModules.zsh = {
       config,
+      lib,
       pkgs,
       ...
     }: let
-      plugins = with pkgs; [
+      inherit (lib) cleanSource flatten optionals;
+      inherit (pkgs) fetchFromGitHub zsh-powerlevel10k;
+      plugins = [
         {
           name = "powerlevel10k";
           src = zsh-powerlevel10k;
@@ -101,22 +105,10 @@ with nix; {
         }
       ];
     in {
-      options.dotfiles.zsh.initExtraLines = mkOption {
-        type = listOf str;
-        default = [];
-        description = "List implementation of programs.zsh.initExtra to allow merging";
-      };
-      config.dotfiles.zsh.initExtraLines = with config.programs;
-        toList ''
-          prompt_nix_shell_setup
-          # set descriptions format to enable group support
-          zstyle ':completion:*:descriptions' format '[%d]'
-          # set list-colors to enable filename colorizing
-          zstyle ':completion:*' list-colors $LS_COLORS  # ''${(s.:.)LS_COLORS}
-          fpath+=($ZSH/custom/plugins/zsh-completions/src)
-        '';
-      config.home.packages = [pkgs.meslo-lgs-nf];
-      config.programs.zsh = {
+      # TODO package https://github.com/Trepan-Debuggers/zshdb
+      # dotfiles.programs.emacs.dependencies = [pkgs.zshdb];
+      home.packages = [pkgs.meslo-lgs-nf];
+      programs.zsh = {
         enable = true;
         autosuggestion.enable = true;
         syntaxHighlighting.enable = true;
@@ -124,14 +116,18 @@ with nix; {
         autocd = true;
         history.expireDuplicatesFirst = true;
         history.extended = true;
-        # TODO trim leading tabs
-        initExtra = concatMapStringsSep "\n" (x: x) config.dotfiles.zsh.initExtraLines;
+        initExtra = ''
+          prompt_nix_shell_setup
+          # set descriptions format to enable group support
+          zstyle ':completion:*:descriptions' format '[%d]'
+          # set list-colors to enable filename colorizing
+          zstyle ':completion:*' list-colors $LS_COLORS  # ''${(s.:.)LS_COLORS}
+          fpath+=($ZSH/custom/plugins/zsh-completions/src)
+        '';
         localVariables = {
           YSU_MESSAGE_POSITION = "after";
           YSU_MODE = "ALL";
-          YSU_HARDCORE = 1;
           ZSH_AUTOSUGGEST_STRATEGY = ["history" "completion"];
-          DIRENV_WARN_TIMEOUT = "10s";
         };
         oh-my-zsh.enable = true;
         oh-my-zsh.plugins = with config.programs;
@@ -148,7 +144,6 @@ with nix; {
             "rsync"
             (optionals gh.enable ["gh"])
             (optionals git.enable ["git git-auto-fetch"])
-            (optionals tmux.enable ["tmux"])
             (optionals k9s.enable ["helm" "kubectl"])
             (optionals k9s.enable ["helm" "kubectl"])
           ];
