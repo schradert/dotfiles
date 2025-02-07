@@ -21,6 +21,9 @@ in {
           slack
           unbound
         ];
+        # TODO android module
+        home.sessionVariables.ANDROID_USER_HOME = "${config.xdg.dataHome}/android";
+        home.shellAliases.adb = "HOME=\"${config.home.sessionVariables.ANDROID_USER_HOME}\" ${pkgs.android-tools}/bin/adb";
       };
     };
     darwin.modules.graphical = {config, ...}: {
@@ -32,15 +35,17 @@ in {
           "bitwarden"
           "brave-browser"
           "element"
-          "godot"
+          "legcord"
           "protonvpn"
+          "quiet"
           "session"
-          "signal"
+          "zen-browser"
         ];
       };
     };
     nixos.modules.graphical = {
       config,
+      perSystem,
       pkgs,
       ...
     }: {
@@ -54,10 +59,17 @@ in {
             bitwarden
             brave
             element-desktop
-            godot_4
             protonvpn-gui
+            quiet
             session-desktop
-            signal-desktop
+            simplex-chat-desktop
+
+            # Discord
+            discordo
+            legcord
+            webcord
+
+            perSystem.inputs'.zen-browser.packages.twilight
           ];
           wayland.windowManager.hyprland.settings."$browser" = "brave";
         };
