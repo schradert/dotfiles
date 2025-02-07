@@ -1,5 +1,9 @@
 {
-  canivete.deploy.nixos.modules.openebs = {config, lib, ...}: {
+  canivete.deploy.nixos.modules.openebs = {
+    config,
+    lib,
+    ...
+  }: {
     config = lib.mkIf config.dotfiles.kubernetes.enable {
       boot.kernelModules = ["dm_thin_pool"];
     };

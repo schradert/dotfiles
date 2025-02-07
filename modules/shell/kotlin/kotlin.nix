@@ -5,7 +5,7 @@
     pkgs,
     ...
   }: let
-    inherit (lib) mkEnableOption mkIf mkMerge mkOption mkPackageOption types;
+    inherit (lib) mkEnableOption mkIf;
     inherit (config.dotfiles.programs) kotlin;
   in {
     options.dotfiles.programs.kotlin = {

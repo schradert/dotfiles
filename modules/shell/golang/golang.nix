@@ -6,8 +6,7 @@
     ...
   }: let
     inherit (config.dotfiles.programs) go;
-    inherit (lib) mkEnableOption mkIf mkMerge mkOption mkPackageOption types;
-    inherit (types) listOf package;
+    inherit (lib) mkEnableOption mkIf mkMerge;
   in {
     options.dotfiles.programs.go = {
       enable = mkEnableOption "go";

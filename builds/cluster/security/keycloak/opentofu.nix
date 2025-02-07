@@ -41,8 +41,6 @@
   groups.admin = ["tristan" "tahoe"];
   realm_id = "\${ keycloak_realm.primary.id }";
   subdomain = "keycloak.${config.dotfiles.domain}";
-  alias = "fido2";
-  sub_alias = "fido2-subflow";
 in {
   # NOTE https://www.keycloak.org/2024/09/realm-config-management-tools-survey-results
   perSystem.dotfiles.opentofu.passwords = {

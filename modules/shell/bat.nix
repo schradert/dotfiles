@@ -1,5 +1,5 @@
 {
-  canivete.deploy.system.homeModules.bat = {pkgs, ...}: {
+  canivete.deploy.system.homeModules.bat = {
     programs.bat = {
       enable = true;
       config.theme = "Dracula";

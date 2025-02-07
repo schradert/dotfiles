@@ -2,9 +2,15 @@
   # TODO is it possible to add navi as a zellij widget like you can for tmux?
   # TODO add theming!
   canivete.deploy = {
-    system.homeModules.navi = {canivete, config, lib, pkgs, ...}: let
+    system.homeModules.navi = {
+      canivete,
+      config,
+      lib,
+      pkgs,
+      ...
+    }: let
       inherit (config.dotfiles.programs) navi;
-      inherit (lib) concatStringsSep forEach getAttr getExe hm mkDefault mkEnableOption mkIf mkMerge mkOption types;
+      inherit (lib) concatStringsSep forEach getAttr getExe hm mkEnableOption mkIf mkMerge mkOption types;
       inherit (types) coercedTo listOf package str submodule;
       navi' = getExe config.programs.navi.package;
     in {
@@ -13,19 +19,19 @@
         autoupdate.enable = mkEnableOption "navi repository autoupdater" // {default = navi.autoupdate.repositories != [];};
         autoupdate.repositories = mkOption {
           type = listOf (coercedTo str (url: let
-            matches = builtins.match ".+/(.+)/(.+)$" url;
-          in {
-            inherit url;
-            owner = builtins.elemAt matches 0;
-            repo = builtins.elemAt matches 1;
-          }) (let
-            strOption = mkOption {type = str;};
-          in
-            submodule {
-              options.owner = strOption;
-              options.repo = strOption;
-              options.url = strOption;
-            }));
+              matches = builtins.match ".+/(.+)/(.+)$" url;
+            in {
+              inherit url;
+              owner = builtins.elemAt matches 0;
+              repo = builtins.elemAt matches 1;
+            }) (let
+              strOption = mkOption {type = str;};
+            in
+              submodule {
+                options.owner = strOption;
+                options.repo = strOption;
+                options.url = strOption;
+              }));
           default = [];
           description = "Git repositories to clone regularly for updated cheatsheets";
         };
@@ -55,22 +61,23 @@
             script = let
               git' = getExe config.programs.git.package;
               toRepoBashArray = attr: "${attr}s=(${concatStringsSep " " (forEach navi.autoupdate.repositories (getAttr attr))})";
-            in pkgs.writeShellScript "navi-autoupdate.sh" ''
-              MAX_CONCURRENT_PROCESSES=8
-              ${toRepoBashArray "owner"}
-              ${toRepoBashArray "repo"}
-              ${toRepoBashArray "url"}
-              for i in "''${!urls[@]}"; do
-                location="$(${navi'} info cheats-path)/''${owners[i]}__''${repos[i]}"
-                if [[ $1 == clone ]]; then
-                  ${git'} clone "''${urls[i]}" "$location" &
-                elif [[ $1 == pull ]]; then
-                  ${git'} -C "$location" pull --quiet origin &
-                fi
-                if [[ $(jobs -r -p | wc -l) -ge $MAX_CONCURRENT_PROCESSES ]]; then wait -n; fi
-              done
-              wait
-            '';
+            in
+              pkgs.writeShellScript "navi-autoupdate.sh" ''
+                MAX_CONCURRENT_PROCESSES=8
+                ${toRepoBashArray "owner"}
+                ${toRepoBashArray "repo"}
+                ${toRepoBashArray "url"}
+                for i in "''${!urls[@]}"; do
+                  location="$(${navi'} info cheats-path)/''${owners[i]}__''${repos[i]}"
+                  if [[ $1 == clone ]]; then
+                    ${git'} clone "''${urls[i]}" "$location" &
+                  elif [[ $1 == pull ]]; then
+                    ${git'} -C "$location" pull --quiet origin &
+                  fi
+                  if [[ $(jobs -r -p | wc -l) -ge $MAX_CONCURRENT_PROCESSES ]]; then wait -n; fi
+                done
+                wait
+              '';
           };
         }
         (mkIf navi.enable (mkMerge [
@@ -90,7 +97,12 @@
         ]))
       ];
     };
-    darwin.homeModules.navi = {config, lib, options, ...}: let
+    darwin.homeModules.navi = {
+      config,
+      lib,
+      options,
+      ...
+    }: let
       inherit (config.dotfiles.programs.navi) enable autoupdate;
     in {
       # TODO why doesn't this work?
@@ -113,7 +125,12 @@
         })
       ];
     };
-    nixos.homeModules.navi = {config, lib, utils, ...}: let
+    nixos.homeModules.navi = {
+      config,
+      lib,
+      utils,
+      ...
+    }: let
       inherit (config.dotfiles.programs.navi) enable autoupdate;
       inherit (lib) mkDefault mkIf mkMerge;
     in {

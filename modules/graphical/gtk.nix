@@ -9,7 +9,7 @@
     inherit (config.dotfiles.graphical) gtk;
     inherit (lib) mkEnableOption mkOption types mkIf;
     inherit (types) attrsOf submodule package str;
-    inherit (pkgs) stdenvNoCC dracula-icon-theme dracula-theme runCommand fetchurl fetchFromGitHub gnused rsync gtk-engine-murrine unstableGitUpdater noto-fonts papirus-maia-icon-theme formats capitaine-cursors gtk3 gsettings-desktop-schemas writeShellApplication wpgtk gum;
+    inherit (pkgs) stdenvNoCC fetchFromGitHub gnused rsync gtk-engine-murrine unstableGitUpdater noto-fonts papirus-maia-icon-theme formats capitaine-cursors gtk3 gsettings-desktop-schemas writeShellApplication wpgtk gum;
     theme = stdenvNoCC.mkDerivation rec {
       pname = "linea-nord-color";
       version = "0.1";

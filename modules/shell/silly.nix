@@ -31,29 +31,28 @@
         lib,
         stdenv,
         fetchFromGitHub,
-        callPackage,
         cmake,
         vcpkg,
-        imgui,
-      }: stdenv.mkDerivation rec {
-        pname = "angle";
-        version = "0.16";
-        src = fetchFromGitHub {
-          owner = "google";
-          repo = "angle";
-          rev = "v${version}";
-          hash = "";
-        };
-        postPatch = "cp ${vcpkg.src}/ports/angle/CMakeLists.txt .";
-        nativeBuildInputs = [cmake];
-        meta = {
-          description = "A conformant OpenGL ES implementation for Windows, Mac, Linux, iOS and Android.";
-          homepage = "https://github.com/google/angle";
-          license = lib.licenses.bsd3;
-          maintainers = with lib.maintainers; [schradert];
-          platforms = lib.platforms.all;
-        };
-      }) {};
+      }:
+        stdenv.mkDerivation rec {
+          pname = "angle";
+          version = "0.16";
+          src = fetchFromGitHub {
+            owner = "google";
+            repo = "angle";
+            rev = "v${version}";
+            hash = "";
+          };
+          postPatch = "cp ${vcpkg.src}/ports/angle/CMakeLists.txt .";
+          nativeBuildInputs = [cmake];
+          meta = {
+            description = "A conformant OpenGL ES implementation for Windows, Mac, Linux, iOS and Android.";
+            homepage = "https://github.com/google/angle";
+            license = lib.licenses.bsd3;
+            maintainers = with lib.maintainers; [schradert];
+            platforms = lib.platforms.all;
+          };
+        }) {};
       ladybird = prev.ladybird.overrideAttrs (old: {
         nativeBuildInputs = old.nativeBuildInputs ++ [final.copyDesktopItems];
         buildInputs = old.buildInputs ++ [final.lcms] ++ final.lib.optional final.stdenv.hostPlatform.isDarwin final.unofficial-angle;
@@ -80,35 +79,46 @@
       buildNpmPackage,
       fetchFromGitHub,
       importNpmLock,
-    }: buildNpmPackage rec {
-      pname = "webtorrent-cli";
-      version = "5.1.3";
-      src = fetchFromGitHub {
-        owner = "webtorrent";
-        repo = "webtorrent-cli";
-        rev = "refs/tags/v${version}";
-        hash = "sha256-hSQ3j5t/k50/D2ZGO1Whh3bgZNIVmPYUrBsd9V1YQZc=";
-      };
-      npmDeps = importNpmLock {
-        npmRoot = src;
-        packageLock = lib.importJSON ./package-lock.json;
-      };
-      inherit (importNpmLock) npmConfigHook;
-      meta = {
-        description = "WebTorrent, the streaming torrent client. For the command line.";
-        homepage = "https://github.com/webtorrent/webtorrent-cli";
-        license = lib.licenses.mit;
-        maintainers = with lib.maintainers; [ schradert ];
-        platforms = lib.platforms.all;
-      };
-    }) {};
+    }:
+      buildNpmPackage rec {
+        pname = "webtorrent-cli";
+        version = "5.1.3";
+        src = fetchFromGitHub {
+          owner = "webtorrent";
+          repo = "webtorrent-cli";
+          rev = "refs/tags/v${version}";
+          hash = "sha256-hSQ3j5t/k50/D2ZGO1Whh3bgZNIVmPYUrBsd9V1YQZc=";
+        };
+        npmDeps = importNpmLock {
+          npmRoot = src;
+          packageLock = lib.importJSON ./package-lock.json;
+        };
+        inherit (importNpmLock) npmConfigHook;
+        meta = {
+          description = "WebTorrent, the streaming torrent client. For the command line.";
+          homepage = "https://github.com/webtorrent/webtorrent-cli";
+          license = lib.licenses.mit;
+          maintainers = with lib.maintainers; [schradert];
+          platforms = lib.platforms.all;
+        };
+      }) {};
   };
-  canivete.deploy.darwin.modules.silly = {config, lib, pkgs, ...}: {
+  canivete.deploy.darwin.modules.silly = {
+    config,
+    lib,
+    ...
+  }: {
     config = lib.mkIf config.dotfiles.profiles.silly {
       homebrew.casks = ["sweet-home3d" "freecad"];
     };
   };
-  canivete.deploy.nixos.homeModules.silly = {canivete, config, lib, pkgs, ...}: {
+  canivete.deploy.nixos.homeModules.silly = {
+    canivete,
+    config,
+    lib,
+    pkgs,
+    ...
+  }: {
     home.packages = lib.mkIf config.dotfiles.profiles.silly (lib.mkMerge [
       (with pkgs; [
         # NOTE iproute2 not available or replaceable on Darwin

@@ -6,12 +6,21 @@
   canivete.deploy.system.modules.synth = {lib, ...}: {
     options.dotfiles.graphical.sound.synth.enable = lib.mkEnableOption "synthesizing tools";
   };
-  canivete.deploy.darwin.modules.synth = {config, lib, ...}: {
+  canivete.deploy.darwin.modules.synth = {
+    config,
+    lib,
+    ...
+  }: {
     config = lib.mkIf config.dotfiles.graphical.sound.synth.enable {
       homebrew.casks = ["supercollider"];
     };
   };
-  canivete.deploy.system.homeModules.synth = {config, lib, pkgs, ...}: {
+  canivete.deploy.system.homeModules.synth = {
+    config,
+    lib,
+    pkgs,
+    ...
+  }: {
     config = lib.mkIf config.dotfiles.graphical.sound.synth.enable {
       home.packages = lib.mkMerge [
         (with pkgs; [glicol-cli faust])

@@ -6,7 +6,7 @@
     pkgs,
     ...
   }: let
-    inherit (lib) mkEnableOption mkIf mkMerge mkOption mkPackageOption types;
+    inherit (lib) mkEnableOption mkIf mkMerge;
     inherit (config.dotfiles.programs) pandoc;
   in {
     options.dotfiles.programs.pandoc = {
@@ -29,11 +29,12 @@
           (mkIf pandoc.plantuml.enable [./plantuml.org])
         ];
       };
-      programs.vim.plugins = mkIf pandoc.vim.enable (with pkgs.vimPlugins; mkMerge [
-        [vimpreviewpandoc vim-pandoc-syntax vim-pandoc]
-        (mkIf pandoc.markdown.enable [vim-markdown-toc vim-markdown])
-        (mkIf pandoc.plantuml.enable [plantuml-syntax])
-      ]);
+      programs.vim.plugins = mkIf pandoc.vim.enable (with pkgs.vimPlugins;
+        mkMerge [
+          [vimpreviewpandoc vim-pandoc-syntax vim-pandoc]
+          (mkIf pandoc.markdown.enable [vim-markdown-toc vim-markdown])
+          (mkIf pandoc.plantuml.enable [plantuml-syntax])
+        ]);
     };
   };
 }

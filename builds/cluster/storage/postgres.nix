@@ -9,7 +9,12 @@
   inherit (canivete) vals;
   inherit (config.dotfiles) domain;
 in {
-  canivete.deploy.system.homeModules.database = {config, lib, pkgs, ...}: {
+  canivete.deploy.system.homeModules.database = {
+    config,
+    lib,
+    pkgs,
+    ...
+  }: {
     options.dotfiles.profiles.databases = lib.mkEnableOption "database administration tools";
     config = lib.mkIf config.dotfiles.profiles.databases {
       home.packages = with pkgs; [dbeaver-bin gobang lazysql rainfrog harlequin dblab];

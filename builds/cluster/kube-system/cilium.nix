@@ -58,16 +58,22 @@
   };
   release = {inherit namespace chart values;};
 in {
-  canivete.deploy.nixos.modules.cilium = {canivete, config, pkgs, ...}: {
+  canivete.deploy.nixos.modules.cilium = {
+    canivete,
+    config,
+    pkgs,
+    ...
+  }: {
     # NOTE https://docs.cilium.io/en/stable/operations/system_requirements
-    config = canivete.mkIfElse config.dotfiles.kubernetes.enable {
-      boot.blacklistedKernelModules = ["netfilter"];
-      boot.kernelModules = ["cls_bpf" "sch_ingress" "crypto_user"];
-      networking.firewall.enable = false;
-    } (mkIf config.dotfiles.workstation.enable {
-      home-manager.sharedModules = [{home.packages = [pkgs.bpftop];}];
-      # TODO build https://github.com/hengyoush/kyanos
-    });
+    config =
+      canivete.mkIfElse config.dotfiles.kubernetes.enable {
+        boot.blacklistedKernelModules = ["netfilter"];
+        boot.kernelModules = ["cls_bpf" "sch_ingress" "crypto_user"];
+        networking.firewall.enable = false;
+      } (mkIf config.dotfiles.workstation.enable {
+        home-manager.sharedModules = [{home.packages = [pkgs.bpftop];}];
+        # TODO build https://github.com/hengyoush/kyanos
+      });
   };
   # Cilium chart has no way to include CRDs...
   perSystem.canivete.kubenix.clusters.prod.modules.cilium-types.kubernetes.customTypes = [

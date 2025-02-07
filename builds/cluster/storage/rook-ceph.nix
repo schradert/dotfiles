@@ -33,7 +33,11 @@
     };
   };
 in {
-  canivete.deploy.nixos.modules.rook-ceph = {config, lib, ...}: {
+  canivete.deploy.nixos.modules.rook-ceph = {
+    config,
+    lib,
+    ...
+  }: {
     config = lib.mkIf config.dotfiles.kubernetes.enable {
       boot.kernelModules = ["nbd" "rbd"];
     };

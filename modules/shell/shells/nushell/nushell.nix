@@ -9,7 +9,6 @@
   canivete.deploy.system.homeModules.nushell = {
     config,
     lib,
-    pkgs,
     ...
   }: let
     inherit (config.xdg) cacheHome;

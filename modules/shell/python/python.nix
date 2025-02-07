@@ -6,7 +6,7 @@
     pkgs,
     ...
   }: let
-    inherit (lib) mkEnableOption mkIf mkMerge mkOption mkPackageOption types;
+    inherit (lib) mkEnableOption mkIf mkMerge mkPackageOption;
     inherit (config.dotfiles.programs) python;
   in {
     options.dotfiles.programs.python = {

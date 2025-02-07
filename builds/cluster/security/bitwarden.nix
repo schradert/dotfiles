@@ -1,7 +1,7 @@
 {config, ...}: let
   subdomain = "bitwarden.${config.dotfiles.domain}";
 in {
-  canivete.deploy.system.homeModules.bitwarden = {pkgs, ...}: {
+  canivete.deploy.system.homeModules.bitwarden = {
     programs.rbw.enable = true;
     # TODO pass email, base_url, identity_url
   };

@@ -26,7 +26,6 @@ in {
     };
     system.homeModules.godot = {
       config,
-      lib,
       pkgs,
       ...
     }: let

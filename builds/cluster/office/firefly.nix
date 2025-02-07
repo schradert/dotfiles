@@ -7,7 +7,6 @@
   inherit (canivete) vals;
   inherit (config.dotfiles) domain;
   subdomain = "firefly.${domain}";
-  port = 5006;
 in {
   # TODO nix built image
   # TODO persistence + volsync

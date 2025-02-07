@@ -2,7 +2,6 @@
   canivete.deploy.system.homeModules.direnv = {
     config,
     lib,
-    pkgs,
     ...
   }: {
     options.dotfiles.programs.direnv.enable = lib.mkEnableOption "direnv";

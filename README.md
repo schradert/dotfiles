@@ -131,7 +131,8 @@
 ### Firefox extensions
 
 [Frame](https://addons.mozilla.org/en-US/firefox/addon/frame-extension/)
-[uBlock]()
+
+uBlock
 
 ### Services
 

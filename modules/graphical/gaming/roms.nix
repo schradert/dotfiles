@@ -327,7 +327,7 @@ in {
           RPCS3.shortcut.exe = getExe pkgs.rpcs3;
           Xemu.shortcut.exe = getExe pkgs.xemu;
         };
-        retroarch.package = pkgs.retroarch.withCores (cores:
+        retroarch.package = pkgs.retroarch.withCores (_:
           pipe external.consoles [
             (filterAttrs (_: getAttr "retroarch"))
             (mapAttrsToList (_: getAttr "wrapper"))

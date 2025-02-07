@@ -6,7 +6,7 @@
     ...
   }: let
     inherit (config.dotfiles.programs) agda;
-    inherit (lib) mkEnableOption mkIf mkOption mkPackageOption;
+    inherit (lib) mkEnableOption mkIf mkPackageOption;
   in {
     options.dotfiles.programs.agda = {
       enable = mkEnableOption "agda";

@@ -1,6 +1,10 @@
 {
   canivete.deploy = {
-    system.modules.workstation = {config, lib, ...}: {
+    system.modules.workstation = {
+      config,
+      lib,
+      ...
+    }: {
       options.dotfiles.workstation.enable = lib.mkEnableOption "primary workstation configuration";
       config = lib.mkIf config.dotfiles.workstation.enable {
         dotfiles.containers = true;
@@ -11,7 +15,12 @@
         dotfiles.programs.godot.enable = true;
       };
     };
-    system.homeModules.workstation = {config, lib, pkgs, ...}: {
+    system.homeModules.workstation = {
+      config,
+      lib,
+      pkgs,
+      ...
+    }: {
       config = lib.mkIf config.dotfiles.workstation.enable (lib.mkMerge [
         {
           dotfiles.email = true;
@@ -57,7 +66,11 @@
         })
       ]);
     };
-    nixos.modules.workstation = {config, lib, ...}: {
+    nixos.modules.workstation = {
+      config,
+      lib,
+      ...
+    }: {
       config = lib.mkIf config.dotfiles.workstation.enable {
         dotfiles.graphical.sound.enable = true;
       };

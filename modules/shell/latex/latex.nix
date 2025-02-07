@@ -8,7 +8,7 @@
     pkgs,
     ...
   }: let
-    inherit (lib) mkEnableOption mkIf mkMerge mkOption mkPackageOption types;
+    inherit (lib) mkEnableOption mkIf mkMerge;
     inherit (config.dotfiles.programs) latex;
   in {
     options.dotfiles.programs.latex = {

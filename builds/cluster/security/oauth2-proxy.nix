@@ -7,12 +7,9 @@
   perSystem = {pkgs, ...}: let
     inherit (canivete) vals;
     inherit (config.dotfiles) domain;
-    inherit (lib) getExe;
-    inherit (pkgs) jq sops openssl coreutils;
+    inherit (pkgs) jq openssl coreutils;
     subdomain = "oauth2-proxy.${domain}";
     cookie = "oauth2-proxy-cookie";
-    cookiePath = "'[\"oauth2-proxy\"][\"cookie\"]'";
-    sopsFile = "\"$(${getExe git} rev-parse --show-toplevel)/.canivete/sops/default.yaml\"";
     realm_id = "\${ keycloak_realm.primary.id }";
     client_id = "\${ keycloak_openid_client.oauth2-proxy.client_id }";
   in {

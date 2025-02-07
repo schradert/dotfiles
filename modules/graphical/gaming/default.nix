@@ -8,7 +8,12 @@
   # TODO try to run hack-of-life
   # TODO build https://github.com/sachaos/go-life
   # TODO get copies of fallout and fallout2 to combine with bugfixes from fallout-ce + fallout2-ce
-  canivete.deploy.system.homeModules.gaming = {config, lib, pkgs, ...}: {
+  canivete.deploy.system.homeModules.gaming = {
+    config,
+    lib,
+    pkgs,
+    ...
+  }: {
     options.dotfiles.graphical.gaming.enable = lib.mkEnableOption "gaming tools";
     config = lib.mkIf config.dotfiles.graphical.gaming.enable {
       assertions = lib.toList {
@@ -59,7 +64,12 @@
       ];
     };
   };
-  canivete.deploy.nixos.homeModules.gaming = {config, lib, pkgs, ...}: {
+  canivete.deploy.nixos.homeModules.gaming = {
+    config,
+    lib,
+    pkgs,
+    ...
+  }: {
     config = lib.mkIf config.dotfiles.graphical.gaming.enable {
       home.packages = with pkgs; [
         arx-libertatis

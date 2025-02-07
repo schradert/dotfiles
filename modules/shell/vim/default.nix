@@ -31,7 +31,6 @@
   # TODO https://github.com/skwp/dotfiles
   canivete.deploy.system.homeModules.vim = {
     config,
-    lib,
     pkgs,
     ...
   }: {

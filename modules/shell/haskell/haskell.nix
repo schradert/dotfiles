@@ -6,7 +6,7 @@
     pkgs,
     ...
   }: let
-    inherit (lib) mkEnableOption mkIf mkMerge mkOption mkPackageOption types;
+    inherit (lib) mkEnableOption mkIf mkMerge;
     inherit (config.dotfiles.programs) haskell;
   in {
     options.dotfiles.programs.haskell = {
