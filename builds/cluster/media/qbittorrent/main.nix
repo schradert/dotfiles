@@ -1,6 +1,12 @@
-{config, nix, ...}: let
+{
+  canivete,
+  config,
+  lib,
+  ...
+}: let
+  inherit (canivete.vals) sops;
   inherit (config.dotfiles) domain;
-  inherit (nix) toList readFile vals;
+  inherit (lib) toList;
   subdomain = "qbittorrent.${domain}";
   port = 8080;
   probe.enabled = true;
@@ -25,7 +31,7 @@ in {
     dns.query-name = subdomain;
     dns.query-type = "A";
     conditions = ["len([BODY]) == 0"];
-    # alerts = [{type = "custom";}]; FIXME
+    # alerts = [{type = "custom";}]; TODO
   };
   perSystem.dotfiles.helm.qbittorrent = {
     namespace = "media";
@@ -123,7 +129,7 @@ in {
           QBITTORRENT_WEBUI_PORT = toString port;
           LOG_TIMESTAMP = "false";
         };
-        qbittorrent-files.data."dnsdist.conf" = readFile ./dnsdist.conf;
+        qbittorrent-files.data."dnsdist.conf" = builtins.readFile ./dnsdist.conf;
       };
       objectbucketclaims.qbittorrent-config-bucket.spec = {
         bucketName = "qbittorrent-config";
@@ -186,9 +192,9 @@ in {
       };
       secrets.qbittorrent-config-volsync-b2.stringData = {
         RESTIC_REPOSITORY = "s3:http://s3.us-west-004.backblazeb2.com:80/t0rdos/qbittorrent-config";
-        RESTIC_PASSWORD = vals.sops "default.yaml#/passwords/b2-restic";
-        B2_ACCOUNT_ID = vals.sops "default.yaml#/backblaze/application_key";
-        B2_ACCOUNT_KEY = vals.sops "default.yaml#/backblaze/application_key_id";
+        RESTIC_PASSWORD = sops "default.yaml#/passwords/b2-restic";
+        B2_ACCOUNT_ID = sops "default.yaml#/backblaze/application_key";
+        B2_ACCOUNT_KEY = sops "default.yaml#/backblaze/application_key_id";
       };
       replicationsources.qbittorrent-config-b2.spec = {
         sourcePVC = "qbittorrent-config";
@@ -275,9 +281,9 @@ in {
       };
       secrets.qbittorrent-media-volsync-b2.stringData = {
         RESTIC_REPOSITORY = "s3:http://s3.us-west-004.backblazeb2.com:80/t0rdos/qbittorrent-media";
-        RESTIC_PASSWORD = vals.sops "default.yaml#/passwords/b2-restic";
-        B2_ACCOUNT_ID = vals.sops "default.yaml#/backblaze/application_key";
-        B2_ACCOUNT_KEY = vals.sops "default.yaml#/backblaze/application_key_id";
+        RESTIC_PASSWORD = sops "default.yaml#/passwords/b2-restic";
+        B2_ACCOUNT_ID = sops "default.yaml#/backblaze/application_key";
+        B2_ACCOUNT_KEY = sops "default.yaml#/backblaze/application_key_id";
       };
       replicationsources.qbittorrent-media-b2.spec = {
         sourcePVC = "qbittorrent-media";

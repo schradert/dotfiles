@@ -1,10 +1,12 @@
 flake @ {
+  canivete,
   config,
   inputs,
-  nix,
+  lib,
   ...
-}:
-with nix; let
+}: let
+  inherit (builtins) removeAttrs attrValues match listToAttrs map;
+  inherit (lib) id foldl mapAttrs flip pipe mapAttrsToList concatStringsSep concat optional getExe mkMerge mapAttrs' nameValuePair mkOption getAttr mergeAttrsList mergeAttrs types toList;
   inherit (config.canivete.people) me users;
   sshFile = name: inputs.self + "/.canivete/sops/${name}";
   linkSecrets = system: let
@@ -65,7 +67,7 @@ in {
       inherit (config.home) username;
     in {
       options.dotfiles.hostname = mkOption {
-        type = str;
+        type = types.str;
         description = "The hostname of the relevant machine";
         example = "another-server";
       };
@@ -90,13 +92,13 @@ in {
                   (map (flip pipe [
                     # Key-value pair from SSH option like ProxyJump=<url>
                     (match "^(.+)=(.+)$")
-                    (evalWithAll nameValuePair)
+                    (foldl id nameValuePair)
                   ]))
                   listToAttrs
                   # Exclude non-interactive options
                   (flip removeAttrs ["ControlMaster" "ControlPath" "ControlPersist" "StrictHostKeyChecking"])
                   # Home-manager defines these attributes in camelCase
-                  (mapAttrNames pascalToCamel)
+                  (canivete.mapAttrNames canivete.pascalToCamel)
                   # Include sensible defaults
                   (mergeAttrs {
                     hostname = host;
@@ -110,14 +112,18 @@ in {
         };
       };
     };
-    darwin.modules.ssh = darwin @ {pkgs, ...}: {
+    darwin.modules.ssh = {
+      config,
+      pkgs,
+      ...
+    }: {
       launchd.agents.secrets = {
-        command = getExe (linkSecrets darwin);
+        command = getExe (linkSecrets {inherit config pkgs;});
         serviceConfig.RunAtLoad = true;
       };
     };
     nixos.homeModules.ssh.services.ssh-agent.enable = true;
-    nixos.modules.ssh = nixos @ {
+    nixos.modules.ssh = {
       config,
       pkgs,
       ...
@@ -132,7 +138,7 @@ in {
         {root.openssh.authorizedKeys.keyFiles = config.users.users.${me}.openssh.authorizedKeys.keyFiles;}
       ];
       systemd.services.secrets = {
-        script = getExe (linkSecrets nixos);
+        script = getExe (linkSecrets {inherit config pkgs;});
         wantedBy = ["multi-user.target"];
       };
     };

@@ -1,4 +1,9 @@
-{config, nix, ...}: with nix; let
+{
+  canivete,
+  config,
+  lib,
+  ...
+}: let
   secret.name = "external-dns";
   secret.key = "cloudflare_pat";
 in {
@@ -11,10 +16,10 @@ in {
       version = "1.14.5";
       sha256 = "2kGZredY6Iw4ucAdG9DOkWbznsOT+AhynSgJdHxlMZQ=";
     };
-    resources.secrets.${secret.name}.stringData.${secret.key} = vals.sops "default.yaml#/cloudflare/pat";
+    resources.secrets.${secret.name}.stringData.${secret.key} = canivete.vals.sops "default.yaml#/cloudflare/pat";
     values = {
       provider.name = "cloudflare";
-      env = toList {
+      env = lib.toList {
         name = "CF_API_TOKEN";
         valueFrom.secretKeyRef = secret;
       };

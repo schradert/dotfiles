@@ -1,9 +1,8 @@
 {
   config,
-  nix,
+  lib,
   ...
-}:
-with nix; {
+}: {
   # https://github.com/jorenn92/Maintainerr
   perSystem.dotfiles.helm.maintainerr = {
     namespace = "media";
@@ -18,9 +17,9 @@ with nix; {
       service.maintainerr.controller = "maintainerr";
       service.maintainerr.ports.http.port = 6246;
       ingress.maintainerr.className = "internal";
-      ingress.maintainerr.hosts = toList {
+      ingress.maintainerr.hosts = lib.toList {
         host = "maintainerr.${config.dotfiles.domain}";
-        paths = toList {
+        paths = lib.toList {
           path = "/";
           service.identifier = "maintainerr";
           service.port = "http";

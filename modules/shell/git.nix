@@ -1,14 +1,13 @@
 {
   canivete.deploy.system.homeModules.git = {
+    canivete,
     config,
     flake,
     lib,
-    nix,
     pkgs,
     ...
   }: let
-    inherit (lib) fileContents mapAttrs mkIf mkEnableOption mkMerge toList setAttrByPath;
-    inherit (nix) prefix;
+    inherit (lib) fileContents mapAttrs mkIf mkEnableOption mkMerge setAttrByPath;
     inherit (config) dotfiles programs home;
     my = flake.config.canivete.people.users.${home.username};
     key = fileContents (flake.inputs.self + "/.canivete/sops/${home.username}.pub");
@@ -51,7 +50,7 @@
               maintenance.strategy = "incremental";
               # TODO run `git maintenance start` in all of these repositories
               # TODO convert repositories to modules, maybe with categories?
-              maintenance.repo = map (prefix "${home.homeDirectory}/") ["dotfiles" "sage" "alexandria" "basement" "canivete" "umomi" "VILF" "dyspraxis" "sandbox" "sabedoria"];
+              maintenance.repo = builtins.map (canivete.prefix "${home.homeDirectory}/Projects/") ["dotfiles" "sage" "alexandria" "basement" "canivete" "umomi" "VILF" "dyspraxis" "sandbox" "sabedoria"];
 
               # Signing
               user.signingKey = key;

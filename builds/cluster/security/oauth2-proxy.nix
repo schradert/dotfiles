@@ -1,12 +1,14 @@
 {
+  canivete,
   config,
-  nix,
+  lib,
   ...
 }: {
   perSystem = {pkgs, ...}: let
+    inherit (canivete) vals;
     inherit (config.dotfiles) domain;
-    inherit (nix) getExe readFile vals;
-    inherit (pkgs) writeText git jq sops openssl coreutils;
+    inherit (lib) getExe;
+    inherit (pkgs) jq sops openssl coreutils;
     subdomain = "oauth2-proxy.${domain}";
     cookie = "oauth2-proxy-cookie";
     cookiePath = "'[\"oauth2-proxy\"][\"cookie\"]'";
@@ -19,10 +21,10 @@
       modules.oauth2-proxy.resource = {
         shell_script.${cookie}.lifecycle_commands = {
           create = ''
-            ${getExe openssl} rand -base64 32 |
+            ${lib.getExe openssl} rand -base64 32 |
             ${coreutils}/bin/head -c 32 |
             ${coreutils}/bin/base64 |
-            ${getExe jq} --raw-input '{"value":.}'
+            ${lib.getExe jq} --raw-input '{"value":.}'
           '';
           delete = "echo";
         };
@@ -71,7 +73,7 @@
         };
         metrics.serviceMonitor.enabled = true;
       };
-      resources.configMaps.oauth2-proxy-configmap.data."oauth2_proxy.cfg" = readFile (pkgs.writers.writeTOML "oauth2-proxy.cfg" {
+      resources.configMaps.oauth2-proxy-configmap.data."oauth2_proxy.cfg" = builtins.readFile (pkgs.writers.writeTOML "oauth2-proxy.cfg" {
         provider = "keycloak-oidc";
         redirect_url = "https://oauth2-proxy.${domain}/oauth2/callback";
         oidc_issuer_url = "https://keycloak.${domain}/realms/primary";

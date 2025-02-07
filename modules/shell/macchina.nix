@@ -1,18 +1,22 @@
-{nix, ...}:
-with nix; {
+{
+  # TODO should I use fastfetch instead? I want something with maximum features
+  # TODO what about sysfex https://github.com/mehedirm6244/sysfex
+  # TODO durdraw also looks fun: https://github.com/cmang/durdraw/tree/dev
   canivete.deploy.system.homeModules.macchina = {
     config,
+    lib,
     pkgs,
     ...
   }: let
-    cfg = config.dotfiles.macchina;
+    inherit (lib) mkEnableOption mkPackageOption mkOption mkIf substring types;
     inherit (pkgs) stdenv formats fetchFromGitHub fetchurl yq;
+    cfg = config.dotfiles.programs.macchina;
   in {
-    options.dotfiles.macchina = {
-      enable = mkEnabledOption "macchina";
+    options.dotfiles.programs.macchina = {
+      enable = mkEnableOption "macchina";
       package = mkPackageOption pkgs "macchina" {};
       networkInterface = mkOption {
-        type = str;
+        type = types.str;
         default = "en0";
         example = "wlan0";
         description = "Network interface to display a local IP for";

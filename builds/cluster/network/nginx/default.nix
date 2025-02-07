@@ -1,4 +1,9 @@
-{config, nix, ...}: with nix; let
+{
+  config,
+  lib,
+  ...
+}: let
+  inherit (lib) replaceStrings fileContents toList recursiveUpdate;
   inherit (config.dotfiles) domain;
   namespace = "network";
   chart = {
@@ -51,16 +56,17 @@
       values = [type];
     };
   };
-  topologySpreadConstraint = type: toList {
-    maxSkew = 1;
-    topologyKey = "kubernetes.io/hostname";
-    whenUnsatisfiable = "DoNotSchedule";
-    labelSelector.matchLabels = {
-      "app.kubernetes.io/name" = "ingress-nginx";
-      "app.kubernetes.io/instance" = "nginx-${type}";
-      "app.kubernetes.io/component" = "controller";
+  topologySpreadConstraint = type:
+    toList {
+      maxSkew = 1;
+      topologyKey = "kubernetes.io/hostname";
+      whenUnsatisfiable = "DoNotSchedule";
+      labelSelector.matchLabels = {
+        "app.kubernetes.io/name" = "ingress-nginx";
+        "app.kubernetes.io/instance" = "nginx-${type}";
+        "app.kubernetes.io/component" = "controller";
+      };
     };
-  };
 in {
   perSystem = {
     dotfiles.nix2container.nginx = {};

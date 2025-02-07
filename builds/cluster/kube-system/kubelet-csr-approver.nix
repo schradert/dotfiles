@@ -1,9 +1,9 @@
 {
-  nix,
+  lib,
   self,
   ...
-}:
-with nix; let
+}: let
+  inherit (lib) pipe filterAttrs concatStringsSep recursiveUpdate;
   namespace = "kube-system";
   chart = {
     repo = "https://postfinance.github.io/kubelet-csr-approver";
@@ -15,7 +15,7 @@ with nix; let
     fullnameOverride = "kubelet-csr-approver";
     providerRegex = pipe self.nixosConfigurations [
       (filterAttrs (_: cfg: cfg.config.dotfiles.kubernetes.enable))
-      attrNames
+      builtins.attrNames
       (concatStringsSep "|")
       (str: "^(${str})$")
     ];

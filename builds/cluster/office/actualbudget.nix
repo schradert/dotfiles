@@ -1,4 +1,11 @@
-{config, nix, ...}: with nix; let
+{
+  canivete,
+  config,
+  lib,
+  ...
+}: let
+  inherit (canivete) vals;
+  inherit (lib) toList;
   inherit (config.dotfiles) domain;
   subdomain = "actual.${domain}";
   port = 5006;
@@ -51,7 +58,7 @@ in {
     };
     resources = {
       configMaps.actual-configmap.data = {
-        ACTUAL_PORT = toString port;
+        ACTUAL_PORT = builtins.toString port;
         ACTUAL_LOGIN_METHOD = "header";
       };
       objectbucketclaims.actual-bucket.spec = {
@@ -115,9 +122,9 @@ in {
       };
       secrets.actual-volsync-b2.stringData = {
         RESTIC_REPOSITORY = "s3:http://s3.us-west-004.backblazeb2.com:80/t0rdos/actual";
-        RESTIC_PASSWORD = nix.vals.sops "default.yaml#/passwords/b2-restic";
-        B2_ACCOUNT_ID = nix.vals.sops "default.yaml#/backblaze/application_key";
-        B2_ACCOUNT_KEY = nix.vals.sops "default.yaml#/backblaze/application_key_id";
+        RESTIC_PASSWORD = vals.sops "default.yaml#/passwords/b2-restic";
+        B2_ACCOUNT_ID = vals.sops "default.yaml#/backblaze/application_key";
+        B2_ACCOUNT_KEY = vals.sops "default.yaml#/backblaze/application_key_id";
       };
       replicationsources.actual-b2.spec = {
         sourcePVC = "actual";

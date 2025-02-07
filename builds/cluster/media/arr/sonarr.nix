@@ -1,6 +1,6 @@
 {
   config,
-  nix,
+  lib,
   ...
 }: let
   port = 7878;
@@ -60,9 +60,9 @@ in {
     service.sonarr.controller = "sonarr";
     service.sonarr.ports.http.port = port;
     ingress.sonarr.className = "internal";
-    ingress.sonarr.hosts = nix.toList {
+    ingress.sonarr.hosts = lib.toList {
       host = subdomain;
-      paths = nix.toList {
+      paths = lib.toList {
         path = "/";
         service.identifier = "sonarr";
         service.port = "http";

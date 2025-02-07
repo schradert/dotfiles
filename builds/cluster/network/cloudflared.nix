@@ -1,4 +1,11 @@
-{config, nix, ...}: with nix; let
+{
+  canivete,
+  config,
+  lib,
+  ...
+}: let
+  inherit (canivete) vals;
+  inherit (lib) toList recursiveUpdate;
   inherit (config.dotfiles) domain;
   inherit (config.canivete) root;
   subdomain = "external.${domain}";
@@ -104,7 +111,7 @@ in {
     };
     resources.secrets.cloudflared-secret.stringData = {
       TUNNEL_ID = vals.sops "default.yaml#/cloudflare/tunnel/id";
-      "credentials.json" = toJSON {
+      "credentials.json" = builtins.toJSON {
         AccountTag = vals.sops "default.yaml#/cloudflare/account_id";
         TunnelSecret = vals.sops "default.yaml#/cloudflare/tunnel/secret";
         TunnelID = vals.sops "default.yaml#/cloudflare/tunnel/id";
@@ -114,7 +121,7 @@ in {
       NO_AUTOUPDATE = "true";
       TUNNEL_CRED_FILE = credsPath;
       TUNNEL_METRICS = "0.0.0.0:8080";
-      "config.yaml" = toJSON {
+      "config.yaml" = builtins.toJSON {
         originRequest.originServerName = subdomain;
         ingress = [
           {

@@ -1,5 +1,11 @@
 {
-  canivete.deploy.system.homeModules.wezterm = {config, lib, perSystem, pkgs, ...}: let
+  canivete.deploy.system.homeModules.wezterm = {
+    config,
+    lib,
+    perSystem,
+    pkgs,
+    ...
+  }: let
     inherit (lib) mkEnableOption mkIf mkMerge;
   in {
     options.dotfiles.programs.wezterm.enable = mkEnableOption "Wezterm";

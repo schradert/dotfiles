@@ -1,5 +1,4 @@
-{nix, ...}:
-with nix; {
+{lib, ...}: {
   # [ ] [descheduler](https://github.com/kubernetes-sigs/descheduler)
   perSystem.dotfiles.helm.descheduler = {
     namespace = "kube-system";
@@ -13,7 +12,7 @@ with nix; {
       replicas = 1;
       kind = "Deployment";
       deschedulerPolicyAPIVersion = "descheduler/v1alpha2";
-      deschedulerPolicy.profiles = toList {
+      deschedulerPolicy.profiles = lib.toList {
         name = "Default";
         pluginConfig = [
           {name = "RemovePodsViolatingInterPodAntiAffinity";}

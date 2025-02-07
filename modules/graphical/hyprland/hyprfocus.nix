@@ -1,5 +1,10 @@
 {
-  canivete.deploy.nixos.homeModules.hyprfocus = {config, lib, perSystem, ...}: let
+  canivete.deploy.nixos.homeModules.hyprfocus = {
+    config,
+    lib,
+    perSystem,
+    ...
+  }: let
     inherit (config.dotfiles.graphical) hyprland;
   in {
     options.dotfiles.graphical.hyprland.plugins.hyprfocus.enable = lib.mkEnableOption "Hyprland's hyprfocus animation plugin" // {default = hyprland.enable;};

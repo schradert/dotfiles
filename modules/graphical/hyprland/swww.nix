@@ -1,7 +1,13 @@
 {
   canivete.deploy.nixos.homeModules = {
-    upstream-swww = {config, lib, pkgs, ...}: let
-      inherit (lib) getExe mkEnableOption mkIf mkOption mkPackageOption;
+    upstream-swww = {
+      config,
+      lib,
+      pkgs,
+      ...
+    }: let
+      inherit (lib) mkEnableOption mkIf mkOption mkPackageOption types;
+      inherit (types) submodule path package listOf;
       inherit (config.dotfiles.services) swww;
     in {
       options.dotfiles.services.swww = {
@@ -24,6 +30,6 @@
       # TODO download these images through nix asset pinning and symlink to wallpaper directory
       # TODO schedule cycling through these images
       dotfiles.services.swww.enable = config.dotfiles.graphical.hyprland.enable;
-     };
+    };
   };
 }

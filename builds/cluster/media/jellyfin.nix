@@ -1,10 +1,11 @@
 {
+  canivete,
   config,
-  nix,
+  lib,
   ...
 }: let
+  inherit (canivete.vals) sops;
   inherit (config.dotfiles) domain;
-  inherit (nix) toList vals;
   port = 8096;
   subdomain = "jellyfin.${domain}";
   probe.enabled = true;
@@ -29,7 +30,7 @@ in {
     };
     nixos.useSystemd = true;
   };
-  perSystem.dotfiles.helm.gatus.values.config.endpoints = toList {
+  perSystem.dotfiles.helm.gatus.values.config.endpoints = lib.toList {
     name = "jellyfin";
     group = "external";
     url = "1.1.1.1";
@@ -39,7 +40,7 @@ in {
     dns.query-name = subdomain;
     dns.query-type = "A";
     conditions = ["len([BODY]) == 0"];
-    # alerts = [{type = "custom";}]; FIXME
+    # alerts = [{type = "custom";}]; TODO
   };
   perSystem.dotfiles.helm.jellyfin = {
     namespace = "media";
@@ -68,9 +69,9 @@ in {
         annotations."nginx.ingress.kubernetes.io/auth-url" = "https://oauth2-proxy.${domain}/oauth2/auth?allowed_groups=/family";
         annotations."nginx.ingress.kubernetes.io/auth-signin" = "https://oauth2-proxy.${domain}/oauth2/start?rd=$scheme://$host$request_uri";
         className = "external";
-        hosts = toList {
+        hosts = lib.toList {
           host = subdomain;
-          paths = toList {
+          paths = lib.toList {
             path = "/";
             service.identifier = "jellyfin";
             service.port = "http";
@@ -152,9 +153,9 @@ in {
       };
       secrets.jellyfin-volsync-b2.stringData = {
         RESTIC_REPOSITORY = "s3:http://s3.us-west-004.backblazeb2.com:80/t0rdos/jellyfin";
-        RESTIC_PASSWORD = vals.sops "default.yaml#/passwords/b2-restic";
-        B2_ACCOUNT_ID = vals.sops "default.yaml#/backblaze/application_key";
-        B2_ACCOUNT_KEY = vals.sops "default.yaml#/backblaze/application_key_id";
+        RESTIC_PASSWORD = sops "default.yaml#/passwords/b2-restic";
+        B2_ACCOUNT_ID = sops "default.yaml#/backblaze/application_key";
+        B2_ACCOUNT_KEY = sops "default.yaml#/backblaze/application_key_id";
       };
       replicationsources.jellyfin-b2.spec = {
         sourcePVC = "jellyfin";

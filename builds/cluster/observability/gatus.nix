@@ -1,6 +1,9 @@
-{config, nix, ...}: let
+{
+  config,
+  lib,
+  ...
+}: let
   inherit (config.dotfiles) domain;
-  inherit (nix) toJSON toList toString;
   subdomain = "gatus.${domain}";
 in {
   # https://github.com/TwiN/gatus
@@ -42,22 +45,22 @@ in {
         debug = false;
         ui.title = "Status | Gatus";
         ui.header = "Status";
-        alerting = {};  # FIXME
+        alerting = {}; # TODO
         connectivity.checker.target = "1.1.1.1:53";
         connectivity.checker.interval = "1m";
-        endpoints = toList {
+        endpoints = lib.toList {
           name = "status";
           group = "external";
           url = "https://${subdomain}";
           interval = "1m";
           client.dns-resolver = "tcp://1.1.1.1:53";
           conditions = ["[STATUS] == 200"];
-          # alerts = [{type = "custom";}]; FIXME
+          # alerts = [{type = "custom";}]; TODO
         };
       };
     };
     resources.externalsecrets.gatus.spec = {
-      dataFrom = toList {
+      dataFrom = lib.toList {
         extract.key = "gatus.main.credentials.postgresql.acid.zalan.do";
         sourceRef.storeRef.kind = "ClusterSecretStore";
         sourceRef.storeRef.name = "kubernetes-storage";

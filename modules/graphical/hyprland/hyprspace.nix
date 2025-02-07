@@ -1,5 +1,10 @@
 {
-  canivete.deploy.nixos.homeModules.hyprspace = {config, lib, perSystem, ...}: let
+  canivete.deploy.nixos.homeModules.hyprspace = {
+    config,
+    lib,
+    perSystem,
+    ...
+  }: let
     inherit (config.dotfiles.graphical) hyprland;
   in {
     options.dotfiles.graphical.hyprland.plugins.hyprspace.enable = lib.mkEnableOption "Hyprspace overview plugin" // {default = hyprland.enable;};

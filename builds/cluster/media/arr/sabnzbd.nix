@@ -1,9 +1,8 @@
 {
   config,
-  nix,
+  lib,
   ...
-}:
-with nix; let
+}: let
   port = 8080;
   subdomain = "sabnzbd.${config.dotfiles.domain}";
 in {
@@ -26,9 +25,9 @@ in {
         service.sabnzbd.controller = "sabnzbd";
         service.sabnzbd.ports.http.port = port;
         ingress.sabnzbd.className = "internal";
-        ingress.sabnzbd.hosts = nix.toList {
+        ingress.sabnzbd.hosts = lib.toList {
           host = subdomain;
-          paths = nix.toList {
+          paths = lib.toList {
             path = "/";
             service.identifier = "sabnzbd";
             service.port = "http";
@@ -42,7 +41,7 @@ in {
         configMaps.sabnzbd.enabled = true;
         configMaps.sabnzbd.data = {
           SABNZBD__PORT = toString port;
-          SABNZBD__HOST_WHITELIST_ENTRIES = concatStringsSep "," ["sabnzbd" "sabnzbd.arr" "sabnzbd.arr.svc" "sabnzbd.arr.svc.cluster" "sabnzbd.arr.svc.cluster.local" subdomain];
+          SABNZBD__HOST_WHITELIST_ENTRIES = lib.concatStringsSep "," ["sabnzbd" "sabnzbd.arr" "sabnzbd.arr.svc" "sabnzbd.arr.svc.cluster" "sabnzbd.arr.svc.cluster.local" subdomain];
         };
       };
     };

@@ -1,5 +1,9 @@
-{nix, ...}: with nix; {
-  canivete.deploy.nixos.modules.openebs = {config, ...}: {boot.kernelModules = mkIf config.dotfiles.kubernetes.enable ["dm_thin_pool"];};
+{
+  canivete.deploy.nixos.modules.openebs = {config, lib, ...}: {
+    config = lib.mkIf config.dotfiles.kubernetes.enable {
+      boot.kernelModules = ["dm_thin_pool"];
+    };
+  };
   perSystem.dotfiles.helm.openebs = {
     namespace = "storage";
     chart = {

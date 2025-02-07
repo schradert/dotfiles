@@ -24,41 +24,42 @@ in {
       };
     };
   in {
-    imports = [inputs.disko.nixosModules.disko];
-    config = mkMerge ((mapAttrsToList mkUserModule users) ++ toList {
-      dotfiles.containers = true;
-      boot.initrd.availableKernelModules = ["ahci" "usb_storage" "sd_mod"];
-      boot.loader.systemd-boot.enable = true;
-      boot.loader.efi.canTouchEfiVariables = true;
-      hardware.enableRedistributableFirmware = mkDefault true;
-      hardware.cpu.intel.updateMicrocode = mkDefault config.hardware.enableRedistributableFirmware;
-      hardware.cpu.amd.updateMicrocode = mkDefault config.hardware.enableRedistributableFirmware;
-      home-manager.useGlobalPkgs = true;
-      home-manager.sharedModules = [
-        {
-          options.dotfiles = options.dotfiles;
-          config.dotfiles = config.dotfiles;
-          config.home.stateVersion = "24.05";
-        }
-        {
-          dotfiles.common = true;
-          dotfiles.programs.git.enable = true;
-          dotfiles.programs.wordnet.enable = true;
-        }
-      ];
-      i18n.defaultLocale = "en_US.UTF-8";
-      networking.useDHCP = mkDefault true;
-      security.sudo.extraRules = toList {
-        users = [me];
-        commands = toList {
-          command = "ALL";
-          options = ["NOPASSWD"];
+    imports = [inputs.disko.nixosModules.disko inputs.nur.modules.nixos.default];
+    config = mkMerge ((mapAttrsToList mkUserModule users)
+      ++ toList {
+        dotfiles.containers = true;
+        boot.initrd.availableKernelModules = ["ahci" "usb_storage" "sd_mod"];
+        boot.loader.systemd-boot.enable = true;
+        boot.loader.efi.canTouchEfiVariables = true;
+        hardware.enableRedistributableFirmware = mkDefault true;
+        hardware.cpu.intel.updateMicrocode = mkDefault config.hardware.enableRedistributableFirmware;
+        hardware.cpu.amd.updateMicrocode = mkDefault config.hardware.enableRedistributableFirmware;
+        home-manager.backupFileExtension = "bak";
+        home-manager.useGlobalPkgs = true;
+        home-manager.sharedModules = [
+          {
+            options.dotfiles = options.dotfiles;
+            config.dotfiles = config.dotfiles;
+            config.home.stateVersion = "24.05";
+          }
+          {
+            dotfiles.common = true;
+            dotfiles.programs.git.enable = true;
+          }
+        ];
+        i18n.defaultLocale = "en_US.UTF-8";
+        networking.useDHCP = mkDefault true;
+        security.sudo.extraRules = toList {
+          users = [me];
+          commands = toList {
+            command = "ALL";
+            options = ["NOPASSWD"];
+          };
         };
-      };
-      services.earlyoom.enable = true;
-      system.stateVersion = "24.05";
-      time.timeZone = "America/Los_Angeles";
-      users.mutableUsers = true;
-    });
+        services.earlyoom.enable = true;
+        system.stateVersion = "24.05";
+        time.timeZone = "America/Los_Angeles";
+        users.mutableUsers = true;
+      });
   };
 }

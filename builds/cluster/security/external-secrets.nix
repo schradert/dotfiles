@@ -1,8 +1,8 @@
-{nix, ...}: with nix; let
+{lib, ...}: let
   name = "external-secrets-kubernetes";
   namespace = "security";
   namespaces = ["home" "kube-system" "office" "media" "storage"];
-  namespaceModules = (forEach namespaces (ns: {
+  namespaceModules = lib.forEach namespaces (ns: {
     clustersecretstores."kubernetes-${ns}" = {
       spec.provider.kubernetes = {
         auth.serviceAccount = {inherit name namespace;};
@@ -15,7 +15,7 @@
         };
       };
     };
-  }));
+  });
   commonModule = {
     serviceAccounts.${name} = {};
     clusterRoles.${name}.rules = [
@@ -36,7 +36,7 @@
         kind = "ClusterRole";
         apiGroup = "rbac.authorization.k8s.io";
       };
-      subjects = toList {
+      subjects = lib.toList {
         inherit name namespace;
         kind = "ServiceAccount";
       };
@@ -53,6 +53,6 @@ in {
     };
     values.serviceMonitor.enabled = true;
     # TODO can I use a single ClusterSecretStore?
-    resources = mkMerge (namespaceModules ++ [commonModule]);
+    resources = lib.mkMerge (namespaceModules ++ [commonModule]);
   };
 }

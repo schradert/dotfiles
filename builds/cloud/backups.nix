@@ -1,8 +1,8 @@
 {
   perSystem.canivete.opentofu.workspaces.deploy = {
     plugins = ["Backblaze/b2"];
-    modules.backblaze = {nix, ...}: let
-      inherit (nix.vals) sops;
+    modules.backblaze = {canivete, ...}: let
+      inherit (canivete.vals) sops;
       application_key_id = sops "default.yaml#/backblaze/application_key_id";
       application_key = sops "default.yaml#/backblaze/application_key";
       bucket_name = "t0rdos";

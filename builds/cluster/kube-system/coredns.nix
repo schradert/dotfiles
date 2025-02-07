@@ -1,6 +1,4 @@
-{nix, ...}: let
-  inherit (nix) toList;
-in {
+{lib, ...}: {
   perSystem.dotfiles.helm.coredns = {
     namespace = "kube-system";
     chart = {
@@ -13,17 +11,24 @@ in {
       fullnameOverride = "coredns";
       serviceAccount.create = true;
       service.clusterIP = "10.43.0.10";
-      affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms = toList {
-        matchExpressions = toList {
+      affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms = lib.toList {
+        matchExpressions = lib.toList {
           key = "node-role.kubernetes.io/control-plane";
           operator = "Exists";
         };
       };
       tolerations = [
-        {key = "CriticalAddonsOnly"; operator = "Exists";}
-        {key = "node-role.kubernetes.io/control-plane"; operator = "Exists"; effect = "NoSchedule";}
+        {
+          key = "CriticalAddonsOnly";
+          operator = "Exists";
+        }
+        {
+          key = "node-role.kubernetes.io/control-plane";
+          operator = "Exists";
+          effect = "NoSchedule";
+        }
       ];
-      topologySpreadConstraints = toList {
+      topologySpreadConstraints = lib.toList {
         maxSkew = 1;
         topologyKey = "kubernetes.io/hostname";
         whenUnsatisfiable = "DoNotSchedule";

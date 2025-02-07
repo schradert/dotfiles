@@ -1,9 +1,12 @@
-{config, nix, ...}: let
+{
+  config,
+  lib,
+  ...
+}: let
   inherit (config.dotfiles) domain;
-  inherit (nix) toList;
 in {
   # TODO user accounts?
-  # TODO what about collaboration with excalidraw-room?
+  # TODO what about collaboration with excalidraw-room? https://github.com/excalidraw/excalidraw-room
   # TODO mermaid-to-excalidraw?
   # TODO find a wrapper application!
   perSystem.dotfiles.helm.excalidraw = {
@@ -30,9 +33,9 @@ in {
           "nginx.ingress.kubernetes.io/auth-signin" = "https://oauth2-proxy.${domain}/oauth2/start?rd=$scheme://$host$request_uri";
         };
         className = "external";
-        hosts = toList {
+        hosts = lib.toList {
           host = "excalidraw.${domain}";
-          paths = toList {
+          paths = lib.toList {
             path = "/";
             service.identifier = "excalidraw";
             service.port = "http";

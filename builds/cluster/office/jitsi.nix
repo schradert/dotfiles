@@ -1,7 +1,11 @@
-{config, nix, ...}: let
+{
+  canivete,
+  config,
+  lib,
+  ...
+}: let
   inherit (config.dotfiles) domain;
-  inherit (nix) toList vals;
-  inherit (vals) sops;
+  inherit (canivete.vals) sops;
   subdomain = "jitsi.${domain}";
 in {
   # TODO integrate with excalidraw https://github.com/jitsi/excalidraw-backend
@@ -56,7 +60,7 @@ in {
         storageClassName = "ceph-filesystem";
       };
       # TODO look through useful plugins https://github.com/jitsi-contrib/prosody-plugins
-      # prosody.extraVolumes = toList {
+      # prosody.extraVolumes = lib.toList {
       #   name = "prosody-modules";
       #   configMap.name = "prosody-modules";
       # };
@@ -73,7 +77,7 @@ in {
         enabled = true;
         ingressClassName = "external";
         annotations."external-dns.alpha.kubernetes.io/target" = "external.${domain}";
-        hosts = toList {
+        hosts = lib.toList {
           host = subdomain;
           paths = ["/"];
         };

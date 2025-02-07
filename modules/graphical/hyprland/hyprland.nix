@@ -1,11 +1,18 @@
 {inputs, ...}: let
   inherit (inputs.hyprland) nixosModules homeManagerModules overlays;
 in {
-  flake.overlays.hyprland = overlays.default;
-  flake.overlays.hyprland-plugins = inputs.hyprland-plugins.overlays.default;
-  canivete.deploy.nixos.modules.hyprland = {config, lib, pkgs, ...}: let
-    inherit (lib) flatten mkEnableOption mkIf toList;
-    inherit (pkgs) hyprlandPlugins kitty libsForQt5 qt6 systemd;
+  flake.overlays = {
+    hyprland = overlays.default;
+    hyprland-plugins = inputs.hyprland-plugins.overlays.default;
+  };
+  canivete.deploy.nixos.modules.hyprland = {
+    config,
+    lib,
+    pkgs,
+    ...
+  }: let
+    inherit (lib) mkEnableOption mkIf toList;
+    inherit (pkgs) hyprlandPlugins hyprpicker kitty libsForQt5 qt6 systemd xwaylandvideobridge;
   in {
     imports = [nixosModules.default];
     options.dotfiles.graphical.hyprland.enable = mkEnableOption "Hyprland configuration";

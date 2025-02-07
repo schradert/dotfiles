@@ -1,9 +1,8 @@
 {
   config,
-  nix,
+  lib,
   ...
-}:
-with nix; {
+}: {
   # TODO plex token?
   # TODO should I use subcleaner https://github.com/KBlixt/subcleaner
   perSystem.dotfiles.nix2container.bazarr = {};
@@ -13,7 +12,7 @@ with nix; {
       controllers.bazarr.containers.bazarr = {
         image.repository = "ref+envsubst://BAZARR_IMAGE_FULLREPOSITORY+";
         image.tag = "ref+envsubst://BAZARR_IMAGE_TAG";
-        envFrom = toList {secret = "bazarr";};
+        envFrom = lib.toList {secret = "bazarr";};
         probes.liveness.enabled = true;
         probes.readiness.enabled = true;
         probes.startup.enabled = true;
@@ -21,9 +20,9 @@ with nix; {
       service.bazarr.controller = "bazarr";
       service.bazarr.ports.http.port = 6767;
       ingress.bazarr.className = "internal";
-      ingress.bazarr.hosts = toList {
+      ingress.bazarr.hosts = lib.toList {
         host = "bazarr.${config.dotfiles.domain}";
-        paths = toList {
+        paths = lib.toList {
           path = "/";
           service.identifier = "bazarr";
           service.port = "http";

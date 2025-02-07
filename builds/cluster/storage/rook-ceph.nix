@@ -1,11 +1,13 @@
 # https://github.com/rook/rook/blob/master/Documentation/Helm-Charts/ceph-cluster-chart.md
 # TODO why does the CephBlockPool sit in Failed phase? signal interrupt for creation
 {
+  canivete,
   config,
-  nix,
+  lib,
   ...
-}:
-with nix; let
+}: let
+  inherit (lib) toList mkOption types mkForce;
+  inherit (types) attrsOf submodule str;
   inherit (config.dotfiles) domain;
   subdomain = "rook.${domain}";
   placement = nodes: label: let
@@ -31,7 +33,11 @@ with nix; let
     };
   };
 in {
-  canivete.deploy.nixos.modules.rook-ceph.boot.kernelModules = ["nbd" "rbd"];
+  canivete.deploy.nixos.modules.rook-ceph = {config, lib, ...}: {
+    config = lib.mkIf config.dotfiles.kubernetes.enable {
+      boot.kernelModules = ["nbd" "rbd"];
+    };
+  };
   # Kubenix bug means fields outside of expected spec won't register, so we define them here
   # NOTE https://github.com/hall/kubenix/issues/34
   perSystem.canivete.kubenix.clusters.prod.modules.rook-ceph-patch = {
@@ -125,7 +131,7 @@ in {
         serviceMonitor.enabled = true;
       };
       values.monitoring.enabled = true;
-      resources.secrets.rook-ceph-dashboard-password.stringData.password = vals.sops "default.yaml#/passwords/rook-ceph-dashboard-password";
+      resources.secrets.rook-ceph-dashboard-password.stringData.password = canivete.vals.sops "default.yaml#/passwords/rook-ceph-dashboard-password";
     };
     rook-ceph-cluster = {
       namespace = "storage";
@@ -153,7 +159,7 @@ in {
           mgr/dashboard/standby_behaviour = "error"
           mgr/dashboard/standby_error_status_code = 503
         '';
-          # mgr/dashboard/redirect_resolve_ip_addr = true
+        # mgr/dashboard/redirect_resolve_ip_addr = true
         cephBlockPoolsVolumeSnapshotClass.enabled = true;
         cephClusterSpec = {
           removeOSDsIfOutAndSafeToRemove = true;

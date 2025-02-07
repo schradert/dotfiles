@@ -1,6 +1,11 @@
 {
   canivete.deploy.nixos.homeModules = {
-    upstream-swaync = {config, lib, pkgs, ...}: let
+    upstream-swaync = {
+      config,
+      lib,
+      pkgs,
+      ...
+    }: let
       inherit (lib) getExe mkEnableOption mkIf mkOption mkPackageOption;
       inherit (config.dotfiles.programs.swaync) enable package settings;
       json = pkgs.formats.json {};

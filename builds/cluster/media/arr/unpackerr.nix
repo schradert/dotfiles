@@ -1,9 +1,8 @@
 {
   config,
-  nix,
+  lib,
   ...
-}:
-with nix; {
+}: {
   perSystem.dotfiles = {
     opentofu.passwords.unpackerr-api-key = {
       length = 21;
@@ -45,9 +44,9 @@ with nix; {
       service.unpackerr.controller = "unpackerr";
       service.unpackerr.ports.http.port = 5656;
       ingress.unpackerr.className = "internal";
-      ingress.unpackerr.hosts = toList {
+      ingress.unpackerr.hosts = lib.toList {
         host = "unpackerr.${config.dotfiles.domain}";
-        paths = toList {
+        paths = lib.toList {
           path = "/";
           service.identifier = "unpackerr";
           service.port = "http";

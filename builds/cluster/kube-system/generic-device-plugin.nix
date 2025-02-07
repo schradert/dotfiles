@@ -1,6 +1,4 @@
-{nix, ...}: let
-  inherit (nix) toList toJSON;
-in {
+{lib, ...}: {
   perSystem.dotfiles.helm.generic-device-plugin = {
     namespace = "kube-system";
     values.defaultPodOptions.priorityClassName = "system-node-critical";
@@ -19,7 +17,7 @@ in {
     values.persistence = {
       config.type = "configMap";
       config.name = "generic-device-plugin-configmap";
-      config.globalMounts = toList {
+      config.globalMounts = lib.toList {
         path = "/config/config.yaml";
         subPath = "config.yaml";
         readOnly = true;
@@ -33,10 +31,10 @@ in {
       plugins.type = "hostPath";
       plugins.hostPath = "/var/lib/kubelet/device-plugins";
     };
-    resources.configMaps.generic-device-plugin-configmap.data."config.yaml" = toJSON {
-      devices = toList {
+    resources.configMaps.generic-device-plugin-configmap.data."config.yaml" = builtins.toJSON {
+      devices = lib.toList {
         name = "tun";
-        groups = toList {
+        groups = lib.toList {
           count = 1000;
           paths = [{path = "/dev/net/tun";}];
         };

@@ -1,9 +1,9 @@
 {
   config,
-  nix,
+  lib,
   ...
 }: let
-  inherit (nix) toList toString;
+  inherit (lib) toList;
   inherit (config.dotfiles) domain;
   subdomain = "atuin.${domain}";
   port = 8888;
@@ -20,7 +20,7 @@ in {
     dns.query-name = subdomain;
     dns.query-type = "A";
     conditions = ["len([BODY]) == 0"];
-    # alerts = [{type = "custom";}]; FIXME
+    # alerts = [{type = "custom";}]; TODO
   };
   perSystem.dotfiles.helm.postgres.resources.postgresqls.main.spec = {
     users.atuin = ["createdb"];

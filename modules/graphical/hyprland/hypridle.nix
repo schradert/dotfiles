@@ -1,5 +1,10 @@
 {
-  canivete.deploy.nixos.homeModules.hypridle = {config, lib, pkgs, ...}: let
+  canivete.deploy.nixos.homeModules.hypridle = {
+    config,
+    lib,
+    pkgs,
+    ...
+  }: let
     inherit (lib) getExe getExe';
     inherit (pkgs) brightnessctl hyprland hyprlock procps systemd;
     loginctl = getExe' systemd "loginctl";

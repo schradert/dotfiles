@@ -1,22 +1,23 @@
-{nix, ...}:
-with nix; {
+{
   canivete.deploy.system.homeModules.wtf = {
     config,
+    lib,
     pkgs,
     ...
   }: let
+    inherit (lib) mkEnableOption mkPackageOption mkOption mkIf types;
     inherit (config.dotfiles.programs) wtf;
   in {
     options.dotfiles.programs.wtf = {
-      enable = mkEnabledOption "wtfutil";
+      enable = mkEnableOption "wtfutil";
       config = mkOption {
-        type = nullOr package;
+        type = types.nullOr types.package;
         description = "Wtfutil config file";
         default = null;
       };
       basePackage = mkPackageOption pkgs "wtf" {};
       finalPackage = mkOption {
-        type = package;
+        type = types.package;
         description = "Final configured wtfutil executable";
         default =
           if wtf.config == null

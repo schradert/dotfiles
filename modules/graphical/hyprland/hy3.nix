@@ -1,5 +1,10 @@
 {
-  canivete.deploy.nixos.homeModules.hy3 = {config, lib, perSystem, ...}: let
+  canivete.deploy.nixos.homeModules.hy3 = {
+    config,
+    lib,
+    perSystem,
+    ...
+  }: let
     inherit (config.dotfiles.graphical) hyprland;
   in {
     options.dotfiles.graphical.hyprland.plugins.hy3.enable = lib.mkEnableOption "Hy3 Hyprland plugin" // {default = hyprland.enable;};

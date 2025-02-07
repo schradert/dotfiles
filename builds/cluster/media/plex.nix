@@ -1,4 +1,10 @@
-{config, nix, ...}: with nix; let
+{
+  canivete,
+  config,
+  lib,
+  ...
+}: let
+  inherit (canivete) vals;
   inherit (config.dotfiles) domain;
   subdomain = "plex.${domain}";
 in {
@@ -46,9 +52,9 @@ in {
         annotations."external-dns.alpha.kubernetes.io/target" = "external.${domain}";
         annotations."nginx.ingress.kubernetes.io/backend-protocol" = "HTTPS";
         className = "external";
-        hosts = toList {
+        hosts = lib.toList {
           host = subdomain;
-          paths = toList {
+          paths = lib.toList {
             path = "/";
             service.identifier = "plex";
             service.port = "http";
@@ -138,9 +144,9 @@ in {
     };
     resources.secrets.plex-data-volsync-b2.stringData = {
       RESTIC_REPOSITORY = "s3:http://s3.us-west-004.backblazeb2.com:80/t0rdos/plex/data";
-      RESTIC_PASSWORD = nix.vals.sops "default.yaml#/passwords/b2-restic";
-      B2_ACCOUNT_ID = nix.vals.sops "default.yaml#/backblaze/application_key";
-      B2_ACCOUNT_KEY = nix.vals.sops "default.yaml#/backblaze/application_key_id";
+      RESTIC_PASSWORD = vals.sops "default.yaml#/passwords/b2-restic";
+      B2_ACCOUNT_ID = vals.sops "default.yaml#/backblaze/application_key";
+      B2_ACCOUNT_KEY = vals.sops "default.yaml#/backblaze/application_key_id";
     };
     resources.replicationsources.plex-data-b2.spec = {
       sourcePVC = "plex-data";
@@ -228,9 +234,9 @@ in {
     };
     resources.secrets.plex-config-volsync-b2.stringData = {
       RESTIC_REPOSITORY = "s3:http://s3.us-west-004.backblazeb2.com:80/t0rdos/plex/config";
-      RESTIC_PASSWORD = nix.vals.sops "default.yaml#/passwords/b2-restic";
-      B2_ACCOUNT_ID = nix.vals.sops "default.yaml#/backblaze/application_key";
-      B2_ACCOUNT_KEY = nix.vals.sops "default.yaml#/backblaze/application_key_id";
+      RESTIC_PASSWORD = vals.sops "default.yaml#/passwords/b2-restic";
+      B2_ACCOUNT_ID = vals.sops "default.yaml#/backblaze/application_key";
+      B2_ACCOUNT_KEY = vals.sops "default.yaml#/backblaze/application_key_id";
     };
     resources.replicationsources.plex-config-b2.spec = {
       sourcePVC = "plex-config";

@@ -1,5 +1,10 @@
 # https://github.com/grafana/grafana
-{config, nix, ...}: let
+{
+  canivete,
+  config,
+  lib,
+  ...
+}: let
   inherit (config.dotfiles) domain;
 in {
   # TODO liveness probe failed
@@ -87,7 +92,7 @@ in {
         labelValue = "";
       };
       testFramework.enabled = false;
-      topologySpreadConstraints = nix.toList {
+      topologySpreadConstraints = lib.toList {
         maxSkew = 1;
         topologyKey = "kubernetes.io/hostname";
         whenUnsatisfiable = "DoNotSchedule";
@@ -96,7 +101,7 @@ in {
     };
     resources.secrets.grafana-secret.stringData = {
       admin-user = "admin";
-      admin-password = nix.vals.sops "default.yaml#/passwords/grafana-admin-password";
+      admin-password = canivete.vals.sops "default.yaml#/passwords/grafana-admin-password";
     };
     resources.configMaps.grafana-configmap.data = {
       GF_ANALYTICS_CHECK_FOR_UPDATES = "false";
@@ -110,7 +115,7 @@ in {
       GF_FEATURE_TOGGLES_ENABLE = "publicDashboards";
       GF_LOG_MODE = "console";
       GF_NEWS_NEWS_FEED_ENABLED = "false";
-      GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS = nix.concatStringsSep "," ["natel-discrete-panel" "pr0ps-trackmap-panel" "panodata-map-panel"];
+      GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS = lib.concatStringsSep "," ["natel-discrete-panel" "pr0ps-trackmap-panel" "panodata-map-panel"];
       GF_SECURITY_ANGULAR_SUPPORT_ENABLED = "true";
       GF_SECURITY_COOKIE_SAMESITE = "grafana";
       GF_SERVER_ROOT_URL = "https://grafana.${domain}";

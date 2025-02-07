@@ -1,4 +1,4 @@
-{nix, ...}: {
+{canivete, ...}: {
   perSystem.dotfiles.opentofu.passwords = {
     b2-restic.length = 21;
     ceph-restic.length = 21;
@@ -14,8 +14,8 @@
     values.manageCRDs = true;
     values.metrics.disableAuth = true;
     resources.secrets.volsync-restic-passwords.stringData = {
-      B2_RESTIC = nix.vals.sops "default.yaml#/passwords/b2-restic";
-      CEPH_RESTIC = nix.vals.sops "default.yaml#/passwords/ceph-restic";
+      B2_RESTIC = canivete.vals.sops "default.yaml#/passwords/b2-restic";
+      CEPH_RESTIC = canivete.vals.sops "default.yaml#/passwords/ceph-restic";
     };
   };
 }

@@ -1,16 +1,17 @@
 {
+  canivete,
   config,
-  nix,
+  lib,
   ...
 }: let
   inherit (config.canivete.people.my.profiles.default) email;
   inherit (config.dotfiles) domain;
-  domainName = nix.replaceStrings ["."] ["-"] domain;
+  domainName = lib.replaceStrings ["."] ["-"] domain;
   mkClusterIssuer = name: server: {
     spec.acme = {
       inherit server email;
       privateKeySecretRef = {inherit name;};
-      solvers = nix.toList {
+      solvers = lib.toList {
         dns01.cloudflare = {
           inherit email;
           apiKeySecretRef.name = "cert-manager";
@@ -32,12 +33,12 @@ in {
     };
     values = {
       crds.enabled = true;
-      dns01RecursiveNameservers = nix.concatStringsSep "," ["https://1.1.1.1:443/dns-query" "https://1.0.0.1:443/dns-query"];
+      dns01RecursiveNameservers = lib.concatStringsSep "," ["https://1.1.1.1:443/dns-query" "https://1.0.0.1:443/dns-query"];
       dns01RecursiveNameserversOnly = true;
       prometheus.enabled = true;
       prometheus.servicemonitor.enabled = true;
     };
-    resources.secrets.cert-manager.stringData.cloudflare_api_key = nix.vals.sops "default.yaml#/cloudflare/api_key";
+    resources.secrets.cert-manager.stringData.cloudflare_api_key = canivete.vals.sops "default.yaml#/cloudflare/api_key";
     resources.clusterissuers = {
       letsencrypt-production = mkClusterIssuer "letsencrypt-production" "https://acme-v02.api.letsencrypt.org/directory";
       letsencrypt-staging = mkClusterIssuer "letsencrypt-staging" "https://acme-staging-v02.api.letsencrypt.org/directory";

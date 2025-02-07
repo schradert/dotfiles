@@ -1,6 +1,10 @@
 {
   # https://github.com/spegel-org/spegel
-  canivete.deploy.nixos.modules.spegel = {config, lib, pkgs, ...}: {
+  canivete.deploy.nixos.modules.spegel = {
+    config,
+    lib,
+    ...
+  }: {
     config = lib.mkIf config.dotfiles.kubernetes.enable {
       # dotfiles.kubernetes.k3s.embedded-registry = lib.mkIf (config.services.k3s.role == "server") true;
       # environment.etc."rancher/k3s/registries.yaml".source = pkgs.writers.writeYAML "registries.yaml" {mirrors."*" = {};};
@@ -44,7 +48,7 @@
       sha256 = "5RDhU2md61UvFVE4uz+tMTdEWFXHfSfgAKzMz7qBzCI=";
     };
     values.spegel = {
-      appendMirrors =  true;
+      appendMirrors = true;
       containerdSock = "/run/k3s/containerd/containerd.sock";
       containerdRegistryConfigPath = "/var/lib/rancher/k3s/agent/etc/containerd/certs.d";
     };

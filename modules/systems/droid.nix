@@ -1,5 +1,4 @@
-{nix, ...}:
-with nix; {
+{
   canivete.deploy.droid = {
     # TODO convert to gradle build in nix
     # NOTE how to use gradlew? do I need gradle2nix/v2? can I do it from scratch?
@@ -9,6 +8,7 @@ with nix; {
       pkgs,
       ...
     }: let
+      inherit (lib) pipe filterAttrs getAttr mapAttrsToList concatStringsSep mkEnabledOption mkOption types mkIf;
       inherit (config.dotfiles) apk;
       apks = pipe apk.programs [
         (filterAttrs (getAttr "enable"))
@@ -19,9 +19,9 @@ with nix; {
       options.dotfiles.apk = {
         enable = mkEnabledOption "APK installation step";
         programs = mkOption {
-          type = attrsOf (submodule ({name, ...}: {
+          type = types.attrsOf (types.submodule ({name, ...}: {
             options.enable = mkEnabledOption name;
-            options.apk = mkOption {type = package;};
+            options.apk = mkOption {type = types.package;};
           }));
           default = {};
         };
@@ -34,6 +34,7 @@ with nix; {
     };
     modules.default = {
       config,
+      lib,
       options,
       ...
     }: {
@@ -41,7 +42,7 @@ with nix; {
       home-manager = {
         backupFileExtension = "hm-bak";
         useGlobalPkgs = true;
-        sharedModules = toList {
+        sharedModules = lib.toList {
           options.dotfiles = options.dotfiles;
           config.dotfiles = config.dotfiles;
         };

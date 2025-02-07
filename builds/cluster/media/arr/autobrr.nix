@@ -1,6 +1,6 @@
 {
   config,
-  nix,
+  lib,
   ...
 }: let
   subdomain = "autobrr.${config.dotfiles.domain}";
@@ -28,9 +28,9 @@ in {
       service.autobrr.controller = "autobrr";
       service.autobrr.ports.http.port = port;
       ingress.autobrr.className = "internal";
-      ingress.autobrr.hosts = nix.toList {
+      ingress.autobrr.hosts = lib.toList {
         host = subdomain;
-        paths = nix.toList {
+        paths = lib.toList {
           path = "/";
           service.identifier = "autobrr";
           service.port = "http";
@@ -50,7 +50,7 @@ in {
         AUTOBRR__POSTGRES_USER = "autobrr";
         AUTOBRR__CHECK_FOR_UPDATES = "false";
         AUTOBRR__HOST = "0.0.0.0";
-        AUTOBRR__PORT = nix.toString port;
+        AUTOBRR__PORT = toString port;
         AUTOBRR__LOG_LEVEL = "INFO";
       };
     };

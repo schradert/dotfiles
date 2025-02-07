@@ -1,9 +1,8 @@
 {
   config,
-  nix,
+  lib,
   ...
-}:
-with nix; let
+}: let
   name = "devops";
   url = "git@github.com:schradert/dotfiles";
   branch = "trunk";
@@ -35,11 +34,11 @@ in {
       '';
     };
   in {
-    options.dotfiles.${name}.enable = mkEnableOption name;
-    config = mkIf config.dotfiles.${name}.enable {
+    options.dotfiles.${name}.enable = lib.mkEnableOption name;
+    config = lib.mkIf config.dotfiles.${name}.enable {
       systemd.services.${name} = {
         wantedBy = ["default.target"];
-        script = getExe script;
+        script = lib.getExe script;
         requires = ["secrets.service" "ssh-agent.service"];
         after = ["secrets.service" "ssh-agent.service"];
         serviceConfig.Restart = "on-failure";

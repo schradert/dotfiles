@@ -1,9 +1,4 @@
-{
-  config,
-  nix,
-  ...
-}:
-with nix; let
+{config, ...}: let
   subdomain = "bitwarden.${config.dotfiles.domain}";
 in {
   perSystem.dotfiles.helm.bitwarden = {

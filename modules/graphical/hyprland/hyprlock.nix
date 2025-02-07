@@ -1,6 +1,10 @@
 {
   canivete.deploy.nixos = {
-    homeModules.hyprlock = {config, lib, ...}: {
+    homeModules.hyprlock = {
+      config,
+      lib,
+      ...
+    }: {
       programs.hyprlock.enable = config.dotfiles.graphical.hyprland.enable;
       programs.hyprlock.settings = {
         general.ignore_empty_input = true;
@@ -78,7 +82,12 @@
         };
       };
     };
-    modules.hyprlock = {config, lib, pkgs, ...}: {
+    modules.hyprlock = {
+      config,
+      lib,
+      pkgs,
+      ...
+    }: {
       config = lib.mkIf config.dotfiles.graphical.hyprland.enable {
         environment.systemPackages = [pkgs.hyprlock];
         security.pam.services.hyprlock = {};

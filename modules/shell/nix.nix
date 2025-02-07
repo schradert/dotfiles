@@ -1,10 +1,10 @@
 {
   config,
   inputs,
-  nix,
+  lib,
   ...
-}:
-with nix; let
+}: let
+  inherit (lib) flip mapAttrsToList fileContents mkForce mkMerge;
   inherit (config.canivete.people) me;
   buildMachines = flip mapAttrsToList config.canivete.deploy.nixos.nodes (name: machine: {
     hostName = name;
@@ -24,8 +24,9 @@ with nix; let
       experimental-features = nix-command flakes auto-allocate-uids
       keep-outputs = true
       keep-derivations = true
-      warn-dirty = false
       trusted-users = ${me}
+      warn-dirty = false
+      use-xdg-base-directories = true
     '';
     optimise.automatic = true;
   };

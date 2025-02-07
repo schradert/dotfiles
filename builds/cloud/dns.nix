@@ -1,9 +1,9 @@
 {
+  canivete,
   config,
-  nix,
   ...
 }: let
-  inherit (nix.vals) sops;
+  inherit (canivete.vals) sops;
   inherit (config.dotfiles) domain;
   inherit (config.canivete.people.my.profiles.default) email;
 in {

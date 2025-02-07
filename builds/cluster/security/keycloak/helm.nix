@@ -1,6 +1,7 @@
 {
+  canivete,
   config,
-  nix,
+  lib,
   ...
 }: let
   inherit (config.dotfiles) domain;
@@ -22,7 +23,7 @@ in {
         KC_HTTP_ENABLED = "true";
       };
       resources.externalsecrets.keycloak.spec = {
-        dataFrom = nix.toList {
+        dataFrom = lib.toList {
           extract.key = "keycloak.main.credentials.postgresql.acid.zalan.do";
           sourceRef.storeRef.kind = "ClusterSecretStore";
           sourceRef.storeRef.name = "kubernetes-storage";
@@ -31,7 +32,7 @@ in {
         target.template.engineVersion = "v2";
         target.template.data = {
           db-password = "{{ .password }}";
-          keycloak-superadmin = nix.vals.sops "default.yaml#/passwords/keycloak-superadmin";
+          keycloak-superadmin = canivete.vals.sops "default.yaml#/passwords/keycloak-superadmin";
         };
       };
       chart = {

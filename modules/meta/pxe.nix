@@ -1,23 +1,34 @@
 {
-  canivete.deploy.nixos.modules.pxe = {config, flake, lib, pkgs, ...}: let
+  canivete.deploy.nixos.modules.pxe = {
+    config,
+    flake,
+    lib,
+    pkgs,
+    ...
+  }: let
     inherit (config.dotfiles.pxe) client server;
     inherit (flake.config.canivete.people) me;
     inherit (flake.inputs) nixpkgs self;
     inherit (lib) toList mkIf mkMerge mkEnableOption;
     inherit (pkgs) ipxe grub2 system;
-    inherit (nixpkgs.lib.nixosSystem {
-      inherit system;
-      modules = toList ({modulesPath, ...}: {
-        imports = [(modulesPath + "/installer/netboot/netboot-niminal.nix")];
-        services.openssh = {
-          enable = true;
-          openFirewall = true;
-          settings.PasswordAuthentication = false;
-          settings.KbdInteractiveAuthentication = false;
-        };
-        users.users.root.openssh.authorizedKeys.keyFiles = [(self + "/.canivete/sops/${me}.pub")];
-      });
-    }) kernel netbootRamdisk toplevel;
+    inherit
+      (nixpkgs.lib.nixosSystem {
+        inherit system;
+        modules = toList ({modulesPath, ...}: {
+          imports = [(modulesPath + "/installer/netboot/netboot-niminal.nix")];
+          services.openssh = {
+            enable = true;
+            openFirewall = true;
+            settings.PasswordAuthentication = false;
+            settings.KbdInteractiveAuthentication = false;
+          };
+          users.users.root.openssh.authorizedKeys.keyFiles = [(self + "/.canivete/sops/${me}.pub")];
+        });
+      })
+      kernel
+      netbootRamdisk
+      toplevel
+      ;
   in {
     # TODO figure out running this on a vpn cloud machine
     # TODO convert this to systemd-boot before attempting (or maybe I should use GRUB?)

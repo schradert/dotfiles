@@ -1,9 +1,8 @@
 {
   config,
-  nix,
+  lib,
   ...
-}:
-with nix; let
+}: let
   port = 7878;
   subdomain = "lidarr.${config.dotfiles.domain}";
 in {
@@ -62,9 +61,9 @@ in {
       service.lidarr.controller = "lidarr";
       service.lidarr.ports.http.port = port;
       ingress.lidarr.className = "internal";
-      ingress.lidarr.hosts = toList {
+      ingress.lidarr.hosts = lib.toList {
         host = subdomain;
-        paths = toList {
+        paths = lib.toList {
           path = "/";
           service.identifier = "lidarr";
           service.port = "http";

@@ -1,6 +1,6 @@
 {
   config,
-  nix,
+  lib,
   ...
 }: let
   port = 7878;
@@ -61,9 +61,9 @@ in {
       service.radarr.controller = "radarr";
       service.radarr.ports.http.port = port;
       ingress.radarr.className = "internal";
-      ingress.radarr.hosts = nix.toList {
+      ingress.radarr.hosts = lib.toList {
         host = subdomain;
-        paths = nix.toList {
+        paths = lib.toList {
           path = "/";
           service.identifier = "radarr";
           service.port = "http";

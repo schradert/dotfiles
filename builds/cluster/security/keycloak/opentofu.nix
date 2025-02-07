@@ -1,9 +1,10 @@
 {
+  canivete,
   config,
-  nix,
+  lib,
   ...
 }: let
-  inherit (nix) flip mapAttrs vals;
+  inherit (lib) flip mapAttrs;
   users = {
     tristan = {
       email = "me@trdos.me";
@@ -53,7 +54,7 @@ in {
       provider.keycloak = {
         client_id = "admin-cli";
         username = "superadmin";
-        password = vals.sops "default.yaml#/passwords/keycloak-superadmin";
+        password = canivete.vals.sops "default.yaml#/passwords/keycloak-superadmin";
         url = "https://${subdomain}";
       };
       resource = {

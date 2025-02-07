@@ -1,20 +1,21 @@
-{
-  config,
-  nix,
-  ...
-}:
-with nix; let
+{config, ...}: let
   inherit (config.dotfiles) domain;
   inherit (config.canivete) root;
   # TODO how can I bootstrap images onto the server to allow every other deployment to use this?
+  # TODO look through https://github.com/ramitsurana/awesome-kubernetes
 in {
   perSystem = {
+    canivete,
     config,
     inputs',
+    lib,
     pkgs,
     self',
     ...
-  }: {
+  }: let
+    inherit (lib) mkOption types pipe recursiveUpdate mkMerge flip mapAttrsToList genAttrs toUpper getExe mergeAttrs mapAttrs mkDefault mkIf filterAttrs getAttr mkEnableOption;
+    inherit (types) attrsOf submodule anything str package;
+  in {
     options.dotfiles.nix2container = mkOption {
       default = {};
       type = attrsOf (submodule ({
@@ -91,7 +92,7 @@ in {
             # depends_on = ["null_resource.${name}"];
             provisioner.local-exec.environment = pipe ["tag" "registry" "repository" "fullRepository"] [
               (flip genAttrs (attr: "\${ data.external.${name}.result.${attr} }"))
-              (mapAttrNames (key: "${toUpper name}_IMAGE_${toUpper key}"))
+              (canivete.mapAttrNames (key: "${toUpper name}_IMAGE_${toUpper key}"))
             ];
           };
           data.external.${name}.program = pkgs.execBash ''
@@ -116,35 +117,36 @@ in {
       };
     };
     config.canivete.kubenix.clusters = let
-      mapReleases = releases: helm: mkMerge (flip mapAttrsToList releases (name: cfg: {
-        kubernetes = {
-          resources = mkMerge [
-            cfg.resources
-            # TODO fix this with resources.imports
-            (flip mapAttrs cfg.resources (_: type:
-              flip mapAttrs type (_: _: {
-                metadata.namespace = mkDefault cfg.namespace;
-                metadata.labels."canivete/chart" = mkDefault name;
-              })))
-            (mkIf (cfg ? namespace) {namespaces.${cfg.namespace} = {};})
-          ];
-          helm.releases.${name} = mkMerge [
-            (removeAttrs cfg ["chart" "resources" "bootstrap"])
-            {
-              chart = pipe cfg.chart [
-                # Good template chart to make deployment easier and more powerful
-                (mergeAttrs {
-                  repo = "https://bjw-s.github.io/helm-charts";
-                  chart = "app-template";
-                  version = "3.3.2";
-                  sha256 = "9Lx3jPGiLaE+joGy2GWxLzjWDu8wCa+4DrS9atf2zug=";
-                })
-                helm.fetch
-              ];
-            }
-          ];
-        };
-      }));
+      mapReleases = releases: helm:
+        mkMerge (flip mapAttrsToList releases (name: cfg: {
+          kubernetes = {
+            resources = mkMerge [
+              cfg.resources
+              # TODO fix this with resources.imports
+              (flip mapAttrs cfg.resources (_: type:
+                flip mapAttrs type (_: _: {
+                  metadata.namespace = mkDefault cfg.namespace;
+                  metadata.labels."canivete/chart" = mkDefault name;
+                })))
+              (mkIf (cfg ? namespace) {namespaces.${cfg.namespace} = {};})
+            ];
+            helm.releases.${name} = mkMerge [
+              (removeAttrs cfg ["chart" "resources" "bootstrap"])
+              {
+                chart = pipe cfg.chart [
+                  # Good template chart to make deployment easier and more powerful
+                  (mergeAttrs {
+                    repo = "https://bjw-s.github.io/helm-charts";
+                    chart = "app-template";
+                    version = "3.3.2";
+                    sha256 = "9Lx3jPGiLaE+joGy2GWxLzjWDu8wCa+4DrS9atf2zug=";
+                  })
+                  helm.fetch
+                ];
+              }
+            ];
+          };
+        }));
       fetchKubeconfig = "ssh ${root} sudo k3s kubectl config view --raw | sed 's/127\.0\.0\.1/${domain}/'";
     in {
       bootstrap.opentofuWorkspace = "bootstrap";
@@ -155,11 +157,13 @@ in {
     };
   };
   canivete.deploy.nixos.modules.kubernetes = {
+    canivete,
     config,
+    lib,
     pkgs,
-    perSystem,
     ...
   }: let
+    inherit (lib) mkEnableOption mkOption mkIf mkMerge mkDefault;
     cfg = config.dotfiles.kubernetes;
     cfg_k3s = config.services.k3s;
   in {
@@ -189,12 +193,12 @@ in {
         };
         virtualisation.containerd.enable = true;
       }
-      (mkIfElse cfg.root {
-        services.k3s.role = "server";
-        services.k3s.clusterInit = true;
-      } {
-        dotfiles.kubernetes.k3s.server = "https://${domain}:6443";
-      })
+      (canivete.mkIfElse cfg.root {
+          services.k3s.role = "server";
+          services.k3s.clusterInit = true;
+        } {
+          dotfiles.kubernetes.k3s.server = "https://${domain}:6443";
+        })
       (mkIf (cfg_k3s.role == "server") {
         dotfiles.kubernetes.k3s = {
           # Barebones

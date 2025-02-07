@@ -1,4 +1,9 @@
-{config, nix, ...}: with nix; let
+{
+  config,
+  lib,
+  ...
+}: let
+  inherit (lib) pipe filterAttrs mapAttrsToList concatStringsSep mkIf recursiveUpdate toList;
   # NOTE https://github.com/cilium/cilium
   inherit (config.dotfiles) domain;
   # most are eno1, sirver = eno4, axolotl = enp0s31f6

@@ -1,4 +1,9 @@
-{config, nix, ...}: with nix; let
+{
+  config,
+  lib,
+  ...
+}: let
+  inherit (lib) toList concatStringsSep genAttrs;
   inherit (config.dotfiles) domain;
   bucketNames = {
     chunks = "loki-chunks";
@@ -10,8 +15,14 @@
     extraEnvFrom = [
       {secretRef.name = "loki-chunks";}
       {configMapRef.name = "loki-chunks";}
-      {secretRef.name = "loki-ruler"; prefix = "RULER_";}
-      {configMapRef.name = "loki-ruler"; prefix = "RULER_";}
+      {
+        secretRef.name = "loki-ruler";
+        prefix = "RULER_";
+      }
+      {
+        configMapRef.name = "loki-ruler";
+        prefix = "RULER_";
+      }
     ];
   };
 in {
@@ -32,8 +43,14 @@ in {
       global.extraEnvFrom = [
         {secretRef.name = "loki-chunks";}
         {configMapRef.name = "loki-chunks";}
-        {secretRef.name = "loki-ruler"; prefix = "RULER_";}
-        {configMapRef.name = "loki-ruler"; prefix = "RULER_";}
+        {
+          secretRef.name = "loki-ruler";
+          prefix = "RULER_";
+        }
+        {
+          configMapRef.name = "loki-ruler";
+          prefix = "RULER_";
+        }
       ];
       deploymentMode = "SimpleScalable";
       loki = {
@@ -103,13 +120,16 @@ in {
       chunksCache.enabled = false;
       resultsCache.enabled = false;
     };
-    resources.objectbucketclaims = genAttrs (attrValues bucketNames) (name: {
+    resources.objectbucketclaims = genAttrs (builtins.attrValues bucketNames) (name: {
       spec.bucketName = name;
       spec.storageClassName = "ceph-bucket";
     });
   };
   perSystem.dotfiles.helm.grafana.values.datasources."datasources.yaml" = {
-    deleteDatasources = toList {name = "Loki"; orgId = 1;};
+    deleteDatasources = toList {
+      name = "Loki";
+      orgId = 1;
+    };
     datasources = toList {
       name = "Loki";
       type = "loki";

@@ -1,4 +1,4 @@
-{config, nix, ...}: with nix; let
+{config, ...}: let
   inherit (config.dotfiles) domain;
 in {
   # TODO figure out prometheus in nix

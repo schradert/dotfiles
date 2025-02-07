@@ -1,6 +1,6 @@
-{nix, ...}: {
+{
   # TODO look into immich-go vs immich-cli for photo upload
-  # TODO build immich with nix
+  # TODO build immich from source
   # NOTE https://github.com/immich-app/immich
   perSystem.canivete.dream2nix.packages = {
     # NOTE currently failing with @msgpackr-extract/msgpackr-extract-darwin-x64 not found in package-lock.json""
@@ -34,12 +34,13 @@
     immich-machine-learning.module = {
       config,
       dream2nix,
+      lib,
       ...
     }: let
       inherit (config) deps mkDerivation version;
       inherit (mkDerivation) src;
       inherit (deps) fetchFromGitHub python;
-      pyproject = nix.fromTOML (nix.readFile "${src}/machine-learning/pyproject.toml");
+      pyproject = lib.importTOML (builtins.readFile "${src}/machine-learning/pyproject.toml");
     in {
       imports = [dream2nix.modules.dream2nix.pip];
       paths.package = src;
@@ -59,7 +60,7 @@
         buildInputs = pyproject.build-system.requires;
       };
       buildPythonPackage.pyproject = true;
-      pip.requirementsList = nix.attrNames pyproject.tool.poetry.dependencies;
+      pip.requirementsList = builtins.attrNames pyproject.tool.poetry.dependencies;
       pip.flattenDependencies = true;
     };
   };

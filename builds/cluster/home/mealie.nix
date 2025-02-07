@@ -1,9 +1,8 @@
 {
   config,
-  nix,
+  lib,
   ...
-}:
-with nix; let
+}: let
   inherit (config.dotfiles) domain;
   subdomain = "mealie.${domain}";
 in {
@@ -43,9 +42,9 @@ in {
         ingress.mealie = {
           annotations."external-dns.alpha.kubernetes.io/target" = "external.${domain}";
           className = "external";
-          hosts = toList {
+          hosts = lib.toList {
             host = subdomain;
-            paths = toList {
+            paths = lib.toList {
               path = "/";
               service.identifier = "mealie";
               service.port = "http";
@@ -67,7 +66,7 @@ in {
         POSTGRES_SERVER = "main.storage.svc.cluster.local";
       };
       resources.externalsecrets.mealie.spec = {
-        dataFrom = toList {
+        dataFrom = lib.toList {
           extract.key = "mealie.main.credentials.postgresql.acid.zalan.do";
           sourceRef.storeRef.kind = "ClusterSecretStore";
           sourceRef.storeRef.name = "kubernetes-storage";

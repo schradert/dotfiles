@@ -1,5 +1,5 @@
-{nix, ...}: let
-  inherit (nix) mkMerge toList;
+{lib, ...}: let
+  inherit (lib) mkMerge;
   container = {
     image.repository = "ghcr.io/buroa/qbtools";
     image.tag = "v0.16.10";
@@ -31,7 +31,7 @@ in {
         type = "cronjob";
         cronjob = cronjob // {schedule = "@daily";};
         pod.restartPolicy = "OnFailure";
-        containers.orphaned = mkMerge [container {args = ["orphaned" "--exlude-pattern" "*/manual/*"];}];
+        containers.orphaned = mkMerge [container {args = ["orphaned" "--exclude-pattern" "*/manual/*"];}];
       };
       reannounce.containers.reannounce = mkMerge [container {args = ["reannounce"];}];
     };

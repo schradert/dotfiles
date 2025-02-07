@@ -1,9 +1,8 @@
 {
   config,
-  nix,
+  lib,
   ...
-}:
-with nix; let
+}: let
   port = 9696;
   subdomain = "prowlarr.${config.dotfiles.domain}";
 in {
@@ -36,9 +35,9 @@ in {
         service.prowlarr.controller = "prowlarr";
         service.prowlarr.ports.http.port = port;
         ingress.prowlarr.className = "internal";
-        ingress.prowlarr.hosts = toList {
+        ingress.prowlarr.hosts = lib.toList {
           host = subdomain;
-          paths = toList {
+          paths = lib.toList {
             path = "/";
             service.identifier = "prowlarr";
             service.port = "http";

@@ -1,9 +1,8 @@
 {
   config,
-  nix,
+  lib,
   ...
-}:
-with nix; {
+}: {
   # https://github.com/autobrr/omegabrr
   perSystem.dotfiles.helm.omegabrr = {
     namespace = "media";
@@ -18,9 +17,9 @@ with nix; {
       service.omegabrr.controller = "omegabrr";
       service.omegabrr.ports.http.port = 80;
       ingress.omegabrr.className = "internal";
-      ingress.omegabrr.hosts = toList {
+      ingress.omegabrr.hosts = lib.toList {
         host = "omegabrr.${config.dotfiles.domain}";
-        paths = toList {
+        paths = lib.toList {
           path = "/";
           service.identifier = "omegabrr";
           service.port = "http";
