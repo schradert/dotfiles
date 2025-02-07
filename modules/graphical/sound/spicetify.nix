@@ -1,18 +1,14 @@
 {
-  inputs,
-  nix,
-  ...
-}: {
-  canivete.deploy.darwin.homeModules.spotify = {pkgs, ...}: {home.packages = [pkgs.spotify];};
-  canivete.deploy.nixos.modules.spicetify = {
-    config,
+  canivete.deploy.system.homeModules.spicetify = {
+    flake,
     pkgs,
     ...
-  }: {
-    imports = [inputs.spicetify-nix.nixosModules.default];
-    config = nix.mkIf config.dotfiles.graphical.enable {
-      programs.spicetify = with inputs.spicetify-nix.legacyPackages.${pkgs.system}; {
-        enable = nix.mkDefault true;
+  }: let
+    inherit (flake.inputs.spicetify-nix.legacyPackages.${pkgs.system}) apps extensions themes;
+  in {
+    imports = [flake.inputs.spicetify-nix.homeManagerModules.default];
+    config = {
+      programs.spicetify = {
         enabledCustomApps = with apps; [
           newReleases
           reddit
@@ -49,7 +45,7 @@
               owner = "Vexcited";
               repo = "better-spotify-genres";
               rev = "build";
-              hash = "sha256-eaHOJKoVf4HzhZEJiMRCDyEYUroI4/daC6CD4z0E16Y=";
+              hash = "sha256-yPydeK1lctIyDXi+flRiiC13ADpNdYgrC7M7L46PhGM=";
             };
           }
         ];

@@ -1,0 +1,3 @@
+#+begin_src emacs-lisp :tangle no
+(package! glicol-mode :recipe (:host github :repo "khtdr/glicol-mode"))
+#+end_src

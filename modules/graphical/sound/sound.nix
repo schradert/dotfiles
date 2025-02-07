@@ -5,11 +5,19 @@
     lib,
     pkgs,
     ...
-  }: {
-    options.dotfiles.graphical.sound.enable = lib.mkEnableOption "Sound devices";
-    config = lib.mkIf config.dotfiles.graphical.sound.enable {
+  }: let
+    inherit (lib) mkEnableOption mkIf toList;
+  in {
+    options.dotfiles.graphical.sound.enable = mkEnableOption "Sound devices";
+    config = mkIf config.dotfiles.graphical.sound.enable {
+      assertions = toList {
+        assertion = config.dotfiles.graphical.enable;
+        message = "Sound only makes sense if the node is graphical";
+      };
+      # TODO consider build https://github.com/schooldanlp6/marstui-rustio
       environment.systemPackages = [pkgs.pavucontrol];
       hardware.bluetooth.enable = true;
+      # TODO should I do powerOnBoot and settings.General.Experimental?
       security.rtkit.enable = true;
       services.pipewire = {
         enable = true;
@@ -18,8 +26,8 @@
         pulse.enable = true;
         jack.enable = true;
       };
-      home-manager.sharedModules = lib.toList {
-        home.packages = [pkgs.playerctl];
+      home-manager.sharedModules = toList {
+        home.packages = with pkgs; [asak playerctl];
         services.playerctld.enable = true;
         wayland.windowManager.hyprland.settings = {
           bindl = [
