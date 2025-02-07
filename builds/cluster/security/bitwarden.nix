@@ -1,6 +1,10 @@
 {config, ...}: let
   subdomain = "bitwarden.${config.dotfiles.domain}";
 in {
+  canivete.deploy.system.homeModules.bitwarden = {pkgs, ...}: {
+    programs.rbw.enable = true;
+    # TODO pass email, base_url, identity_url
+  };
   # TODO is it easier to end up using vaultwarden
   # TODO https://github.com/quexten/goldwarden with programs.goldwarden in NixOS...
   # NOTE https://github.com/dani-garcia/vaultwarden/wiki
