@@ -1,0 +1,3 @@
+#+begin_src emacs-lisp :tangle packages.el
+(package! xonsh-mode :pin "7fa581524533a9b6b770426e4445e571a69e469d")
+#+end_src
