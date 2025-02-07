@@ -1,0 +1,14 @@
+#+begin_src emacs-lisp :noweb-ref init
+(doom! :lang (rust +lsp +tree-sitter))
+#+end_src
+
+#+begin_src emacs-lisp :tangle no
+(after! dap-mode
+  (dap-register-debug-template "Rust::GDB Run Configuration"
+                               (list :type "gdb"
+                                     :request "launch"
+                                     :name "GDB::Run"
+                                     :gdbpath "rust-gdb"
+                                     :target nil
+                                     :cwd nil)))
+#+end_src

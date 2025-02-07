@@ -1,0 +1,3 @@
+#+begin_src emacs-lisp :noweb-ref init
+(doom! :tools editorconfig)
+#+end_src

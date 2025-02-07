@@ -40,8 +40,6 @@
         bat.enable = true;
         btop.enable = true;
         dircolors.enable = true;
-        direnv.enable = true;
-        direnv.nix-direnv.enable = true;
         eza.enable = true;
         home-manager.enable = true;
         htop.enable = true;

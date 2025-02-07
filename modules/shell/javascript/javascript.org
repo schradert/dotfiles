@@ -1,0 +1,3 @@
+#+begin_src emacs-lisp :noweb-ref init
+(doom! :lang (javascript +lsp +tree-sitter))
+#+end_src

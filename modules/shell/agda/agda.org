@@ -1,0 +1,3 @@
+#+begin_src emacs-lisp :noweb-ref init
+(doom! :lang (agda +local +tree-sitter))
+#+end_src

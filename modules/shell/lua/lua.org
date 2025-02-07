@@ -1,0 +1,8 @@
+#+begin_src emacs-lisp :noweb-ref init
+(doom! :lang (lua +fennel +lsp +tree-sitter +moonscript))
+#+end_src
+
+#+begin_src emacs-lisp :tangle no
+;; TODO is it a problem to not set lua-lsp-dir globally
+;; TODO do I need to set lsp-clients-lua-language-server-bin to use lua-language-server?
+#+end_src

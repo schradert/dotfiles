@@ -1,0 +1,8 @@
+#+begin_src emacs-lisp :noweb-ref init
+(doom! :lang (python +lsp +pyright +tree-sitter)
+       :tools ein)
+#+end_src
+
+#+begin_src emacs-lisp :tangle no
+(after! dap-mode (setq dap-python-debugger 'debugpy))
+#+end_src
