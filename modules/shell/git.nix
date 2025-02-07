@@ -15,14 +15,11 @@
   in {
     options.dotfiles.programs.git.enable = mkEnableOption "Git configuration";
     config = mkIf dotfiles.programs.git.enable {
-      dotfiles.zsh.initExtraLines = toList ''
-        # disable sort when completing `git checkout`
-        zstyle ':completion:*:git-checkout:*' sort false
-      '';
-      home.packages = with pkgs; [lazygit tig];
       # TODO how good is gitu vs magit vs lazygit vs tig?
+      home.packages = with pkgs; [code-maat lazygit tig gitu gitui serie];
       programs = {
         gpg.enable = true;
+        gpg.homedir = "${config.xdg.dataHome}/gnupg";
         git = {
           enable = true;
           userName = my.name;
@@ -43,6 +40,7 @@
               column.ui = "auto";
               branch.sort = "-committerdate";
               fetch.writeCommitGraph = true;
+              core.hooksPath = "${config.xdg.stateHome}/git/hooks";
               core.untrackedCache = true;
               core.fsmonitor = true;
               rebase.autoSquash = true;
@@ -79,6 +77,10 @@
         git-cliff.enable = true;
         # TODO figure out how to use git-cliff and find what settings I prefer
         git-cliff.settings = {};
+        zsh.initExtra = ''
+          # disable sort when completing `git checkout`
+          zstyle ':completion:*:git-checkout:*' sort false
+        '';
       };
     };
   };
