@@ -4,9 +4,17 @@
   lib,
   ...
 }: let
+  inherit (lib) mkOption types toList;
+  inherit (types) attrsOf submodule anything;
   inherit (canivete) vals;
   inherit (config.dotfiles) domain;
 in {
+  canivete.deploy.system.homeModules.database = {config, lib, pkgs, ...}: {
+    options.dotfiles.profiles.databases = lib.mkEnableOption "database administration tools";
+    config = lib.mkIf config.dotfiles.profiles.databases {
+      home.packages = with pkgs; [dbeaver-bin gobang lazysql rainfrog harlequin dblab];
+    };
+  };
   # TODO https://github.com/hydradatabase/hydra vs https://github.com/apache/age vs https://github.com/paradedb/paradedb
   # TODO https://github.com/ankane/pghero
   # OperatorConfiguration has a configuration field, not spec, so we need this to pass validation
