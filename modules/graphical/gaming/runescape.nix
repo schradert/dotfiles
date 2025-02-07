@@ -5,7 +5,7 @@
   # canivete.pkgs.config.permittedInsecurePackages = ["openssl-1.1.1w"];
   # canivete.pkgs.config.allowUnfreePredicate = pkg: elem (getName pkg) ["RuneScape" "runescape-launcher"];
   # environment.systemPackages = [pkgs.runescape];
-  flake.overlays.runescape = final: prev: {
+  flake.overlays.runescape = final: _: {
     rscplus = final.callPackage ({
       lib,
       stdenv,

@@ -1,7 +1,12 @@
 {lib, ...}: let
-  inherit (lib) concat flip filterAttrs forEach getAttr getExe length literalExpression mkDefault mapAttrsToList mapAttrs mkEnableOption mkPackageOption mkOption mkIf recursiveUpdate escapeURL isString isAttrs throw types toList pipe;
+  inherit (lib) concat flip filterAttrs forEach getAttr getExe length literalExpression mkDefault mapAttrsToList mapAttrs mkEnableOption mkPackageOption mkOption mkIf recursiveUpdate escapeURL isString isAttrs throw types pipe;
 in {
-  flake.overlays.roms = final: prev: {
+  # TODO add flash emulation with https://github.com/ruffle-rs/ruffle
+  # TODO https://github.com/OpenEmu/OpenEmu
+  # TODO https://vndb.org/
+  # TODO is this helpful https://github.com/mtkennerly/ludusavi
+  # TODO is this helpful https://github.com/m4dEngi/RemotePlayWhatever
+  flake.overlays.roms = final: _: {
     # NOTE https://github.com/NixOS/nixpkgs/issues/108212
     # NOTE https://github.com/xenia-project/xenia
     xenia-canary = final.callPackage ({
@@ -174,10 +179,89 @@ in {
         PS2."Shin Megami Tensei - Digital Devil Saga (USA)" = "sha256-t/0zSn95uweU4/ABRIMNIaKD5FMRNbnYM5Ows5WdwOc=";
         PS2."Shin Megami Tensei - Digital Devil Saga 2 (USA)" = "sha256-ZT15hSFxSadiqHFayM4nYmErfueoKXQBucdZ19wCq+U=";
 
+        # Turok
+        N64."Turok - Dinosaur Hunter (USA)" = "";
+        N64."Turok 2 - Seeds of Evil (USA)" = "";
+        N64."Turok 3 - Shadow of Oblivion (USA)" = "";
+        GC."Turok - Evolution (USA)" = "";
+
+        # Team Ico
+        PS2."Ico (USA)" = "";
+        PS2."Shadow of the Colossus (USA)" = "";
+
+        # Jak and Daxter
+        PS2."Jak and Daxter - The Precursor Legacy (USA) (En,Fr,De,Es,It)" = "";
+        PS2."Jak II (USA) (En,Ja,Fr,De,Es,It,Ko) (v2.01)" = "";
+        PS2."Jak 3 (USA) (En,Fr,De,Es,It,Pt,Ru)" = "";
+        PSP."Daxter (USA) (En,Fr,De,Es,It)" = "";
+
+        # Crash Bandicoot
+        PS1."Crash Bandicoot (USA)" = "";
+        PS1."Crash Bandicoot 2 - Cortex Strikes Back (USA)" = "";
+        PS1."Crash Bandicoot - Warped (USA)" = "";
+        PS1."CTR - Crash Team Racing (USA)" = "";
+        PS1."Crash Bash (USA)" = "";
+
+        # Onimusha
+        # PS2."Onimusha: Warlords"
+        # PS2."Onimusha 2: Samurai's Destiny"
+        # PS2."Onimusha 3: Demon Siege"
+        # PS2."Onimusha: Dawn of Dreams"
+
+        # Uncharted
+        # TODO these are too large right now to handle this way...
+        # PS3."Uncharted - Drake's Fortune (USA) (En,Fr,De,Es,It,Nl,Pt,Sv,No,Da,Fi)" = "";
+        # PS3."Uncharted 2 - Among Thieves (USA) (En,Fr,Es)" = "";
+        # PS3."Uncharted 3 - Drake's Deception (USA) (En,Fr,Es,Pt)" = "";
+        # TODO support PlayStation Vita
+        # PSV."Uncharted Golden Abyss" = "";
+
         # Independent
         SNES."Rudra no Hihou (Japan)" = "sha256-Vc8C6H3iW6TWoNbmEErqobV/ZuHZwdTpVysFH/c9Cyw=";
         PS1."Legacy of Kain - Soul Reaver (USA)" = "sha256-oL7UUbxwQFFbHYpUgUZ/lf2YTvG26b6Cvaud5CkOXD0=";
         DS."World Ends with You, The (USA)" = "sha256-XJnoO804J0ArJmy7lSZzuKeultkCgjoM/4Qmn3563wg=";
+        PS2."Ookami (USA)" = "";
+        N64."GoldenEye 007 (USA)" = "";
+        N64."Perfect Dark (USA)" = "";
+
+        # Not Matching
+        SNES."Illusion of Gaia" = "";
+        SNES."Live A Live" = "";
+        SNES."Star Ocean" = "";
+        # Lunar: The Silver Star on Sega Genesis + Mega-CD
+        # Phantasy Star IV: The End of the Millennium for Sega Genesis
+        "3DS"."The Alliance Alive" = "";
+        PS1."Legend of Legaia" = "";
+        SNES.EarthBound = "";
+        GBA."Golden Sun" = "";
+        WiiU."Xenoblade Chronicles X" = "";
+        PS1."Jade Cocoon: Story of the Tamamayu" = "";
+        PS1."Vandal Hearts" = "";
+        PS1."Valkyrie Profile" = "";
+        PS1."Breath of Fire III" = "";
+        PS1."Suikoden II" = "";
+        PS1.Xenogears = "";
+        PS1."Vagrant Story" = "";
+        PS1."Final Fantasy Tactics" = "";
+        PS2.Yakuza = "";
+        PS2."Yakuza 2" = "";
+        PS3."Yakuza 3" = "";
+        PS3."Yakuza 4" = "";
+        PS3."Yakuza 5" = "";
+        # Legend of Heroes and Trails series!
+        PS3."The Legend of Heroes: Trails of Cold Steel" = "";
+        #PSV."Ys VIII: Lacrimosa of Dana" = "";
+        # Ys: The Oath in Felghana on Windows
+        # Ys series!
+        # GC."Tales of Symphonia" = "";
+        # XB360."Tales of Vesperia" = "";
+        # Tales series!
+        # PS2."Shadow Hearts: Covenant" = "";
+        # Wild Arms series!
+        # SNES."Secret of Mana" = "";
+        # Spyro series!
+        # Dragon Quest series!
+        # XB360."Hydro Thunder Hurricane" = "";
       };
 
       # BIOS
@@ -191,7 +275,6 @@ in {
   };
   canivete.deploy.nixos.homeModules.roms = {
     config,
-    lib,
     pkgs,
     ...
   }: let
@@ -212,7 +295,7 @@ in {
         description = "Contents of retroarch.cfg";
       };
       consoles = mkOption {
-        type = attrsOf (submodule ({name, ...}: {
+        type = attrsOf (submodule {
           options.retroarch = mkEnableOption "corresponding retroarch library";
           options.wrapper = mkOption {
             type = nullOr package;
@@ -229,7 +312,7 @@ in {
             default = [];
             description = "Name of existing BIOS package or a new package to provide to the wrapper";
           };
-        }));
+        });
         default = {};
         example = literalExpression "{ GBC.programs = [\"Legend of Zelda, The - Oracle of Ages (USA, Australia)\" pkgs.myrient.roms.GB.\"Legend of Zelda, The - Link's Awakening (USA, Europe)\"]; }";
         description = "ROMs to build and install for each console. The name should be the name of file hosted on myrient.erista.me";
@@ -244,12 +327,11 @@ in {
           RPCS3.shortcut.exe = getExe pkgs.rpcs3;
           Xemu.shortcut.exe = getExe pkgs.xemu;
         };
-        retroarch.package = pkgs.retroarch.override {
-          cores = pipe external.consoles [
+        retroarch.package = pkgs.retroarch.withCores (cores:
+          pipe external.consoles [
             (filterAttrs (_: getAttr "retroarch"))
             (mapAttrsToList (_: getAttr "wrapper"))
-          ];
-        };
+          ]);
         # TODO figure out passing secrets
         # TODO how to merge config with defaults?
         retroarch.settings = {

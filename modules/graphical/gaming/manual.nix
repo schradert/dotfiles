@@ -13,7 +13,7 @@
     ...
   }: let
     json = pkgs.formats.json {};
-    inherit (lib) attrValues concatStringsSep filterAttrs flip getExe mkOption mkIf mkMerge mkPackageOption literalExpression pipe mapAttrsToList toList types;
+    inherit (lib) concatStringsSep filterAttrs flip mkOption mkPackageOption literalExpression pipe mapAttrsToList toList types;
     inherit (types) attrsOf submodule str path pathInStore;
     inherit (config.dotfiles.programs.steam) external;
   in {
@@ -50,10 +50,11 @@
         name = "Artwork";
         paths = pipe external.manual [
           (filterAttrs (_: program: program.assets != {}))
-          (mapAttrsToList (name: program: pkgs.runCommand "${name}-artwork" {} (pipe program.assets [
-            (mapAttrsToList (type: path: "install -D --mode 644 ${path} $out/${type}/${name}"))
-            (concatStringsSep "\n")
-          ])))
+          (mapAttrsToList (name: program:
+            pkgs.runCommand "${name}-artwork" {} (pipe program.assets [
+              (mapAttrsToList (type: path: "install -D --mode 644 ${path} $out/${type}/${name}"))
+              (concatStringsSep "\n")
+            ])))
         ];
       };
       dotfiles.programs.steam.external.consoles.Manual = {
@@ -61,16 +62,16 @@
         # TODO connect local images to parserInputs
         programs = flip mapAttrsToList external.manual (
           name: game:
-          pkgs.linkFarm "${name}.json" (toList {
-            name = "${name}.json";
-            path = json.generate "${name}.manifest.json" (toList {
-              title = name;
-              target = game.shortcut.exe;
-              startIn = game.shortcut.StartDir;
-              launchOptions = "";
-              appendArgsToExecutable = true;
-            });
-          })
+            pkgs.linkFarm "${name}.json" (toList {
+              name = "${name}.json";
+              path = json.generate "${name}.manifest.json" (toList {
+                title = name;
+                target = game.shortcut.exe;
+                startIn = game.shortcut.StartDir;
+                launchOptions = "";
+                appendArgsToExecutable = true;
+              });
+            })
         );
       };
     };

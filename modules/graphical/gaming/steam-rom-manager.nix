@@ -1,6 +1,6 @@
 {
   # TODO make desktop item
-  flake.overlays.srm = final: prev: {
+  flake.overlays.srm = final: _: {
     steam-rom-manager = final.callPackage ({
       lib,
       stdenv,
@@ -22,6 +22,7 @@
       stdenv.mkDerivation rec {
         pname = "steam-rom-manager";
         version = lib.substring 0 7 src.rev;
+        # TODO update steam-rom-manager to get fixes upstream
         src = fetchFromGitHub {
           owner = "schradert";
           repo = "steam-rom-manager";
@@ -39,6 +40,7 @@
           fixup-yarn-lock
           pkg-config
           makeWrapper
+          copyDesktopItems
         ];
         buildInputs = [sqlite xdg-utils];
         configurePhase = ''
@@ -102,7 +104,7 @@
     pkgs,
     ...
   }: let
-    inherit (lib) attrValues concatStringsSep filterAttrs flatten length flip getExe mapAttrsToList mkAliasOptionModule mkDefault mkEnableOption mkPackageOption mkOption mkIf literalExpression pipe imap1 recursiveUpdate types;
+    inherit (lib) attrValues filterAttrs flatten length getExe mapAttrsToList mkAliasOptionModule mkDefault mkEnableOption mkPackageOption mkOption mkIf literalExpression pipe imap1 recursiveUpdate types;
     inherit (types) attrsOf bool float enum listOf submodule path pathInStore str int;
     inherit (config.home) homeDirectory;
     inherit (config.dotfiles.programs.steam) external;
@@ -136,11 +138,7 @@
   in {
     options.dotfiles.programs.steam.external = {
       consoles = mkOption {
-        type = attrsOf (submodule ({
-          name,
-          config,
-          ...
-        }: {
+        type = attrsOf (submodule ({config, ...}: {
           options.parsers = mkOption {
             type = attrsOf (submodule ({name, ...}: {
               options.preset = mkOption {

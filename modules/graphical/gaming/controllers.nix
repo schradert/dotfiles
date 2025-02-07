@@ -1,7 +1,11 @@
-{lib, inputs, ...}: let
+{
+  lib,
+  inputs,
+  ...
+}: let
   pkgs = {};
-  inherit (lib) any evalModules flip mapAttrsToList mkOption types toLower nameValuePair imap0 pipe listToAttrs setAttrByPath imap1 attrNames removeAttrs concat mergeAttrs getAttr flatten optional attrVals;
-  inherit (types) anything coercedTo str int submodule listOf attrsOf nullOr enum package oneOf;
+  inherit (lib) any evalModules flip mapAttrsToList mkOption types nameValuePair imap0 pipe listToAttrs imap1 attrNames removeAttrs concat mergeAttrs getAttr flatten optional attrVals;
+  inherit (types) coercedTo str int submodule listOf attrsOf nullOr enum package oneOf;
   inherit ((evalModules {inherit modules;}).config.out) json;
   intStr = coercedTo int builtins.toString str;
   title = "The Legend of Pirates Online";
@@ -56,20 +60,42 @@
   button = mkOption {
     default = null;
     type = nullOr (submodule {
-      options.activators = mkOption {type = activators; default = {};};
-      options.disabled_activators = mkOption {type = activators; default = {};};
+      options.activators = mkOption {
+        type = activators;
+        default = {};
+      };
+      options.disabled_activators = mkOption {
+        type = activators;
+        default = {};
+      };
     });
   };
   four_buttons = submodule {
     options = {
       id = mkOption {type = intStr;};
-      name = mkOption {type = str; default = "";};
-      description = mkOption {type = str; default = "";};
-      mode = mkOption {type = enum ["four_buttons"]; readOnly = true; default = "four_buttons";};
+      name = mkOption {
+        type = str;
+        default = "";
+      };
+      description = mkOption {
+        type = str;
+        default = "";
+      };
+      mode = mkOption {
+        type = enum ["four_buttons"];
+        readOnly = true;
+        default = "four_buttons";
+      };
       settings = mkOption {
         type = submodule {
-          options.button_size = mkOption {type = enum ["17994"]; default = "17994";};
-          options.button_dist = mkOption {type = enum ["19994"]; default = "19994";};
+          options.button_size = mkOption {
+            type = enum ["17994"];
+            default = "17994";
+          };
+          options.button_dist = mkOption {
+            type = enum ["19994"];
+            default = "19994";
+          };
         };
       };
       inputs = mkOption {
@@ -88,14 +114,33 @@
   dpad = submodule {
     options = {
       id = mkOption {type = intStr;};
-      name = mkOption {type = str; default = "";};
-      description = mkOption {type = str; default = "";};
-      mode = mkOption {type = enum ["dpad"]; readOnly = true; default = "dpad";};
+      name = mkOption {
+        type = str;
+        default = "";
+      };
+      description = mkOption {
+        type = str;
+        default = "";
+      };
+      mode = mkOption {
+        type = enum ["dpad"];
+        readOnly = true;
+        default = "dpad";
+      };
       settings = mkOption {
         type = submodule {
-          options.edge_binding_radius = mkOption {type = nullOr intStr; default = null;};
-          options.requires_click = mkOption {type = nullOr (enum ["0"]); default = null;};
-          options.haptic_intensity_override = mkOption {type = nullOr (enum ["0"]); default = null;};
+          options.edge_binding_radius = mkOption {
+            type = nullOr intStr;
+            default = null;
+          };
+          options.requires_click = mkOption {
+            type = nullOr (enum ["0"]);
+            default = null;
+          };
+          options.haptic_intensity_override = mkOption {
+            type = nullOr (enum ["0"]);
+            default = null;
+          };
         };
       };
       inputs = mkOption {
@@ -115,13 +160,29 @@
   absolute_mouse = submodule {
     options = {
       id = mkOption {type = intStr;};
-      name = mkOption {type = str; default = "";};
-      description = mkOption {type = str; default = "";};
-      mode = mkOption {type = enum ["absolute_mouse"]; readOnly = true; default = "absolute_mouse";};
+      name = mkOption {
+        type = str;
+        default = "";
+      };
+      description = mkOption {
+        type = str;
+        default = "";
+      };
+      mode = mkOption {
+        type = enum ["absolute_mouse"];
+        readOnly = true;
+        default = "absolute_mouse";
+      };
       settings = mkOption {
         type = submodule {
-          options.sensitivity = mkOption {type = intStr; default = 145;};
-          options.doubetap_max_duration = mkOption {type = intStr; default = 320;};
+          options.sensitivity = mkOption {
+            type = intStr;
+            default = 145;
+          };
+          options.doubetap_max_duration = mkOption {
+            type = intStr;
+            default = 320;
+          };
         };
       };
       inputs = mkOption {
@@ -135,9 +196,19 @@
   trigger = submodule {
     options = {
       id = mkOption {type = intStr;};
-      name = mkOption {type = str; default = "";};
-      description = mkOption {type = str; default = "";};
-      mode = mkOption {type = enum ["trigger"]; readOnly = true; default = "trigger";};
+      name = mkOption {
+        type = str;
+        default = "";
+      };
+      description = mkOption {
+        type = str;
+        default = "";
+      };
+      mode = mkOption {
+        type = enum ["trigger"];
+        readOnly = true;
+        default = "trigger";
+      };
       inputs = mkOption {
         default = {};
         type = submodule {
@@ -149,14 +220,33 @@
   joystick_mouse = submodule {
     options = {
       id = mkOption {type = intStr;};
-      name = mkOption {type = str; default = "";};
-      description = mkOption {type = str; default = "";};
-      mode = mkOption {type = enum ["joystick_mouse"]; readOnly = true; default = "joystick_mouse";};
+      name = mkOption {
+        type = str;
+        default = "";
+      };
+      description = mkOption {
+        type = str;
+        default = "";
+      };
+      mode = mkOption {
+        type = enum ["joystick_mouse"];
+        readOnly = true;
+        default = "joystick_mouse";
+      };
       settings = mkOption {
         type = submodule {
-          options.output_joystick = mkOption {type = intStr; default = 2;};
-          options.sensitivity_horiz_scale = mkOption {type = nullOr intStr; default = null;};
-          options.sensitivity_vert_scale = mkOption {type = nullOr intStr; default = null;};
+          options.output_joystick = mkOption {
+            type = intStr;
+            default = 2;
+          };
+          options.sensitivity_horiz_scale = mkOption {
+            type = nullOr intStr;
+            default = null;
+          };
+          options.sensitivity_vert_scale = mkOption {
+            type = nullOr intStr;
+            default = null;
+          };
         };
       };
       inputs = mkOption {
@@ -170,12 +260,25 @@
   scrollwheel = submodule {
     options = {
       id = mkOption {type = intStr;};
-      name = mkOption {type = str; default = "";};
-      description = mkOption {type = str; default = "";};
-      mode = mkOption {type = enum ["scrollwheel"]; readOnly = true; default = "scrollwheel";};
+      name = mkOption {
+        type = str;
+        default = "";
+      };
+      description = mkOption {
+        type = str;
+        default = "";
+      };
+      mode = mkOption {
+        type = enum ["scrollwheel"];
+        readOnly = true;
+        default = "scrollwheel";
+      };
       settings = mkOption {
         type = submodule {
-          options.scroll_type = mkOption {type = intStr; default = 2;};
+          options.scroll_type = mkOption {
+            type = intStr;
+            default = 2;
+          };
         };
       };
       inputs = mkOption {
@@ -199,11 +302,21 @@
     options = {
       id = mkOption {type = intStr;};
       name = mkOption {type = str;};
-      description = mkOption {type = str; default = "";};
-      mode = mkOption {type = enum ["touch_menu"]; readOnly = true; default = "touch_menu";};
+      description = mkOption {
+        type = str;
+        default = "";
+      };
+      mode = mkOption {
+        type = enum ["touch_menu"];
+        readOnly = true;
+        default = "touch_menu";
+      };
       settings = mkOption {
         type = submodule {
-          options.gyro_button = mkOption {type = intStr; default = 1;};
+          options.gyro_button = mkOption {
+            type = intStr;
+            default = 1;
+          };
         };
       };
       inputs = mkOption {
@@ -226,8 +339,15 @@
   reference = submodule {
     options = {
       id = mkOption {type = intStr;};
-      description = mkOption {type = str; default = "";};
-      mode = mkOption {type = enum ["reference"]; readOnly = true; default = "reference";};
+      description = mkOption {
+        type = str;
+        default = "";
+      };
+      mode = mkOption {
+        type = enum ["reference"];
+        readOnly = true;
+        default = "reference";
+      };
       settings = mkOption {
         type = submodule {
           options.referenced_mode = mkOption {type = intStr;};
@@ -238,9 +358,19 @@
   switches = submodule {
     options = {
       id = mkOption {type = intStr;};
-      name = mkOption {type = str; default = "";};
-      description = mkOption {type = str; default = "";};
-      mode = mkOption {type = enum ["switches"]; readOnly = true; default = "switches";};
+      name = mkOption {
+        type = str;
+        default = "";
+      };
+      description = mkOption {
+        type = str;
+        default = "";
+      };
+      mode = mkOption {
+        type = enum ["switches"];
+        readOnly = true;
+        default = "switches";
+      };
       inputs = mkOption {
         default = {};
         type = submodule {
@@ -445,10 +575,11 @@
         mode = "touch_menu";
         inherit name;
         inputs = pipe menu.touch [
-          (imap0 (i: binding: nameValuePair "touch_menu_button_${i}" {
-            activators.Full_Press.bindings.binding = "${binding}, , ";
-            activators.Full_Press.settings.haptic_intensity = "2";
-          }))
+          (imap0 (i: binding:
+            nameValuePair "touch_menu_button_${i}" {
+              activators.Full_Press.bindings.binding = "${binding}, , ";
+              activators.Full_Press.settings.haptic_intensity = "2";
+            }))
           listToAttrs
         ];
       });
@@ -466,15 +597,16 @@
         listToAttrs
       ];
       action_layers = pipe config.sets [
-        (mapAttrsToList (parent_set_name: flip pipe [
-          (getAttr "layers")
-          (flip removeAttrs ["Default"])
-          (mapAttrsToList (title: layer: {
-            inherit title parent_set_name;
-            inherit (actions.${parent_set_name}) layer_set;
-          }))
-          (imap1 (i: mergeAttrs {set_layer = i;}))
-        ]))
+        (mapAttrsToList (parent_set_name:
+          flip pipe [
+            (getAttr "layers")
+            (flip removeAttrs ["Default"])
+            (mapAttrsToList (title: _: {
+              inherit title parent_set_name;
+              inherit (actions.${parent_set_name}) layer_set;
+            }))
+            (imap1 (i: mergeAttrs {set_layer = i;}))
+          ]))
         flatten
         (imap1 (i: nameValuePair "Preset_${toString (1000000 + i)}"))
         listToAttrs
@@ -488,19 +620,23 @@
       ];
       notNull = value: value != null;
       group = pipe config.sets [
-        (mapAttrsToList (parent_set_name: set: flip pipe [
-          (getAttr "layers")
-          (mapAttrsToList (title: layer: [
-            (pipe layer [
-              (attrVals ["LT"])
-              (any notNull)
-              (flip optional {
-                mode = "trigger";
-                inputs = if layer.LT != null then layer.LT else {};
-              })
-            ])
+        (mapAttrsToList (_: _:
+          flip pipe [
+            (getAttr "layers")
+            (mapAttrsToList (_: layer: [
+              (pipe layer [
+                (attrVals ["LT"])
+                (any notNull)
+                (flip optional {
+                  mode = "trigger";
+                  inputs =
+                    if layer.LT != null
+                    then layer.LT
+                    else {};
+                })
+              ])
+            ]))
           ]))
-        ]))
         flatten
         (imap0 (id: mergeAttrs {inherit id;}))
       ];
@@ -510,9 +646,10 @@
             default = null;
             # TODO convert to more than a string
             type = nullOr (coercedTo str (binding: {
-              activators.Full_Press.bindings = [{binding = "${binding}, , ";}];
-              activators.Full_Press.settings.repeat_rate = 99;
-            }) button);
+                activators.Full_Press.bindings = [{binding = "${binding}, , ";}];
+                activators.Full_Press.settings.repeat_rate = 99;
+              })
+              button);
           };
         in {
           A = ABXY;

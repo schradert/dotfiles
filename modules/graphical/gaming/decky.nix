@@ -6,12 +6,8 @@
   # 19. Free Games
   #
   # complicated
-  # 2. PowerTools
+  # 2. PowerTools https://git.ngni.us/NG-SD-Plugins/PowerTools
   # 17. Controller Tools
-  #
-  # unsure if i want
-  # 23. Deck FAQs?
-  # 25. Notebook???
   #
   # 26. Deck(y) settings???
   # 27. volume mixer
@@ -70,7 +66,7 @@
       };
     # TODO handle non-jovian more cleanly
     config = let
-      inherit (lib) attrValues concatStringsSep filter flatten forEach getAttr getExe mkIf;
+      inherit (lib) attrValues concatStringsSep filter forEach getAttr getExe mkIf;
       inherit (config.jovian.decky-loader) user stateDir plugins;
       enabledPlugins = filter (getAttr "enable") (attrValues plugins);
       loaderJSON = json.generate "decky-loader.json" {
@@ -108,9 +104,9 @@
         '';
       };
   };
-  flake.overlays.decky = final: prev: let
+  flake.overlays.decky = _: prev: let
     # NOTE Pnpm pinned to version 8 because pnpm.fetchDeps is unstable to changes in pnpm registry tools, which broke recently
-    inherit (prev) decky-loader fetchFromGitHub lib nodejs pnpm_8 stdenv;
+    inherit (prev) fetchFromGitHub lib nodejs pnpm_8 stdenv;
     inherit (lib) recursiveUpdate substring;
     # TODO pin python dependencies?
     mkDeckyPlugin = attrs:
@@ -209,6 +205,7 @@
         pnpmLockHash = "sha256-/e8pMzYgxb1ZhNON+J5gQh+E1fiEpm7o5DQ+GKBb8B4=";
         extraPackages = [prev.pulseaudio];
       };
+      # TODO should I actually use this if I have steam-rom-manager https://github.com/SteamGridDB/decky-steamgriddb
       steamgriddb = mkDeckyPlugin rec {
         pname = "decky-steamgriddb";
         version = substring 0 7 src.rev;
@@ -380,6 +377,7 @@
       #   '';
       # };
       # TODO figure out backend rust library
+      # https://github.com/jfernandez/ControllerTools
       # controller-tools = mkDeckyPlugin rec {
       #   pname = "decky-controller-tools";
       #   version = "2.0.0";
@@ -392,6 +390,7 @@
       #   pnpmLockHash = "sha256-uAEQvT5MkPYS/WFniEXXdlM2bwB27jVDKlhUDAU0g9U=";
       # };
       # TODO why does this fail with pnpm-lock.yaml not found?!
+      # TODO is this even helpful if I have IsThereAnyDeal working?
       # SDH-FreeGames = mkDeckyPlugin rec {
       #   pname = "SDH-FreeGames";
       #   version = substring 0 7 src.rev;
@@ -403,6 +402,7 @@
       #   };
       #   pnpmLockHash = "";
       # };
+      # https://github.com/popsUlfr/SDH-PauseGames/tree/v0.4.2
       # SDH-PauseGames = mkDeckyPlugin rec {
       #   pname = "SDH-PauseGames";
       #   version = "0.4.2";
