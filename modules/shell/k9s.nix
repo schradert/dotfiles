@@ -1,4 +1,7 @@
 {
+  # TODO add HolmesGPT plugin https://github.com/derailed/k9s/blob/master/plugins/ai-incident-investigaton.yaml
+  # TODO build https://github.com/hcavarsan/kftray
+  # TODO https://github.com/derailed/k9s/blob/master/plugins/carvel.yaml
   canivete.deploy.system.homeModules.k9s = {pkgs, ...}: {
     home.packages = with pkgs; [kubectl kubernetes-helm];
     programs.k9s.enable = true;

@@ -1,4 +1,9 @@
 {inputs, ...}: {
+  # TODO dynamic colors by wallpaper
+  # TODO https://github.com/kot-behemoth/awesome-org-roam
+  # TODO https://github.com/emacs-tw/awesome-emacs
+  # TODO tangle all emacs files (init.el too with doom/bin/org-tangle)
+  # NOTE https://github.com/doomemacs/doomemacs/blob/master/modules/config/literate/README.org
   flake.overlays.emacs = inputs.emacs-overlay.overlay;
   canivete.deploy = {
     nixos.homeModules.emacs = {

@@ -1,6 +1,8 @@
 {config, ...}: let
   inherit (config.dotfiles) domain;
 in {
+  # TODO build https://github.com/pehlicd/amtui/
+  # TODO run HolmesGPT in ops clients https://github.com/robusta-dev/holmesgpt
   # TODO figure out prometheus in nix
   # TODO make sure to get all the endpoints like sonarr, radarr, lidarr
   # TODO alertmanager
@@ -45,7 +47,7 @@ in {
           scrapeConfigSelectorNilUsesHelmValues = false;
           enableAdminAPI = true;
           walCompression = true;
-          scrapeInterval = "1m";  # Must match interval in Grafana Helm chart
+          scrapeInterval = "1m"; # Must match interval in Grafana Helm chart
           enableFeatures = ["auto-gomemlimit" "auto-gomaxprocs" "memory-snapshot-on-shutdown" "new-service-discovery-manager"];
           replicas = 1;
           retention = "14d";

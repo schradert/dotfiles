@@ -9,6 +9,10 @@ with nix; let
   darwin = config.canivete.deploy.darwin.nodes.morgenmuffel.profiles.system.raw;
 in {
   flake.overlays.gke-gcloud-auth-plugin = inputs.gke-gcloud-auth-plugin-flake.overlays.default;
+  # TODO https://github.com/exelban/stats
+  # TODO https://github.com/koekeishiya/yabai vs https://github.com/nikitabobko/AeroSpace
+  # TODO https://github.com/jordanbaird/Ice
+  # TODO https://github.com/lwouis/alt-tab-macos
   canivete.deploy.darwin.nodes.morgenmuffel = {
     target.sshOptions = ["ProxyJump=${domain}"];
     profiles.system.module = {

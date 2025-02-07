@@ -8,6 +8,7 @@
   inherit (config.dotfiles) domain;
   subdomain = "plex.${domain}";
 in {
+  # TODO request button on plex!
   # TODO plugins? Audnexus.bundle and Absolute-Series-Scanner
   # TODO nodeAffinity for bonobo, chinchilla, dingo, and axolotl
   # https://github.com/Kometa-Team/ImageMaid

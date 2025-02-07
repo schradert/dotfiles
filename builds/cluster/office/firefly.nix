@@ -13,6 +13,8 @@ in {
   # TODO persistence + volsync
   # TODO LDAP? with authentication
   # TODO pod.enableServiceLinks?
+  # NOTE https://github.com/firefly-iii/kubernetes
+  # TODO https://github.com/bahuma20/firefly-iii-ai-categorize
   perSystem.dotfiles = {
     opentofu.passwords.firefly.length = 21;
     opentofu.passwords.firefly-appkey = {
@@ -61,6 +63,8 @@ in {
           # autoscaling.enabled = true;
           # autoscaling.maxReplicas = 3;
         };
+        # TODO https://docs.firefly-iii.org/how-to/data-importer/how-to-configure/
+        # TODO https://github.com/dvankley/firefly-plaid-connector-2
         importer = {
           enabled = true;
           fireflyiii.auth.accessToken = vals.sops "default.yaml#/fireflay_pat";

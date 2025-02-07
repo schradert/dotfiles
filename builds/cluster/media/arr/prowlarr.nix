@@ -6,6 +6,7 @@
   port = 9696;
   subdomain = "prowlarr.${config.dotfiles.domain}";
 in {
+  # TODO how useful is https://github.com/sergiotapia/magnetissimo
   perSystem.dotfiles = {
     opentofu.passwords.prowlarr-api-key = {
       length = 21;

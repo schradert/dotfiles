@@ -7,6 +7,8 @@
   subdomain = "gatus.${domain}";
 in {
   # https://github.com/TwiN/gatus
+  # TODO compare with https://github.com/cachethq/cachet
+  # TODO compare with https://github.com/louislam/uptime-kuma
   perSystem.dotfiles.helm.postgres.resources.postgresqls.main.spec = {
     users.gatus = ["createdb"];
     databases.gatus = "gatus";

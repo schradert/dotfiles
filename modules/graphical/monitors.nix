@@ -1,6 +1,8 @@
 {
   # TODO figure out a proper arrangement of monitors to allow synchronized brightness control
   # NOTE DisplayLink seems to not work well with the DDC/CI standard, even though HDMI/USB is hinted to work
+  # TODO create monitor name alias options
+  # TODO https://github.com/MonitorControl/MonitorControl
   canivete.deploy.nixos = {
     modules.monitors = {config, flake, lib, pkgs, ...}: {
       options.dotfiles.graphical.monitors = lib.mkEnableOption "Graphical monitor setup at home";
@@ -28,6 +30,7 @@
           offsetY = 400;
           base = 1.50;
           zoom = 3.00;
+          # TODO round numbers or find the closest available mode (could this be what's causing the aberrations on lock screen? is there lag because of this too?)
           monitorCfgs = scale: [
             "DVI-I-1, ${toString LGW}x${toString LGH}@60.00, 0x0, ${toString scale}, transform, 1"
             "DVI-I-2, ${toString LGW}x${toString LGH}@60.00, ${toString (LGH / scale)}x${toString (offsetY / scale)}, ${toString scale}"

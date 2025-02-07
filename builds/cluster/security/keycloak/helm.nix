@@ -7,6 +7,8 @@
   inherit (config.dotfiles) domain;
   subdomain = "keycloak.${domain}";
 in {
+  # TODO should I be considering newer and faster alternatives that offer support for newer features?
+  # NOTE https://github.com/ory/kratos
   perSystem.dotfiles.helm = {
     postgres.resources.postgresqls.main.spec = {
       users.keycloak = ["createdb"];

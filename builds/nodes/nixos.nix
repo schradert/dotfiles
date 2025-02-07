@@ -122,6 +122,8 @@ in {
 
         # Gaming
         programs.steam.enable = true;
+        # TODO can https://github.com/luxtorpeda-dev/luxtorpeda be added?
+        # TODO https://github.com/dreamer/boxtron
         programs.steam.extraCompatPackages = with pkgs; [proton-ge-bin steamtinkerlaunch steam-play-none];
         programs.steam.protontricks.enable = true;
         programs.gamemode.enable = true;
@@ -459,7 +461,7 @@ in {
 
         # volume-boost
         systemd.services.decky-loader.environment.PULSE_SERVER = "tcp:127.0.0.1:4713";
-        # TODO get cookie to work to minimze security surface
+        # TODO get cookie to work to minimize security surface
         # environment.etc."pulse/client.conf".text = "cookie-file = /home/${config.canivete.people.me}/.config/pulse/cookie";
         services.pipewire.extraConfig.pipewire-pulse."11-decky-volume-boost"."pulse.cmd" = toList {
           cmd = "load-module";

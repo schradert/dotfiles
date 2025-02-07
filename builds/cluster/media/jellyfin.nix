@@ -19,17 +19,18 @@
     failureThreshold = 3;
   };
 in {
+  # TODO https://github.com/CyferShepard/Jellystat
   # TODO figure out hardware acceleration and nodeAffinity
   # TODO find a good helm chart or roll with app-template
   # NOTE https://gitlab.com/bunkbed/backbone/-/blob/migrate-to-on-prem/src/cluster/jellyfin.nix?ref_type=heads
   # NOTE https://jellyfin.org/docs/general/administration/configuration
-  perSystem.canivete.arion.modules.jellyfin.services.jellyfin = {
-    nixos.configuration.services = {
-      jellyfin.enable = true;
-      jellyseer.enable = true;
-    };
-    nixos.useSystemd = true;
-  };
+  #   perSystem.canivete.arion.modules.jellyfin.services.jellyfin = {
+  #     nixos.configuration.services = {
+  #       jellyfin.enable = true;
+  #       jellyseer.enable = true;
+  #     };
+  #     nixos.useSystemd = true;
+  #   };
   perSystem.dotfiles.helm.gatus.values.config.endpoints = lib.toList {
     name = "jellyfin";
     group = "external";

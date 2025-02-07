@@ -6,6 +6,7 @@
   port = 7878;
   subdomain = "radarr.${config.dotfiles.domain}";
 in {
+  # TODO are these useful https://github.com/RandomNinjaAtk/arr-scripts
   perSystem.dotfiles = {
     opentofu.passwords.radarr-api-key = {
       length = 21;

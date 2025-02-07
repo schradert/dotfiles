@@ -1,6 +1,10 @@
 {config, ...}: let
   subdomain = "bitwarden.${config.dotfiles.domain}";
 in {
+  # TODO is it easier to end up using vaultwarden
+  # TODO https://github.com/quexten/goldwarden with programs.goldwarden in NixOS...
+  # NOTE https://github.com/dani-garcia/vaultwarden/wiki
+  # NOTE also SSO might be lacking? still want to make sure I can use keycloak
   perSystem.dotfiles.helm.bitwarden = {
     namespace = "security";
     chart = {

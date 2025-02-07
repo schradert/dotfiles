@@ -14,6 +14,7 @@ in {
   # TODO persistence + volsync
   # TODO LDAP? with authentication
   # TODO pod.enableServiceLinks?
+  # TODO update for multiple user support https://github.com/actualbudget/actual/issues/524
   perSystem.dotfiles.opentofu.passwords.actual = {
     length = 21;
     special = false;

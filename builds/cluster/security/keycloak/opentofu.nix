@@ -44,6 +44,7 @@
   alias = "fido2";
   sub_alias = "fido2-subflow";
 in {
+  # NOTE https://www.keycloak.org/2024/09/realm-config-management-tools-survey-results
   perSystem.dotfiles.opentofu.passwords = {
     keycloak-superadmin.length = 21;
     keycloak-postgres.length = 21;

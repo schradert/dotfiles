@@ -7,6 +7,8 @@
   inherit (canivete) vals;
   inherit (config.dotfiles) domain;
 in {
+  # TODO https://github.com/hydradatabase/hydra vs https://github.com/apache/age vs https://github.com/paradedb/paradedb
+  # TODO https://github.com/ankane/pghero
   # OperatorConfiguration has a configuration field, not spec, so we need this to pass validation
   # NOTE https://github.com/hall/kubenix/issues/34
   perSystem.canivete.kubenix.clusters.prod.modules.postgres-patch.options.kubernetes.api.resources."acid.zalan.do".v1.OperatorConfiguration = mkOption {

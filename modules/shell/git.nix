@@ -1,4 +1,5 @@
 {
+  # TODO https://github.com/tj/git-extras
   canivete.deploy.system.homeModules.git = {
     canivete,
     config,
@@ -19,6 +20,7 @@
         zstyle ':completion:*:git-checkout:*' sort false
       '';
       home.packages = with pkgs; [lazygit tig];
+      # TODO how good is gitu vs magit vs lazygit vs tig?
       programs = {
         gpg.enable = true;
         git = {
