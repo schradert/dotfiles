@@ -1,10 +1,10 @@
 {
   config,
   inputs,
-  nix,
+  lib,
   ...
-}:
-with nix; let
+}: let
+  inherit (lib) recursiveUpdate mkForce toList getExe;
   inherit (config.canivete) root;
   sshOptions = ["ProxyJump=${config.dotfiles.domain}"];
   # Disko does not actually merge NixOS modules (major bummer!)
@@ -62,7 +62,7 @@ in {
     nixos_systeamadeck_system_install.provisioner.local-exec.command = mkForce "echo";
   };
   flake.overlays.jovian = inputs.jovian.overlays.default;
-  flake.overlays.gamescope = final: prev: {
+  flake.overlays.gamescope = _: prev: {
     umu = inputs.umu.packages.${prev.system}.umu.override {version = inputs.umu.shortRev;};
     kodi = prev.kodi.withPackages (ps: with ps; [invidious jellyfin netflix trakt]);
     # TODO might not be necessary given: https://github.com/NixOS/nixpkgs/blob/c31898adf5a8ed202ce5bea9f347b1c6871f32d1/pkgs/by-name/ga/gamescope/package.nix#L104
@@ -93,12 +93,11 @@ in {
       build.sshOptions = sshOptions;
       profiles.system.sshProtocol = "ssh";
       profiles.system.module = {pkgs, ...}: {
-        dotfiles.graphical.enable = true;
         dotfiles.graphical.monitors = true;
-        dotfiles.graphical.sound.enable = true;
         dotfiles.graphical.hyprland.enable = true;
         dotfiles.kubernetes.enable = true;
         dotfiles.services.yubikey.enable = true;
+        dotfiles.workstation.enable = true;
         boot.initrd.availableKernelModules = ["xhci_pci" "nvme" "rtsx_pci_sdmmc"];
         disko = recursiveUpdate lvmDisko {
           devices.disk.base = {
@@ -107,14 +106,16 @@ in {
           };
         };
         home-manager.sharedModules = toList {
-          dotfiles.email = true;
-          dotfiles.macchina.networkInterface = "enp0s31f6";
-          dotfiles.programs.steam.external = {
-            enable = true;
-            srm.userAccounts = ["supertriggy"];
-            runescape.runelite.enable = true;
+          dotfiles = {
+            programs = {
+              macchina.networkInterface = "enp0s31f6";
+              steam.external = {
+                enable = true;
+                srm.userAccounts = ["supertriggy"];
+                runescape.runelite.enable = true;
+              };
+            };
           };
-          dotfiles.programs.silly = true;
         };
 
         location.latitude = 37.8;
@@ -180,6 +181,26 @@ in {
             content.partitions.root.end = "-51G";
           };
         };
+      };
+    };
+    echidna = {
+      install.host = "";
+      build.sshOptions = sshOptions;
+      profiles.system.module = {
+        imports = [inputs.nixos-wsl.nixosModules.default];
+        dotfiles.kubernetes.enable = true;
+        wsl.enable = true;
+        wsl.defaultUser = config.canivete.me;
+        wsl.startMenuLaunchers = true;
+        # TODO figure out hardwired internet setup (switch + ethernet to usb adapters)
+        # TODO should I I use wsl-vpnkit?
+        # TODO value of OpenGL driver from Windows?
+        # TODO any settings I should configure for more resource usage or enable graphical applications?
+        # wsl.usbip.enable = true;
+        # wsl.usbip.autoAttach = [];
+        # wsl.usbip.snippetIpAddress = "127.0.0.1";
+        # wsl.useWindowsDriver = true;
+        # wsl.wslConf = {};
       };
     };
     octopus = {
@@ -391,6 +412,7 @@ in {
                 "Shin Megami Tensei - Persona 4 (USA)"
                 "Shin Megami Tensei - Digital Devil Saga (USA)"
                 "Shin Megami Tensei - Digital Devil Saga 2 (USA)"
+                "Ookami (USA)"
               ];
               PS3.programs = [
                 "Persona 5 (USA)"
