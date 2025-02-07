@@ -18,7 +18,7 @@
           animate_workspacechange = "yes";
           focus_animation = "shrink";
           shrink = {
-            shrink_percentage = 0.98;
+            shrink_percentage = 0.99;
             in_bezier = "realsmoooth";
             in_speed = 1;
             out_bezier = "realsmooth";
