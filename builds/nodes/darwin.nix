@@ -1,14 +1,20 @@
 {
   config,
   inputs,
-  nix,
   ...
-}:
-with nix; let
+}: let
   inherit (config.dotfiles) domain;
   darwin = config.canivete.deploy.darwin.nodes.morgenmuffel.profiles.system.raw;
 in {
-  flake.overlays.gke-gcloud-auth-plugin = inputs.gke-gcloud-auth-plugin-flake.overlays.default;
+  flake.deploy.nodes.morgenmuffel = {
+    hostname = "morgenmuffel";
+    profiles.system = {
+      user = "tristan";
+      path = inputs.deploy-rs.lib.aarch64-darwin.activate.nixos inputs.self.darwinConfigurations.morgenmuffel;
+    };
+  };
+  # flake.checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks inputs.self.deploy) inputs.deploy-rs.lib;
+
   # TODO https://github.com/exelban/stats
   # TODO https://github.com/koekeishiya/yabai vs https://github.com/nikitabobko/AeroSpace
   # TODO https://github.com/jordanbaird/Ice
@@ -16,23 +22,13 @@ in {
   canivete.deploy.darwin.nodes.morgenmuffel = {
     target.sshOptions = ["ProxyJump=${domain}"];
     profiles.system.module = {
-      dotfiles.containers = true;
-      dotfiles.graphical.enable = true;
-      homebrew.enable = true;
-      homebrew.brews = ["libtool" "vfkit"];
-      homebrew.casks = [
-        "clickup"
-        # "dracula-wallpaper"
-        "gitbutler"
-        "google-drive"
-        "lulu"
-        "teamviewer"
-        "zotero"
-      ];
-      homebrew.taps = [
-        "cfergeau/crc"
-        # "dracula/install"
-      ];
+      dotfiles.workstation.enable = true;
+      homebrew = {
+        enable = true;
+        brews = ["libtool" "vfkit"];
+        casks = ["zotero"];
+        taps = ["cfergeau/crc"];
+      };
       security.pam.enableSudoTouchIdAuth = true;
       security.sudo.extraConfig = ''
         root ALL=(ALL) NOPASSWD: ALL
@@ -46,65 +42,29 @@ in {
       };
       system.stateVersion = 4;
     };
-    home.tristan = {
-      config,
-      lib,
-      pkgs,
-      ...
-    }: {
-      imports = toList {
-        options.dotfiles = darwin.options.dotfiles;
-        config.dotfiles = darwin.config.dotfiles;
+    home.tristan = {pkgs, ...}: {
+      imports = [
+        {
+          options.dotfiles = darwin.options.dotfiles;
+          config.dotfiles = darwin.config.dotfiles;
+        }
+      ];
+      home.packages = [pkgs.raycast];
+      home.stateVersion = "23.05";
+      launchd.agents.raycast = {
+        enable = true;
+        config.KeepAlive.Crashed = true;
+        config.Program = "${pkgs.raycast}/Applications/Raycast.app/Contents/MacOS/Raycast";
+        config.RunAtLoad = true;
       };
-      dotfiles.common = true;
-      dotfiles.email = true;
-      dotfiles.graphical.enable = true;
-      dotfiles.programs.git.enable = true;
-      dotfiles.programs.wordnet.enable = true;
-      dotfiles.profile = "work";
-      dotfiles.zsh.initExtraLines = nix.toList ''
+      programs.zsh.initExtra = ''
         fixaudio() {
           sudo rm /Library/Preferences/Audio/com.apple.audio.DeviceSettings.plist
           sudo rm /Library/Preferences/Audio/com.apple.audio.SystemSettings.plist
           sudo killall coreaudiod
         }
       '';
-      # TODO remove all of the extra logging (why isn't /dev/null working on relevant commands?)
-      home.activation.prepareFutoffo = let
-        gcloud = getExe pkgs.google-cloud-sdk;
-      in
-        lib.hm.dag.entryAfter ["linkGeneration"] ''
-          chmod +x ${config.home.shellAliases.futoffo}
-          if [[ -z $(${gcloud} auth list --filter active | grep '@climaxfoods.com' | ${pkgs.gawk}/bin/awk '{print $NF}' 2> /dev/null) ]]; then
-             ${gcloud} auth login
-          fi
-          if [[ ! $(grep -q gcloud "$HOME/.docker/config.json" &> /dev/null) ]]; then
-             ${gcloud} auth configure-docker
-          fi
-        '';
-      home.packages = with pkgs; [google-cloud-sdk gke-gcloud-auth-plugin pngpaste python312 raycast];
-      home.shellAliases.futoffo = "\"${config.home.homeDirectory}/Google Drive/Shared drives/software/futoffo/start_docker.command\"";
-      home.stateVersion = "23.05";
-      launchd.agents = let
-        config.RunAtLoad = true;
-        config.KeepAlive.Crashed = true;
-      in {
-        bitwarden.enable = true;
-        bitwarden.config = config // {Program = "/Applications/Bitwarden.app/Contents/MacOS/Bitwarden";};
-        brave.enable = true;
-        brave.config = config // {Program = "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser";};
-        clickup.enable = true;
-        clickup.config = config // {Program = "/Applications/ClickUp.app/Contents/MacOS/ClickUp";};
-        gdrive.enable = true;
-        gdrive.config = config // {Program = "/Applications/Google Drive.app/Contents/MacOS/Google Drive";};
-        lulu.enable = true;
-        lulu.config = config // {Program = "/Applications/LuLu.app/Contents/MacOS/LuLu";};
-        protonvpn.enable = true;
-        protonvpn.config = config // {Program = "/Applications/ProtonVPN.app/Contents/MacOS/ProtonVPN";};
-        raycast.enable = true;
-        raycast.config = config // {Program = "${pkgs.raycast}/Applications/Raycast.app/Contents/MacOS/Raycast";};
-      };
-      programs.zsh.oh-my-zsh.plugins = ["brew" "gcloud"];
+      programs.zsh.oh-my-zsh.plugins = ["brew"];
     };
   };
 }

@@ -45,8 +45,6 @@ set statusline^=%{FugitiveStatusline()}
 " AIRLINE (status bar)
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
-let g:airline#extensions#tmuxline#enabled = 0
-let g:tmuxline_theme = 'lightline'
 let g:airline_theme = 'wombat'
 
 " DRACULA (theme)
