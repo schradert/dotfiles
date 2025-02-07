@@ -13,13 +13,38 @@
       options.dotfiles.services.swww = {
         enable = mkEnableOption "swww wallpaper daemon for wayland";
         package = mkPackageOption pkgs "swww" {};
+        config = mkOption {
+          default = {};
+          type = submodule {
+            options = {
+              config_dir = mkOption {
+                type = path;
+                readOnly = true;
+                default = "${config.xdg.configHome}/swww";
+              };
+              wallpapers_dir = mkOption {
+                type = path;
+                readOnly = true;
+                default = "${swww.config.config_dir}/wallpapers";
+              };
+              wallpapers = mkOption {
+                type = listOf package;
+                default = [];
+              };
+            };
+          };
+        };
       };
       config = mkIf swww.enable {
         home.packages = [swww.package];
+        # TODO host and mount wallpapers
+        # xdg.configFile."swww/wallpapers".source = pkgs.linkFarm "wallpapers" swww.config.wallpapers;
         systemd.user.services.swww = {
           Unit.After = ["graphical-session-pre.target"];
           Unit.PartOf = ["graphical-session.target"];
           Service.ExecStart = "${swww.package}/bin/swww-daemon";
+          Service.Restart = "on-failure";
+          Install.WantedBy = ["graphical-session.target"];
         };
       };
     };
