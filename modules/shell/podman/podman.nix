@@ -29,8 +29,14 @@ in {
     }: {
       config = mkIf config.dotfiles.containers (mkMerge [
         {
+          dotfiles.programs.emacs = {
+            dependencies = [pkgs.dockerfile-language-server-nodejs];
+            orgFiles = [./podman.org];
+          };
+          home.sessionVariables.DOCKER_CONFIG = "${config.xdg.configHome}/docker";
           home.shellAliases.docker = getExe pkgs.podman;
-          home.packages = with pkgs; [k3d podman podman-compose podman-tui lazydocker];
+          home.packages = with pkgs; [k3d podman podman-compose podman-tui lazydocker oxker dive];
+          # TODO build https://github.com/robertpsoane/ducker
         }
         (mkIf pkgs.stdenv.isDarwin {
           # TODO make sure that the podman socket is found
@@ -52,6 +58,15 @@ in {
           dockerSocket.enable = true;
           defaultNetwork.settings.dns_enable = true;
         };
+      };
+    };
+    nixos.homeModules.containers = {
+      config,
+      pkgs,
+      ...
+    }: {
+      config = mkIf config.dotfiles.containers {
+        home.packages = with pkgs; [boxbuddy distrobox distrobox-tui host-spawn];
       };
     };
   };
