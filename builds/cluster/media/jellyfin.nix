@@ -183,4 +183,7 @@ in {
       };
     };
   };
+  canivete.deploy.nixos.homeModules.jellyfin = {pkgs, ...}: {
+    home.packages = [pkgs.jftui];
+  };
 }
