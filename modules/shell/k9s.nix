@@ -3,7 +3,7 @@
   # TODO build https://github.com/hcavarsan/kftray
   # TODO https://github.com/derailed/k9s/blob/master/plugins/carvel.yaml
   canivete.deploy.system.homeModules.k9s = {pkgs, ...}: {
-    home.packages = with pkgs; [kubectl kubernetes-helm];
+    home.packages = with pkgs; [kubectl kubernetes-helm kubetui kdash ktop];
     programs.k9s.enable = true;
     # Reference "https://github.com/derailed/k9s/blob/master/skins/dracula.yaml"
     programs.k9s.skins.skin.k9s = let
