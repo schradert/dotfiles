@@ -1,0 +1,17 @@
+@import url("file:///home/tristan/.config/wpg/templates/ags.css");
+// TODO there is probably a better way to do this
+
+$white: #{"@white"};
+$theme_fg_color: #{"@theme_fg_color"};
+$darkgray: #{"@darkgray"};
+$active: #{"@active"};
+$transparent: #{"@transparent"};
+$red: #{"@red"};
+$black: #{"@black"};
+$activedim: #{"@activedim"};
+$hovered: #{"@hovered"};
+$darkgray: #{"@darkgray"};
+
+* {
+    all: unset;
+}
