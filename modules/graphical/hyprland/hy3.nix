@@ -61,7 +61,7 @@
             "$mod+SHIFT, F9, hy3:movetoworkspace, 09"
             "$mod+SHIFT, F10, hy3:movetoworkspace, 10"
             "$mod+SHIFT, F11, hy3:movetoworkspace, 11"
-            "$mod+SHIFT, F10, hy3:movetoworkspace, 12"
+            "$mod+SHIFT, F12, hy3:movetoworkspace, 12"
 
             "$mod+SHIFT, h, hy3:movewindow, l, once"
             "$mod+SHIFT, j, hy3:movewindow, d, once"
