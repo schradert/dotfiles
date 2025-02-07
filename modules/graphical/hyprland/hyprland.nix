@@ -60,19 +60,6 @@ in {
               "$mod, f, fullscreen, toggle"
               "$mod+CONTROL, f, togglefloating"
 
-              "$mod, F1, workspace, 01"
-              "$mod, F2, workspace, 02"
-              "$mod, F3, workspace, 03"
-              "$mod, F4, workspace, 04"
-              "$mod, F5, workspace, 05"
-              "$mod, F6, workspace, 06"
-              "$mod, F7, workspace, 07"
-              "$mod, F8, workspace, 08"
-              "$mod, F9, workspace, 09"
-              "$mod, F10, workspace, 10"
-              "$mod, F11, workspace, 11"
-              "$mod, F12, workspace, 12"
-
               "$mod+SHIFT, Tab, hyprexpo:expo, toggle"
             ];
             bindm = [
