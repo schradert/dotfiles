@@ -51,4 +51,36 @@ in {
       dnsNames = [domain "*.${domain}"];
     };
   };
+  canivete.deploy.system.homeModules.cert-manager = {
+    lib,
+    pkgs,
+    ...
+  }: {
+    home.packages = [pkgs.cmctl];
+    programs.k9s.plugin.plugins = let
+      bash = lib.getExe pkgs.bash;
+      cmctl = lib.getExe pkgs.cmctl;
+      less = lib.getExe pkgs.less;
+    in {
+      cert-status = {
+        shortCut = "Shift-S";
+        description = "Certificate status";
+        scopes = ["certificates"];
+        confirm = false;
+        background = false;
+        command = bash;
+        args = ["-c" "${cmctl} status certificate --context $CONTEXT --namespace $NAMESPACE $NAME |& ${less}"];
+      };
+      cert-renew = {
+        shortCut = "Shift-R";
+        description = "Certificate renew";
+        scopes = ["certificates"];
+        confirm = true;
+        background = false;
+        command = bash;
+        args = ["-c" "${cmctl} renew --context $CONTEXT --namespace $NAMESPACE $NAME |& ${less}"];
+      };
+      # TODO get secret from a certificate!
+    };
+  };
 }
