@@ -1,4 +1,4 @@
-{
+{inputs, ...}: {
   canivete.deploy.system.homeModules.common = {
     config,
     lib,
@@ -35,6 +35,7 @@
         xplr
       ];
       fonts.fontconfig.enable = true;
+      nixpkgs.overlays = [inputs.nur.overlays.default];
       programs = {
         bash.enable = true;
         bat.enable = true;
