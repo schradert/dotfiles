@@ -1,14 +1,26 @@
-{config, lib, ...}: let
+{
+  config,
+  lib,
+  ...
+}: let
   inherit (config.canivete.people) users;
   inherit (lib) flip getExe mapAttrs mkEnableOption mkIf mkMerge;
 in {
-  canivete.deploy.system.homeModules.email = {config, pkgs, ...}: let
+  canivete.deploy.system.homeModules.email = {
+    config,
+    pkgs,
+    ...
+  }: let
     inherit (pkgs) mu isync hydroxide stdenv;
     user = users.${config.home.username};
   in {
     options.dotfiles.email = mkEnableOption "local email services";
     config = mkIf config.dotfiles.email (mkMerge [
       {
+        # TODO consider https://github.com/sup-heliotrope/sup
+        # TODO consider https://notmuchmail.org/frontends/ with https://notmuchmail.org/
+        # TODO consider https://git.meli-email.org/meli/meli
+        # TODO consider aerc
         home.packages = [mu mu.mu4e isync hydroxide];
         accounts.email.accounts = flip mapAttrs user.profiles (name: cfg: {
           # TODO alot contact completion

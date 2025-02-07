@@ -1,0 +1,3 @@
+#+begin_src emacs-lisp :noweb-ref init
+(doom! :email (mu4e +mbsync +org))
+#+end_src
