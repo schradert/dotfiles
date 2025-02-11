@@ -52,7 +52,8 @@
         ])
         (mkIf pkgs.stdenv.hostPlatform.isLinux (with pkgs; [
           kmon
-          psicircle
+          # TODO build psicircle
+          # NOTE https://gitlab.com/mildlyparallel/pscircle
           systeroid
         ]))
       ];

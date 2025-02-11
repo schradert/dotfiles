@@ -25,7 +25,7 @@
     config = mkIf elvish.enable {
       home.packages = [elvish.package];
       programs.vim.plugins = [pkgs.vimPlugins.elvish-vim];
-      xdg.configFile."elvish/rc.elv" = pkgs.writeText "rc.elv" elvish.initExtra;
+      xdg.configFile."elvish/rc.elv".source = pkgs.writeText "rc.elv" elvish.initExtra;
 
       dotfiles.programs.emacs.orgFiles = [./elvish.org];
       dotfiles.programs.elvish.initExtra = mkMerge (forEach elvish.integrations (cmd: "eval (${cmd})"));

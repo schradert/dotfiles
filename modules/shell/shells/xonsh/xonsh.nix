@@ -44,7 +44,7 @@
     config = mkIf xonsh.enable {
       home.packages = [(xonsh.package.override {extraPackages = xonsh.packages;})];
       dotfiles.programs.emacs.orgFiles = [./xonsh.org];
-      xdg.configFile."xonsh/.xonshrc" = pkgs.writeText ".xonshrc" xonsh.initExtra;
+      xdg.configFile."xonsh/.xonshrc".source = pkgs.writeText ".xonshrc" xonsh.initExtra;
       dotfiles.programs.xonsh.initExtra = mkMerge (forEach xonsh.xontribs (pkg: "xontrib load ${pkg}"));
     };
   };
