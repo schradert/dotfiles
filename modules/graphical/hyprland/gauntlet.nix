@@ -6,5 +6,6 @@
     # TODO follow unstable changes for libffi-sys fixes
     programs.gauntlet.package = inputs.gauntlet.packages.${pkgs.system}.default;
     programs.gauntlet.service.enable = true;
+    wayland.windowManager.hyprland.settings.bind = ["$mod+ALT, SPACE, exec, gauntlet open"];
   };
 }
