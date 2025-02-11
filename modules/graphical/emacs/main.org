@@ -28,6 +28,9 @@
        (undo +tree)
        vc
 
+       :input
+       layout
+
        :tools
        (collab +tunnel)
        ;; TODO configure more here https://emacs-lsp.github.io/dap-mode/page/configuration/
@@ -91,9 +94,6 @@
        (objed +manual)
 
        :input
-       bidi
-       ;; (chinese +childframe) ;; TODO +rime, when https://github.com/doomemacs/doomemacs/issues/8218 is fixed
-       ;; japanese
        layout
 
        :os
