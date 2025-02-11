@@ -100,9 +100,6 @@
        (:if IS-MAC macos)
        (tty +osc)
 
-       :term
-       vterm
-
        :app
        ;; emms TODO decide if mpd is what I want to use
        irc
@@ -434,22 +431,6 @@
         org-roam-ui-update-on-save t
         org-roam-ui-open-on-start t))
 #+end_src
-* Vterm
-** Key bindings
-#+begin_src emacs-lisp :tangle no
-(after! vterm
-  (map! :map vterm-mode-map "C-c ESC" #'vterm-send-escape)
-  (defun vterm-ssh (host)
-    (vterm)
-    (vterm-send-string (concat "ssh " host "\n")))
-  (defun vterm-ssh-tramp ()
-    (interactive)
-    (let ((host (file-remote-p default-directory 'host)))
-      (if host
-          (vterm-ssh host)
-        (message "Not in a TRAMP buffer")))))
-#+end_src
-
 * ssh-deploy
 #+begin_src emacs-lisp :tangle no
 ;; TODO figure this out
