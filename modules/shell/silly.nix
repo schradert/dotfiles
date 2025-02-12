@@ -258,10 +258,8 @@
         calcure
         # TODO build https://github.com/darrenburns/posting
         # TODO build https://github.com/ulissesf/qmassa
-        # TODO how does russ compare to elfeed
         # TODO should I try out canard + journalist?
         # TODO or https://github.com/veeso/tuifeed
-        russ
         otree
         ttysvr
         sssnake

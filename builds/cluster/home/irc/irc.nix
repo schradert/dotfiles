@@ -18,4 +18,5 @@
     type = with lib.types; listOf str;
     default = [];
   };
+  config.canivete.deploy.system.homeModules.irc.dotfiles.programs.emacs.orgFiles = [./irc.org];
 }

@@ -1,3 +1,23 @@
 #+begin_src emacs-lisp :noweb-ref init
 (doom! :email (mu4e +mbsync +org))
 #+end_src
+#+begin_src emacs-lisp :tangle config.el
+(after! org
+  (add-to-list 'org-capture-templates
+               '("@" "inbox [mu4e]" entry (file "inbox.org")
+                 "* DRAFTING Process \"%a\" %?\nEntered on %U"
+                 :clock-in t :clock-resume t)))
+(after! mu4e
+  (defun my/org-capture-mail ()
+    (interactive)
+    (call-interactively 'org-store-link)
+    (org-capture nil "@"))
+  (map! :map mu4e-headers-mode-map "X" #'my/org-capture-mail)
+  (map! :map mu4e-view-mode-map "X" #'my/org-capture-mail))
+;; TODO figure out msmtp in emacs
+;;   (setq sendmail-program (executable-find "msmtp")
+;;         send-mail-function #'smtpmail-send-it
+;;         message-sendmail-f-is-evil t
+;;         message-sendmail-extra-arguments '("--read-envelope-from")
+;;         message-send-mail-function #'message-send-mail-with-sendmail)
+#+end_src

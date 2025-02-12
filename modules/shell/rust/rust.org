@@ -2,7 +2,7 @@
 (doom! :lang (rust +lsp +tree-sitter))
 #+end_src
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp :tangle config.el
 (after! dap-mode
   (dap-register-debug-template "Rust::GDB Run Configuration"
                                (list :type "gdb"

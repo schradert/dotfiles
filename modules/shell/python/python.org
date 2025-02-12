@@ -2,7 +2,9 @@
 (doom! :lang (python +lsp +pyright +tree-sitter)
        :tools ein)
 #+end_src
-
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp :tangle packages.el
+(package! nose :disable t)
+#+end_src
+#+begin_src emacs-lisp :tangle config.el
 (after! dap-mode (setq dap-python-debugger 'debugpy))
 #+end_src

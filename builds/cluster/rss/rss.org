@@ -1,19 +1,12 @@
-# RSS
-
-[ ] [feedpushr](https://github.com/ncarlier/feedpushr)
-[ ] [readflow](https://github.com/ncarlier/readflow)
-[ ] [rsshub](https://github.com/DIYgod/RSSHub)
-[ ] [rsshub-radar](https://github.com/DIYgod/RSSHub-Radar)
-[ ] add feeds for my filters on [Stack Exchange](https://stackexchange.com/users/15556329/t-whiz?tab=accounts)
-[ ] convert websites like [this bash issue](https://savannah.gnu.org/support/?108134) into rss feed
-[ ] [synd](https://github.com/ymgyt/syndicationd)
-
-## Links
-
-- add rpgcodex
-
-``` emacs-lisp
- (("http://asert.arbornetworks.com/feed/" security second)
+#+begin_src emacs-lisp :noweb-ref apps
+rss
+#+end_src
+#+begin_src emacs-lisp :tangle packages.el
+(package! elfeed-protocol :pin "4f5e77a28c501db686ac06a2ea250a7b37d5420c")
+#+end_src
+#+begin_src emacs-lisp :tangle no
+;; TODO how can I configure this to support my RSS backend?
+(("http://asert.arbornetworks.com/feed/" security second)
  ("https://github.com/kilimchoi/engineering-blogs")
  ("https://willowprotocol.org/rss_news.xml")
  ("https://blog.ipfs.tech/index.xml")
@@ -123,4 +116,4 @@
  ("https://oceanbites.org/feed/")
  ("https://www.symmetrymagazine.org/feed")
  ("http://feeds.feedburner.com/darknethackers"))
-```
+#+end_src

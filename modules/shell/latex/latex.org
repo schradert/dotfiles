@@ -3,7 +3,7 @@
        :tools biblio)
 #+end_src
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp :tangle config.el
 (setq +latex-viewers '(zathura))
 ;; TODO how can I integrate reftex for bibliography?
 ;; (setq reftex-default-bibliography "/your/bib/file.bib")

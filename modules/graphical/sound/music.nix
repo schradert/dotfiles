@@ -1,5 +1,6 @@
 {
   # TODO choose a music player!!!
+  # TODO set up :app emms in doomemacs
   canivete.deploy = {
     nixos.homeModules.music = {
       config,

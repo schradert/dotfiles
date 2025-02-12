@@ -10,7 +10,10 @@
   in {
     options.dotfiles.common = mkEnableOption "common shell utilities" // {default = true;};
     config = mkIf config.dotfiles.common {
-      dotfiles.programs.git.enable = true;
+      dotfiles.programs = {
+        git.enable = true;
+        nix-inspect.enable = true;
+      };
       home.sessionVariables = {
         XDG_CACHE_HOME = xdg.cacheHome;
         XDG_CONFIG_HOME = xdg.configHome;
@@ -23,7 +26,6 @@
         (with pkgs; [
           aria2
           bottom
-          cheat
           cmake
           dig
           fd
@@ -43,9 +45,6 @@
           rustscan
           speedtest-cli
           sqlite
-          # TODO https://github.com/nvbn/thefuck
-          thefuck
-          tldr
           tree
           unzip
           xplr
@@ -67,7 +66,8 @@
         home-manager.enable = true;
         htop.enable = true;
         jq.enable = true;
-        nix-your-shell.enable = true;
+        # TODO why is it panicking when I try to call it from `nix run`?
+        # nix-your-shell.enable = true;
         starship.enable = true;
         zoxide.enable = true;
       };

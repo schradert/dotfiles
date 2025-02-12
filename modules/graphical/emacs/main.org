@@ -1,12 +1,23 @@
+* Fix for when GNU's Savannah is down...
+#+begin_src emacs-lisp :tangle no
+;; Taken from https://www.reddit.com/r/DoomEmacs/comments/1dohgxv/gitsavannahgnuorg_is_down/
+(defadvice! straight-use-recipes-ignore-nongnu-elpa-a (fn recipe)
+  :around #'straight-use-recipes
+  (unless (eq 'nongnu-elpa (car recipe))
+    (funcall fn recipe)))
+#+end_src
+
 * Initialization
-#+begin_src emacs-lisp :tangle init.el
+#+begin_src emacs-lisp :tangle init.el :noweb yes
+<<init>>
 (doom! :checkers
        (syntax +childframe)
        (spell +aspell +everywhere +flyspell)
        grammar
 
        :completion
-       (company +childframe +tng) ;; TODO do I need to configure backends for specific filetypes?
+       (corfu +icons +orderless +dabbrev)
+       ;; (company +childframe +tng) ;; TODO do I need to configure backends for specific filetypes?
        (vertico +childframe +icons)
 
        :editor
@@ -21,7 +32,6 @@
        word-wrap
 
        :emacs
-       (dired +dirvish +icons)
        electric
        eww
        (ibuffer +icons)
@@ -30,6 +40,20 @@
 
        :input
        layout
+
+       :lang
+       data
+       emacs-lisp
+       (json +lsp +tree-sitter)
+       (org +brain +contacts +dragndrop +crypt +gnuplot +journal +jupyter +noter +pandoc +passwords +pomodoro +present +pretty +roam2)
+       (nix +tree-sitter +lsp)
+       (sh +fish +lsp +tree-sitter)
+       (web +lsp +tree-sitter)
+       (yaml +lsp +tree-sitter)
+
+       :os
+       (:if (featurep :system 'macos) macos)
+       (tty +osc)
 
        :tools
        (collab +tunnel)
@@ -43,16 +67,6 @@
        pdf
        tree-sitter
        upload
-
-       :lang
-       data
-       emacs-lisp
-       (json +lsp +tree-sitter)
-       (org +brain +contacts +dragndrop +crypt +gnuplot +journal +jupyter +noter +pandoc +passwords +pomodoro +present +pretty +roam2)
-       (nix +tree-sitter +lsp)
-       (sh +fish +lsp +tree-sitter)
-       (web +lsp +tree-sitter)
-       (yaml +lsp +tree-sitter)
 
        :ui
        doom
@@ -76,156 +90,56 @@
        workspaces
        zen
 
+       ;; NOTE :app and :config must be at the end
+
        :app
        everywhere
+       <<apps>>
 
        :config
-       ;; NOTE must be defined after :editor evil for some reason, otherwise get (void-variable evil-window-map)
        (default +bindings))
 #+end_src
-#+begin_src emacs-lisp :tangle no :noweb yes
-<<init>>
-(doom! :checkers
-       (syntax +childframe)
-       (spell +aspell +flyspell) ;; +everywhere
-       grammar
 
-       :editor
-       (objed +manual)
-
-       :input
-       layout
-
-       :os
-       (:if IS-MAC macos)
-       (tty +osc)
-
-       :app
-       ;; emms TODO decide if mpd is what I want to use
-       irc
-       ;; rss TODO how can I connect elfedd with an rss server (rsshub, feedpushr)
-#+end_src
-
-* Extra Packages (on macOS)
-#+begin_src emacs-lisp :tangle no
-(package! editorconfig)
-(package! peep-dired)
-(package! rainbow-mode)
-(package! kurecolor)
-(package! imenu-list)
-(package! org-brain)
-(package! org-ql)
-(package! helm-org-rifle)
-(package! org-edna)
-(package! org-linker :recipe (:host github :repo "toshism/org-linker"))
-(package! org-linker-edna :recipe (:host github :repo "toshism/org-linker-edna"))
-(package! org-super-links :recipe (:host github :repo "toshism/org-super-links"))
-(package! org-timeline)
-(package! tldr)
-(package! kubernetes)
-(package! kubernetes-evil)
-(package! nose :disable t)
-#+end_src
-
-* Basic Configuration
-#+begin_src emacs-lisp :tangle no
+* General
+#+begin_src emacs-lisp :tangle config.el
 (setq user-full-name "Tristan Schrader"
       user-mail-address "tristanschrader@proton.me"
 
       doom-theme 'doom-dracula
       delete-by-moving-to-trash t
-      trash-directory (concat (getenv "USERDIR") "/.Trash"))
+      trash-directory (concat (getenv "USERDIR") "/.Trash")
+      +tree-sitter-hl-enabled-modes t
+      +treemacs-git-mode 'deferred)
 (map! "C-M-i" #'completion-at-point)
+(add-hook 'doom-before-reload-hook (lambda () (shell-command "doom install < <(yes)")))
+(add-to-list '+lookup-provider-url-alist '("Wiktionary" . "https://en.wiktionary.org/wiki/%s"))
 #+end_src
 
-* JQ Lang
-#+begin_src emacs-lisp :tangle no
-(package! jq-mode)
+** imenu-list
+#+begin_src emacs-lisp :tangle packages.el
+(package! imenu-list :pin "76f2335ee6f2f066d87fe4e4729219d70c9bc70d")
 #+end_src
-#+begin_src emacs-lisp :tangle no
-(use-package! jq-mode
-  :init
-  (autoload 'jq-mode "jq-mode.el"
-    "Major mode for editing jq files" t)
-  (add-to-list 'auto-mode-alist '("\\.jq$" . jq-mode)))
+#+begin_src emacs-lisp :tangle config.el
+(after! imenu-list
+  (map! :leader :desc "imenu-list-toggle" "b L" #'imenu-list-smart-toggle))
 #+end_src
 
-* SOPS
-#+begin_src emacs-lisp :tangle no
-(package! sops :recipe (:host github :repo "djgoku/sops") :pin "6d82ea9")
+* Dired
+#+begin_src emacs-lisp :noweb-ref init
+(doom! :emacs (dired +dirvish +icons))
 #+end_src
-#+begin_src emacs-lisp :tangle no
-(use-package! sops
-  :init
-  (global-sops-mode 1)
-  :config
-  ;; Create a custom keymap that doesn't exist
-  (defvar sops-mode-map (make-sparse-keymap) "Keymap for sops-mode.")
-  ;; Define useful bindings in keymap
-  (map! :map sops-mode-map
-        :localleader
-        "fe" #'sops-edit-file
-        "fc" #'sops-cancel
-        "fs" #'sops-save-file)
-  ;; Activate keymap in sops-mode
-  (add-hook! sops-mode (use-local-map sops-mode-map)))
+#+begin_src emacs-lisp :tangle packages.el
+(package! dired-preview :pin "76e2d2a6675807f41c18c2f000dfaec35ed59100")
+#+end_src
+#+begin_src emacs-lisp :tangle config.el
+(use-package! dired-preview :init (dired-preview-global-mode 1))
 #+end_src
 
-* Fix for when GNU's Savannah is down...
-#+begin_src emacs-lisp :tangle no
-;; Taken from https://www.reddit.com/r/DoomEmacs/comments/1dohgxv/gitsavannahgnuorg_is_down/
-(defadvice! straight-use-recipes-ignore-nongnu-elpa-a (fn recipe)
-  :around #'straight-use-recipes
-  (unless (eq 'nongnu-elpa (car recipe))
-    (funcall fn recipe)))
-#+end_src
-
-* Org Mode
-#+begin_src emacs-lisp :tangle no
+* Org
+#+begin_src emacs-lisp :tangle config.el
 ;; NOTE apparently org-directory must be set before org is loaded
 (setq org-directory (concat (getenv "USERDIR") "/Projects/sabedoria"))
 (after! org
-  (setq
-    org-roam-directory (concat org-directory "/roam")
-    org-global-properties '(("Effort_ALL" . "0 0:15 0:30 1:00 2:00 3:00 4:00 5:00 6:00 7:00"))
-    org-log-into-drawer t
-    org-todo-keywords '(
-      (sequence "DRAFTING(d@)" "PLANNED(p!)" "IN-PROGRESS(i!/@)" "WAITING(w@)" "|" "COMPLETED(c@)" "REJECTED(r@)" "MISSED(m@)")
-    )
-    org-todo-repeat-to-state "PLANNED"
-    org-columns-default-format "%40ITEM(Task) %TODO %3PRIORITY %17Effort{:} %CLOCKSUM %CLOCKSUM_T %TAGS"
-    org-agenda-columns-add-appointments-to-effort-sum t
-    org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id
-    org-super-links-related-into-drawer t
-    org-super-links-link-prefix 'org-super-links-link-prefix-timestamp
-    org-super-links-search-function 'helm-org-ql-org-directory
-    org-agenda-skip-scheduled-if-done t
-    org-agenda-skip-deadline-if-done t
-    org-agenda-include-diary t
-    org-agenda-start-day nil
-    org-agenda-show-future-repeats nil
-    org-agenda-custom-commands '(("g" "Get Things Done (GTD)"
-                                  ((agenda "" ((org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline))
-                                               (org-deadline-warning-days 0)))
-                                   (todo "PLANNED" ((org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline))
-                                                    (org-agenda-prefix-format "  %i %-12:c [%e] ")
-                                                    (org-agenda-overriding-header "\nTasks\n")))
-                                   (agenda nil ((org-agenda-entry-types '(:deadline))
-                                                (org-agenda-format-date "")
-                                                (org-deadline-warning-days 7)
-                                                (org-agenda-skip-function '(org-agenda-skip-entry-if 'notregexp "\\* PLANNED"))
-                                                (org-agenda-overriding-header "\nDeadlines\n")))
-                                   (tags-todo "inbox" ((org-agenda-prefix-format "  %?-12t% s")
-                                                       (org-agenda-overriding-header "\nInbox\n")))
-                                   (tags "COMPLETED>=\"<today>\"" ((org-agenda-overriding-header "\nCompleted today\n")))))))
-  (map! :map org-mode-map
-        :localleader
-        "le" #'org-linker-edna
-        "ll" #'org-super-links-link
-        "li" #'org-super-links-insert-link
-        "lI" #'org-super-links-quick-insert-inline-link
-        "ls" #'org-super-links-store-link
-        "ds" #'my/org-schedule)
   (defun my/mark-as-project ()
     "This function makes sure that the current heading has
 (1) the tag :project:
@@ -238,28 +152,35 @@
     (org-back-to-heading t)
     (let*
       ((title (nth 4 (org-heading-components)))
-       (keyword (nth 2 (org-heading-components)))
-      )
+       (keyword (nth 2 (org-heading-components))))
       (when (and (bound-and-true-p keyword) (string-prefix-p "[" title))
-        (message "TODO keyword and progress indicator found")
-      )
+        (message "TODO keyword and progress indicator found"))
       (when (and (not (bound-and-true-p keyword)) (string-prefix-p "[" title))
         (message "no TODO keyword but progress indicator found")
         (forward-whitespace 1)
-        (insert "PLANNED ")
-      )
+        (insert "PLANNED "))
       (when (and (not (bound-and-true-p keyword)) (not (string-prefix-p "[" title)))
         (message "no TODO keyword and no progress indicator found")
         (forward-whitespace 1)
-        (insert "PLANNED [/] ")
-      )
+        (insert "PLANNED [/] "))
       (when (and (bound-and-true-p keyword) (not (string-prefix-p "[" title)))
         (message "TODO keyword but no progress indicator found")
         (forward-whitespace 2)
-        (insert "[/] ")
-      )
-    )
-  )
+        (insert "[/] "))))
+  (defun my/org-clock-todo-change ()
+    "Clock in on an in progress task and clock out of the other"
+    (if (equal org-state "IN-PROGRESS")
+        (org-clock-in)
+      (org-clock-out-if-current)))
+  (defun my/org-habit-is-habit-subheading ()
+    "Check if the current TODO is under an org-habit heading."
+    (save-excursion
+      (while (and (not (org-at-heading-p))
+                  (org-up-heading-safe))
+        (let ((style (org-entry-get (point) "STYLE")))
+          (when (and style (string= style "habit"))
+            (cl-return t))))
+      nil))
   (defun my/org-schedule ()
     "Prompt for a datetime and insert it into a SCHEDULE drawer under the current Org heading."
     (interactive)
@@ -290,81 +211,86 @@
       (insert "\n")
       (org-time-stamp nil)
       (org-indent-region drawer-beg (point))))
-)
-
-(defun my/org-habit-is-habit-subheading ()
-  "Check if the current TODO is under an org-habit heading."
-  (save-excursion
-    (while (and (not (org-at-heading-p))
-                (org-up-heading-safe))
-      (let ((style (org-entry-get (point) "STYLE")))
-        (when (and style (string= style "habit"))
-          (cl-return t))))
-    nil))
-
-(defun my/org-agenda-remove-schedule ()
-  "Remove SCHEDULED-cookie is switching state to WAITING."
-  (save-excursion
-    (and (equal org-state "COMPLETED")
-         ;; (my/org-habit-is-habit-subheading)
-         (org-get-scheduled-time (point))
-         (when (search-forward-regexp org-scheduled-time-regexp nil t)
-           (or (delete-region (match-beginning 0) (match-end 0)) t))
-         (get-buffer "*Org Agenda*")
-         (with-current-buffer "*Org Agenda*"
-           (org-agenda-redo)))))
-
-(defun my/org-clock-todo-change ()
-  "Clock in on an in progress task and clock out of the other"
-  (if (equal org-state "IN-PROGRESS")
-      (org-clock-in)
-    (org-clock-out-if-current)))
-
-(add-hook! 'org-after-todo-stage-change-hook 'my/org-agenda-remove-schedule)
-(add-hook! 'org-after-todo-state-change-hook 'my/org-clock-todo-change)
-(add-hook! org-mode
-           (org-edna-mode)
-           (require 'org-linker-edna))
-#+end_src
-
-* Roam
-** General
-#+begin_src emacs-lisp :tangle no
-(after! org
-  (org-roam-db-autosync-mode)
 
   (setq
-      org-roam-capture-templates `(
-        ("d" "default" plain
-         "%?"
-         :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-         :unnarrowed t)
-        ("l" "programming languages" plain
-         "* Characteristics\n\n- Family: %?\n- Inspired by: \n\n* Reference:\n\n"
-         :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-         :unnarrowed t)
-        ("b" "book notes" plain
-         (file ,(concat org-directory "/templates/book-notes.org"))
-         :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
-         :unnarrowed t)
-        ("a" "agenda" plain
-         (file ,(concat org-directory "/templates/agenda.org"))
-         :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: project\n#+category: ${title}")
-         :unnarrowed t)
-        ("i" "inbox" entry
-         (file ,(concat org-directory "/templates/inbox.org"))
-         :target (file "inbox.org")
-         :unnarrowed t))
-      org-roam-dailies-capture-templates '(
-        ("d" "default" entry "* %<%I:%M %p>: %?"
-         :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
+    org-columns-default-format "%40ITEM(Task) %TODO %3PRIORITY %17Effort{:} %CLOCKSUM %CLOCKSUM_T %TAGS"
+    org-global-properties '(("Effort_ALL" . "0 0:15 0:30 1:00 2:00 3:00 4:00 5:00 6:00 7:00"))
+    org-log-into-drawer t
+    org-todo-keywords '((sequence "DRAFTING(d@)" "PLANNED(p!)" "IN-PROGRESS(i!/@)" "WAITING(w@)" "|" "COMPLETED(c@)" "REJECTED(r@)" "MISSED(m@)"))
+    org-todo-repeat-to-state "PLANNED")
 
+  (add-hook! 'org-after-todo-state-change-hook 'my/org-clock-todo-change)
+  (map! :map org-mode-map :localleader "ds" #'my/org-schedule))
+#+end_src
+
+** org-super-links
+#+begin_src emacs-lisp :tangle packages.el
+(package! org-ql :pin "98c62ab0a6c084ae4132110e24d9fe1ace91d363")
+(package! org-super-links :recipe (:host github :repo "toshism/org-super-links") :pin "dd303357f996993074d8d251fcb2c9e18d8036af")
+#+end_src
+#+begin_src emacs-lisp :tangle config.el
+(after! org-super-links
+  (setq org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id
+        org-super-links-related-into-drawer t
+        org-super-links-link-prefix 'org-super-links-link-prefix-timestamp)
+
+  (map! :map org-mode-map
+        :localleader
+        "ll" #'org-super-links-link
+        "li" #'org-super-links-insert-link
+        "lI" #'org-super-links-quick-insert-inline-link
+        "ls" #'org-super-links-store-link))
+#+end_src
+
+** org-agenda
+#+begin_src emacs-lisp :tangle packages.el
+(package! org-super-agenda :pin "c07e35416ce749b42cbb70ff8d4e814362111bb5")
+(package! org-timeline :pin "2b300abc8adc9955418fa2334f55e0610bff79f5")
+#+end_src
+#+begin_src emacs-lisp :tangle config.el
+(after! org
+  (defun my/org-agenda-remove-schedule ()
+    "Remove SCHEDULED-cookie is switching state to WAITING."
+    (save-excursion
+      (and (equal org-state "COMPLETED")
+           ;; (my/org-habit-is-habit-subheading)
+           (org-get-scheduled-time (point))
+           (when (search-forward-regexp org-scheduled-time-regexp nil t)
+             (or (delete-region (match-beginning 0) (match-end 0)) t))
+           (get-buffer "*Org Agenda*")
+           (with-current-buffer "*Org Agenda*" (org-agenda-redo)))))
+
+  (setq org-agenda-skip-scheduled-if-done t
+        org-agenda-columns-add-appointments-to-effort-sum t
+        org-agenda-skip-deadline-if-done t
+        org-agenda-include-diary t
+        org-agenda-start-day nil
+        org-agenda-show-future-repeats nil
+        org-agenda-custom-commands '(("g" "Get Things Done (GTD)"
+                                      ((agenda "" ((org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline))
+                                                   (org-deadline-warning-days 0)))
+                                       (todo "PLANNED" ((org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline))
+                                                        (org-agenda-prefix-format "  %i %-12:c [%e] ")
+                                                        (org-agenda-overriding-header "\nTasks\n")))
+                                       (agenda nil ((org-agenda-entry-types '(:deadline))
+                                                    (org-agenda-format-date "")
+                                                    (org-deadline-warning-days 7)
+                                                    (org-agenda-skip-function '(org-agenda-skip-entry-if 'notregexp "\\* PLANNED"))
+                                                    (org-agenda-overriding-header "\nDeadlines\n")))
+                                       (tags-todo "inbox" ((org-agenda-prefix-format "  %?-12t% s")
+                                                           (org-agenda-overriding-header "\nInbox\n")))
+                                       (tags "COMPLETED>=\"<today>\"" ((org-agenda-overriding-header "\nCompleted today\n")))))))
+
+  (add-hook! 'org-after-todo-stage-change-hook 'my/org-agenda-remove-schedule)
+  (add-hook! 'org-agenda-finalize-hook 'org-timeline-insert-timeline :append))
+#+end_src
+
+** org-roam
+#+begin_src emacs-lisp :tangle config.el
+(after! org
   (defun my/org-roam-update-agenda-files ()
     "Set org-agenda-files to all org-roam files"
     (setq org-agenda-files (directory-files-recursively org-roam-directory "\\.org$")))
-  (add-hook! 'org-roam-capture-new-node-hook 'my/org-roam-update-agenda-files)
-  (my/org-roam-update-agenda-files)
-
   (defun my/org-roam-node-insert-immediate (arg &rest args)
     "Create link to node without opening a buffer to edit it"
     (interactive "P")
@@ -372,22 +298,54 @@
           (org-roam-capture-templates (list (append (car org-roam-capture-templates)
                                                     '(:immediate-finish t)))))
       (apply #'org-roam-node-insert args)))
-
   (defun my/org-roam-filter-by-tag (tag-name)
     "Filter function for org-roam nodes by name of a tag"
     (lambda (node) (member tag-name (org-roam-node-tags node))))
-
   (defun my/org-roam-list-notes-by-tag (tag-name)
     "List all org-roam notes by tag-name"
     (mapcar #'org-roam-node-file
             (seq-filter
              (my/org-roam-filter-by-tag tag-name)
              (org-roam-node-list))))
-
   (defun my/org-roam-update-org-agenda-files ()
     "Update org-agenda-files"
     (interactive)
-    (setq org-agenda-files (my/org-roam-list-notes-by-tag "agenda"))))
+    (setq org-agenda-files (my/org-roam-list-notes-by-tag "agenda")))
+
+  (setq org-roam-directory (concat org-directory "/roam")
+        org-roam-capture-templates `(
+          ("d" "default" plain
+           "%?"
+           :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+           :unnarrowed t)
+          ("l" "programming languages" plain
+           "* Characteristics\n\n- Family: %?\n- Inspired by: \n\n* Reference:\n\n"
+           :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+           :unnarrowed t)
+          ("b" "book notes" plain
+           (file ,(concat org-directory "/templates/book-notes.org"))
+           :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+           :unnarrowed t)
+          ("a" "agenda" plain
+           (file ,(concat org-directory "/templates/agenda.org"))
+           :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: project\n#+category: ${title}")
+           :unnarrowed t)
+          ("i" "inbox" entry
+           (file ,(concat org-directory "/templates/inbox.org"))
+           :target (file "inbox.org")
+           :unnarrowed t))
+        org-roam-dailies-capture-templates '(
+          ("d" "default" entry "* %<%I:%M %p>: %?"
+           :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
+
+  (add-hook! 'org-roam-capture-new-node-hook 'my/org-roam-update-agenda-files)
+
+  (org-roam-db-autosync-mode)
+  (my/org-roam-update-agenda-files))
+#+end_src
+
+*** Advanced Features
+#+begin_src emacs-lisp :tangle config.el
   ;; (defun my/org-roam-project-finalize-hook ()
   ;;   ;; Remove temporary hook
   ;;   (remove-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
@@ -416,12 +374,13 @@
   ;;    '(("p" "project" plain "* TODO %?"
   ;;       :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+category: ${title}\n#+filetags: agenda project" ("Tasks"))))))
 #+end_src
-** org-roam-ui
-#+begin_src emacs-lisp :tangle no
+
+*** org-roam-ui
+#+begin_src emacs-lisp :tangle packages.el
 (unpin! org-roam)
 (package! org-roam-ui)
 #+end_src
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp :tangle config.el
 (use-package! websocket :after org-roam)
 (use-package! org-roam-ui
   :after org-roam
@@ -431,35 +390,12 @@
         org-roam-ui-update-on-save t
         org-roam-ui-open-on-start t))
 #+end_src
-* ssh-deploy
-#+begin_src emacs-lisp :tangle no
-;; TODO figure this out
-(after! ssh-deploy
-  (ssh-deploy-line-mode)
-  (ssh-deploy-add-menu)
-  (ssh-deploy-add-after-save-hook)
-  (ssh-deploy-add-find-file-hook)
-  (advice-add #'turn-on-evil-mode :before
-              (lambda (&optional args)
-                (when (eq major-mode 'fundamental-mode)
-                  (hack-local-variables)))))
-#+end_src
-
-* Dired
-#+begin_src emacs-lisp :tangle no
-(map! :map dired-mode-map
-      "h" #'dired-up-directory
-      "l" #'dired-view-file
-      "x" #'dired-do-kill-lines
-      "dp" #'peep-dired :desc "Peep-dired image previews")
-#+end_src
 
 * Magit
-** General
 #+begin_src emacs-lisp :noweb-ref init
 (doom! :tools (magit +forge))
 #+end_src
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp :tangle config.el
 ;; Put forge tokens in ~/.netrc
 ;; TODO get +forge working with GitHub API token and code-review configuration
 (setq auth-sources '((concat (getenv "USERDIR") "/.netrc")))
@@ -467,115 +403,86 @@
   ;; Enable granular diff-highlights for all hunks
   (setq magit-diff-refine-hunk 'all))
 #+end_src
+
 ** Code Review
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp :tangle config.el
 ;; TODO finish configuring authentication with tokens!
 ;; NOTE https://github.com/wandersoncferreira/code-review?tab=readme-ov-file#configuration
 ;; Line wrap in comments
-(setq code-review-fill-column 80)
-;; Use same passwords used for forge
-(setq code-review-auth-login-marker 'forge)
-;; Jump into code review from a magit-forge PR view
-(map! :after forge
-      :map forge-topic-mode-map
-      "rr" #'code-review-forge-pr-at-point)
-;; Show *Code Review* in current workspace (Doom bug)
-(add-hook 'code-review-mode-hook (lambda () (persp-add-buffer (current-buffer))))
-;; Show pretty symbols
-(add-hook 'code-review-mode-hook #'emojify-mode)
+(after! code-review
+  (setq code-review-fill-column 80)
+  ;; Use same passwords used for forge
+  (setq code-review-auth-login-marker 'forge)
+  ;; Jump into code review from a magit-forge PR view
+  (map! :after forge
+        :map forge-topic-mode-map
+        "rr" #'code-review-forge-pr-at-point)
+  ;; Show *Code Review* in current workspace (Doom bug)
+  (add-hook! code-review-mode (lambda () (persp-add-buffer (current-buffer))))
+  ;; Show pretty symbols
+  (add-hook! code-review-mode #'emojify-mode))
 #+end_src
+
 ** Magit Todos
-#+begin_src emacs-lisp :tangle no
-(package! magit-todos)
+#+begin_src emacs-lisp :tangle packages.el
+(package! magit-todos :pin "bd27c57eada0fda1cc0a813db04731a9bcc51b7b")
 #+end_src
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp :tangle config.el
 (use-package! magit-todos
   :after magit
   :config (magit-todos-mode 1))
 #+end_src
-* Tools
-** tree-sitter
-*** enable highlighting in all modes
+
+* JQ
+#+begin_src emacs-lisp :tangle packages.el
+(package! jq-mode :pin "eeb86b4d5ad823e97bd19979fcb22d0aa90ff07b")
+#+end_src
+#+begin_src emacs-lisp :tangle config.el
+(use-package! jq-mode
+  :init
+  (autoload 'jq-mode "jq-mode.el" "Major mode for editing jq files" t)
+  (add-to-list 'auto-mode-alist '("\\.jq$" . jq-mode))
+
+  :config
+  (after! json-mode
+    (map! :map json-mode-map
+          "C-c C-j" #'jq-interactively))
+  (setq jq-interactive-command "yq"
+        jq-interactive-font-lock-mode #'yaml-mode
+        jq-interactive-default-options "--yaml-roundtrip"))
+#+end_src
+
+* SOPS
+#+begin_src emacs-lisp :tangle packages.el
+(package! sops :recipe (:host github :repo "djgoku/sops") :pin "afeb1232b89335d77a3f4b6639ebe8a2b70fae3f")
+#+end_src
+#+begin_src emacs-lisp :tangle config.el
+(use-package! sops
+  :init
+  (global-sops-mode 1)
+
+  :config
+  (defvar sops-mode-map (make-sparse-keymap) "Keymap for sops-mode.")
+  (map! :map sops-mode-map
+        :localleader
+        "fe" #'sops-edit-file
+        "fc" #'sops-cancel
+        "fs" #'sops-save-file)
+  ;; Activate keymap in sops-mode
+  (add-hook! sops-mode (set-keymap-parent sops-mode-map (current-local-map))))
+#+end_src
+
+* Future
+** org-caldav
 #+begin_src emacs-lisp :tangle no
-(setq +tree-sitter-hl-enabled-modes t)
-#+end_src
-** lookup
-*** add another websites for quick search
-#+begin_src emacs-lisp :tangle no
-(add-to-list '+lookup-provider-url-alist '("Wiktionary" . "https://en.wiktionary.org/wiki/%s"))
+;; TODO https://github.com/dengste/org-caldav
+;; NOTE inspiration from https://github.com/doomemacs/doomemacs/tree/master/modules/app/calendar
 #+end_src
 
-* mu4e
-** msmtp
-#+begin_src emacs-lisp :tangle no
-(after! org
-  (add-to-list 'org-capture-templates
-               '("@" "inbox [mu4e]" entry (file "inbox.org")
-                 "* DRAFTING Process \"%a\" %?\nEntered on %U"
-                 :clock-in t :clock-resume t)))
-(after! mu4e
-  (defun my/org-capture-mail ()
-    (interactive)
-    (call-interactively 'org-store-link)
-    (org-capture nil "@"))
-  (map! :map mu4e-headers-mode-map "X" #'my/org-capture-mail)
-  (map! :map mu4e-view-mode-map "X" #'my/org-capture-mail))
-;; TODO figure out msmtp in emacs
-;;   (setq sendmail-program (executable-find "msmtp")
-;;         send-mail-function #'smtpmail-send-it
-;;         message-sendmail-f-is-evil t
-;;         message-sendmail-extra-arguments '("--read-envelope-from")
-;;         message-send-mail-function #'message-send-mail-with-sendmail)
-#+end_src
-
-* Calendar
-#+begin_src bash :tangle no
-# TODO https://github.com/dengste/org-caldav
-# NOTE inspiration from https://github.com/doomemacs/doomemacs/tree/master/modules/app/calendar
-#+end_src
-
-* Everywhere
-#+begin_src emacs-lisp :tangle no
-;; TODO do I need any of this?
-;; (setq emacs-everywhere-markdown-windows ...)
-;; (setq emacs-everywhere-markdown-apps ...)
-;; (setq emacs-everywhere-major-mode-function #'org-mode) ;; converts through pandoc to org-mode
-;; (setq emacs-everywhere-init-hooks ...)
-#+end_src
-
-* IRC
-#+begin_src emacs-lisp :tangle no
-;; TODO add more channels
-;; TODO bitawrden integration to fetch passwords
-;; NOTE this would mean :sasl-username (+pass-get-user "irc/libera.chat") :sasl-password (+pass-get-secret "irc/libera.chat")
-;; TODO how can I obscure my user and nicknames?
-(after! circe
-  (defun fetch-password (&rest params)
-    (require 'auth-source)
-    (if-let* ((match (car (apply #'auth-source-search params)))
-              (secret (plist-get match :secret)))
-        (if (functionp secret)
-            (funcall secret)
-          secret)
-      (user-error "Password not found for %S" params)))
-  (set-irc-server! "irc.libera.chat"
-                   '(:tls t
-                     :port 6697
-                     :nick "gobbledigook"
-                     :sasl-password
-                     (lambda (server)
-                       (fetch-password :user "tristan" :host "irc.libera.chat"))
-                     :channels ("#emacs"))))
-#+end_src
-
-* Colemak
-
-TODO plan for introducing colemak
-
+** colemak layout
 #+begin_src emacs-lisp :tangle no
 (package! evil-colemak-basics)
 #+end_src
-
 #+begin_src emacs-lisp :tangle no
 ;; TODO follow updates at https://github.com/doomemacs/doomemacs/pull/5835
 ;; NOTE borrowed from https://github.com/doomemacs/doomemacs/issues/783#issuecomment-1023417216
@@ -583,9 +490,4 @@ TODO plan for introducing colemak
   :after evil
   :init (setq evil-colemak-basics-layout-mod `mod-dh)
   :config (global-evil-colemak-basics-mode))
-#+end_src
-
-* Treemacs
-#+begin_src emacs-lisp :tangle no
-(setq +treemacs-git-mode 'deferred)
 #+end_src

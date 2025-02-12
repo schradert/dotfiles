@@ -1,0 +1,3 @@
+#+begin_src emacs-lisp :tangle packages.el
+(package! kubernetes :pin "24de7a1621dc06234abf63db454d63a522aaa632")
+#+end_src

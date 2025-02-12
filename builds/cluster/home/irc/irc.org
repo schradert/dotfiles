@@ -1,0 +1,26 @@
+#+begin_src emacs-lisp :noweb-ref apps
+irc
+#+end_src
+#+begin_src emacs-lisp :tangle config.el
+;; TODO add more channels
+;; TODO bitwarden integration to fetch passwords
+;; NOTE this would mean :sasl-username (+pass-get-user "irc/libera.chat") :sasl-password (+pass-get-secret "irc/libera.chat")
+;; TODO how can I obscure my user and nicknames?
+(after! circe
+  (defun fetch-password (&rest params)
+    (require 'auth-source)
+    (if-let* ((match (car (apply #'auth-source-search params)))
+              (secret (plist-get match :secret)))
+        (if (functionp secret)
+            (funcall secret)
+          secret)
+      (user-error "Password not found for %S" params)))
+  (set-irc-server! "irc.libera.chat"
+                   '(:tls t
+                     :port 6697
+                     :nick "gobbledigook"
+                     :sasl-password
+                     (lambda (server)
+                       (fetch-password :user "tristan" :host "irc.libera.chat"))
+                     :channels ("#emacs"))))
+#+end_src

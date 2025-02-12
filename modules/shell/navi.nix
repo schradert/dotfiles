@@ -82,6 +82,13 @@
         }
         (mkIf navi.enable (mkMerge [
           {
+            # TODO navi in emacs
+            home.packages = with pkgs; [
+              cheat
+              # TODO https://github.com/nvbn/thefuck
+              thefuck
+              tldr
+            ];
             dotfiles.programs = {
               elvish.integrations = ["${navi'} widget elvish | slurp"];
               nushell.integrations.navi = "${navi'} widget nushell";

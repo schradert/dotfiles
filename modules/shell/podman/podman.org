@@ -2,6 +2,6 @@
 (doom! :tools (docker +lsp))
 #+end_src
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp :tangle config.el
 (after! docker (setq docker-image-run-arguments '("--interactive" "--tty" "--rm")))
 #+end_src

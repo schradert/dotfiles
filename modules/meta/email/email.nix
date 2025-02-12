@@ -46,6 +46,7 @@ in {
         });
         programs.mbsync.enable = true;
         programs.mu.enable = true;
+        dotfiles.programs.emacs.orgFiles = [./email.org];
       }
       (mkIf stdenv.isLinux {
         services.mbsync.enable = true;
