@@ -181,36 +181,6 @@
           (when (and style (string= style "habit"))
             (cl-return t))))
       nil))
-  (defun my/org-schedule ()
-    "Prompt for a datetime and insert it into a SCHEDULE drawer under the current Org heading."
-    (interactive)
-    (unless (eq major-mode 'org-mode)
-      (error "Not in Org mode"))
-    (let* ((drawer "SCHEDULE")
-           drawer-beg
-           drawer-end)
-      ;; Move to the beginning of the current heading
-      (org-back-to-heading t)
-      ;; Look for an existing SCHEDULE drawer
-      (if (re-search-forward (format ":%s:" drawer) (save-excursion (org-end-of-subtree t t)) t)
-          (setq drawer-beg (match-beginning 0)
-                drawer-end (save-excursion
-                             (goto-char (match-end 0))
-                             (if (re-search-forward ":END:" nil t)
-                                 (point)
-                               (user-error "Drawer %s is not properly closed" drawer))))
-        ;; If no drawer found, create one
-        (org-back-to-heading t)
-        (end-of-line)
-        (insert "\n")
-        (setq drawer-beg (point-marker))
-        (insert (format ":%s:\n:END:\n" drawer)))
-      ;; Go to the end of the drawer and insert the date
-      (goto-char drawer-beg)
-      (end-of-line)
-      (insert "\n")
-      (org-time-stamp nil)
-      (org-indent-region drawer-beg (point))))
 
   (setq
     org-columns-default-format "%40ITEM(Task) %TODO %3PRIORITY %17Effort{:} %CLOCKSUM %CLOCKSUM_T %TAGS"
@@ -219,8 +189,7 @@
     org-todo-keywords '((sequence "DRAFTING(d@)" "PLANNED(p!)" "IN-PROGRESS(i!/@)" "WAITING(w@)" "|" "COMPLETED(c@)" "REJECTED(r@)" "MISSED(m@)"))
     org-todo-repeat-to-state "PLANNED")
 
-  (add-hook! 'org-after-todo-state-change-hook 'my/org-clock-todo-change)
-  (map! :map org-mode-map :localleader "ds" #'my/org-schedule))
+  (add-hook! 'org-after-todo-state-change-hook 'my/org-clock-todo-change))
 #+end_src
 
 ** org-super-links
