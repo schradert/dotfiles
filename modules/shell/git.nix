@@ -42,7 +42,8 @@
               fetch.writeCommitGraph = true;
               core.hooksPath = "${config.xdg.stateHome}/git/hooks";
               core.untrackedCache = true;
-              core.fsmonitor = true;
+              # FIXME why is nix-inspect failing with core.fsmonitor?
+              # core.fsmonitor = true;
               rebase.autoSquash = true;
               rebase.autoStash = true;
               rebase.updateRefs = true;
