@@ -1,5 +1,5 @@
 {inputs, ...}: {
-  flake.overlays.zellij-plugins = inputs.mynur.overlays.zellij-plugins;
+  flake.overlays.zellij = inputs.mynur.overlays.zellij;
   canivete.deploy.system.homeModules.zellij = {
     config,
     lib,
@@ -21,43 +21,66 @@
       # TODO zjstatus
       # TODO jbz?
       # TODO multitask?
-      plugins = ps: (with ps; [harpoon room monocle zellij-forgot]) ++ [perSystem.inputs'.zjstatus.packages.default];
+      plugins = ps: (with ps; [
+        room
+        monocle
+        zellij-forgot
+        zj-quit
+        zellij-choose-tree
+        zellij-sessionizer
+      ]) ++ [perSystem.inputs'.zjstatus.packages.default];
     };
     xdg.configFile."zellij/config.kdl".text = lib.mkForce (toKDL {} [
       (kdlNode "keybinds" [] {} [
         (kdlNode "shared_except" ["locked"] {} [
           (kdlNode "bind" ["Ctrl y"] {} [
-            (kdlNode "LaunchOrFocusPlugin" ["harpoon"] {} [
-              # FIXME harpoon panics when opening tab
-              # TODO add search to select feature
-              # TODO autofill by default with all panes
-              (kdlNode "floating" ["true"] {} [])
-              (kdlNode "move_to_focused_tab" ["true"] {} [])
-            ])
-          ])
-          (kdlNode "bind" ["Ctrl u"] {} [
             (kdlNode "LaunchOrFocusPlugin" ["room"] {} [
-              (kdlNode "floating" ["true"] {} [])
-              (kdlNode "ignore_case" ["true"] {} [])
-              (kdlNode "quick_jump" ["true"] {} [])
+              (kdlNode "floating" [true] {} [])
+              (kdlNode "ignore_case" [true] {} [])
+              (kdlNode "quick_jump" [true] {} [])
             ])
-          ])
-          (kdlNode "bind" ["F1"] {} [
-            (kdlNode "LaunchOrFocusPlugin" ["monocle"] {} [
-              # FIXME why is it not floating? behaves same as in_place + kiosk (below)
-              (kdlNode "floating" ["true"] {} [])
-            ])
-            (kdlNode "SwitchToMode" ["Normal"] {} [])
-          ])
-          (kdlNode "bind" ["F2"] {} [
-            (kdlNode "LaunchOrFocusPlugin" ["monocle"] {} [
-              (kdlNode "in_place" ["true"] {} [])
-              (kdlNode "kiosk" ["true"] {} [])
-            ])
-            (kdlNode "SwitchToMode" ["Normal"] {} [])
           ])
           (kdlNode "bind" ["Ctrl f"] {} [
-            (kdlNode "LaunchOrFocusPlugin" ["zellij_forgot"] {} [])
+            (kdlNode "LaunchOrFocusPlugin" ["monocle"] {} [
+              (kdlNode "floating" [true] {} [])
+            ])
+            (kdlNode "SwitchToMode" ["Normal"] {} [])
+          ])
+          (kdlNode "bind" ["Ctrl F"] {} [
+            (kdlNode "LaunchOrFocusPlugin" ["monocle"] {} [
+              (kdlNode "in_place" [true] {} [])
+              (kdlNode "kiosk" [true] {} [])
+            ])
+            (kdlNode "SwitchToMode" ["Normal"] {} [])
+          ])
+          (kdlNode "bind" ["Ctrl H"] {} [
+            (kdlNode "LaunchOrFocusPlugin" ["zellij_forgot"] {} [
+              (kdlNode "floating" [true] {} [])
+            ])
+          ])
+          (kdlNode "bind" ["Ctrl q"] {} [
+            (kdlNode "LaunchOrFocusPlugin" ["zj-quit"] {} [
+              (kdlNode "floating" [true] {} [])
+            ])
+          ])
+        ])
+        (kdlNode "tmux" [] {} [
+          (kdlNode "bind" ["s"] {} [
+            (kdlNode "LaunchOrFocusPlugin" ["zellij-choose-tree"] {} [
+              (kdlNode "floating" [true] {} [])
+              (kdlNode "move_to_focused_tab" [true] {} [])
+              (kdlNode "show_plugins" [true] {} [])
+            ])
+          ])
+          (kdlNode "bind" ["g"] {} [
+            (kdlNode "LaunchOrFocusPlugin" ["zellij-sessionizer"] {} [
+              (kdlNode "floating" [true] {} [])
+              (kdlNode "move_to_focused_tab" [true] {} [])
+              (kdlNode "cwd" ["/"] {} [])
+              (kdlNode "root_dirs" ["${config.home.homeDirectory}/Projects"] {} [])
+              (kdlNode "session_layout" ["project"] {} [])
+            ])
+            (kdlNode "SwitchToMode" ["Locked"] {} [])
           ])
         ])
       ])
