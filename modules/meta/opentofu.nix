@@ -6,6 +6,11 @@
   inherit (lib) flip pipe toUpper replaceStrings mapAttrs getAttr mapAttrs' nameValuePair getExe concatStringsSep mapAttrsToList mkOption types concatMapStrings;
   inherit (types) attrsOf submodule str listOf anything;
 in {
+  canivete.deploy.system.homeModules.opentofu = {config, lib, pkgs, ...}: {
+    config = lib.mkIf config.dotfiles.workstation.enable {
+      home.packages = [pkgs.tftui];
+    };
+  };
   # TODO destroy provisioners!
   flake.lib.nixToEnv = flip pipe [
     toUpper

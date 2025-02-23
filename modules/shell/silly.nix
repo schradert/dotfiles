@@ -225,7 +225,6 @@
         # TODO build https://github.com/SOF3/lpl
         glow
         systemctl-tui
-        tftui
         tuisky
         twitch-tui
         wiki-tui
