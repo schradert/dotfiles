@@ -34,6 +34,7 @@ in {
             orgFiles = [./podman.org];
           };
           home.sessionVariables.DOCKER_CONFIG = "${config.xdg.configHome}/docker";
+          home.sessionVariables.DOCKER_HOST = "unix:///${config.home.sessionVariables.XDG_RUNTIME_DIR}/podman/podman.sock";
           home.shellAliases.docker = getExe pkgs.podman;
           home.packages = with pkgs; [k3d podman podman-compose podman-tui lazydocker oxker dive];
           # TODO build https://github.com/robertpsoane/ducker
