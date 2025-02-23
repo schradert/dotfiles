@@ -69,6 +69,11 @@
     nostatoo.url = github:samueldr/nostatoo;
     nostatoo.flake = false;
 
+    # Helix editor
+    helix.url = github:usagi-flow/evil-helix;
+    helix.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    helix.inputs.rust-overlay.follows = "rust-overlay";
+
     # Umu game launcher
     umu.url = github:Open-Wine-Components/umu-launcher?dir=packaging/nix&submodules=1;
     umu.inputs.nixpkgs.follows = "canivete/nixpkgs";

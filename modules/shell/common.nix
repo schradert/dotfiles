@@ -64,6 +64,7 @@
         btop.settings.vim_keys = true;
         dircolors.enable = true;
         eza.enable = true;
+        helix.enable = true;
         home-manager.enable = true;
         htop.enable = true;
         jq.enable = true;

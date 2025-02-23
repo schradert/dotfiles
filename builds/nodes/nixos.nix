@@ -107,6 +107,7 @@ in {
         };
         home-manager.sharedModules = toList {
           dotfiles = {
+            editor = lib.mkForce "hx";
             programs = {
               macchina.networkInterface = "enp0s31f6";
               steam.external = {

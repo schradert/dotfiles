@@ -5,7 +5,7 @@
 }: let
   inherit (config.canivete.people) users;
   inherit (lib) attrNames mkOption types;
-  inherit (types) strMatching enum;
+  inherit (types) strMatching enum str;
 in {
   options.dotfiles.domain = mkOption {
     type = strMatching "^[a-z0-9\-]+\.[a-z]{2,}$";
@@ -25,7 +25,7 @@ in {
       default = "default";
     };
     options.dotfiles.editor = mkOption {
-      type = enum ["vim" "emacs"];
+      type = str;
       default = "vim";
       example = "emacs";
       description = "Default editor to use for profile";
