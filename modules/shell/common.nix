@@ -61,6 +61,7 @@
       programs = {
         bash.enable = true;
         btop.enable = true;
+        btop.settings.vim_keys = true;
         dircolors.enable = true;
         eza.enable = true;
         home-manager.enable = true;
