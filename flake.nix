@@ -18,6 +18,12 @@
 
     nur.url = github:nix-community/nur;
     nur.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    mynur.url = github:schradert/nur;
+    mynur.inputs = {
+      nixpkgs.follows = "canivete/nixpkgs";
+      flake-parts.follows = "canivete/flake-parts";
+      systems.follows = "canivete/systems";
+    };
 
     # TODO keep tabs on this project to see if it's evolving enough to try to use
     # NOTE nix-doom-emacs marked as broken for now so we use overlay
@@ -70,6 +76,11 @@
     # mkWindowsApp
     erosanix.url = github:emmanuelrosa/erosanix;
     erosanix.inputs.nixpkgs.follows = "canivete/nixpkgs";
+
+    # Zellij bar
+    zjstatus.url = github:dj95/zjstatus;
+    zjstatus.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    zjstatus.inputs.rust-overlay.follows = "rust-overlay";
 
     # Wayland launcher
     walker.url = github:abenz1267/walker;

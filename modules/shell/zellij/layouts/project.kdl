@@ -1,0 +1,22 @@
+layout {
+    default_tab_template {
+        pane size=1 borderless=true {
+            plugin location="zellij:tab-bar"
+        }
+        children
+        pane size=2 borderless=true {
+            plugin location="zellij:status-bar"
+        }
+    }
+    tab name="git" {
+        pane size="50%" name="lazygit" command="lazygit"
+        pane size="25%" name="gitui" command="gitui"
+        pane size="25%" name="tig" command="tig"
+    }
+    tab name="cicd" {
+        pane size="50%" name="tftui" command="tftui" {
+            args "--executable" "nix run . --"
+        }
+        pane size="50%" name="nix-inspect" command="nix-inspect"
+    }
+}

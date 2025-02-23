@@ -1,0 +1,36 @@
+layout {
+    default_tab_template {
+        pane size=1 borderless=true {
+            plugin location="zellij:tab-bar"
+        }
+        children
+        pane size=2 borderless=true {
+            plugin location="zellij:status-bar"
+        }
+    }
+    tab name="doom" {
+        pane
+    }
+    tab name="files" focus=true {
+        pane size="50%" name="superfile" command="superfile"
+        pane size="25%" name="yazi" command="yazi"
+        pane size="25%" name="xplr" command="xplr"
+    }
+    tab name="top" {
+        pane size="50%" name="btop" command="btop"
+        pane size="25%" name="htop" command="htop"
+        pane size="25%" name="btm" command="btm"
+    }
+    tab name="services" {
+        pane size="50%" name="lazyjournal" command="lazyjournal"
+        pane size="50%" name="systemctl-tui" command="systemctl-tui"
+    }
+    tab name="containers" {
+        pane size="50%" name="podman" command="podman-tui"
+        pane size="25%" name="lazydocker" command="lazydocker"
+        pane size="25%" name="oxker" command="oxker"
+    }
+    tab name="wtf" {
+        pane name="wtf" command="wtfutil"
+    }
+}
