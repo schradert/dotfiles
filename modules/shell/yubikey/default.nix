@@ -23,7 +23,7 @@
     options.dotfiles.services.yubikey.enable = lib.mkEnableOption "YubiKey authentication for login, sudo, etc.";
     config = lib.mkIf config.dotfiles.services.yubikey.enable {
       environment.systemPackages = [pkgs.yubioath-flutter];
-      home-manager.users.${flake.config.canivete.people.me}.pam.yubico.authorizedYubiKeys.ids = ["cccccbdeigfb"];
+      home-manager.users.${flake.config.canivete.meta.people.me}.pam.yubico.authorizedYubiKeys.ids = ["cccccbdeigfb"];
       programs.gnupg.agent = {
         enable = true;
         enableSSHSupport = true;

@@ -4,12 +4,12 @@
   lib,
   ...
 }: let
-  inherit (config.dotfiles) domain;
+  inherit (config.canivete.meta) domain;
   subdomain = "keycloak.${domain}";
 in {
   # TODO should I be considering newer and faster alternatives that offer support for newer features?
   # NOTE https://github.com/ory/kratos
-  perSystem.dotfiles.helm = {
+  perSystem.canivete.kubenix.helm = {
     postgres.resources.postgresqls.main.spec = {
       users.keycloak = ["createdb"];
       databases.keycloak = "keycloak";

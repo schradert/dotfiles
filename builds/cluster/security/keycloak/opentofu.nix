@@ -40,16 +40,16 @@
   groups.family = ["tristan" "tahoe" "adam" "juju" "dad" "mom"];
   groups.admin = ["tristan" "tahoe"];
   realm_id = "\${ keycloak_realm.primary.id }";
-  subdomain = "keycloak.${config.dotfiles.domain}";
+  subdomain = "keycloak.${config.canivete.meta.domain}";
 in {
   # NOTE https://www.keycloak.org/2024/09/realm-config-management-tools-survey-results
-  perSystem.dotfiles.opentofu.passwords = {
-    keycloak-superadmin.length = 21;
-    keycloak-postgres.length = 21;
-  };
   perSystem.canivete.opentofu.workspaces.deploy = {
     plugins = ["mrparkers/keycloak"];
     modules.keycloak = {
+      canivete.passwords = {
+        keycloak-superadmin.length = 21;
+        keycloak-postgres.length = 21;
+      };
       provider.keycloak = {
         client_id = "admin-cli";
         username = "superadmin";

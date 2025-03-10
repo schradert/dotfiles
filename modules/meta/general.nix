@@ -3,20 +3,16 @@
   lib,
   ...
 }: let
-  inherit (config.canivete.people) users;
+  inherit (config.canivete.meta.people) users;
   inherit (lib) attrNames mkOption types;
-  inherit (types) strMatching enum str;
+  inherit (types) enum str;
 in {
-  options.dotfiles.domain = mkOption {
-    type = strMatching "^[a-z0-9\-]+\.[a-z]{2,}$";
-    description = "Base domain for exposing nodes and services";
-  };
   config.canivete.deploy.system.homeModules.general = {
     config,
     pkgs,
     ...
   }: let
-    inherit (config.home) username homeDirectory;
+    inherit (config.home) username;
   in {
     options.dotfiles.profile = mkOption {
       type = enum (attrNames users.${username}.profiles);

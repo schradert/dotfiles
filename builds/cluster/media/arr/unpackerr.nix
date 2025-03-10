@@ -3,15 +3,15 @@
   lib,
   ...
 }: {
-  perSystem.dotfiles = {
-    opentofu.passwords.unpackerr-api-key = {
+  perSystem.canivete = {
+    opentofu.workspaces.deploy.modules.unpackerr.canivete.passwords.unpackerr-api-key = {
       length = 21;
       upper = false;
       special = false;
     };
     nix2container.unpackerr = {};
-    helm.unpackerr.namespace = "media";
-    helm.unpackerr.values = {
+    kubenix.helm.unpackerr.namespace = "media";
+    kubenix.helm.unpackerr.values = {
       secrets.unpackerr.enabled = true;
       secrets.unpackerr.stringData = {
         UN_RADARR_0_API_KEY = "ref+envsubst://RADARR_API_KEY";
@@ -45,7 +45,7 @@
       service.unpackerr.ports.http.port = 5656;
       ingress.unpackerr.className = "internal";
       ingress.unpackerr.hosts = lib.toList {
-        host = "unpackerr.${config.dotfiles.domain}";
+        host = "unpackerr.${config.canivete.meta.domain}";
         paths = lib.toList {
           path = "/";
           service.identifier = "unpackerr";

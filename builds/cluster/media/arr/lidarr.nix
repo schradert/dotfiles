@@ -4,17 +4,17 @@
   ...
 }: let
   port = 7878;
-  subdomain = "lidarr.${config.dotfiles.domain}";
+  subdomain = "lidarr.${config.canivete.meta.domain}";
 in {
-  perSystem.dotfiles = {
-    opentofu.passwords.lidarr-api-key = {
+  perSystem.canivete = {
+    opentofu.workspaces.deploy.modules.lidarr.canivete.passwords.lidarr-api-key = {
       length = 21;
       upper = false;
       special = false;
     };
     nix2container.lidarr = {};
-    helm.lidarr.namespace = "media";
-    helm.lidarr.values = {
+    kubenix.helm.lidarr.namespace = "media";
+    kubenix.helm.lidarr.values = {
       secrets.lidarr.enabled = true;
       secrets.lidarr.stringData.LIDARR__AUTH__APIKEY = "ref+envsubst://LIDARR_API_KEY";
       configMaps.lidarr.enabled = true;

@@ -13,7 +13,7 @@ in {
     ...
   }: let
     inherit (lib) mkEnableOption mkIf toList;
-    inherit (pkgs) hyprlandPlugins hyprpicker kitty libsForQt5 qt6 systemd xwaylandvideobridge;
+    inherit (pkgs) hyprlandPlugins hyprpicker kitty libsForQt5 qt6 xwaylandvideobridge;
   in {
     imports = [nixosModules.default];
     options.dotfiles.graphical.hyprland.enable = mkEnableOption "Hyprland configuration";

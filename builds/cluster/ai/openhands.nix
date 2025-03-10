@@ -2,7 +2,7 @@
   # NOTE https://github.com/All-Hands-AI/OpenHands
   # NOTE https://docs.all-hands.dev/modules/usage/how-to/openshift-example
   # TODO follow this project closer for a better kubernetes setup without DinD
-  # perSystem.dotfiles.helm.openhands = {
+  # perSystem.canivete.kubenix.helm.openhands = {
   #   namespace = "ai";
   #   resources.persistentVolumeClaims = {
   #     openhands-workspace.spec.accessModes = ["ReadWriteOnce"];

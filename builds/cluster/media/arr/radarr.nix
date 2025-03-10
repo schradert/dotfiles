@@ -4,18 +4,18 @@
   ...
 }: let
   port = 7878;
-  subdomain = "radarr.${config.dotfiles.domain}";
+  subdomain = "radarr.${config.canivete.meta.domain}";
 in {
   # TODO are these useful https://github.com/RandomNinjaAtk/arr-scripts
-  perSystem.dotfiles = {
-    opentofu.passwords.radarr-api-key = {
+  perSystem.canivete = {
+    opentofu.workspaces.deploy.modules.radarr.canivete.passwords.radarr-api-key = {
       length = 21;
       upper = false;
       special = false;
     };
     nix2container.radarr = {};
-    helm.radarr.namespace = "media";
-    helm.radarr.values = {
+    kubenix.helm.radarr.namespace = "media";
+    kubenix.helm.radarr.values = {
       secrets.radarr.enabled = true;
       secrets.radarr.stringData.RADARR__AUTH__APIKEY = "ref+envsubst://RADARR_API_KEY";
       configMaps.radarr.enabled = true;

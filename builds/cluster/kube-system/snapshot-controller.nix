@@ -1,5 +1,5 @@
 {
-  perSystem.dotfiles.helm.snapshot-controller = {
+  perSystem.canivete.kubenix.helm.snapshot-controller = {
     namespace = "kube-system";
     chart = {
       repo = "https://piraeus.io/helm-charts";

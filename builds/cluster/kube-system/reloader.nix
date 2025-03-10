@@ -1,6 +1,6 @@
 {
   # https://github.com/stakater/Reloader
-  perSystem.dotfiles.helm.reloader = {
+  perSystem.canivete.kubenix.helm.reloader = {
     namespace = "kube-system";
     chart = {
       chartUrl = "oci://ghcr.io/stakater/charts/reloader";

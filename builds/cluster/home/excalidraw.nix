@@ -3,13 +3,13 @@
   lib,
   ...
 }: let
-  inherit (config.dotfiles) domain;
+  inherit (config.canivete.meta) domain;
 in {
   # TODO user accounts?
   # TODO what about collaboration with excalidraw-room? https://github.com/excalidraw/excalidraw-room
   # TODO mermaid-to-excalidraw?
   # TODO find a wrapper application!
-  perSystem.dotfiles.helm.excalidraw = {
+  perSystem.canivete.kubenix.helm.excalidraw = {
     namespace = "home";
     values = {
       controllers.excalidraw.annotations."reloader.stakater.com/auto" = "true";

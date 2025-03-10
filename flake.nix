@@ -1,5 +1,6 @@
 {
   description = "System configuration";
+  outputs = inputs: inputs.canivete.lib.mkFlake {inherit inputs;} [./modules ./builds] ./default.nix;
   inputs = {
     canivete.url = github:schradert/canivete;
 
@@ -24,6 +25,25 @@
       flake-parts.follows = "canivete/flake-parts";
       systems.follows = "canivete/systems";
     };
+
+    # Terraform manifest generation
+    terranix.url = github:terranix/terranix;
+    terranix.inputs.nixpkgs.follows = "canivete/nixpkgs";
+
+    # Kubernetes manifest generation
+    # TODO follow updates and revert on merge
+    # NOTE https://github.com/hall/kubenix/issues/52
+    # kubenix.url = github:hall/kubenix;
+    kubenix.url = github:schradert/kubenix/52-patch;
+    kubenix.inputs.nixpkgs.follows = "nixpkgs";
+
+    # OpenTofu dependency registry
+    # TODO should this be imported differently?
+    opentofu-registry.url = github:opentofu/registry;
+    opentofu-registry.flake = false;
+
+    dream2nix.url = github:nix-community/dream2nix;
+    dream2nix.inputs.nixpkgs.follows = "canivete/nixpkgs";
 
     # TODO keep tabs on this project to see if it's evolving enough to try to use
     # NOTE nix-doom-emacs marked as broken for now so we use overlay
@@ -187,94 +207,4 @@
     # NOTE https://github.com/Mic92/envfs
     # NOTE Mic92's example: https://github.com/Mic92/dotfiles/blob/main/machines/modules/fhs-compat.nix
   };
-  outputs = inputs:
-    inputs.canivete.lib.mkFlake {inherit inputs;} [./modules ./builds] ({
-      config,
-      lib,
-      ...
-    }: let
-      inherit (lib) elem getAttr getName mapAttrs;
-    in {
-      flake.overlays.nur = inputs.nur.overlays.default;
-      # FIXME fix infinite recursion from 'mergeAttrs config.canivete (mapAttrs (_: getAttr "canivete") config.allSystems);'
-      flake.canivete = lib.mkForce config.canivete;
-      dotfiles.domain = "trdos.me";
-      canivete.root = "sirver";
-      canivete.people = {
-        me = "tristan";
-        users.tristan = {
-          name = "Tristan Schrader";
-          accounts.github = "schradert";
-          accounts.gitlab = "schrader.tristan";
-          profiles.default.email = "t0rdos@pm.me";
-        };
-      };
-      canivete.pkgs.config = {
-        allowUnfreePredicate = pkg:
-          elem (getName pkg) [
-            "android-studio-stable"
-            "aspell-dict-en-science"
-            "discord"
-            "displaylink"
-            "raycast"
-            "slack"
-            "spotify"
-            "beeper"
-            "steam-run"
-            "steam-jupiter-original"
-            "steam-jupiter-unwrapped"
-            "steam"
-            "steamcmd"
-            "steamdeck-hw-theme"
-            "steam-original"
-            # Sabnzbd only supports unrar currently, but unar is a better alternative to keep track of
-            # NOTE https://github.com/sabnzbd/sabnzbd/issues/1120
-            "unrar"
-          ];
-      };
-      perSystem = {
-        config,
-        pkgs,
-        ...
-      }: {
-        packages.default = pkgs.wrapFlags config.canivete.opentofu.script "--add-flags \"deploy\"";
-        canivete.pre-commit.languages.shell.enable = true;
-        canivete.pre-commit.settings = {
-          excludes = [".canivete/sops/.+"];
-          # TODO extract these tool configurations into options
-          hooks.lychee.settings.configPath = builtins.toString (pkgs.writers.writeTOML "lychee.toml" {
-            exclude_path = ["^\./modules/programs/emacs/config\.org$"];
-            exclude = [
-              # These helm repositories don't have parent pages
-              "https://seaweedfs.github.io/seaweedfs/helm"
-              "https://seaweedfs.github.io/seaweedfs-csi-driver/helm"
-              "https://charts.rook.io/release"
-              "https://kubernetes-sigs.github.io/descheduler"
-              "https://kubernetes-sigs.github.io/node-feature-discovery/charts"
-              "https://k8tz.github.io/k8tz"
-              "https://opensource.zalando.com/postgres-operator/charts/postgres-operator"
-              "https://opensource.zalando.com/postgres-operator/charts/postgres-operator-ui"
-              "https://gitlab.com/api/v4/projects/43892189/packages/helm/stable"
-              # Cluster local addresses
-              "svc.cluster.local"
-              # URLs built with substitution
-              # error: repetition quantifier expects a valid decimal: "^.+\${.+}.+$"
-              # DNS authority
-              "^.+/dns-query$"
-            ];
-          });
-          hooks.typos.settings.configPath = builtins.toString (pkgs.writers.writeTOML "_typos.toml" {
-            default.extend-words = {
-              enew = "enew"; # vim
-              ags = "ags"; # ags
-              interruptable = "interruptable"; # steam input
-              regist = "regist"; # chiaki
-            };
-          });
-          # zsh not really supported by shfmt
-          hooks.shfmt.excludes = ["programs/zsh/.p10k.zsh"];
-        };
-      };
-      flake.dotfiles = mapAttrs (_: getAttr "dotfiles") config.allSystems;
-    });
 }

@@ -1,5 +1,11 @@
 {
-  canivete.deploy.system.homeModules.languages = {canivete, config, lib, pkgs, ...}: let
+  canivete.deploy.system.homeModules.languages = {
+    canivete,
+    config,
+    lib,
+    pkgs,
+    ...
+  }: let
     inherit (lib) mkIf mkMerge pipe splitString;
     # NOTE list possible layouts and variants with `cat /etc/X11/xkb/rules/base.lst`
     layouts = "us,ara,br,cn,fi,fr,de,jp,kr,ru,latam,tr";

@@ -8,7 +8,7 @@
   secret.key = "cloudflare_pat";
 in {
   # [ ] [external-dns](https://github.com/kubernetes-sigs/external-dns)
-  perSystem.dotfiles.helm.external-dns = {
+  perSystem.canivete.kubenix.helm.external-dns = {
     namespace = "network";
     chart = {
       repo = "https://kubernetes-sigs.github.io/external-dns";
@@ -36,7 +36,7 @@ in {
       sources = ["crd" "ingress"];
       txtOwnerId = "main";
       txtPrefix = "k8s.";
-      domainFilters = [config.dotfiles.domain];
+      domainFilters = [config.canivete.meta.domain];
       serviceMonitor.enabled = true;
       podAnnotations."secret.reloader.stakater.com/reload" = secret.name;
       resources.requests.cpu = "13m";

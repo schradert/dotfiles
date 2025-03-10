@@ -3,6 +3,7 @@
   # NOTE DisplayLink seems to not work well with the DDC/CI standard, even though HDMI/USB is hinted to work
   # TODO create monitor name alias options
   # TODO https://github.com/MonitorControl/MonitorControl
+  canivete.pkgs.allowUnfree = ["displaylink"];
   canivete.deploy.nixos = {
     modules.monitors = {
       config,
@@ -23,7 +24,7 @@
         programs.light.brightnessKeys.enable = true;
         services.ddccontrol.enable = true;
         services.redshift.enable = true;
-        users.users.${flake.config.canivete.people.me}.extraGroups = ["i2c"];
+        users.users.${flake.config.canivete.meta.people.me}.extraGroups = ["i2c"];
       };
     };
     homeModules.monitors = {

@@ -6,8 +6,7 @@
 }: let
   inherit (canivete) vals;
   inherit (lib) toList recursiveUpdate;
-  inherit (config.dotfiles) domain;
-  inherit (config.canivete) root;
+  inherit (config.canivete.meta) domain root;
   subdomain = "external.${domain}";
   credsPath = "/etc/cloudflared/creds/credentials.json";
   configPath = "/etc/cloudflared/config/config.yaml";
@@ -25,28 +24,30 @@
     };
   };
 in {
-  perSystem.canivete.opentofu.workspaces.deploy.modules.cloudflared.resource.cloudflare_zero_trust_tunnel_cloudflared.main = {
-    account_id = "\${ data.cloudflare_accounts.main.accounts[0].id }";
-    name = "main";
-    secret = "\${ base64encode(random_password.cloudflare-tunnel-secret.result) }";
-    config_src = "local";
-  };
-  perSystem.dotfiles.opentofu = {
-    passwords.cloudflare-tunnel-secret.length = 21;
-    sops = {
-      cloudflare-account-id.value = "\${ data.cloudflare_accounts.main.accounts[0].id }";
-      cloudflare-account-id.path = ["cloudflare" "account_id"];
-      cloudflare-tunnel-cname.value = "\${ cloudflare_zero_trust_tunnel_cloudflared.main.cname }";
-      cloudflare-tunnel-cname.path = ["cloudflare" "tunnel" "cname"];
-      cloudflare-tunnel-token.value = "\${ cloudflare_zero_trust_tunnel_cloudflared.main.tunnel_token }";
-      cloudflare-tunnel-token.path = ["cloudflare" "tunnel" "token"];
-      cloudflare-tunnel-id.value = "\${ cloudflare_zero_trust_tunnel_cloudflared.main.id }";
-      cloudflare-tunnel-id.path = ["cloudflare" "tunnel" "id"];
-      cloudflare-tunnel-secret-base64.value = "\${ cloudflare_zero_trust_tunnel_cloudflared.main.secret }";
-      cloudflare-tunnel-secret-base64.path = ["cloudflare" "tunnel" "secret"];
+  perSystem.canivete.opentofu.workspaces.deploy.modules.cloudflared = {
+    resource.cloudflare_zero_trust_tunnel_cloudflared.main = {
+      account_id = "\${ data.cloudflare_accounts.main.accounts[0].id }";
+      name = "main";
+      secret = "\${ base64encode(random_password.cloudflare-tunnel-secret.result) }";
+      config_src = "local";
+    };
+    canivete = {
+      passwords.cloudflare-tunnel-secret.length = 21;
+      sops = {
+        cloudflare-account-id.value = "\${ data.cloudflare_accounts.main.accounts[0].id }";
+        cloudflare-account-id.path = ["cloudflare" "account_id"];
+        cloudflare-tunnel-cname.value = "\${ cloudflare_zero_trust_tunnel_cloudflared.main.cname }";
+        cloudflare-tunnel-cname.path = ["cloudflare" "tunnel" "cname"];
+        cloudflare-tunnel-token.value = "\${ cloudflare_zero_trust_tunnel_cloudflared.main.tunnel_token }";
+        cloudflare-tunnel-token.path = ["cloudflare" "tunnel" "token"];
+        cloudflare-tunnel-id.value = "\${ cloudflare_zero_trust_tunnel_cloudflared.main.id }";
+        cloudflare-tunnel-id.path = ["cloudflare" "tunnel" "id"];
+        cloudflare-tunnel-secret-base64.value = "\${ cloudflare_zero_trust_tunnel_cloudflared.main.secret }";
+        cloudflare-tunnel-secret-base64.path = ["cloudflare" "tunnel" "secret"];
+      };
     };
   };
-  perSystem.dotfiles.helm.cloudflared = {
+  perSystem.canivete.kubenix.helm.cloudflared = {
     namespace = "network";
     values = {
       controllers.cloudflared = {

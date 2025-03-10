@@ -1,7 +1,7 @@
 {
-  perSystem.dotfiles.nix2container.recyclarr = {};
-  perSystem.dotfiles.helm.recyclarr.namespace = "media";
-  perSystem.dotfiles.helm.recyclarr.values = {
+  perSystem.canivete.nix2container.recyclarr = {};
+  perSystem.canivete.kubenix.helm.recyclarr.namespace = "media";
+  perSystem.canivete.kubenix.helm.recyclarr.values = {
     secrets.recyclarr.enabled = true;
     secrets.recyclarr.stringData = {
       RADARR_API_KEY = "ref+envsubst://RADARR__AUTH__APIKEY";

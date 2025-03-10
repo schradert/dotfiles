@@ -3,17 +3,17 @@
   lib,
   ...
 }: let
-  inherit (config.dotfiles) domain;
+  inherit (config.canivete.meta) domain;
   subdomain = "gatus.${domain}";
 in {
   # https://github.com/TwiN/gatus
   # TODO compare with https://github.com/cachethq/cachet
   # TODO compare with https://github.com/louislam/uptime-kuma
-  perSystem.dotfiles.helm.postgres.resources.postgresqls.main.spec = {
+  perSystem.canivete.kubenix.helm.postgres.resources.postgresqls.main.spec = {
     users.gatus = ["createdb"];
     databases.gatus = "gatus";
   };
-  perSystem.dotfiles.helm.gatus = {
+  perSystem.canivete.kubenix.helm.gatus = {
     namespace = "observability";
     chart = {
       repo = "https://twin.github.io/helm-charts";

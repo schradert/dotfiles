@@ -1,9 +1,9 @@
 {canivete, ...}: {
-  perSystem.dotfiles.opentofu.passwords = {
+  perSystem.canivete.opentofu.workspaces.deploy.modules.volsync.canivete.passwords = {
     b2-restic.length = 21;
     ceph-restic.length = 21;
   };
-  perSystem.dotfiles.helm.volsync = {
+  perSystem.canivete.kubenix.helm.volsync = {
     namespace = "kube-system";
     chart = {
       repo = "https://backube.github.io/helm-charts";

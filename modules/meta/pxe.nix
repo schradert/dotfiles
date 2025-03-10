@@ -7,7 +7,7 @@
     ...
   }: let
     inherit (config.dotfiles.pxe) client server;
-    inherit (flake.config.canivete.people) me;
+    inherit (flake.config.canivete.meta.people) me;
     inherit (flake.inputs) nixpkgs self;
     inherit (lib) toList mkIf mkMerge mkEnableOption;
     inherit (pkgs) ipxe grub2 system;

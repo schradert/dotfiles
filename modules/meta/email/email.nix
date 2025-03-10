@@ -3,7 +3,7 @@
   lib,
   ...
 }: let
-  inherit (config.canivete.people) users;
+  inherit (config.canivete.meta.people) users;
   inherit (lib) flip getExe mapAttrs mkEnableOption mkIf mkMerge;
 in {
   canivete.deploy.system.homeModules.email = {

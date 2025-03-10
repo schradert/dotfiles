@@ -21,14 +21,16 @@
       # TODO zjstatus
       # TODO jbz?
       # TODO multitask?
-      plugins = ps: (with ps; [
-        room
-        monocle
-        zellij-forgot
-        zj-quit
-        zellij-choose-tree
-        zellij-sessionizer
-      ]) ++ [perSystem.inputs'.zjstatus.packages.default];
+      plugins = ps:
+        (with ps; [
+          room
+          monocle
+          zellij-forgot
+          zj-quit
+          zellij-choose-tree
+          zellij-sessionizer
+        ])
+        ++ [perSystem.inputs'.zjstatus.packages.default];
     };
     xdg.configFile."zellij/config.kdl".text = lib.mkForce (toKDL {} [
       (kdlNode "keybinds" [] {} [

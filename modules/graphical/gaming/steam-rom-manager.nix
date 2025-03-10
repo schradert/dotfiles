@@ -1,4 +1,6 @@
 {
+  canivete.pkgs.allowUnfree = ["steam-run" "steam-jupiter-original" "steam-jupiter-unwrapped" "steam" "steamcmd" "steamdeck-hw-theme" "steam-original"];
+  perSystem.canivete.pre-commit.settings.hooks.typos.settings.ignored-words = ["interruptable"];
   # TODO make desktop item
   flake.overlays.srm = final: _: {
     steam-rom-manager = final.callPackage ({

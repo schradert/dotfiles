@@ -64,7 +64,7 @@
       pip.flattenDependencies = true;
     };
   };
-  perSystem.dotfiles.helm.immich = {
+  perSystem.canivete.kubenix.helm.immich = {
     namespace = "media";
     resources.persistentVolumeClaims.immich = {
       metadata.namespace = "immich";

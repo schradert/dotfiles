@@ -1,7 +1,7 @@
 {
   # TODO implement this
   # https://github.com/mylar3/mylar3
-  canivete.deploy.nixos.homeModules.reading = {
+  canivete.deploy.system.homeModules.reading = {
     config,
     lib,
     pkgs,

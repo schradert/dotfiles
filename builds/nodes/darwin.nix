@@ -3,9 +3,10 @@
   inputs,
   ...
 }: let
-  inherit (config.dotfiles) domain;
+  inherit (config.canivete.meta) domain;
   darwin = config.canivete.deploy.darwin.nodes.morgenmuffel.profiles.system.raw;
 in {
+  canivete.pkgs.allowUnfree = ["raycast"];
   flake.deploy.nodes.morgenmuffel = {
     hostname = "morgenmuffel";
     profiles.system = {

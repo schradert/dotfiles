@@ -1,6 +1,10 @@
 {
-  perSystem.dotfiles.nix2container.seaweedfs = {};
-  perSystem.dotfiles.helm = {
+  perSystem.canivete.pre-commit.settings.hooks.lychee.toml.exclude = [
+    "https://seaweedfs.github.io/seaweedfs/helm"
+    "https://seaweedfs.github.io/seaweedfs-csi-driver/helm"
+  ];
+  perSystem.canivete.nix2container.seaweedfs = {};
+  perSystem.canivete.kubenix.helm = {
     seaweedfs.namespace = "storage";
     seaweedfs.chart = {
       repo = "https://seaweedfs.github.io/seaweedfs/helm";

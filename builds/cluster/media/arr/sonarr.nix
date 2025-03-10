@@ -4,16 +4,16 @@
   ...
 }: let
   port = 7878;
-  subdomain = "sonarr.${config.dotfiles.domain}";
+  subdomain = "sonarr.${config.canivete.meta.domain}";
 in {
-  perSystem.dotfiles.opentofu.passwords.sonarr-api-key = {
+  perSystem.canivete.opentofu.workspaces.deploy.modules.sonarr.canivete.passwords.sonarr-api-key = {
     length = 21;
     upper = false;
     special = false;
   };
-  perSystem.dotfiles.nix2container.sonarr = {};
-  perSystem.dotfiles.helm.sonarr.namespace = "media";
-  perSystem.dotfiles.helm.sonarr.values = {
+  perSystem.canivete.nix2container.sonarr = {};
+  perSystem.canivete.kubenix.helm.sonarr.namespace = "media";
+  perSystem.canivete.kubenix.helm.sonarr.values = {
     secrets.sonarr.enabled = true;
     secrets.sonarr.stringData.SONARR__AUTH__APIKEY = "ref+envsubst://SONARR_API_KEY";
     configMaps.sonarr.enabled = true;

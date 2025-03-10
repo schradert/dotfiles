@@ -16,7 +16,7 @@
     failedJobsHistory = 1;
   };
 in {
-  perSystem.dotfiles.helm.qbtools = {
+  perSystem.canivete.kubenix.helm.qbtools = {
     namespace = "media";
     values.controllers = {
       prune = {

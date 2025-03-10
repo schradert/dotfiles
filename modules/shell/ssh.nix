@@ -7,7 +7,7 @@ flake @ {
 }: let
   inherit (builtins) removeAttrs attrValues match listToAttrs map;
   inherit (lib) id foldl mapAttrs flip pipe mapAttrsToList concatStringsSep concat optional getExe mkMerge mapAttrs' nameValuePair mkOption getAttr mergeAttrsList mergeAttrs types toList;
-  inherit (config.canivete.people) me users;
+  inherit (config.canivete.meta.people) me users;
   sshFile = name: inputs.self + "/.canivete/sops/${name}";
   linkSecrets = system: let
     inherit (system.pkgs.stdenv) isDarwin;

@@ -6,7 +6,7 @@
 }: let
   inherit (canivete) vals;
   inherit (lib) toList;
-  inherit (config.dotfiles) domain;
+  inherit (config.canivete.meta) domain;
   subdomain = "actual.${domain}";
   port = 5006;
 in {
@@ -15,11 +15,11 @@ in {
   # TODO LDAP? with authentication
   # TODO pod.enableServiceLinks?
   # TODO update for multiple user support https://github.com/actualbudget/actual/issues/524
-  perSystem.dotfiles.opentofu.passwords.actual = {
+  perSystem.canivete.opentofu.workspaces.deploy.modules.actual.canivete.passwords.actual = {
     length = 21;
     special = false;
   };
-  perSystem.dotfiles.helm.actual = {
+  perSystem.canivete.kubenix.helm.actual = {
     namespace = "office";
     values = {
       controllers.actual.annotations."reloader.stakater.com/auto" = "true";

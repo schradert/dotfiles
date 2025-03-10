@@ -4,13 +4,13 @@
   ...
 }: let
   inherit (lib) toList;
-  inherit (config.dotfiles) domain;
+  inherit (config.canivete.meta) domain;
   subdomain = "atuin.${domain}";
   port = 8888;
   metricsPort = 8080;
 in {
-  perSystem.dotfiles.nix2container.atuin = {};
-  perSystem.dotfiles.helm.gatus.values.config.endpoints = toList {
+  perSystem.canivete.nix2container.atuin = {};
+  perSystem.canivete.kubenix.helm.gatus.values.config.endpoints = toList {
     name = "atuin";
     group = "internal";
     url = "1.1.1.1";
@@ -22,11 +22,11 @@ in {
     conditions = ["len([BODY]) == 0"];
     # alerts = [{type = "custom";}]; TODO
   };
-  perSystem.dotfiles.helm.postgres.resources.postgresqls.main.spec = {
+  perSystem.canivete.kubenix.helm.postgres.resources.postgresqls.main.spec = {
     users.atuin = ["createdb"];
     databases.atuin = "atuin";
   };
-  perSystem.dotfiles.helm.atuin = {
+  perSystem.canivete.kubenix.helm.atuin = {
     namespace = "search";
     values = {
       controllers.atuin.annotations."reloader.stakater.com/auto" = "true";

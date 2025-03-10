@@ -1,5 +1,5 @@
 {config, ...}: let
-  inherit (config.dotfiles) domain;
+  inherit (config.canivete.meta) domain;
 in {
   # TODO build https://github.com/pehlicd/amtui/
   # TODO run HolmesGPT in ops clients https://github.com/robusta-dev/holmesgpt
@@ -9,7 +9,7 @@ in {
   # [ ] [prometheus-node-exporter](https://github.com/prometheus/node_exporter)
   # [ ] [prometheus-smartctl-exporter](https://github.com/prometheus-community/smartctl_exporter)
   # [ ] [prometheus-snmp-exporter](https://github.com/prometheus/snmp_exporter)
-  perSystem.dotfiles.helm = {
+  perSystem.canivete.kubenix.helm = {
     prometheus = {
       namespace = "observability";
       chart = {

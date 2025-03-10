@@ -3,7 +3,7 @@
   lib,
   ...
 }: let
-  inherit (config.dotfiles) domain;
+  inherit (config.canivete.meta) domain;
   inherit (lib) toList;
   port = 5572;
 in {
@@ -12,7 +12,7 @@ in {
   # TODO should this be an interactive download or a mount?
   # TODO is croc useful?
   canivete.deploy.system.homeModules.rclone = {pkgs, ...}: {home.packages = with pkgs; [croc rclone];};
-  perSystem.dotfiles.helm.rclone = {
+  perSystem.canivete.kubenix.helm.rclone = {
     namespace = "storage";
     values = {
       controllers.rclone.annotations."reloader.stakater.com/auto" = "true";

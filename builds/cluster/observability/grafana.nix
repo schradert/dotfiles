@@ -5,11 +5,11 @@
   lib,
   ...
 }: let
-  inherit (config.dotfiles) domain;
+  inherit (config.canivete.meta) domain;
 in {
   # TODO liveness probe failed
-  perSystem.dotfiles.opentofu.passwords.grafana-admin-password.length = 21;
-  perSystem.dotfiles.helm.grafana = {
+  perSystem.canivete.opentofu.workspaces.deploy.modules.grafana.canivete.passwords.grafana-admin-password.length = 21;
+  perSystem.canivete.kubenix.helm.grafana = {
     namespace = "observability";
     chart = {
       repo = "https://grafana.github.io/helm-charts";

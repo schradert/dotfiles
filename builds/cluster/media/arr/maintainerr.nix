@@ -4,7 +4,7 @@
   ...
 }: {
   # https://github.com/jorenn92/Maintainerr
-  perSystem.dotfiles.helm.maintainerr = {
+  perSystem.canivete.kubenix.helm.maintainerr = {
     namespace = "media";
     values = {
       controllers.maintainerr.containers.maintainerr = {
@@ -18,7 +18,7 @@
       service.maintainerr.ports.http.port = 6246;
       ingress.maintainerr.className = "internal";
       ingress.maintainerr.hosts = lib.toList {
-        host = "maintainerr.${config.dotfiles.domain}";
+        host = "maintainerr.${config.canivete.meta.domain}";
         paths = lib.toList {
           path = "/";
           service.identifier = "maintainerr";

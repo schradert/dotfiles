@@ -8,7 +8,7 @@
 }: let
   inherit (lib) toList mkOption types mkForce;
   inherit (types) attrsOf submodule str;
-  inherit (config.dotfiles) domain;
+  inherit (config.canivete.meta) domain;
   subdomain = "rook.${domain}";
   placement = nodes: label: let
     topologyKey = "kubernetes.io/hostname";
@@ -38,10 +38,11 @@ in {
     lib,
     ...
   }: {
-    config = lib.mkIf config.dotfiles.kubernetes.enable {
+    config = lib.mkIf config.canivete.kubernetes.enable {
       boot.kernelModules = ["nbd" "rbd"];
     };
   };
+  perSystem.canivete.pre-commit.settings.hooks.lychee.toml.exclude = ["https://charts.rook.io/release"];
   # Kubenix bug means fields outside of expected spec won't register, so we define them here
   # NOTE https://github.com/hall/kubenix/issues/34
   perSystem.canivete.kubenix.clusters.prod.modules.rook-ceph-patch = {
@@ -54,43 +55,43 @@ in {
     };
     # NOTE rook-ceph-cluster creates some of the same resources so we force any collisions here
     # TODO why couldn't I do this with helm overrides!!!
-    config.kubernetes.api.resources = {
-      core.v1.ServiceAccount = {
-        rook-ceph-default.metadata.labels."canivete/chart" = mkForce "rook-ceph";
-        rook-ceph-purge-osd.metadata.labels."canivete/chart" = mkForce "rook-ceph";
-        rook-ceph-cmd-reporter = {
-          metadata.labels."canivete/chart" = mkForce "rook-ceph";
-          metadata.labels."helm.sh/chart" = mkForce "rook-ceph-v1.15.0";
-        };
-        rook-ceph-mgr = {
-          metadata.labels."canivete/chart" = mkForce "rook-ceph";
-          metadata.labels."helm.sh/chart" = mkForce "rook-ceph-v1.15.0";
-        };
-        rook-ceph-osd = {
-          metadata.labels."canivete/chart" = mkForce "rook-ceph";
-          metadata.labels."helm.sh/chart" = mkForce "rook-ceph-v1.15.0";
-        };
-        rook-ceph-rgw = {
-          metadata.labels."canivete/chart" = mkForce "rook-ceph";
-          metadata.labels."helm.sh/chart" = mkForce "rook-ceph-v1.15.0";
-        };
-      };
-      "rbac.authorization.k8s.io".v1.Role = {
-        rook-ceph-osd.metadata.labels."canivete/chart" = mkForce "rook-ceph";
-        rook-ceph-purge-osd.metadata.labels."canivete/chart" = mkForce "rook-ceph";
-        rook-ceph-cmd-reporter.metadata.labels."canivete/chart" = mkForce "rook-ceph";
-        rook-ceph-mgr.metadata.labels."canivete/chart" = mkForce "rook-ceph";
-        rook-ceph-monitoring.metadata.labels."canivete/chart" = mkForce "rook-ceph";
-        rook-ceph-monitoring-mgr.metadata.labels."canivete/chart" = mkForce "rook-ceph";
-      };
-      "rbac.authorization.k8s.io".v1.RoleBinding = {
-        rook-ceph-osd.metadata.labels."canivete/chart" = mkForce "rook-ceph";
-        rook-ceph-cluster-mgmt.metadata.labels."canivete/chart" = mkForce "rook-ceph";
-      };
-    };
+    #    config.kubernetes.api.resources = {
+    #      core.v1.ServiceAccount = {
+    #        rook-ceph-default.metadata.labels."canivete/chart" = mkForce "rook-ceph";
+    #        rook-ceph-purge-osd.metadata.labels."canivete/chart" = mkForce "rook-ceph";
+    #        rook-ceph-cmd-reporter = {
+    #          metadata.labels."canivete/chart" = mkForce "rook-ceph";
+    #          metadata.labels."helm.sh/chart" = mkForce "rook-ceph-v1.15.0";
+    #        };
+    #        rook-ceph-mgr = {
+    #          metadata.labels."canivete/chart" = mkForce "rook-ceph";
+    #          metadata.labels."helm.sh/chart" = mkForce "rook-ceph-v1.15.0";
+    #        };
+    #        rook-ceph-osd = {
+    #          metadata.labels."canivete/chart" = mkForce "rook-ceph";
+    #          metadata.labels."helm.sh/chart" = mkForce "rook-ceph-v1.15.0";
+    #        };
+    #        rook-ceph-rgw = {
+    #          metadata.labels."canivete/chart" = mkForce "rook-ceph";
+    #          metadata.labels."helm.sh/chart" = mkForce "rook-ceph-v1.15.0";
+    #        };
+    #      };
+    #      "rbac.authorization.k8s.io".v1.Role = {
+    #        rook-ceph-osd.metadata.labels."canivete/chart" = mkForce "rook-ceph";
+    #        rook-ceph-purge-osd.metadata.labels."canivete/chart" = mkForce "rook-ceph";
+    #        rook-ceph-cmd-reporter.metadata.labels."canivete/chart" = mkForce "rook-ceph";
+    #        rook-ceph-mgr.metadata.labels."canivete/chart" = mkForce "rook-ceph";
+    #        rook-ceph-monitoring.metadata.labels."canivete/chart" = mkForce "rook-ceph";
+    #        rook-ceph-monitoring-mgr.metadata.labels."canivete/chart" = mkForce "rook-ceph";
+    #      };
+    #      "rbac.authorization.k8s.io".v1.RoleBinding = {
+    #        rook-ceph-osd.metadata.labels."canivete/chart" = mkForce "rook-ceph";
+    #        rook-ceph-cluster-mgmt.metadata.labels."canivete/chart" = mkForce "rook-ceph";
+    #      };
+    #    };
   };
-  perSystem.dotfiles.opentofu.passwords.rook-ceph-dashboard-password.length = 21;
-  perSystem.dotfiles.helm = {
+  perSystem.canivete.opentofu.workspaces.deploy.modules.rook-ceph.canivete.passwords.rook-ceph-dashboard-password.length = 21;
+  perSystem.canivete.kubenix.helm = {
     rook-ceph = {
       namespace = "storage";
       chart = {

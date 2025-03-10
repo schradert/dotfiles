@@ -6,7 +6,7 @@
 }: {
   perSystem = {pkgs, ...}: let
     inherit (canivete) vals;
-    inherit (config.dotfiles) domain;
+    inherit (config.canivete.meta) domain;
     inherit (pkgs) jq openssl coreutils;
     subdomain = "oauth2-proxy.${domain}";
     cookie = "oauth2-proxy-cookie";
@@ -45,11 +45,11 @@
         };
       };
     };
-    dotfiles.opentofu.sops.oauth2-proxy-cookie = {
+    canivete.opentofu.workspaces.deploy.modules.oauth2-proxy.canivete.sops.oauth2-proxy-cookie = {
       path = ["oauth2-proxy" "cookie"];
       value = "\${ shell_script.${cookie}.output[\"value\"] }";
     };
-    dotfiles.helm.oauth2-proxy = {
+    canivete.kubenix.helm.oauth2-proxy = {
       namespace = "security";
       chart = {
         repo = "https://oauth2-proxy.github.io/manifests";

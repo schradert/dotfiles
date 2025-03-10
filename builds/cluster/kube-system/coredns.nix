@@ -1,5 +1,5 @@
 {lib, ...}: {
-  perSystem.dotfiles.helm.coredns = {
+  perSystem.canivete.kubenix.helm.coredns = {
     namespace = "kube-system";
     chart = {
       repo = "https://coredns.github.io/helm";

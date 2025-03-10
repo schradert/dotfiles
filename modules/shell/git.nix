@@ -10,7 +10,7 @@
   }: let
     inherit (lib) fileContents mapAttrs mkIf mkEnableOption mkMerge setAttrByPath;
     inherit (config) dotfiles programs home;
-    my = flake.config.canivete.people.users.${home.username};
+    my = flake.config.canivete.meta.people.users.${home.username};
     key = fileContents (flake.inputs.self + "/.canivete/sops/${home.username}.pub");
   in {
     options.dotfiles.programs.git.enable = mkEnableOption "Git configuration";

@@ -6,7 +6,7 @@
   name = "devops";
   url = "git@github.com:schradert/dotfiles";
   branch = "trunk";
-  inherit (config.canivete.people) me;
+  inherit (config.canivete.meta.people) me;
 in {
   canivete.deploy.nixos.modules.${name} = {
     config,

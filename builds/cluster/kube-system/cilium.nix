@@ -5,7 +5,7 @@
 }: let
   inherit (lib) pipe filterAttrs mapAttrsToList concatStringsSep mkIf recursiveUpdate toList;
   # NOTE https://github.com/cilium/cilium
-  inherit (config.dotfiles) domain;
+  inherit (config.canivete.meta) domain;
   # most are eno1, sirver = eno4, axolotl = enp0s31f6
   devices = "en+";
   namespace = "kube-system";
@@ -38,7 +38,7 @@
     kubeProxyReplacement = true;
     kubeProxyReplacementHealthzBindAddr = "0.0.0.0:10256";
     k8sServiceHost = pipe config.canivete.deploy.nixos.nodes [
-      (filterAttrs (_: node: with node.profiles.system.raw.config; dotfiles.kubernetes.enable && services.k3s.role == "server"))
+      (filterAttrs (_: node: with node.profiles.system.raw.config; canivete.kubernetes.enable && services.k3s.role == "server"))
       (mapAttrsToList (_: node: node.install.host))
       (concatStringsSep ",")
     ];
@@ -66,7 +66,7 @@ in {
   }: {
     # NOTE https://docs.cilium.io/en/stable/operations/system_requirements
     config =
-      canivete.mkIfElse config.dotfiles.kubernetes.enable {
+      canivete.mkIfElse config.canivete.kubernetes.enable {
         boot.blacklistedKernelModules = ["netfilter"];
         boot.kernelModules = ["cls_bpf" "sch_ingress" "crypto_user"];
         networking.firewall.enable = false;
@@ -90,7 +90,7 @@ in {
       version = "v2alpha1";
     }
   ];
-  perSystem.dotfiles.helm = {
+  perSystem.canivete.kubenix.helm = {
     cilium-bootstrap = release // {bootstrap = true;};
     cilium = recursiveUpdate release {
       values = {

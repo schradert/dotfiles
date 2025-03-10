@@ -43,7 +43,7 @@
     };
   };
 in {
-  perSystem.dotfiles.helm.external-secrets = {
+  perSystem.canivete.kubenix.helm.external-secrets = {
     inherit namespace;
     chart = {
       repo = "https://charts.external-secrets.io";

@@ -2,7 +2,7 @@
   # https://github.com/goharbor/harbor
   # https://goharbor.io/docs/2.11.0/install-config/harbor-ha-helm/
   # TODO package harbor from source
-  perSystem.dotfiles.helm.harbor = {
+  perSystem.canivete.kubenix.helm.harbor = {
     namespace = "storage";
     chart = {
       repo = "https://helm.goharbor.io";

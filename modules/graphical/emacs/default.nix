@@ -5,6 +5,8 @@
   # TODO tangle all emacs files (init.el too with doom/bin/org-tangle)
   # NOTE https://github.com/doomemacs/doomemacs/blob/master/modules/config/literate/README.org
   flake.overlays.emacs = inputs.emacs-overlay.overlay;
+  canivete.pkgs.allowUnfree = ["aspell-dict-en-science"];
+  perSystem.canivete.pre-commit.settings.hooks.lychee.toml.exclude_path = ["^\./modules/programs/emacs/config\.org$"];
   canivete.deploy.system.homeModules.emacs = {
     config,
     lib,

@@ -29,6 +29,7 @@
   # TODO is there a better version of this https://github.com/waiting-for-dev/vim-www
   # TODO https://github.com/EdenEast/nightfox.nvim
   # TODO https://github.com/skwp/dotfiles
+  perSystem.canivete.pre-commit.settings.hooks.typos.settings.ignored-words = ["enew"];
   canivete.deploy.system.homeModules.vim = {
     config,
     pkgs,

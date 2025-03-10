@@ -5,7 +5,7 @@
   ...
 }: let
   inherit (canivete.vals) sops;
-  inherit (config.dotfiles) domain;
+  inherit (config.canivete.meta) domain;
   port = 8096;
   subdomain = "jellyfin.${domain}";
   probe.enabled = true;
@@ -31,7 +31,7 @@ in {
   #     };
   #     nixos.useSystemd = true;
   #   };
-  perSystem.dotfiles.helm.gatus.values.config.endpoints = lib.toList {
+  perSystem.canivete.kubenix.helm.gatus.values.config.endpoints = lib.toList {
     name = "jellyfin";
     group = "external";
     url = "1.1.1.1";
@@ -43,7 +43,7 @@ in {
     conditions = ["len([BODY]) == 0"];
     # alerts = [{type = "custom";}]; TODO
   };
-  perSystem.dotfiles.helm.jellyfin = {
+  perSystem.canivete.kubenix.helm.jellyfin = {
     namespace = "media";
     values = {
       controllers.jellyfin = {

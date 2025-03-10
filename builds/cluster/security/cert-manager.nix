@@ -4,8 +4,8 @@
   lib,
   ...
 }: let
-  inherit (config.canivete.people.my.profiles.default) email;
-  inherit (config.dotfiles) domain;
+  inherit (config.canivete.meta.people.my.profiles.default) email;
+  inherit (config.canivete.meta) domain;
   domainName = lib.replaceStrings ["."] ["-"] domain;
   mkClusterIssuer = name: server: {
     spec.acme = {
@@ -22,8 +22,9 @@
     };
   };
 in {
+  perSystem.canivete.pre-commit.settings.hooks.lychee.toml.exclude = ["^.+/dns-query$"];
   # https://github.com/cert-manager/cert-manager
-  perSystem.dotfiles.helm.cert-manager = {
+  perSystem.canivete.kubenix.helm.cert-manager = {
     namespace = "security";
     chart = {
       repo = "https://charts.jetstack.io";

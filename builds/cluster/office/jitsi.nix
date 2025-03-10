@@ -4,12 +4,12 @@
   lib,
   ...
 }: let
-  inherit (config.dotfiles) domain;
+  inherit (config.canivete.meta) domain;
   inherit (canivete.vals) sops;
   subdomain = "jitsi.${domain}";
 in {
   # TODO integrate with excalidraw https://github.com/jitsi/excalidraw-backend
-  perSystem.dotfiles.opentofu.passwords = {
+  perSystem.canivete.opentofu.workspaces.deploy.modules.jitsi.canivete.passwords = {
     jitsi-jigasi.length = 10;
     jitsi-jigasi.special = false;
     jitsi-jibri.length = 10;
@@ -21,7 +21,7 @@ in {
     jitsi-jvb.length = 10;
     jitsi-jvb.special = false;
   };
-  perSystem.dotfiles.helm.jitsi = {
+  perSystem.canivete.kubenix.helm.jitsi = {
     namespace = "office";
     chart = {
       repo = "https://jitsi-contrib.github.io/jitsi-helm";

@@ -1,5 +1,5 @@
 {lib, ...}: {
-  perSystem.dotfiles.helm.generic-device-plugin = {
+  perSystem.canivete.kubenix.helm.generic-device-plugin = {
     namespace = "kube-system";
     values.defaultPodOptions.priorityClassName = "system-node-critical";
     values.controllers.generic-device-plugin = {

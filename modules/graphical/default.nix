@@ -1,6 +1,7 @@
 {lib, ...}: let
   inherit (lib) mkDefault mkEnableOption mkIf toList;
 in {
+  canivete.pkgs.allowUnfree = ["android-studio-stable" "discord" "slack" "beeper"];
   canivete.deploy = {
     system.modules.graphical.options.dotfiles.graphical.enable = mkEnableOption "graphical tools (i.e. not headless)";
     system.homeModules.graphical = {

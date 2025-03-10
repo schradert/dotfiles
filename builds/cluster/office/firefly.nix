@@ -5,7 +5,7 @@
   ...
 }: let
   inherit (canivete) vals;
-  inherit (config.dotfiles) domain;
+  inherit (config.canivete.meta) domain;
   subdomain = "firefly.${domain}";
 in {
   # TODO nix built image
@@ -14,17 +14,17 @@ in {
   # TODO pod.enableServiceLinks?
   # NOTE https://github.com/firefly-iii/kubernetes
   # TODO https://github.com/bahuma20/firefly-iii-ai-categorize
-  perSystem.dotfiles = {
-    opentofu.passwords.firefly.length = 21;
-    opentofu.passwords.firefly-appkey = {
-      length = 32;
-      special = false;
+  perSystem.canivete = {
+    opentofu.workspaces.deploy.modules.firefly.canivete.passwords = {
+      firefly.length = 21;
+      firefly-appkey.length = 32;
+      firefly-appkey.special = false;
     };
-    helm.postgres.resources.postgresqls.main.spec = {
+    kubenix.helm.postgres.resources.postgresqls.main.spec = {
       users.firefly = ["createdb"];
       databases.firefly = "firefly";
     };
-    helm.firefly = {
+    kubenix.helm.firefly = {
       namespace = "office";
       chart = {
         repo = "https://firefly-iii.github.io/kubernetes";

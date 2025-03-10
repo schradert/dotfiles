@@ -1,6 +1,7 @@
 {lib, ...}: {
+  perSystem.canivete.pre-commit.settings.hooks.lychee.toml.exclude = ["https://kubernetes-sigs.github.io/descheduler"];
   # [ ] [descheduler](https://github.com/kubernetes-sigs/descheduler)
-  perSystem.dotfiles.helm.descheduler = {
+  perSystem.canivete.kubenix.helm.descheduler = {
     namespace = "kube-system";
     chart = {
       repo = "https://kubernetes-sigs.github.io/descheduler";

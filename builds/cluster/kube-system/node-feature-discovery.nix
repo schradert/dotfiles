@@ -1,6 +1,7 @@
 {
+  perSystem.canivete.pre-commit.settings.hooks.lychee.toml.exclude = ["https://kubernetes-sigs.github.io/node-feature-discovery/charts"];
   # [ ] [node-feature-discovery](https://github.com/kubernetes-sigs/node-feature-discovery)
-  perSystem.dotfiles.helm.node-feature-discovery = {
+  perSystem.canivete.kubenix.helm.node-feature-discovery = {
     namespace = "kube-system";
     chart = {
       repo = "https://kubernetes-sigs.github.io/node-feature-discovery/charts";

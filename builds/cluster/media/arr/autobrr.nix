@@ -3,15 +3,15 @@
   lib,
   ...
 }: let
-  subdomain = "autobrr.${config.dotfiles.domain}";
+  subdomain = "autobrr.${config.canivete.meta.domain}";
   port = 7878;
 in {
   # [ ] [autobrr](https://github.com/autobrr/autobrr)
-  perSystem.dotfiles.opentofu.passwords = {
+  perSystem.canivete.opentofu.workspaces.deploy.modules.autobrr.canivete.passwords = {
     autobrr-session-secret.length = 21;
     autobrr-postgres-password.length = 21;
   };
-  perSystem.dotfiles.helm.autobrr = {
+  perSystem.canivete.kubenix.helm.autobrr = {
     namespace = "media";
     values = {
       controllers.autobrr.containers.autobrr = {

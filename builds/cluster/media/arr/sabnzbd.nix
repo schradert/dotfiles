@@ -4,11 +4,14 @@
   ...
 }: let
   port = 8080;
-  subdomain = "sabnzbd.${config.dotfiles.domain}";
+  subdomain = "sabnzbd.${config.canivete.meta.domain}";
 in {
+  # Sabnzbd only supports unrar currently, but unar is a better alternative to keep track of
+  # NOTE https://github.com/sabnzbd/sabnzbd/issues/1120
+  canivete.pkgs.allowUnfree = ["unrar"];
   perSystem = {
-    dotfiles.nix2container.sabnzbd = {};
-    dotfiles.helm.sabnzbd = {
+    canivete.nix2container.sabnzbd = {};
+    canivete.kubenix.helm.sabnzbd = {
       namespace = "media";
       values = {
         controllers.sabnzbd.containers.sabnzbd = {

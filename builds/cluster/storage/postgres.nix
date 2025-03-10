@@ -7,7 +7,7 @@
   inherit (lib) mkOption types toList;
   inherit (types) attrsOf submodule anything;
   inherit (canivete) vals;
-  inherit (config.dotfiles) domain;
+  inherit (config.canivete.meta) domain;
 in {
   canivete.deploy.system.homeModules.database = {
     config,
@@ -20,6 +20,10 @@ in {
       home.packages = with pkgs; [dbeaver-bin gobang lazysql rainfrog harlequin dblab];
     };
   };
+  perSystem.canivete.pre-commit.settings.hooks.lychee.toml.exclude = [
+    "https://opensource.zalando.com/postgres-operator/charts/postgres-operator"
+    "https://opensource.zalando.com/postgres-operator/charts/postgres-operator-ui"
+  ];
   # TODO https://github.com/hydradatabase/hydra vs https://github.com/apache/age vs https://github.com/paradedb/paradedb
   # TODO https://github.com/ankane/pghero
   # OperatorConfiguration has a configuration field, not spec, so we need this to pass validation
@@ -27,7 +31,7 @@ in {
   perSystem.canivete.kubenix.clusters.prod.modules.postgres-patch.options.kubernetes.api.resources."acid.zalan.do".v1.OperatorConfiguration = mkOption {
     type = attrsOf (submodule {options.configuration = mkOption {type = attrsOf anything;};});
   };
-  perSystem.dotfiles.helm = {
+  perSystem.canivete.kubenix.helm = {
     postgres = {
       namespace = "storage";
       chart = {

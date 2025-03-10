@@ -11,7 +11,12 @@
   # NOTE add feeds for my filters on [Stack Exchange](https://stackexchange.com/users/15556329/t-whiz?tab=accounts)
   # NOTE convert websites like [this bash issue](https://savannah.gnu.org/support/?108134) into rss feed
   # NOTE contents of rss.org
-  canivete.deploy.system.homeModules.rss = {config, lib, pkgs, ...}: {
+  canivete.deploy.system.homeModules.rss = {
+    config,
+    lib,
+    pkgs,
+    ...
+  }: {
     config = lib.mkIf config.dotfiles.workstation.enable {
       # TODO build syndicationd https://github.com/ymgyt/syndicationd
       # TODO compare russ vs syndicationd TUI

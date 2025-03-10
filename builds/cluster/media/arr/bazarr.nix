@@ -5,8 +5,8 @@
 }: {
   # TODO plex token?
   # TODO should I use subcleaner https://github.com/KBlixt/subcleaner
-  perSystem.dotfiles.nix2container.bazarr = {};
-  perSystem.dotfiles.helm.bazarr = {
+  perSystem.canivete.nix2container.bazarr = {};
+  perSystem.canivete.kubenix.helm.bazarr = {
     namespace = "media";
     values = {
       controllers.bazarr.containers.bazarr = {
@@ -21,7 +21,7 @@
       service.bazarr.ports.http.port = 6767;
       ingress.bazarr.className = "internal";
       ingress.bazarr.hosts = lib.toList {
-        host = "bazarr.${config.dotfiles.domain}";
+        host = "bazarr.${config.canivete.meta.domain}";
         paths = lib.toList {
           path = "/";
           service.identifier = "bazarr";

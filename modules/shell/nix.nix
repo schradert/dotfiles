@@ -5,7 +5,7 @@
   ...
 }: let
   inherit (lib) flip mapAttrsToList fileContents mkForce mkMerge;
-  inherit (config.canivete.people) me;
+  inherit (config.canivete.meta.people) me;
   buildMachines = flip mapAttrsToList config.canivete.deploy.nixos.nodes (name: machine: {
     hostName = name;
     protocol = "ssh-ng";

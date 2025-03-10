@@ -1,4 +1,5 @@
 {
+  perSystem.canivete.pre-commit.settings.hooks.typos.settings.ignored-words = ["regist"];
   canivete.deploy.nixos.homeModules.chiaki = {
     config,
     lib,

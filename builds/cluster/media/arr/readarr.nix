@@ -1,4 +1,4 @@
 {
   # TODO implement this
-  perSystem.dotfiles.nix2container.readarr = {};
+  perSystem.canivete.nix2container.readarr = {};
 }

@@ -8,7 +8,7 @@
     pkgs,
     ...
   }: let
-    inherit (flake.config.dotfiles) domain;
+    inherit (flake.config.canivete.meta) domain;
     inherit (lib) mkEnableOption mkIf mkMerge;
     inherit (pkgs) barrier stdenv;
   in {

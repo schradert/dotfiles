@@ -5,7 +5,7 @@
   ...
 }: let
   inherit (canivete.vals) sops;
-  inherit (config.dotfiles) domain;
+  inherit (config.canivete.meta) domain;
   inherit (lib) toList;
   subdomain = "qbittorrent.${domain}";
   port = 8080;
@@ -21,7 +21,7 @@
   };
 in {
   # NOTE https://qbittorrent-docs.readthedocs.io/en/latest/cookbook.html#modernized-configuration-template
-  perSystem.dotfiles.helm.gatus.values.config.endpoints = toList {
+  perSystem.canivete.kubenix.helm.gatus.values.config.endpoints = toList {
     name = "qbittorrent";
     group = "internal";
     url = "1.1.1.1";
@@ -33,7 +33,7 @@ in {
     conditions = ["len([BODY]) == 0"];
     # alerts = [{type = "custom";}]; TODO
   };
-  perSystem.dotfiles.helm.qbittorrent = {
+  perSystem.canivete.kubenix.helm.qbittorrent = {
     namespace = "media";
     values = {
       controllers.qbittorrent.annotations = {

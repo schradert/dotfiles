@@ -4,7 +4,7 @@
   ...
 }: {
   # https://github.com/autobrr/omegabrr
-  perSystem.dotfiles.helm.omegabrr = {
+  perSystem.canivete.kubenix.helm.omegabrr = {
     namespace = "media";
     values = {
       controllers.omegabrr.containers.omegabrr = {
@@ -18,7 +18,7 @@
       service.omegabrr.ports.http.port = 80;
       ingress.omegabrr.className = "internal";
       ingress.omegabrr.hosts = lib.toList {
-        host = "omegabrr.${config.dotfiles.domain}";
+        host = "omegabrr.${config.canivete.meta.domain}";
         paths = lib.toList {
           path = "/";
           service.identifier = "omegabrr";

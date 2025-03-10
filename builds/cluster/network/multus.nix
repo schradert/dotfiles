@@ -2,7 +2,7 @@
 #
 {
   perSystem = {
-    dotfiles.helm.multus = {
+    canivete.kubenix.helm.multus = {
       namespace = "network";
       # resources.imports = [
       #   (pkgs.fetchurl {

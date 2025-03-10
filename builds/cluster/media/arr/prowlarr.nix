@@ -4,22 +4,24 @@
   ...
 }: let
   port = 9696;
-  subdomain = "prowlarr.${config.dotfiles.domain}";
+  subdomain = "prowlarr.${config.canivete.meta.domain}";
 in {
   # TODO how useful is https://github.com/sergiotapia/magnetissimo
-  perSystem.dotfiles = {
-    opentofu.passwords.prowlarr-api-key = {
-      length = 21;
-      upper = false;
-      special = false;
+  perSystem.canivete = {
+    opentofu.workspaces.deploy.modules.prowlarr.canivete.passwords = {
+      prowlarr-api-key = {
+        length = 21;
+        upper = false;
+        special = false;
+      };
+      prowlarr-postgres-password.length = 21;
     };
-    opentofu.passwords.prowlarr-postgres-password.length = 21;
     nix2container.prowlarr = {};
-    # helm.postgres.resources.postgresqls.main.spec = {
+    # kubenix.helm.postgres.resources.postgresqls.main.spec = {
     #   users.prowlarr = ["superuser" "createdb"];
     #   databases.prowlarr = "prowlarr";
     # };
-    helm.prowlarr = {
+    kubenix.helm.prowlarr = {
       namespace = "media";
       values = {
         controllers.prowlarr.containers.prowlarr = {

@@ -3,7 +3,7 @@
   lib,
   ...
 }: let
-  inherit (config.dotfiles) domain;
+  inherit (config.canivete.meta) domain;
   subdomain = "mealie.${domain}";
 in {
   # TODO fix backups
@@ -13,13 +13,13 @@ in {
   # TODO bulk import some recipes https://docs.mealie.io/documentation/community-guide/bulk-url-import/
   # TODO bookmarklet https://docs.mealie.io/documentation/community-guide/import-recipe-bookmarklet/
   # TODO nix built image
-  perSystem.dotfiles = {
+  perSystem.canivete = {
     nix2container.mealie = {};
-    helm.postgres.resources.postgresqls.main.spec = {
+    kubenix.helm.postgres.resources.postgresqls.main.spec = {
       users.mealie = ["createdb"];
       databases.mealie = "mealie";
     };
-    helm.mealie = {
+    kubenix.helm.mealie = {
       namespace = "home";
       values = {
         controllers.mealie.annotations."reloader.stakater.com/auto" = "true";

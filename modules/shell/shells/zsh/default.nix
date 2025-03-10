@@ -1,4 +1,5 @@
 {
+  perSystem.canivete.pre-commit.settings.hooks.shfmt.excludes = ["programs/zsh/.p10k.zsh"];
   # TODO do i need this for lazy loading completions
   # NOTE https://news.ycombinator.com/item?id=40140873
   canivete.deploy = {
@@ -10,7 +11,7 @@
       environment.pathsToLink = ["/share/zsh"];
       environment.shells = [pkgs.zsh];
       programs.zsh.enable = true;
-      users.users.${flake.config.canivete.people.me}.shell = pkgs.zsh;
+      users.users.${flake.config.canivete.meta.people.me}.shell = pkgs.zsh;
     };
     system.homeModules.zsh = {
       config,

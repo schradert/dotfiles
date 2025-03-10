@@ -1,5 +1,5 @@
 {config, ...}: let
-  subdomain = "bitwarden.${config.dotfiles.domain}";
+  subdomain = "bitwarden.${config.canivete.meta.domain}";
 in {
   canivete.deploy.system.homeModules.bitwarden = {
     programs.rbw.enable = true;
@@ -9,7 +9,7 @@ in {
   # TODO https://github.com/quexten/goldwarden with programs.goldwarden in NixOS...
   # NOTE https://github.com/dani-garcia/vaultwarden/wiki
   # NOTE also SSO might be lacking? still want to make sure I can use keycloak
-  perSystem.dotfiles.helm.bitwarden = {
+  perSystem.canivete.kubenix.helm.bitwarden = {
     namespace = "security";
     chart = {
       repo = "https://charts.bitwarden.com";

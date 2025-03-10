@@ -1,4 +1,5 @@
 {
+  perSystem.canivete.pre-commit.settings.hooks.typos.settings.ignored-words = ["ags"];
   canivete.deploy.nixos.homeModules.ags = {
     config,
     lib,

@@ -4,11 +4,11 @@
     lib,
     ...
   }: {
-    config = lib.mkIf config.dotfiles.kubernetes.enable {
+    config = lib.mkIf config.canivete.kubernetes.enable {
       boot.kernelModules = ["dm_thin_pool"];
     };
   };
-  perSystem.dotfiles.helm.openebs = {
+  perSystem.canivete.kubenix.helm.openebs = {
     namespace = "storage";
     chart = {
       repo = "https://openebs.github.io/openebs";

@@ -5,7 +5,7 @@
   ...
 }: let
   inherit (canivete) vals;
-  inherit (config.dotfiles) domain;
+  inherit (config.canivete.meta) domain;
   subdomain = "plex.${domain}";
 in {
   # TODO request button on plex!
@@ -16,7 +16,7 @@ in {
   # [ ] [plex-auto-languages](https://github.com/bjw-s/home-ops/blob/main/kubernetes/main/apps/media/plex/plex-auto-languages/helmrelease.yaml)
   # https://github.com/RemiRigal/Plex-Auto-Languages
   # https://github.com/blacktwin/JBOPS
-  perSystem.dotfiles.helm.plex = {
+  perSystem.canivete.kubenix.helm.plex = {
     namespace = "media";
     values = {
       controllers.plex = {

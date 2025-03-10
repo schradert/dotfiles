@@ -54,15 +54,14 @@
             xonsh.enable = true;
             zig.enable = true;
           };
+          home.packages = [pkgs.tftui];
           programs = {
             nushell.enable = true;
           };
         }
         (lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
-          dotfiles.programs = {
-            imv.enable = true;
-            obs-studio.enable = true;
-          };
+          programs.imv.enable = true;
+          dotfiles.programs.obs-studio.enable = true;
         })
       ]);
     };

@@ -3,7 +3,7 @@
   inputs,
   ...
 }: let
-  inherit (config.canivete.people) me users;
+  inherit (config.canivete.meta.people) me users;
 in {
   canivete.deploy.nixos.modules.default = {
     config,

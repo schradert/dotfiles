@@ -4,7 +4,7 @@
   ...
 }: let
   inherit (lib) replaceStrings fileContents toList recursiveUpdate;
-  inherit (config.dotfiles) domain;
+  inherit (config.canivete.meta) domain;
   namespace = "network";
   chart = {
     repo = "https://kubernetes.github.io/ingress-nginx";
@@ -69,8 +69,8 @@
     };
 in {
   perSystem = {
-    dotfiles.nix2container.nginx = {};
-    dotfiles.helm.nginx-internal = recursiveUpdate release {
+    canivete.nix2container.nginx = {};
+    canivete.kubenix.helm.nginx-internal = recursiveUpdate release {
       values.fullnameOverride = "nginx-internal";
       values.controller = {
         service.annotations."external-dns.alpha.kubernetes.io/hostname" = "internal.${domain}";
@@ -81,7 +81,7 @@ in {
         topologySpreadConstraints = topologySpreadConstraint "internal";
       };
     };
-    dotfiles.helm.nginx-external = recursiveUpdate release {
+    canivete.kubenix.helm.nginx-external = recursiveUpdate release {
       values.fullnameOverride = "nginx-external";
       values.controller = {
         service.annotations."external-dns.alpha.kubernetes.io/hostname" = "external.${domain}";

@@ -4,7 +4,7 @@
   ...
 }: let
   inherit (lib) toList concatStringsSep genAttrs;
-  inherit (config.dotfiles) domain;
+  inherit (config.canivete.meta) domain;
   bucketNames = {
     chunks = "loki-chunks";
     ruler = "loki-ruler";
@@ -31,7 +31,7 @@ in {
   # TODO authn on ingress? or better to use gateway?
   # TODO manage deprecation and migration to grafana/meta-monitoring-chart
   # TODO why can't I do string templating with env vars
-  perSystem.dotfiles.helm.loki = {
+  perSystem.canivete.kubenix.helm.loki = {
     namespace = "observability";
     chart = {
       repo = "https://grafana.github.io/helm-charts";
@@ -125,7 +125,7 @@ in {
       spec.storageClassName = "ceph-bucket";
     });
   };
-  perSystem.dotfiles.helm.grafana.values.datasources."datasources.yaml" = {
+  perSystem.canivete.kubenix.helm.grafana.values.datasources."datasources.yaml" = {
     deleteDatasources = toList {
       name = "Loki";
       orgId = 1;

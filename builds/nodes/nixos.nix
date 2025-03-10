@@ -5,8 +5,8 @@
   ...
 }: let
   inherit (lib) recursiveUpdate mkForce toList getExe;
-  inherit (config.canivete) root;
-  sshOptions = ["ProxyJump=${config.dotfiles.domain}"];
+  inherit (config.canivete.meta) domain root;
+  sshOptions = ["ProxyJump=${domain}"];
   # Disko does not actually merge NixOS modules (major bummer!)
   # I have to use recursiveUpdate within the same module for all settings to be detected and used
   # NOTE https://github.com/nix-community/disko/issues/678
@@ -74,8 +74,8 @@ in {
       install.sshOptions = mkForce ["User=root"];
       target.sshOptions = sshOptions;
       profiles.system.module = {
-        dotfiles.kubernetes.enable = true;
-        dotfiles.kubernetes.root = true;
+        canivete.kubernetes.enable = true;
+        canivete.kubernetes.root = true;
         dotfiles.devops.enable = true;
         disko = recursiveUpdate lvmDisko {
           devices.disk.base = {
@@ -95,7 +95,7 @@ in {
       profiles.system.module = {pkgs, ...}: {
         dotfiles.graphical.monitors = true;
         dotfiles.graphical.hyprland.enable = true;
-        dotfiles.kubernetes.enable = true;
+        canivete.kubernetes.enable = true;
         dotfiles.services.yubikey.enable = true;
         dotfiles.workstation.enable = true;
         boot.initrd.availableKernelModules = ["xhci_pci" "nvme" "rtsx_pci_sdmmc"];
@@ -146,7 +146,7 @@ in {
       install.host = "192.168.50.142";
       build.sshOptions = sshOptions;
       profiles.system.module = {
-        dotfiles.kubernetes.enable = true;
+        canivete.kubernetes.enable = true;
         boot.initrd.availableKernelModules = ["xhci_pci" "usbhid"];
         disko = recursiveUpdate lvmDisko {
           devices.disk.base = {
@@ -160,7 +160,7 @@ in {
       install.host = "192.168.50.85";
       build.sshOptions = sshOptions;
       profiles.system.module = {
-        dotfiles.kubernetes.enable = true;
+        canivete.kubernetes.enable = true;
         boot.initrd.availableKernelModules = ["xhci_pci" "usbhid"];
         disko = recursiveUpdate lvmDisko {
           devices.disk.base = {
@@ -174,7 +174,7 @@ in {
       install.host = "192.168.50.105";
       build.sshOptions = sshOptions;
       profiles.system.module = {
-        dotfiles.kubernetes.enable = true;
+        canivete.kubernetes.enable = true;
         boot.initrd.availableKernelModules = ["xhci_pci" "usbhid"];
         disko = recursiveUpdate lvmDisko {
           devices.disk.base = {
@@ -189,7 +189,7 @@ in {
       build.sshOptions = sshOptions;
       profiles.system.module = {
         imports = [inputs.nixos-wsl.nixosModules.default];
-        dotfiles.kubernetes.enable = true;
+        canivete.kubernetes.enable = true;
         wsl.enable = true;
         wsl.defaultUser = config.canivete.me;
         wsl.startMenuLaunchers = true;
@@ -208,7 +208,7 @@ in {
       install.host = "192.168.50.53";
       target.sshOptions = sshOptions;
       profiles.system.module = {
-        dotfiles.kubernetes.enable = true;
+        canivete.kubernetes.enable = true;
         boot.initrd.availableKernelModules = ["ehci_pci" "megaraid_sas" "usbhid" "sr_mod"];
         boot.kernelModules = ["kvm-intel"];
         disko = recursiveUpdate lvmDisko {
@@ -473,7 +473,7 @@ in {
           enable = true;
           autoStart = true;
           desktopSession = "plasma";
-          user = config.canivete.people.me;
+          user = config.canivete.meta.people.me;
         };
         networking.networkmanager.enable = true;
         programs.steam.extraCompatPackages = with pkgs; [proton-ge-bin steamtinkerlaunch steam-play-none];
@@ -485,7 +485,7 @@ in {
         # volume-boost
         systemd.services.decky-loader.environment.PULSE_SERVER = "tcp:127.0.0.1:4713";
         # TODO get cookie to work to minimize security surface
-        # environment.etc."pulse/client.conf".text = "cookie-file = /home/${config.canivete.people.me}/.config/pulse/cookie";
+        # environment.etc."pulse/client.conf".text = "cookie-file = /home/${config.canivete.meta.people.me}/.config/pulse/cookie";
         services.pipewire.extraConfig.pipewire-pulse."11-decky-volume-boost"."pulse.cmd" = toList {
           cmd = "load-module";
           args = "module-native-protocol-tcp auth-anonymous=true";

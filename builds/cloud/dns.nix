@@ -4,8 +4,8 @@
   ...
 }: let
   inherit (canivete.vals) sops;
-  inherit (config.dotfiles) domain;
-  inherit (config.canivete.people.my.profiles.default) email;
+  inherit (config.canivete.meta) domain;
+  inherit (config.canivete.meta.people.my.profiles.default) email;
 in {
   perSystem.canivete.opentofu.workspaces.deploy = {
     plugins = ["cloudflare/cloudflare/4.43.0"];

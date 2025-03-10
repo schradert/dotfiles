@@ -14,7 +14,7 @@
   values = {
     fullnameOverride = "kubelet-csr-approver";
     providerRegex = pipe self.nixosConfigurations [
-      (filterAttrs (_: cfg: cfg.config.dotfiles.kubernetes.enable))
+      (filterAttrs (_: cfg: cfg.config.canivete.kubernetes.enable))
       builtins.attrNames
       (concatStringsSep "|")
       (str: "^(${str})$")
@@ -24,7 +24,7 @@
   release = {inherit namespace chart values;};
 in {
   # [ ] [kubelet-csr-approver](https://github.com/postfinance/kubelet-csr-approver)
-  perSystem.dotfiles.helm = {
+  perSystem.canivete.kubenix.helm = {
     kubelet-csr-approver-bootstrap = recursiveUpdate release {bootstrap = true;};
     kubelet-csr-approver = recursiveUpdate release {
       values.metrics.enable = true;

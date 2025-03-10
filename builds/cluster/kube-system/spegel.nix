@@ -5,8 +5,8 @@
     lib,
     ...
   }: {
-    config = lib.mkIf config.dotfiles.kubernetes.enable {
-      # dotfiles.kubernetes.k3s.embedded-registry = lib.mkIf (config.services.k3s.role == "server") true;
+    config = lib.mkIf config.canivete.kubernetes.enable {
+      # canivete.kubernetes.k3s.embedded-registry = lib.mkIf (config.services.k3s.role == "server") true;
       # environment.etc."rancher/k3s/registries.yaml".source = pkgs.writers.writeYAML "registries.yaml" {mirrors."*" = {};};
       # Can't use {{ template "base" . }} to inject 'discard_unpacked_layers' because it gives a "duplicate table" error
       services.k3s.containerdConfigTemplate = ''
@@ -39,7 +39,7 @@
       '';
     };
   };
-  perSystem.dotfiles.helm.spegel = {
+  perSystem.canivete.kubenix.helm.spegel = {
     namespace = "kube-system";
     chart = {
       chartUrl = "oci://ghcr.io/spegel-org/helm-charts/spegel";
