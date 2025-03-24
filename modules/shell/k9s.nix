@@ -2,7 +2,12 @@
   # TODO add HolmesGPT plugin https://github.com/derailed/k9s/blob/master/plugins/ai-incident-investigaton.yaml
   # TODO build https://github.com/hcavarsan/kftray
   # TODO https://github.com/derailed/k9s/blob/master/plugins/carvel.yaml
-  canivete.deploy.system.homeModules.k9s = {config, lib, pkgs, ...}: {
+  canivete.deploy.system.homeModules.k9s = {
+    config,
+    lib,
+    pkgs,
+    ...
+  }: {
     config = lib.mkIf (config.dotfiles.workstation.enable || config.canivete.kubernetes.enable) {
       dotfiles.programs.emacs.orgFiles = [./kubernetes.org];
       home.packages = with pkgs; [kubectl kubernetes-helm kubetui kdash ktop];

@@ -8,7 +8,12 @@
       };
     };
   };
-  canivete.deploy.system.homeModules.gauntlet = {config, lib, pkgs, ...}: {
+  canivete.deploy.system.homeModules.gauntlet = {
+    config,
+    lib,
+    pkgs,
+    ...
+  }: {
     imports = [inputs.gauntlet.homeManagerModules.default];
     config = lib.mkIf config.dotfiles.workstation.enable {
       # TODO follow unstable changes for libffi-sys fixes

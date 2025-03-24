@@ -85,6 +85,10 @@ in {
         };
         boot.initrd.availableKernelModules = ["ehci_pci" "megaraid_sas" "usbhid"];
         boot.kernelModules = ["kvm-intel"];
+
+        # Mini switch to connect falcon
+        # networking.bridges.br0.interfaces = ["eno3" "eno4"];
+        # networking.interfaces.br0.useDHCP = true;
       };
     };
     axolotl = {
@@ -202,6 +206,46 @@ in {
         # wsl.usbip.snippetIpAddress = "127.0.0.1";
         # wsl.useWindowsDriver = true;
         # wsl.wslConf = {};
+      };
+    };
+    falcon = {
+      install.host = "192.168.50.250";
+      build.host = root;
+      build.sshOptions = sshOptions;
+      profiles.system.sshProtocol = "ssh";
+      profiles.system.module = {pkgs, ...}: {
+        dotfiles.graphical.monitors = true;
+        dotfiles.graphical.hyprland.enable = true;
+        canivete.kubernetes.enable = true;
+        dotfiles.services.yubikey.enable = true;
+        dotfiles.workstation.enable = true;
+        boot.initrd.availableKernelModules = ["xhci_pci" "nvme" "rtsx_pci_sdmmc"];
+        disko = recursiveUpdate lvmDisko {
+          devices.disk.base = {
+            device = "/dev/disk/by-id/nvme-SPCC_M.2_PCIE_SSD_30012119169";
+            content.partitions.root.end = "-101G";
+          };
+        };
+        home-manager.sharedModules = toList {
+          dotfiles.programs.steam.external = {
+            enable = true;
+            srm.userAccounts = ["supertriggy"];
+            runescape.runelite.enable = true;
+          };
+        };
+
+        location.latitude = 37.8;
+        location.longitude = -122.4;
+
+        # Gaming
+        programs.steam.enable = true;
+        # TODO can https://github.com/luxtorpeda-dev/luxtorpeda be added?
+        # TODO https://github.com/dreamer/boxtron
+        programs.steam.extraCompatPackages = with pkgs; [proton-ge-bin steamtinkerlaunch steam-play-none];
+        programs.steam.protontricks.enable = true;
+        programs.gamemode.enable = true;
+        programs.gamemode.enableRenice = true;
+        services.xserver.videoDrivers = ["radeon" "i915" "displaylink" "modesetting" "fbdev"];
       };
     };
     octopus = {

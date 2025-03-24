@@ -183,7 +183,12 @@ in {
       };
     };
   };
-  canivete.deploy.system.homeModules.jellyfin = {config, lib, pkgs, ...}: {
+  canivete.deploy.system.homeModules.jellyfin = {
+    config,
+    lib,
+    pkgs,
+    ...
+  }: {
     home.packages = lib.mkIf (config.dotfiles.workstation.enable && pkgs.stdenv.hostPlatform.isLinux) [pkgs.jftui];
   };
 }
