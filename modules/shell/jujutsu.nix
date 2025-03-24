@@ -18,7 +18,6 @@
   in {
     home.packages = with pkgs; [gg-jj jjui lazyjj watchman];
     programs.jujutsu = {
-      enable = true;
       ediff = true;
       settings = {
         core.fsmonitor = "watchman";

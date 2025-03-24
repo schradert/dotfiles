@@ -54,8 +54,20 @@
             xonsh.enable = true;
             zig.enable = true;
           };
-          home.packages = [pkgs.tftui];
+          home.packages = with pkgs; [
+            tftui
+
+            # Art
+            artem
+            ascii-image-converter
+            dwt1-shell-color-scripts
+            # TODO fix broken haskellPackages.tart
+            # TODO build https://github.com/poetaman/arttime
+            vhs
+          ];
           programs = {
+            gauntlet.enable = true;
+            jujutsu.enable = true;
             nushell.enable = true;
           };
         }

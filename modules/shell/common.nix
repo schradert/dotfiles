@@ -26,6 +26,9 @@
         (with pkgs; [
           aria2
           bottom
+          # TODO https://github.com/carapace-sh/carapace-bin
+          # TODO carapace-bridge
+          carapace
           cmake
           dig
           fd

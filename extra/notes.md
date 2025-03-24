@@ -127,6 +127,7 @@
 [ ] would nvtop be valuable?
 [ ] what even tstreaming platform should I be using? kafka? can I use [kaskade](https://github.com/sauljabin/kaskade) otherwise?
 [ ] should I try clickhouse or druid? use TUI :)
+[ ] facter vs nixos-generate-config vs nixos-hardware
 
 ### Firefox extensions
 

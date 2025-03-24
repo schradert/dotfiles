@@ -53,35 +53,40 @@ in {
     };
   };
   canivete.deploy.system.homeModules.cert-manager = {
+    config,
     lib,
     pkgs,
     ...
-  }: {
-    home.packages = [pkgs.cmctl];
-    programs.k9s.plugin.plugins = let
-      bash = lib.getExe pkgs.bash;
-      cmctl = lib.getExe pkgs.cmctl;
-      less = lib.getExe pkgs.less;
-    in {
-      cert-status = {
-        shortCut = "Shift-S";
-        description = "Certificate status";
-        scopes = ["certificates"];
-        confirm = false;
-        background = false;
-        command = bash;
-        args = ["-c" "${cmctl} status certificate --context $CONTEXT --namespace $NAMESPACE $NAME |& ${less}"];
+  }: let
+    inherit (lib) getExe mkIf;
+  in {
+    config = mkIf (config.dotfiles.workstation.enable || config.canivete.kubernetes.enable) {
+      home.packages = [pkgs.cmctl];
+      programs.k9s.plugin.plugins = let
+        bash = getExe pkgs.bash;
+        cmctl = getExe pkgs.cmctl;
+        less = getExe pkgs.less;
+      in {
+        cert-status = {
+          shortCut = "Shift-S";
+          description = "Certificate status";
+          scopes = ["certificates"];
+          confirm = false;
+          background = false;
+          command = bash;
+          args = ["-c" "${cmctl} status certificate --context $CONTEXT --namespace $NAMESPACE $NAME |& ${less}"];
+        };
+        cert-renew = {
+          shortCut = "Shift-R";
+          description = "Certificate renew";
+          scopes = ["certificates"];
+          confirm = true;
+          background = false;
+          command = bash;
+          args = ["-c" "${cmctl} renew --context $CONTEXT --namespace $NAMESPACE $NAME |& ${less}"];
+        };
+        # TODO get secret from a certificate!
       };
-      cert-renew = {
-        shortCut = "Shift-R";
-        description = "Certificate renew";
-        scopes = ["certificates"];
-        confirm = true;
-        background = false;
-        command = bash;
-        args = ["-c" "${cmctl} renew --context $CONTEXT --namespace $NAMESPACE $NAME |& ${less}"];
-      };
-      # TODO get secret from a certificate!
     };
   };
 }
