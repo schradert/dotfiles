@@ -2,205 +2,369 @@
   description = "System configuration";
   outputs = inputs: inputs.canivete.lib.mkFlake {inherit inputs;} [./modules ./builds] ./default.nix;
   inputs = {
-    canivete.url = github:schradert/canivete;
+    ### REPOSITORY
 
-    # TODO move these dependency shifts upstream
-    nixpkgs.url = github:nixos/nixpkgs/nixos-unstable;
-    home-manager.url = github:nix-community/home-manager;
-    home-manager.inputs.nixpkgs.follows = "canivete/nixpkgs";
-    nix-darwin.url = github:LnL7/nix-darwin;
-    nix-darwin.inputs.nixpkgs.follows = "canivete/nixpkgs";
-    canivete.inputs.nixpkgs.follows = "nixpkgs";
-    canivete.inputs.home-manager.follows = "home-manager";
-    canivete.inputs.nix-darwin.follows = "nix-darwin";
-
-    nixos-wsl.url = github:nix-community/NixOS-WSL;
-    nixos-wsl.inputs.nixpkgs.follows = "canivete/nixpkgs";
-
-    nur.url = github:nix-community/nur;
-    nur.inputs.nixpkgs.follows = "canivete/nixpkgs";
-    mynur.url = github:schradert/nur;
-    mynur.inputs = {
-      nixpkgs.follows = "canivete/nixpkgs";
-      flake-parts.follows = "canivete/flake-parts";
-      systems.follows = "canivete/systems";
+    canivete.url = "github:schradert/canivete";
+    canivete.inputs = {
+      flake-parts.follows = "flake-parts";
+      nixpkgs.follows = "nixpkgs";
+      systems.follows = "systems";
+      pre-commit.follows = "pre-commit";
     };
 
-    # Terraform manifest generation
-    terranix.url = github:terranix/terranix;
-    terranix.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    # Essentials
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    systems.url = "github:nix-systems/default";
 
-    # Kubernetes manifest generation
-    # TODO follow updates and revert on merge
-    # NOTE https://github.com/hall/kubenix/issues/52
-    # kubenix.url = github:hall/kubenix;
-    kubenix.url = github:schradert/kubenix/52-patch;
-    kubenix.inputs.nixpkgs.follows = "nixpkgs";
+    # Deployment
+    deploy-rs.url = "github:serokell/deploy-rs";
+    deploy-rs.inputs = {
+      flake-compat.follows = "flake-compat";
+      nixpkgs.follows = "nixpkgs";
+      utils.follows = "flake-utils";
+    };
+    home-manager.url = "github:nix-community/home-manager";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    nix-on-droid.url = "github:nix-community/nix-on-droid";
+    nix-on-droid.inputs.home-manager.follows = "home-manager";
+    nix-on-droid.inputs.nixpkgs.follows = "nixpkgs";
+    nixos-anywhere.url = "github:nix-community/nixos-anywhere";
+    nixos-anywhere.inputs = {
+      flake-parts.follows = "flake-parts";
+      nixpkgs.follows = "nixpkgs";
+      disko.follows = "disko";
+    };
+    disko.url = "github:nix-community/disko";
+    disko.inputs.nixpkgs.follows = "nixpkgs";
+    nix-darwin.url = "github:LnL7/nix-darwin";
+    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+    nixos-wsl.url = "github:nix-community/NixOS-WSL";
+    nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
+    nixos-wsl.inputs.flake-compat.follows = "flake-compat";
 
-    # OpenTofu dependency registry
+    # OpenTofu
+    terranix.url = "github:terranix/terranix";
+    terranix.inputs = {
+      flake-parts.follows = "flake-parts";
+      nixpkgs.follows = "nixpkgs";
+      systems.follows = "systems";
+    };
     # TODO should this be imported differently?
-    opentofu-registry.url = github:opentofu/registry;
+    opentofu-registry.url = "github:opentofu/registry";
     opentofu-registry.flake = false;
 
-    dream2nix.url = github:nix-community/dream2nix;
-    dream2nix.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    # Containers + Kubernetes
+    # TODO follow updates and revert on merge
+    # NOTE https://github.com/hall/kubenix/issues/52
+    # kubenix.url = "github:hall/kubenix";
+    kubenix.url = "github:schradert/kubenix/52-patch";
+    kubenix.inputs = {
+      nixpkgs.follows = "nixpkgs";
+      flake-compat.follows = "flake-compat";
+      systems.follows = "systems";
+      treefmt.follows = "treefmt";
+    };
+    nix2container.url = "github:nlewo/nix2container";
+    nix2container.inputs.nixpkgs.follows = "nixpkgs";
+    nix2container.inputs.flake-utils.follows = "flake-utils";
+    # NOTE Arion has no argument to prefer buildLayeredImage when streamLayeredImage doesn't work across systems
+    # arion.url = "github:hercules-ci/arion";
+    arion.url = "github:schradert/arion/build-layer-image";
+    arion.inputs.flake-parts.follows = "flake-parts";
+    arion.inputs.nixpkgs.follows = "nixpkgs";
 
-    # TODO keep tabs on this project to see if it's evolving enough to try to use
-    # NOTE nix-doom-emacs marked as broken for now so we use overlay
-    # NOTE nix-doom-emacs-unstraightened might work better, but currently doesn't support org-roam
-    nix-doom-emacs.url = github:nix-community/nix-doom-emacs;
-    nix-doom-emacs.inputs.nixpkgs.follows = "canivete/nixpkgs";
-    # nix-doom-emacs-unstraightened.url = github:marienz/nix-doom-emacs-unstraightened;
-    # nix-doom-emacs-unstraightened.inputs.nixpkgs.follows = "canivete/nixpkgs";
-    emacs-overlay.url = github:nix-community/emacs-overlay;
-    emacs-overlay.inputs.nixpkgs.follows = "canivete/nixpkgs";
-    emacs-overlay.inputs.nixpkgs-stable.follows = "canivete/nixpkgs-stable";
+    # Development tools
+    sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
+    pre-commit.url = "github:cachix/git-hooks.nix";
+    pre-commit.inputs = {
+      nixpkgs.follows = "nixpkgs";
+      gitignore.follows = "gitignore";
+      flake-compat.follows = "flake-compat";
+    };
+    # canivete.inputs.pre-commit.follows = "pre-commit";
+    process-compose.url = "github:Platonic-Systems/process-compose-flake";
+    services.url = "github:juspay/services-flake";
 
-    # Secret management in Nix deployments
-    sops-nix.url = github:Mic92/sops-nix;
-    sops-nix.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    # Misc.
+    purescript-overlay.url = "github:thomashoneyman/purescript-overlay";
+    purescript-overlay.inputs.flake-compat.follows = "flake-compat";
+    purescript-overlay.inputs.nixpkgs.follows = "nixpkgs";
+    dream2nix.url = "github:nix-community/dream2nix";
+    dream2nix.inputs.nixpkgs.follows = "nixpkgs";
+    dream2nix.inputs.purescript-overlay.follows = "purescript-overlay";
+    climod.url = "github:nixosbrasil/climod";
+    climod.flake = false;
 
-    # Spotify ecosystem
-    spicetify-nix.url = github:Gerg-L/spicetify-nix;
-    spicetify-nix.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    # GTK Application Framework
+    ags.url = "github:aylur/ags";
+    ags.inputs.nixpkgs.follows = "nixpkgs";
 
-    # NixOS on steamdeck
-    jovian.url = github:Jovian-Experiments/Jovian-NixOS;
-    jovian.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    ### PACKAGES
 
-    # Docker images
-    nix2container.url = github:nlewo/nix2container;
-    nix2container.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    # Collections
+    nur.url = "github:nix-community/nur";
+    nur.inputs = {
+      flake-parts.follows = "flake-parts";
+      nixpkgs.follows = "nixpkgs";
+      treefmt-nix.follows = "treefmt";
+    };
+    mynur.url = "github:schradert/nur";
+    mynur.inputs = {
+      nixpkgs.follows = "nixpkgs";
+      flake-parts.follows = "flake-parts";
+      systems.follows = "systems";
+      gradle2nix.follows = "gradle2nix";
+    };
+    gradle2nix.url = "github:tadfisher/gradle2nix";
+    gradle2nix.inputs.flake-utils.follows = "flake-utils";
+    gradle2nix.inputs.nixpkgs.follows = "nixpkgs";
+    # TODO check out some of these modules, like for chiaki
+    devusb.url = "github:devusb/nix-packages";
+    devusb.inputs = {
+      nixpkgs.follows = "nixpkgs";
+      flake-parts.follows = "flake-parts";
+      treefmt-nix.follows = "treefmt";
+    };
 
-    # More useful modules
-    devusb.url = github:devusb/nix-packages;
-    devusb.inputs.nixpkgs.follows = "canivete/nixpkgs";
-    devusb.inputs.flake-parts.follows = "canivete/flake-parts";
+    # Overrides
+    rust-overlay.url = "github:oxalica/rust-overlay";
+    rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
+    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.11";
+    crane.url = "github:ipetkov/crane";
+    flake-compat.url = "github:edolstra/flake-compat";
+    flake-utils.url = "github:numtide/flake-utils";
+    flake-utils.inputs.systems.follows = "systems";
+    gitignore.url = "github:hercules-ci/gitignore.nix";
+    gitignore.inputs.nixpkgs.follows = "nixpkgs";
+    treefmt.url = "github:numtide/treefmt-nix";
+    treefmt.inputs.nixpkgs.follows = "nixpkgs";
+    nix-github-actions.url = "github:nix-community/nix-github-actions";
 
-    # WezTerm nightly
-    wezterm.url = github:wez/wezterm/main?dir=nix;
-    wezterm.inputs.nixpkgs.follows = "canivete/nixpkgs";
-    # NOTE WezTerm rust-overlay conflict (they did update it, but maybe it's a nixpkgs/nixos problem?)
-    rust-overlay.url = github:oxalica/rust-overlay;
-    rust-overlay.inputs.nixpkgs.follows = "canivete/nixpkgs";
-    wezterm.inputs.rust-overlay.follows = "rust-overlay";
+    # Emacs
+    nix-doom-emacs-unstraightened.url = "github:marienz/nix-doom-emacs-unstraightened";
+    nix-doom-emacs-unstraightened.inputs = {
+      nixpkgs.follows = "nixpkgs";
+      emacs-overlay.follows = "emacs-overlay";
+      systems.follows = "systems";
+    };
+    emacs-overlay.url = "github:nix-community/emacs-overlay";
+    emacs-overlay.inputs.nixpkgs.follows = "nixpkgs";
+    emacs-overlay.inputs.nixpkgs-stable.follows = "nixpkgs-stable";
 
-    # Steam library manager
-    nostatoo.url = github:samueldr/nostatoo;
+    # Music
+    spicetify-nix.url = "github:Gerg-L/spicetify-nix";
+    spicetify-nix.inputs.nixpkgs.follows = "nixpkgs";
+    spicetify-nix.inputs.systems.follows = "systems";
+
+    # Gaming
+    jovian.url = "github:Jovian-Experiments/Jovian-NixOS";
+    jovian.inputs.nixpkgs.follows = "nixpkgs";
+    jovian.inputs.nix-github-actions.follows = "nix-github-actions";
+    nostatoo.url = "github:samueldr/nostatoo";
     nostatoo.flake = false;
-
-    # Helix editor
-    helix.url = github:usagi-flow/evil-helix;
-    helix.inputs.nixpkgs.follows = "canivete/nixpkgs";
-    helix.inputs.rust-overlay.follows = "rust-overlay";
-
-    # Umu game launcher
-    umu.url = github:Open-Wine-Components/umu-launcher?dir=packaging/nix&submodules=1;
-    umu.inputs.nixpkgs.follows = "canivete/nixpkgs";
-
+    umu.url = "github:Open-Wine-Components/umu-launcher?dir=packaging/nix&submodules=1";
+    umu.inputs.nixpkgs.follows = "nixpkgs";
     # mkWindowsApp
-    erosanix.url = github:emmanuelrosa/erosanix;
-    erosanix.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    erosanix.url = "github:emmanuelrosa/erosanix";
+    erosanix.inputs.nixpkgs.follows = "nixpkgs";
+    erosanix.inputs.flake-compat.follows = "flake-compat";
 
-    # Zellij bar
-    zjstatus.url = github:dj95/zjstatus;
-    zjstatus.inputs.nixpkgs.follows = "canivete/nixpkgs";
-    zjstatus.inputs.rust-overlay.follows = "rust-overlay";
+    # Terminal
+    wezterm.url = "github:wez/wezterm/main?dir=nix";
+    wezterm.inputs = {
+      nixpkgs.follows = "nixpkgs";
+      flake-utils.follows = "flake-utils";
+      # NOTE WezTerm rust-overlay conflict (they did update it, but maybe it's a nixpkgs/nixos problem?)
+      rust-overlay.follows = "rust-overlay";
+    };
+    helix.url = "github:usagi-flow/evil-helix";
+    helix.inputs = {
+      nixpkgs.follows = "nixpkgs";
+      flake-utils.follows = "flake-utils";
+      rust-overlay.follows = "rust-overlay";
+      crane.follows = "crane";
+    };
+    zjstatus.url = "github:dj95/zjstatus";
+    zjstatus.inputs = {
+      nixpkgs.follows = "nixpkgs";
+      crane.follows = "crane";
+      flake-utils.follows = "flake-utils";
+      rust-overlay.follows = "rust-overlay";
+    };
+    yazi.url = "github:sxyazi/yazi";
+    yazi.inputs = {
+      nixpkgs.follows = "nixpkgs";
+      flake-utils.follows = "flake-utils";
+      rust-overlay.follows = "rust-overlay";
+    };
+    superfile.url = "github:yorukot/superfile";
+    superfile.inputs = {
+      nixpkgs.follows = "nixpkgs";
+      flake-compat.follows = "flake-compat";
+      flake-utils.follows = "flake-utils";
+    };
+    naersk.url = "github:nix-community/naersk";
+    naersk.inputs.nixpkgs.follows = "nixpkgs";
+    television.url = "github:alexpasmantier/television";
+    television.inputs = {
+      nixpkgs.follows = "nixpkgs";
+      flake-utils.follows = "flake-utils";
+      naersk.follows = "naersk";
+    };
+    nci.url = "github:yusdacra/nix-cargo-integration";
+    nci.inputs = {
+      crane.follows = "crane";
+      dream2nix.follows = "dream2nix";
+      nixpkgs.follows = "nixpkgs";
+      parts.follows = "flake-parts";
+      rust-overlay.follows = "rust-overlay";
+      treefmt.follows = "treefmt";
+    };
+    nix-inspect.url = "github:bluskript/nix-inspect";
+    nix-inspect.inputs = {
+      nixpkgs.follows = "nixpkgs";
+      parts.follows = "flake-parts";
+      nci.follows = "nci";
+    };
 
-    # Wayland launcher
-    walker.url = github:abenz1267/walker;
-    walker.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    # Browser
+    zen-browser.url = "github:0xc000022070/zen-browser-flake";
+    zen-browser.inputs.nixpkgs.follows = "nixpkgs";
 
-    gauntlet.url = github:project-gauntlet/gauntlet;
-    # NOTE see gauntlet.nix
-    # gauntlet.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    # Languages
+    haskell-nix.url = "github:input-output-hk/haskell.nix";
+    haskell-nix.inputs = {
+      nixpkgs.follows = "nixpkgs";
+      nixpkgs-unstable.follows = "nixpkgs";
+      flake-compat.follows = "flake-compat";
+    };
+    unison-src.url = "github:unisonweb/unison/release/0.5.36";
+    unison-src.inputs.haskellNix.follows = "haskell-nix";
+    unison-src.inputs.flake-utils.follows = "flake-utils";
+    unison.url = "github:ceedubs/unison-nix";
+    unison.inputs = {
+      nixpkgs.follows = "nixpkgs";
+      flake-utils.follows = "flake-utils";
+      home-manager.follows = "home-manager";
+      unison.follows = "unison-src";
+    };
 
-    # AGS GTK widget design
-    astal.url = github:aylur/astal;
-    astal.inputs.nixpkgs.follows = "canivete/nixpkgs";
-    ags.url = github:aylur/ags;
-    ags.inputs.nixpkgs.follows = "canivete/nixpkgs";
-
-    # Theme switching
-    matugen.url = github:InioX/matugen;
-    matugen.inputs.nixpkgs.follows = "canivete/nixpkgs";
-
-    yazi.url = github:sxyazi/yazi;
-    yazi.inputs.nixpkgs.follows = "canivete/nixpkgs";
-    yazi.inputs.rust-overlay.follows = "rust-overlay";
-    superfile.url = github:yorukot/superfile;
-    superfile.inputs.nixpkgs.follows = "canivete/nixpkgs";
-    television.url = github:alexpasmantier/television;
-    television.inputs.nixpkgs.follows = "canivete/nixpkgs";
-    nix-inspect.url = github:bluskript/nix-inspect;
-    nix-inspect.inputs.nixpkgs.follows = "canivete/nixpkgs";
-    unison.url = github:ceedubs/unison-nix;
-    unison.inputs.nixpkgs.follows = "canivete/nixpkgs";
-    unison.inputs.home-manager.follows = "canivete/home-manager";
-    zen-browser.url = github:0xc000022070/zen-browser-flake;
-    zen-browser.inputs.nixpkgs.follows = "canivete/nixpkgs";
-
-    deploy.url = github:serokell/deploy-rs;
-    deploy.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    # Window Manager
+    matugen.url = "github:InioX/matugen";
+    matugen.inputs.nixpkgs.follows = "nixpkgs";
+    matugen.inputs.systems.follows = "systems";
+    walker.url = "github:abenz1267/walker";
+    walker.inputs.nixpkgs.follows = "nixpkgs";
+    walker.inputs.systems.follows = "systems";
+    gauntlet.url = "github:project-gauntlet/gauntlet";
+    gauntlet.inputs = {
+      crane.follows = "crane";
+      flake-compat.follows = "flake-compat";
+      flake-parts.follows = "flake-parts";
+      nixpkgs.follows = "nixpkgs";
+      systems.follows = "systems";
+    };
 
     # Hyprland
     # NOTE hyprland changes way too frequently that it might make sense to permanently version pin
-    hyprland.url = github:hyprwm/Hyprland/v0.46.0;
-    hyprland.inputs.nixpkgs.follows = "canivete/nixpkgs";
-    hyprland-plugins.url = github:hyprwm/hyprland-plugins/v0.46.0;
+    hyprland.url = "github:hyprwm/Hyprland/v0.46.0";
+    hyprland.inputs.nixpkgs.follows = "nixpkgs";
+    hyprland.inputs.systems.url = "github:nix-systems/default-linux";
+    hyprland.inputs.pre-commit-hooks.follows = "pre-commit";
+    hyprland-plugins.url = "github:hyprwm/hyprland-plugins/v0.46.0";
     hyprland-plugins.inputs.hyprland.follows = "hyprland";
-    hyprland-plugins.inputs.nixpkgs.follows = "canivete/nixpkgs";
+    hyprland-plugins.inputs.nixpkgs.follows = "nixpkgs";
     # TODO track https://github.com/pyt0xic/hyprfocus/pull/17
-    # hyprfocus.url = github:pyt0xic/hyprfocus;
-    hyprfocus.url = github:schradert/hyprfocus;
+    # hyprfocus.url = "github:pyt0xic/hyprfocus";
+    hyprfocus.url = "github:schradert/hyprfocus";
     hyprfocus.inputs.hyprland.follows = "hyprland";
-    hyprpicker.url = github:hyprwm/hyprpicker;
-    hyprpicker.inputs.nixpkgs.follows = "canivete/nixpkgs";
-    hyprpicker.inputs.hyprutils.follows = "hyprutils";
-    hyprpicker.inputs.hyprwayland-scanner.follows = "hyprwayland-scanner";
-    grim-hyprland.url = github:eriedaberrie/grim-hyprland;
-    grim-hyprland.inputs.nixpkgs.follows = "canivete/nixpkgs";
-    pyprland.url = github:hyprland-community/pyprland;
-    pyprland.inputs.nixpkgs.follows = "canivete/nixpkgs";
-    hyprsome.url = github:sopa0/hyprsome;
-    hyprsome.inputs.nixpkgs.follows = "canivete/nixpkgs";
-    hy3.url = github:outfoxxed/hy3/hl0.46.0;
+    hyprpicker.url = "github:hyprwm/hyprpicker";
+    hyprpicker.inputs = {
+      nixpkgs.follows = "nixpkgs";
+      hyprutils.follows = "hyprutils";
+      systems.follows = "hyprland/systems";
+      hyprwayland-scanner.follows = "hyprwayland-scanner";
+    };
+    grim-hyprland.url = "github:eriedaberrie/grim-hyprland";
+    grim-hyprland.inputs.nixpkgs.follows = "nixpkgs";
+    grim-hyprland.inputs.systems.follows = "hyprland/systems";
+    poetry2nix.url = "github:nix-community/poetry2nix";
+    poetry2nix.inputs = {
+      flake-utils.follows = "flake-utils";
+      nix-github-actions.follows = "nix-github-actions";
+      nixpkgs.follows = "nixpkgs";
+      systems.follows = "hyprland/systems";
+      treefmt-nix.follows = "treefmt";
+    };
+    pyprland.url = "github:hyprland-community/pyprland";
+    pyprland.inputs = {
+      nixpkgs.follows = "nixpkgs";
+      flake-compat.follows = "flake-compat";
+      systems.follows = "systems";
+      poetry2nix.follows = "poetry2nix";
+    };
+    hyprsome.url = "github:sopa0/hyprsome";
+    hyprsome.inputs = {
+      nixpkgs.follows = "nixpkgs";
+      crane.follows = "crane";
+      flake-utils.follows = "flake-utils";
+    };
+    hy3.url = "github:outfoxxed/hy3/hl0.46.0";
     hy3.inputs.hyprland.follows = "hyprland";
     # TODO track https://github.com/KZDKM/Hyprspace/pull/136
     # TODO track https://github.com/KZDKM/Hyprspace/pull/129
     # TODO track https://github.com/KZDKM/Hyprspace/issues/131
-    hyprspace.url = github:schradert/Hyprspace/v0.46.0;
+    hyprspace.url = "github:schradert/Hyprspace/v0.46.0";
     hyprspace.inputs.hyprland.follows = "hyprland";
+    hyprspace.inputs.systems.follows = "hyprland/systems";
     # TODO revert to version pinning
-    aquamarine.url = github:hyprwm/aquamarine;
-    aquamarine.inputs.nixpkgs.follows = "hyprland/nixpkgs";
-    aquamarine.inputs.hyprutils.follows = "hyprland/hyprutils";
-    aquamarine.inputs.hyprwayland-scanner.follows = "hyprland/hyprwayland-scanner";
+    aquamarine.url = "github:hyprwm/aquamarine";
+    aquamarine.inputs = {
+      nixpkgs.follows = "hyprland/nixpkgs";
+      hyprutils.follows = "hyprland/hyprutils";
+      hyprwayland-scanner.follows = "hyprland/hyprwayland-scanner";
+      systems.follows = "hyprland/systems";
+    };
     hyprland.inputs.aquamarine.follows = "aquamarine";
-    hyprcursor.url = github:hyprwm/hyprcursor;
-    hyprcursor.inputs.nixpkgs.follows = "hyprland/nixpkgs";
-    hyprcursor.inputs.hyprlang.follows = "hyprland/hyprlang";
+    hyprcursor.url = "github:hyprwm/hyprcursor";
+    hyprcursor.inputs = {
+      nixpkgs.follows = "hyprland/nixpkgs";
+      hyprlang.follows = "hyprland/hyprlang";
+      systems.follows = "hyprland/systems";
+    };
     hyprland.inputs.hyprcursor.follows = "hyprcursor";
-    hyprland-protocols.url = github:hyprwm/hyprland-protocols;
+    hyprland-protocols.url = "github:hyprwm/hyprland-protocols";
     hyprland-protocols.inputs.nixpkgs.follows = "hyprland/nixpkgs";
+    hyprland-protocols.inputs.systems.follows = "hyprland/systems";
     hyprland.inputs.hyprland-protocols.follows = "hyprland-protocols";
-    hyprlang.url = github:hyprwm/hyprlang;
-    hyprlang.inputs.nixpkgs.follows = "hyprland/nixpkgs";
-    hyprlang.inputs.hyprutils.follows = "hyprland/hyprutils";
+    hyprlang.url = "github:hyprwm/hyprlang";
+    hyprlang.inputs = {
+      nixpkgs.follows = "hyprland/nixpkgs";
+      hyprutils.follows = "hyprland/hyprutils";
+      systems.follows = "hyprland/systems";
+    };
     hyprland.inputs.hyprlang.follows = "hyprlang";
-    hyprutils.url = github:hyprwm/hyprutils;
+    hyprutils.url = "github:hyprwm/hyprutils";
     hyprutils.inputs.nixpkgs.follows = "hyprland/nixpkgs";
+    hyprutils.inputs.systems.follows = "hyprland/systems";
     hyprland.inputs.hyprutils.follows = "hyprutils";
-    hyprwayland-scanner.url = github:hyprwm/hyprwayland-scanner;
+    hyprwayland-scanner.url = "github:hyprwm/hyprwayland-scanner";
     hyprwayland-scanner.inputs.nixpkgs.follows = "hyprland/nixpkgs";
+    hyprwayland-scanner.inputs.systems.follows = "hyprland/systems";
     hyprland.inputs.hyprwayland-scanner.follows = "hyprwayland-scanner";
-    xdph.url = github:hyprwm/xdg-desktop-portal-hyprland;
-    xdph.inputs.nixpkgs.follows = "hyprland/nixpkgs";
-    xdph.inputs.hyprutils.follows = "hyprland/hyprutils";
-    xdph.inputs.hyprlang.follows = "hyprland/hyprlang";
-    xdph.inputs.hyprwayland-scanner.follows = "hyprland/hyprwayland-scanner";
-    xdph.inputs.hyprland-protocols.follows = "hyprland/hyprland-protocols";
+    xdph.url = "github:hyprwm/xdg-desktop-portal-hyprland";
+    xdph.inputs = {
+      nixpkgs.follows = "hyprland/nixpkgs";
+      systems.follows = "hyprland/systems";
+      hyprutils.follows = "hyprland/hyprutils";
+      hyprlang.follows = "hyprland/hyprlang";
+      hyprwayland-scanner.follows = "hyprland/hyprwayland-scanner";
+      hyprland-protocols.follows = "hyprland/hyprland-protocols";
+    };
     hyprland.inputs.xdph.follows = "xdph";
+
     # TODO fix wiimmfi login
     # TODO FHS compatibility with envfs and nix-ld
     # NOTE https://github.com/nix-community/nix-ld
