@@ -4,7 +4,6 @@ Fair warning this repository does not follow more traditional patterns for infra
 
 ## TODO
 
-- [ ] essential configuration in emacs
-- [ ] zellij layouts for projects and default
-- [ ] zellij command for tri-split window fixer
-- [ ] zellij command to search and navigate to a pane
+- [ ] nix and cluster image garbage collector
+- [ ] write tailscaled service config and install
+- [ ] why do I have to `rm -rf /var/lib/rancher/k3s/agent/images && systemd-tmpfiles --create --remove` when a new image with same name is pushed?! (only applies to `buildImage` because symlink name is the same)

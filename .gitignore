@@ -1,5 +1,5 @@
-.DS_Store
-/.direnv/
-*.swp
+.direnv/
 result
-/.pre-commit-config.yaml
+.pre-commit-config.yaml
+/.canivete/opentofu/**/terraform.tfstate*.backup
+/kubeconfig

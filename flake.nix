@@ -1,6 +1,6 @@
 {
   description = "System configuration";
-  outputs = inputs: inputs.canivete.lib.mkFlake {inherit inputs;} [./modules ./builds] ./default.nix;
+  outputs = inputs: inputs.canivete.lib.mkFlake {inherit inputs;} [./.] {};
   inputs = {
     ### REPOSITORY
 
@@ -14,6 +14,7 @@
 
     # Essentials
     flake-parts.url = "github:hercules-ci/flake-parts";
+    flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs-lib";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     systems.url = "github:nix-systems/default";
 
@@ -29,14 +30,22 @@
     nix-on-droid.url = "github:nix-community/nix-on-droid";
     nix-on-droid.inputs.home-manager.follows = "home-manager";
     nix-on-droid.inputs.nixpkgs.follows = "nixpkgs";
-    nixos-anywhere.url = "github:nix-community/nixos-anywhere";
+    # TODO submit feature upstream
+    # nixos-anywhere.url = "github:nix-community/nixos-anywhere";
+    nixos-anywhere.url = "github:schradert/nixos-anywhere";
     nixos-anywhere.inputs = {
       flake-parts.follows = "flake-parts";
       nixpkgs.follows = "nixpkgs";
       disko.follows = "disko";
+      treefmt-nix.follows = "treefmt";
     };
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
+    srvos.url = "github:nix-community/srvos";
+    srvos.inputs.nixpkgs.follows = "nixpkgs";
+    nixos-generators.url = "github:nix-community/nixos-generators";
+    nixos-generators.inputs.nixpkgs.follows = "nixpkgs";
+    nixos-generators.inputs.nixlib.follows = "nixpkgs-lib";
     nix-darwin.url = "github:LnL7/nix-darwin";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
     nixos-wsl.url = "github:nix-community/NixOS-WSL";
@@ -132,6 +141,7 @@
     rust-overlay.url = "github:oxalica/rust-overlay";
     rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-24.11";
+    nixpkgs-lib.url = "github:nix-community/nixpkgs.lib";
     crane.url = "github:ipetkov/crane";
     flake-compat.url = "github:edolstra/flake-compat";
     flake-utils.url = "github:numtide/flake-utils";
@@ -141,6 +151,12 @@
     treefmt.url = "github:numtide/treefmt-nix";
     treefmt.inputs.nixpkgs.follows = "nixpkgs";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
+
+    # Network
+    # NOTE https://github.com/awlsring/terraform-provider-headscale/issues/12
+    headscale.url = "github:juanfont/headscale/v0.23.0";
+    headscale.inputs.nixpkgs.follows = "nixpkgs";
+    headscale.inputs.flake-utils.follows = "flake-utils";
 
     # Emacs
     nix-doom-emacs-unstraightened.url = "github:marienz/nix-doom-emacs-unstraightened";
@@ -364,11 +380,5 @@
       hyprland-protocols.follows = "hyprland/hyprland-protocols";
     };
     hyprland.inputs.xdph.follows = "xdph";
-
-    # TODO fix wiimmfi login
-    # TODO FHS compatibility with envfs and nix-ld
-    # NOTE https://github.com/nix-community/nix-ld
-    # NOTE https://github.com/Mic92/envfs
-    # NOTE Mic92's example: https://github.com/Mic92/dotfiles/blob/main/machines/modules/fhs-compat.nix
   };
 }

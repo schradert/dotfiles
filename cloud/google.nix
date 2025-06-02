@@ -1,0 +1,82 @@
+{config, ...}: let
+  inherit (config.canivete.meta.people.my.profiles.default) email;
+in {
+  perSystem = {pkgs, ...}: {
+    canivete.devShells.shells.default.packages = [pkgs.google-cloud-sdk];
+  };
+  dotfiles = {
+    config,
+    lib,
+    ...
+  }: let
+    inherit (config) domain;
+    # Somehow someone already took this... :'(
+    project = "roca-dotfiles";
+    billing_project = "rocaille";
+  in {
+    options.platforms.google.enable = lib.mkEnableOption "Google Cloud";
+    config.opentofu.modules = {
+      provider.google = {
+        inherit project billing_project;
+        region = "us-west1";
+        zone = "us-west1-a";
+        user_project_override = true;
+      };
+      # TODO why do I need certain services on billing project?
+      # NOTE required permissions are:
+      # roles/resourcemanager.organizationAdmin + roles/billing.admin on organizations/rocamaterials.com
+      # roles/billing.user on billingAccounts/{Roca AmEx}
+      data = {
+        google_organization.main.domain = domain;
+        google_project.billing.project_id = "rocaille";
+        google_project_service.billing = {
+          service = "cloudbilling.googleapis.com";
+          project = billing_project;
+        };
+        google_project_service.resourcemanager_billing = {
+          service = "cloudresourcemanager.googleapis.com";
+          project = billing_project;
+        };
+        google_billing_account.main.display_name = "Roca AmEx ";
+      };
+      resource = {
+        google_project.main = {
+          depends_on = ["google_org_policy_policy.service_account_key"];
+          name = project;
+          project_id = project;
+          org_id = "\${ data.google_organization.main.org_id }";
+          billing_account = "\${ data.google_billing_account.main.id }";
+        };
+        google_project_service.iam_billing = {
+          depends_on = ["google_project_service.resourcemanager_billing"];
+          project = "\${ data.google_project.billing.project_id }";
+          service = "iam.googleapis.com";
+        };
+        google_project_service.resourcemanager = {
+          service = "cloudresourcemanager.googleapis.com";
+          project = "\${ google_project.main.project_id }";
+        };
+        google_project_service.resourcemanager_billing = {
+          project = "\${ data.google_project.billing.project_id }";
+          service = "cloudresourcemanager.googleapis.com";
+        };
+        google_project_service.orgpolicy = {
+          depends_on = ["google_project_service.resourcemanager_billing"];
+          project = "\${ data.google_project.billing.project_id }";
+          service = "orgpolicy.googleapis.com";
+        };
+        google_organization_iam_member.orgpolicy = {
+          org_id = "\${ data.google_organization.main.org_id }";
+          role = "roles/orgpolicy.policyAdmin";
+          member = "user:${email}";
+        };
+        google_org_policy_policy.service_account_key = {
+          depends_on = ["google_project_service.orgpolicy" "google_organization_iam_member.orgpolicy"];
+          name = "\${ data.google_organization.main.name }/policies/iam.disableServiceAccountKeyCreation";
+          parent = "\${ data.google_organization.main.name }";
+          spec.rules.enforce = "FALSE";
+        };
+      };
+    };
+  };
+}

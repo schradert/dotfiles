@@ -1,0 +1,169 @@
+{
+  dotfiles = {
+    config,
+    lib,
+    ...
+  }: let
+    inherit (lib) flip mapAttrs mapAttrsToList mkDefault mkEnableOption mkIf mkMerge mkOption pipe setAttrByPath types;
+    inherit (types) attrsOf coercedTo int listOf str submodule;
+  in {
+    options.services.volsync.enable = mkEnableOption "Volsync";
+    config = mkMerge [
+      {
+        kubenix = {
+          canivete,
+          perSystem,
+          ...
+        }: {
+          options.kubernetes.helm.releases = mkOption {
+            type = attrsOf (submodule ({
+              config,
+              name,
+              ...
+            }: let
+              inherit (config.dotfiles) volsync;
+            in {
+              options.dotfiles.volsync = {
+                enable = mkEnableOption "Volsync replication of PVCs" // {default = volsync.pvcs != null;};
+                pvcs =
+                  pipe ({config, ...}: {
+                    options = {
+                      title = mkOption {
+                        description = "Name of PVC (eventually) created";
+                        type = str;
+                      };
+                      path = mkOption {
+                        default = ["persistentVolumeClaims" config.title];
+                        description = "Location to inject dataSourceRef for ReplicationDestination";
+                        type = listOf str;
+                      };
+                      uid = mkOption {
+                        default = 101;
+                        description = "UID for podSecurityContext";
+                        type = int;
+                      };
+                      gid = mkOption {
+                        default = 101;
+                        description = "GID for podSecurityContext";
+                        type = int;
+                      };
+                      # TODO switch to a resizable, snapshottable storage class
+                      # NOTE openebs-hostpath Local PV is neither and doesn't support custom dataSourceRef
+                      # options.inject = canivete.mkEnabledOption "Inject dataSourceRef into a PVC";
+                      inject = mkEnableOption "Inject dataSourceRef into a PVC";
+                    };
+                  }) [
+                    submodule
+                    (coercedTo str (title: {inherit title;}))
+                    attrsOf
+                    (flip canivete.mkNullableOption {description = "Name of PVCs to replicate and back up";})
+                  ];
+              };
+              config = mkIf (volsync.enable && volsync.pvcs != null) {
+                extraResources = mkMerge (flip mapAttrsToList volsync.pvcs (pvc: {
+                  title,
+                  inject,
+                  path,
+                  uid,
+                  gid,
+                }: let
+                  repository = "volsync--${name}--${pvc}";
+                  inherit (canivete.vals.sops) default;
+                  # TODO is there a more ergonomic way that doesn't hardcode workspace?
+                  # TODO is this the best central place for defining this?
+                  inherit (perSystem.config.canivete.opentofu.workspaces.deploy.modules.config.provider) minio;
+                in
+                  mkMerge [
+                    # Some services use operators that allow configuration injection into PersistentVolumeClaim templates
+                    # Some still don't offer ways to inject so we have to do this manually
+                    (mkIf inject (setAttrByPath path {
+                      spec.dataSourceRef = {
+                        kind = "ReplicationDestination";
+                        apiGroup = "volsync.backube";
+                        name = "${repository}-dst";
+                      };
+                    }))
+                    # FIXME transfer all of these to respective modules
+                    {
+                      secrets.${repository}.data = mapAttrs (_: canivete.toBase64) {
+                        RESTIC_REPOSITORY = "s3:https://${minio.minio_server}/${default "hetzner/s3/bucket"}/backups/${repository}";
+                        RESTIC_PASSWORD = default "passwords/restic";
+                        AWS_ACCESS_KEY_ID = minio.minio_user;
+                        AWS_SECRET_ACCESS_KEY = minio.minio_password;
+                        AWS_DEFAULT_REGION = minio.minio_region;
+                      };
+                      replicationsources."${repository}-src".spec = {
+                        sourcePVC = title;
+                        trigger.schedule = "0 4 * * *";
+                        restic = {
+                          # TODO is it worth using OpenEBS Mayastor for PiT Snapshot/Clone?
+                          # Copy every day at 4am, pruning every 8 days down to 1 per day/week/month/year
+                          moverSecurityContext.fsGroup = gid;
+                          copyMethod = "Direct";
+                          pruneIntervalDays = 8;
+                          inherit repository;
+                          retain = {
+                            daily = 1;
+                            weekly = 1;
+                            monthly = 1;
+                            yearly = 1;
+                          };
+                        };
+                      };
+                      replicationdestinations."${repository}-dst".spec = {
+                        # Override this to track restoration
+                        trigger.manual = mkDefault "1";
+                        restic = {
+                          moverSecurityContext.runAsGroup = gid;
+                          moverSecurityContext.runAsUser = uid;
+                          copyMethod = "Direct";
+                          destinationPVC = title;
+                          inherit repository;
+                        };
+                      };
+                    }
+                  ]));
+              };
+            }));
+          };
+        };
+      }
+      (mkIf config.services.volsync.enable {
+        opentofu.passwords.restic.length = 21;
+        nixos = {pkgs, ...}: let
+          inherit (pkgs.dockerTools) pullImage;
+        in {
+          canivete.kubernetes.images = {
+            kube-rbac-proxy = pullImage {
+              imageName = "quay.io/brancz/kube-rbac-proxy";
+              imageDigest = "sha256:7de54b6dedc8006ffd447267b826eb417a648c00f2b735b6d313395411803719";
+              hash = "sha256-a3euZnjY/O/gVcXGx70ycuJbo05f2E0BHffM0FVbla0=";
+              finalImageTag = "v0.18.2";
+            };
+            volsync = pullImage {
+              imageName = "quay.io/backube/volsync";
+              imageDigest = "sha256:2dd1ef4251b3a5881ab9289dce481de3fe30da7fc8da5e4dfed2d562964c888a";
+              hash = "sha256-G/z2RbEyp53S3l2OACtuoFSddpuVY4gQ5Yc9PiddYn0=";
+              finalImageTag = "0.12.1";
+            };
+          };
+        };
+        kubenix = {helm, ...}: {
+          canivete.ifd.crds = {
+            replicationdestinations = "volsync.backube/v1alpha1/ReplicationDestination";
+            replicationsources = "volsync.backube/v1alpha1/ReplicationSource";
+          };
+          kubernetes.helm.releases.volsync = {
+            namespace = "storage";
+            chart = helm.fetch {
+              repo = "https://backube.github.io/helm-charts";
+              chart = "volsync";
+              version = "0.12.1";
+              sha256 = "sha256-+ytyqmvUPZynLDivVXjEhmd1uHH3MaaCsYo35Na6sX4=";
+            };
+          };
+        };
+      })
+    ];
+  };
+}
