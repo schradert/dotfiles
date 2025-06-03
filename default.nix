@@ -72,10 +72,6 @@
     me = "tristan";
     people.tristan = "tristan";
 
-    # FIXME extract components from platforms
-    # platforms.hetzner.enable = true;
-    # platforms.google.enable = true;
-
     nixos = {pkgs, ...}: {
       # Convenient debugging image to bypass airgap
       canivete.kubernetes.images.nix = pkgs.dockerTools.pullImage {
@@ -87,17 +83,6 @@
     };
 
     services = {
-      # TODO should I use FluxCD
-      # fluxcd.enable = true;
-      # fluxcd.repo = {
-      #   auth = "ssh";
-      #   domain = "github.com";
-      #   owner = "schradert";
-      #   repo = "dotfiles";
-      #   branch = "trunk";
-      # };
-
-      # TODO configure connections between services
       cert-manager.enable = true;
       cert-manager.provider.cloudflare.token = canivete.vals.sops.default "cloudflare/token";
       cilium.enable = true;
@@ -128,6 +113,8 @@
         annotations = [];
         className = "";
       };
+      # TODO add all of the services
+      # TODO decouple services
     };
   };
 }

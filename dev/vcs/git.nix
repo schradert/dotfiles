@@ -8,13 +8,12 @@
     pkgs,
     ...
   }: let
-    inherit (lib) fileContents mapAttrs mkIf mkEnableOption mkMerge setAttrByPath;
+    inherit (lib) fileContents mapAttrs mkIf mkMerge setAttrByPath;
     inherit (config) dotfiles home;
     my = flake.config.canivete.meta.people.users.${home.username};
     key = fileContents (flake.inputs.self + "/.canivete/sops/${home.username}.pub");
   in {
-    options.dotfiles.programs.git.enable = mkEnableOption "Git configuration";
-    config = mkIf dotfiles.programs.git.enable (mkMerge [
+    config = mkIf dotfiles.profiles.workstation.enable (mkMerge [
       {
         # TODO how good is gitu vs magit vs lazygit vs tig vs code-maat vs serie?
         home.packages = with pkgs; [code-maat lazygit tig gitu gitui serie];

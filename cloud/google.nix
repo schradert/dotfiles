@@ -10,9 +10,8 @@ in {
     ...
   }: let
     inherit (config) domain;
-    # Somehow someone already took this... :'(
-    project = "roca-dotfiles";
-    billing_project = "rocaille";
+    project = "";
+    billing_project = "";
   in {
     options.platforms.google.enable = lib.mkEnableOption "Google Cloud";
     config.opentofu.modules = {
@@ -24,11 +23,11 @@ in {
       };
       # TODO why do I need certain services on billing project?
       # NOTE required permissions are:
-      # roles/resourcemanager.organizationAdmin + roles/billing.admin on organizations/rocamaterials.com
-      # roles/billing.user on billingAccounts/{Roca AmEx}
+      # roles/resourcemanager.organizationAdmin + roles/billing.admin on organizations/{organization}
+      # roles/billing.user on billingAccounts/{billing_account}
       data = {
         google_organization.main.domain = domain;
-        google_project.billing.project_id = "rocaille";
+        google_project.billing.project_id = "";
         google_project_service.billing = {
           service = "cloudbilling.googleapis.com";
           project = billing_project;
@@ -37,7 +36,7 @@ in {
           service = "cloudresourcemanager.googleapis.com";
           project = billing_project;
         };
-        google_billing_account.main.display_name = "Roca AmEx ";
+        google_billing_account.main.display_name = "";
       };
       resource = {
         google_project.main = {

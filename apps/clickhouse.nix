@@ -39,7 +39,7 @@
               hash = "sha256-Z0MQAY0sxPKhEoqWheWSOkci0tM3+xUGZU1Y58GNv38=";
               finalImageTag = "24.3.12.76.altinitystable";
             };
-            # ODBC support for MITS Pro 8 MSSQL Server
+            # ODBC support
             copyToRoot = buildEnv {
               name = "image-root";
               # Upstream Debian image symlinks /bin and /lib to /usr/<dir>
@@ -72,7 +72,8 @@
                 # TODO how to pass this file in through a volume?
                 # TODO figure out MagicDNS on Tailscale to prevent hardcoding IP addresses subject to change
                 (writeTextDir "etc/odbc.ini" (generators.toINI {} {
-                  arbin = {
+                  # FIXME only add actual databases here
+                  test = {
                     Driver = "FreeTDS";
                     Server = "100.64.0.3";
                     Port = 1433;

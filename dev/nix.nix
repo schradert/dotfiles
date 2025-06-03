@@ -5,6 +5,7 @@
 }: let
   inherit (config.canivete.deploy) nodes;
 in {
+  flake.overlays.nix-inspect = _: prev: {nix-inspect = inputs.nix-inspect.packages.${prev.system}.default;};
   dotfiles = {
     config,
     lib,
@@ -43,6 +44,7 @@ in {
     home-manager = {pkgs, ...}: {
       home.packages = with pkgs; [
         nix-btm
+        nix-inspect
         nix-fast-build
         nix-output-monitor
       ];
@@ -51,6 +53,8 @@ in {
         # Some conflict from home-manager managing itself, but it must be specified
         package = mkForce pkgs.nixVersions.latest;
       };
+      # TODO why is it panicking when I try to call it from `nix run`?
+      # programs.nix-your-shell.enable = true;
     };
     nixos.nix = mkMerge [
       common

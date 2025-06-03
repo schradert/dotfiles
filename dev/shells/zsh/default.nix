@@ -1,8 +1,8 @@
 {
   perSystem.canivete.pre-commit.settings.hooks.shfmt.excludes = ["dev/shells/zsh/.p10k.zsh"];
   dotfiles = {
-    system = {lib, ...}: {
-      options.dotfiles.programs.zsh.enable = lib.mkEnableOption "";
+    shared = {lib, ...}: {
+      options.dotfiles.programs.zsh.enable = lib.mkEnableOption "" // {default = true;};
     };
     nixos = {
       config,

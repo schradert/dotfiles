@@ -31,5 +31,15 @@ in {
       then "Users"
       else "home"
     }/${username}";
+    config.home.sessionVariables = let
+      inherit (config) xdg;
+    in {
+      XDG_CACHE_HOME = xdg.cacheHome;
+      XDG_CONFIG_HOME = xdg.configHome;
+      XDG_DATA_HOME = xdg.dataHome;
+      XDG_STATE_HOME = xdg.stateHome;
+      # TODO how can I get the user UID?
+      XDG_RUNTIME_DIR = "/run/user/1000";
+    };
   };
 }

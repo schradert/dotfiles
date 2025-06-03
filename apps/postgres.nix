@@ -1,5 +1,6 @@
 let
   repo = "https://opensource.zalando.com/postgres-operator/charts/postgres-operator";
+  repo-ui = "https://opensource.zalando.com/postgres-operator/charts/postgres-operator-ui";
 in {
   perSystem.canivete.pre-commit.settings.hooks.lychee.toml.exclude = [repo];
   dotfiles = {
@@ -7,6 +8,7 @@ in {
     lib,
     ...
   }: let
+    inherit (config) domain;
     inherit (lib) attrValues concat hasSuffix mkEnableOption mkForce mkIf mkMerge mkOption pipe toList types;
     inherit (types) attrs attrsOf either listOf submodule str;
     databases = mkOption {
@@ -39,6 +41,17 @@ in {
         };
       }
       (mkIf config.services.postgres.enable {
+        home-manager = {pkgs, ...}: {
+          # TODO should I bring back dotfiles.profiles.databases.enable setting?
+          home.packages = with pkgs; [
+            dbeaver-bin
+            gobang
+            lazysql
+            rainfrog
+            harlequin
+            dblab
+          ];
+        };
         nixos = {pkgs, ...}: let
           inherit (pkgs.dockerTools) pullImage;
         in {
@@ -87,45 +100,68 @@ in {
               (canivete.filesets.files (name: _: hasSuffix ".yaml" name))
             ];
           kubernetes.helm.releases.postgres = {
-            chart = helm.fetch {
-              inherit repo;
-              chart = "postgres-operator";
-              version = "1.14.0";
-              sha256 = "sha256-VB3RglaZ9Zu3F2GdcLpVh899d6o7LRg6VDsiq5U6NsA=";
+            postgres = {
+              chart = helm.fetch {
+                inherit repo;
+                chart = "postgres-operator";
+                version = "1.14.0";
+                sha256 = "sha256-VB3RglaZ9Zu3F2GdcLpVh899d6o7LRg6VDsiq5U6NsA=";
+              };
+              extraResources.postgresqls.main.spec = pipe config.dotfiles.postgres [
+                attrValues
+                (concat (toList {
+                  teamId = "acid";
+                  volume.size = "10Gi";
+                  numberOfInstances = 1;
+                  users.superadmin = ["superuser"];
+                  postgresql.version = "16";
+                }))
+                mkMerge
+              ];
+              dotfiles.volsync.pvcs.postgres = {
+                title = "pgdata-main-0";
+                gid = 103;
+              };
+              # NOTE /home/postgres/pgdata/pgroot/data is only accessible by the postgres user
+              extraResources.replicationsources.volsync--postgres--postgres-src.spec.restic.moverSecurityContext.runAsUser = 101;
+              # TODO are there advantages over this logical-backup process compared to volsync?
+              # NOTE this path was considered because there is no way to override dataSourceRef
+              # extraResources.secrets.postgres-logical-backup.data = mapAttrs (_: toBase64) {
+              #   AWS_ACCESS_KEY_ID = minio.minio_user;
+              #   AWS_SECRET_ACCESS_KEY = minio.minio_password;
+              # };
+              # values.configLogicalBackup = {
+              #   logical_backup_docker_image = "ghcr.io/zalando/postgres-operator/logical-backup:v1.14.0";
+              #   logical_backup_s3_bucket = vals.sops.default "hetzner/s3/bucket";
+              #   logical_backup_s3_bucket_prefix = "backups/volsync--postgres--pgdata-main-0";
+              #   logical_backup_s3_region = minio.minio_region;
+              #   logical_backup_s3_endpoint = minio.minio_server;
+              #   logical_backup_s3_retention_time = "8 days";
+              #   logical_backup_schedule = "0 4 * * *";
+              #   logical_backup_cronjob_environment_secret = "postgres-logical-backup";
+              # };
             };
-            extraResources.postgresqls.main.spec = pipe config.dotfiles.postgres [
-              attrValues
-              (concat (toList {
-                teamId = "acid";
-                volume.size = "10Gi";
-                numberOfInstances = 1;
-                users.superadmin = ["superuser"];
-                postgresql.version = "16";
-              }))
-              mkMerge
-            ];
-            dotfiles.volsync.pvcs.postgres = {
-              title = "pgdata-main-0";
-              gid = 103;
+            postgres-ui = {
+              chart = helm.fetch {
+                repo = repo-ui;
+                chart = "postgres-operator-ui";
+                version = "1.12.2";
+                sha256 = "SkuTSWzFhQV4lYgTnSWCuwAHloOz4dz7K8YreNEltes=";
+              };
+              values.envs.resourcesVisible = "True";
+              values.envs.targetNamespace = "*";
+              values.ingress = {
+                enabled = true;
+                annotations."external-dns.alpha.kubernetes.io/target" = "external.${domain}";
+                annotations."nginx.ingress.kubernetes.io/auth-url" = "https://oauth2-proxy.${domain}/oauth2/auth?allowed_groups=/admin";
+                annotations."nginx.ingress.kubernetes.io/auth-signin" = "https://oauth2-proxy.${domain}/oauth2/start?rd=$scheme://$host$request_uri";
+                ingressClassName = "external";
+                hosts = toList {
+                  host = "postgres.${domain}";
+                  paths = ["/"];
+                };
+              };
             };
-            # NOTE /home/postgres/pgdata/pgroot/data is only accessible by the postgres user
-            extraResources.replicationsources.volsync--postgres--postgres-src.spec.restic.moverSecurityContext.runAsUser = 101;
-            # TODO are there advantages over this logical-backup process compared to volsync?
-            # NOTE this path was considered because there is no way to override dataSourceRef
-            # extraResources.secrets.postgres-logical-backup.data = mapAttrs (_: toBase64) {
-            #   AWS_ACCESS_KEY_ID = minio.minio_user;
-            #   AWS_SECRET_ACCESS_KEY = minio.minio_password;
-            # };
-            # values.configLogicalBackup = {
-            #   logical_backup_docker_image = "ghcr.io/zalando/postgres-operator/logical-backup:v1.14.0";
-            #   logical_backup_s3_bucket = vals.sops.default "hetzner/s3/bucket";
-            #   logical_backup_s3_bucket_prefix = "backups/volsync--postgres--pgdata-main-0";
-            #   logical_backup_s3_region = minio.minio_region;
-            #   logical_backup_s3_endpoint = minio.minio_server;
-            #   logical_backup_s3_retention_time = "8 days";
-            #   logical_backup_schedule = "0 4 * * *";
-            #   logical_backup_cronjob_environment_secret = "postgres-logical-backup";
-            # };
           };
 
           # Overrides

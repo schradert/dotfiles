@@ -4,16 +4,33 @@
     lib,
     ...
   }: let
+    inherit (config) root;
     inherit (lib) fileContents mkDefault mkForce mkIf mkMerge mkOption types;
     inherit (types) attrsOf enum submodule;
   in {
     options.nodes = mkOption {
-      type = attrsOf (submodule ({config, ...}: {
+      type = attrsOf (submodule ({
+        config,
+        name,
+        ...
+      }: {
         options.platform = mkOption {
           type = enum ["prem" "google" "hetzner"];
           default = "prem";
         };
         config = mkMerge [
+          # FIXME only propagate these modules to NixOS!
+          (mkIf (config.platform == "prem") {
+            system = {config, ...}: {
+              # TODO are these actually general enough to apply to any NixOS-compatible device I buy?
+              boot.initrd.availableKernelModules = ["ahci" "usb_storage" "sd_mod"];
+              boot.loader.efi.canTouchEfiVariables = true;
+              hardware.enableRedistributableFirmware = mkDefault true;
+              hardware.cpu.intel.updateMicrocode = mkDefault config.hardware.enableRedistributableFirmware;
+              hardware.cpu.amd.updateMicrocode = mkDefault config.hardware.enableRedistributableFirmware;
+              time.timeZone = "America/Los_Angeles";
+            };
+          })
           (mkIf (config.platform == "google") {
             system = {modulesPath, ...}: {
               # FIXME why is it failing with these upstream modules?
@@ -31,15 +48,53 @@
               boot.initrd.kernelModules = ["virtio_scsi"];
               boot.kernelParams = ["console=ttyS0"];
               boot.kernelModules = ["virtio_pci" "virtio_net"];
-              boot.loader.systemd-boot.enable = true;
               networking.extraHosts = "169.254.169.254 metadata.google.internal metadata";
 
               # Delegate to gcloud firewall
               networking.firewall.enable = mkForce false;
             };
+            opentofu.modules.resource.google_compute_instance.${name} = mkMerge [
+              (mkIf (name == root) {network_interface.access_config.nat_ip = "\${ local.root_ip }";})
+              {
+                # TODO what scopes will I need to set?
+                inherit name;
+                machine_type = "e2-standard-4";
+                allow_stopping_for_update = true;
+                boot_disk.initialize_params = {
+                  type = "pd-balanced";
+                  size = 200;
+                  image = "debian-12";
+                };
+                metadata_startup_script = "sed -i 's/PermitRootLogin no/PermitRootLogin prohibit-password/g' /etc/ssh/sshd_config";
+                metadata.ssh-keys = "root:${fileContents (inputs.self + "/${sops.directory}/me.pub")} root";
+                service_account.email = "\${ google_service_account.compute.email }";
+                service_account.scopes = ["cloud-platform"];
+
+                inherit (node) hostname;
+                network_interface.subnetwork = "\${ google_compute_subnetwork.main.name }";
+                can_ip_forward = true;
+              }
+            ];
+            opentofu.modules.module."nixos_${name}_system_install".depends_on = ["google_compute_instance.${name}"];
           })
           (mkIf (config.platform == "hetzner") {
             system.imports = with inputs.srvos.nixosModules; [server hardware-hetzner-cloud];
+            opentofu.modules.resource.hcloud_server.${name} = mkMerge [
+              (mkIf (name == root) {public_net.ipv4 = "\${ local.root_ip }";})
+              {
+                depends_on = ["hcloud_ssh_key.me"];
+                inherit name;
+                location = "ash";
+                # TODO parameterize the server_type
+                server_type = "cpx31";
+                image = "debian-12";
+                keep_disk = true;
+                ssh_keys = ["me"];
+
+                lifecycle.ignore_changes = ["ssh_keys"];
+              }
+            ];
+            opentofu.modules.module."nixos_${name}_system_install".depends_on = ["hcloud_server.${name}"];
           })
         ];
       }));
@@ -51,51 +106,68 @@
           pkgs,
           ...
         }: {
-          canivete.kubernetes.enable = mkDefault true;
+          imports = [inputs.nur.modules.nixos.default];
+          boot.loader.systemd-boot.enable = true;
           environment.systemPackages = with pkgs; [ranger vim];
+          i18n.defaultLocale = "en_US.UTF-8";
           networking.hostName = mkForce "";
-          networking.firewall.allowedTCPPorts = [6443];
-          users.users.root.openssh.authorizedKeys.keys = [(fileContents (inputs.self + "/${flake.config.canivete.sops.directory}/me.pub"))];
+          services.earlyoom.enable = true;
           # NOTE currently necessary for sops-install-secrets to exist instead of a system activation script
           # TODO should this go upstream? worth checking how stable this is and community commentary thereof
           services.userborn.enable = true;
           system.stateVersion = "25.05";
-
-          disko.devices.disk.base = {
-            device = "/dev/sda";
-            type = "disk";
-            content.type = "gpt";
-            content.partitions = {
-              # TODO does this work on GCE?
-              boot = {
-                priority = 1;
-                type = "EF02";
-                size = "1M";
+          users.users.root.openssh.authorizedKeys.keys = [(fileContents (inputs.self + "/${flake.config.canivete.sops.directory}/me.pub"))];
+        };
+        shared = {lib, ...}: {
+          options.dotfiles.profiles.client.enable = lib.mkEnableOption "client configuration";
+        };
+      }
+      {
+        nixos = {
+          config,
+          flake,
+          lib,
+          ...
+        }: {
+          config = lib.mkIf config.dotfiles.profiles.client.enable (lib.mkMerge [
+            (lib.flip lib.mapAttrsToList flake.config.canivete.meta.people.users (username: user: {
+              home-manager.users.${username}.home = {inherit username;};
+              # Can be quite large...
+              systemd.services."home-manager-${username}".serviceConfig.TimeoutStartSec = mkForce "10m";
+              users.groups.${username} = {};
+              users.users.${username} = {
+                isNormalUser = true;
+                home = "/home/${username}";
+                description = user.name;
+                extraGroups = ["wheel" "tty" "networkmanager" "audio" "video" username];
               };
-              ESP = {
-                priority = 2;
-                type = "EF00";
-                size = "512M";
-                content = {
-                  type = "filesystem";
-                  format = "vfat";
-                  mountpoint = "/boot";
-                  mountOptions = ["umask=077"];
-                };
-              };
-              root = {
-                priority = 3;
-                size = "100%";
-                content = {
-                  type = "filesystem";
-                  format = "ext4";
-                  mountpoint = "/";
-                  # TODO just on GCE? how does this relate to boot.growPartition?
-                  # Root partition must be resizable
-                  mountOptions = ["defaults" "x-systemd.growfs"];
-                };
-              };
-            };
+            }))
+            {
+              home-manager.backupFileExtension = "bak";
+              home-manager.useGlobalPkgs = true;
+              home-manager.sharedModules = [
+                {
+                  options.dotfiles = options.dotfiles;
+                  config.dotfiles = config.dotfiles;
+                  config.home.stateVersion = "25.05";
+                }
+              ];
+            }
+          ]);
+        };
+      }
+      {
+        system = {lib, ...}: {
+          options.dotfiles.profiles.server.enable = lib.mkEnableOption "server configuration";
+        };
+        nixos = {
+          config,
+          lib,
+          ...
+        }: {
+          config = lib.mkIf config.dotfiles.profiles.server.enable {
+            canivete.kubernetes.enable = true;
+            networking.firewall.allowedTCPPorts = [6443];
           };
         };
       }

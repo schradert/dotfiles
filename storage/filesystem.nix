@@ -22,7 +22,10 @@
           xplr
         ]
       ];
-    programs.dircolors.enable = true;
-    programs.eza.enable = true;
+    programs = {
+      dircolors.enable = true;
+      eza.enable = true;
+      zoxide.enable = true;
+    };
   };
 }

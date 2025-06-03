@@ -13,6 +13,7 @@
         dotfiles.programs.wezterm.enable = true;
         dotfiles.programs.emacs.enable = true;
         editorconfig.enable = true;
+        fonts.fontconfig.enable = true;
         home.packages = with pkgs;
           lib.mkMerge [
             [
@@ -39,11 +40,12 @@
       lib,
       ...
     }: {
-      config = lib.mkIf config.dotfiles.graphical.enable {
-        homebrew.casks = [
-          "android-studio"
-          "protonvpn"
-        ];
+      config = lib.mkIf config.dotfiles.profiles.workstation.enable {
+        # TODO is this configuration even correct?
+        homebrew.brews = ["libtool"];
+        homebrew.casks = ["android-studio" "protonvpn"];
+        # TODO why do I need this tap?
+        homebrew.taps = ["cfergeau/crc"];
       };
     };
     nixos = {

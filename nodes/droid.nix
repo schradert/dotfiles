@@ -1,23 +1,61 @@
 {
-  canivete.deploy.nodes = let
-    module = {pkgs, ...}: {
-      dotfiles.programs.apk.heliboard.apk = pkgs.fetchurl {
-        url = "https://github.com/Helium314/HeliBoard/releases/download/v2.2/HeliBoard_2.2-release.apk";
-        hash = "sha256-GIHjs4nL363OMN4GAmOn38rRHT0NQ6RLb41952QePYA=";
-      };
+  dotfiles.droid = {
+    config,
+    options,
+    ...
+  }: {
+    home-manager = {
+      backupFileExtension = "hm-bak";
+      useGlobalPkgs = true;
+      sharedModules = [
+        {
+          options.dotfiles = options.dotfiles;
+          config.dotfiles = config.dotfiles;
+        }
+        ({
+          config,
+          lib,
+          pkgs,
+          ...
+        }: let
+          # TODO convert to gradle build in nix
+          # NOTE how to use gradlew? do I need gradle2nix/v2? can I do it from scratch?
+          inherit (lib) pipe filterAttrs getAttr mapAttrsToList concatStringsSep mkEnabledOption mkOption types mkIf;
+          inherit (config.dotfiles) apk;
+          apks = pipe apk.programs [
+            (filterAttrs (getAttr "enable"))
+            (mapAttrsToList (_: getAttr "apk"))
+            (concatStringsSep " ")
+          ];
+        in {
+          options.dotfiles.apk = {
+            enable = mkEnabledOption "APK installation step";
+            programs = mkOption {
+              type = types.attrsOf (types.submodule ({name, ...}: {
+                options.enable = mkEnabledOption name;
+                options.apk = mkOption {type = types.package;};
+              }));
+              default = {};
+            };
+          };
+          config = mkIf apk.enable {
+            home.activation.apkInstallation = lib.hm.dag.entryAfter ["writeBoundary"] ''
+              ${pkgs.android-tools}/bin/adb install-multiple ${apks}
+            '';
+          };
+        })
+      ];
     };
-  in {
-    pixel.canivete.os = "android";
-    pixel.profiles.home-manager.canivete.configuration = module;
-    boox.canivete.os = "android";
-    boox.profiles.home-manager.canivete.configuration = module;
-    odin.canivete.os = "android";
-    odin.profiles.home-manager.canivete.configuration = module;
-    s21.canivete.os = "android";
-    s21.profiles.home-manager.canivete.configuration = module;
-    a10e.canivete.os = "android";
-    a10e.profiles.home-manager.canivete.configuration = module;
-    vivo.canivete.os = "android";
-    vivo.profiles.home-manager.canivete.configuration = module;
+    environment.etcBackupExtension = ".bak";
+    system.stateVersion = "23.05";
+    android-integration = {
+      am.enable = true;
+      termux-open.enable = true;
+      termux-setup-storage.enable = true;
+      termux-reload-settings.enable = true;
+      termux-wake-lock.enable = true;
+      xdg-open.enable = true;
+      unsupported.enable = true;
+    };
   };
 }

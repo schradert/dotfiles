@@ -13,6 +13,7 @@ in {
     # NOTE cannot split this into multiline because it is injected into a script
     kubenix.canivete.deploy.fetchKubeconfig = "ssh root@${root} k3s kubectl config view --raw | sed 's/127\.0\.0\.1/${domain}/g'";
     nixos.canivete.kubernetes.k3s.tls-san = lib.mkForce ["${domain}"];
+    home-manager = {pkgs, ...}: {home.packages = [pkgs.dig];};
     opentofu.plugins = ["cloudflare/cloudflare/4.43.0"];
     opentofu.modules = {
       provider.cloudflare.api_token = sops.default "cloudflare/pat";

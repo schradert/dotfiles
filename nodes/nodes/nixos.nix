@@ -14,20 +14,32 @@
     type = "disk";
     content.type = "gpt";
     content.partitions = {
-      ESP = {
+      boot = {
         priority = 1;
+        type = "EF02";
+        size = "1M";
+      };
+      ESP = {
+        priority = 2;
         type = "EF00";
-        size = "500M";
-        content.type = "filesystem";
-        content.format = "vfat";
-        content.mountpoint = "/boot";
+        size = "512M";
+        content = {
+          type = "filesystem";
+          format = "vfat";
+          mountpoint = "/boot";
+          mountOptions = ["umask=077"];
+        };
       };
       root = {
-        priority = 2;
+        priority = 3;
         end = "-1G";
-        content.type = "filesystem";
-        content.format = "ext4";
-        content.mountpoint = "/";
+        content = {
+          type = "filesystem";
+          format = "ext4";
+          mountpoint = "/";
+          # TODO where does root partition need to be resizable
+          # mountOptions = ["defaults" "x-systemd.growfs"];
+        };
       };
       swap = {
         size = "100%";
@@ -57,7 +69,6 @@ in {
     falcon.system = {pkgs, ...}: {
       dotfiles.graphical.monitors = true;
       dotfiles.graphical.hyprland.enable = true;
-      canivete.kubernetes.enable = true;
       dotfiles.services.yubikey.enable = true;
       dotfiles.workstation.enable = true;
       boot.initrd.availableKernelModules = ["xhci_pci" "nvme" "rtsx_pci_sdmmc"];
@@ -88,7 +99,7 @@ in {
 
     # Servers
     sirver.system = {
-      canivete.kubernetes.enable = true;
+      dotfiles.profiles.server.enable = true;
       # TODO is this the best way to configure this?
       canivete.kubernetes.root = true;
       boot.initrd.availableKernelModules = ["ehci_pci" "megaraid_sas" "usbhid"];
@@ -103,17 +114,17 @@ in {
       dotfiles.devops.enable = true;
     };
     bonobo.system = {
-      canivete.kubernetes.enable = true;
+      dotfiles.profiles.server.enable = true;
       boot.initrd.availableKernelModules = ["xhci_pci" "usbhid"];
       disko = lvmDisko "-51G" "/dev/disk/by-id/ata-Micron_1100_SATA_256GB_165015496CBD";
     };
     chinchilla.system = {
-      canivete.kubernetes.enable = true;
+      dotfiles.profiles.server.enable = true;
       boot.initrd.availableKernelModules = ["xhci_pci" "usbhid"];
       disko = lvmDisko "-51G" "/dev/disk/by-id/ata-MTFDDAK256TBN-1AR1ZABHA_UGXVK01J7BDCER";
     };
     dingo.system = {
-      canivete.kubernetes.enable = true;
+      dotfiles.profiles.server.enable = true;
       boot.initrd.availableKernelModules = ["xhci_pci" "usbhid"];
       disko = recursiveUpdate lvmDisko {
         devices.disk.base = {
@@ -123,7 +134,7 @@ in {
       };
     };
     octopus.system = {
-      canivete.kubernetes.enable = true;
+      dotfiles.profiles.server.enable = true;
       boot.initrd.availableKernelModules = ["ehci_pci" "megaraid_sas" "usbhid" "sr_mod"];
       boot.kernelModules = ["kvm-intel"];
       disko = lvmDisko "-1T" "/dev/disk/by-id/scsi-36b82a720cf60ce002a80577e12e4a1a7";

@@ -7,7 +7,7 @@
 }: let
   inherit (canivete) mkModuleOption;
   inherit (config.dotfiles) domain me nodes people root nixos darwin droid home-manager opentofu kubenix shared system;
-  inherit (lib) mapAttrs mkForce mkIf mkOption types;
+  inherit (lib) mapAttrs mkEnableOption mkForce mkIf mkOption types;
   inherit (types) attrsOf str submodule;
   keyFile = "/root/.config/sops/age/keys.txt";
 in {
@@ -49,6 +49,10 @@ in {
         home-manager = mkModuleOption {description = "Common home-manager configuration for nodes";};
         opentofu = mkModuleOption {description = "Common OpenTofu configuration";};
         kubenix = mkModuleOption {description = "Common kubenix configuration";};
+        clouds = {
+          hetzner.enable = mkEnableOption "Hetzner Cloud";
+          google.enable = mkEnableOption "Google Cloud";
+        };
       };
       config = {
         _module.args = {inherit canivete;};
@@ -62,8 +66,27 @@ in {
           canivete.kubernetes.images.airgap = config.services.k3s.package.airgapImages;
           sops.age.keyFile = mkForce keyFile;
         };
+        opentofu = mkMerge [
+          {
+            kubernetes.cluster = "deploy";
+            modules.module."nixos_${root}_system_install".flake = mkForce ".#bootstrap";
+          }
+          (mkIf config.clouds.hetzner.enable {
+            plugins = ["hetznercloud/hcloud"];
+            modules.provider.hcloud.token = canivete.vals.sops.default "hetzner/token";
+          })
+        ];
         opentofu.kubernetes.cluster = "deploy";
-        opentofu.modules.module."nixos_${root}_system_install".flake = mkForce ".#bootstrap";
+        opentofu.modules = {
+          config = mkMerge [
+            (mkIf config.clouds.hetzner.enable {
+              resource.hcloud_ssh_key.me = {
+                name = "me";
+                public_key = "\${ file(\"\${local.SOPS_DIR}/me.pub\") }";
+              };
+            })
+          ];
+        };
         kubenix = {pkgs, ...}: {
           # NOTE nothing currently defined upstream and I don't know what features I'm even using
           options.kubernetes.api.resources."kapp.k14s.io".v1alpha1.Config = mkOption {
@@ -136,7 +159,18 @@ in {
           people;
       };
     };
-    perSystem.canivete.kubenix.clusters.deploy = kubenix;
-    perSystem.canivete.opentofu.workspaces.deploy = {...}: {imports = [opentofu];};
+    perSystem = {
+      config,
+      pkgs,
+      ...
+    }: {
+      # TODO put this into a module
+      canivete.devShells.shells.default = {
+        packages = [pkgs.hcloud];
+        shellHook = "export HCLOUD_TOKEN=$(${lib.getExe config.canivete.sops.package} --decrypt --extract '[\"hetzner\"][\"token\"]' \"${default}\")";
+      };
+      canivete.kubenix.clusters.deploy = kubenix;
+      canivete.opentofu.workspaces.deploy = {...}: {imports = [opentofu];};
+    };
   };
 }

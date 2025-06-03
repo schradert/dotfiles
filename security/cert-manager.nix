@@ -131,7 +131,7 @@ in {
                   {selector.dnsZones = [domain];}
                   (mkIf (provider ? google) {
                     dns01.cloudDNS = {
-                      project = "roca-dotfiles";
+                      project = "";
                       serviceAccountSecretRef = {
                         name = "cert-manager";
                         key = "credentials.json";

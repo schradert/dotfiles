@@ -1,5 +1,7 @@
 {config, ...}: let
   inherit (config.canivete.meta.people.my.profiles.default) email;
+  # FIXME replace Google with Keycloak
+  # FIXME replace Hetzner with Backblaze
 in {
   dotfiles = {
     config,
@@ -52,7 +54,7 @@ in {
             NC_S3_ACCESS_SECRET = default "hetzner/s3/secret";
             # TODO set up SMTP email plugin
             # NOTE will need to create services username with app password?
-            # NC_SMTP_USERNAME = "techadmin@rocamaterials.com";
+            # NC_SMTP_USERNAME = "";
             # NC_SMTP_PASSWORD = "";
           });
         };
@@ -130,7 +132,7 @@ in {
               # TODO is this helpful?
               # NC_S3_FORCE_PATH_STYLE = "true";
               # TODO set up SMTP email configuration
-              # NC_SMTP_FROM = "techadmin@rocamaterials.com";
+              # NC_SMTP_FROM = "";
               # NC_SMTP_HOST = "smtp.gmail.com";
               # NC_SMTP_PORT = "587";
               # NC_SMTP_SECURE = "true";
