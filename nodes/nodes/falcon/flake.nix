@@ -21,27 +21,11 @@
           pkgs,
           ...
         }: {
-          imports = [
-            inputs.home-manager.nixosModules.home-manager
-            inputs.nixos-facter-modules.nixosModules.facter
-          ];
+          imports = [inputs.home-manager.nixosModules.home-manager];
           boot.initrd.availableKernelModules = ["usbhid" "sr_mod"];
           boot.loader.systemd-boot.enable = true;
           boot.loader.efi.canTouchEfiVariables = true;
           environment.systemPackages = with pkgs; [ranger vim pavucontrol];
-          facter.reportPath = ./facter.json;
-          hardware.nvidia = {
-            modesetting.enable = true;
-            open = true;
-            package = config.boot.kernelPackages.nvidiaPackages.stable;
-            powerManagement.enable = true;
-            # TODO do I need this to fix minor flickering? how would I even implement it?
-            # NOTE I don't have an iGPU but this fine-grained power management was suggested for graphical issues on suspend
-            # powerManagement.finegrained = true;
-            # prime.offload.enable = true;
-            # prime.intelBusId = "";
-            # prime.nvidiaBusId = "PCI:213:0:0";
-          };
           home-manager.backupFileExtension = "bak";
           home-manager.sharedModules = [
             ({
@@ -60,7 +44,7 @@
                 XDG_STATE_HOME = xdg.stateHome;
                 XDG_RUNTIME_DIR = "/run/user/1000";
               };
-              home.packages = with pkgs; [brave beeper legcord spotify lazydocker k3d nix-inspect nix-fast-build heroic bitwarden];
+              home.packages = with pkgs; [brave beeper legcord spotify lazydocker k3d nix-inspect nix-fast-build bitwarden];
               home.stateVersion = "25.05";
               nix.extraOptions = "experimental-features = nix-command flakes";
               programs.bash.enable = true;
@@ -102,11 +86,6 @@
               "steam"
               "steam-unwrapped"
             ];
-          programs.gamemode.enable = true;
-          programs.gamemode.enableRenice = true;
-          programs.steam.enable = true;
-          programs.steam.extraCompatPackages = with pkgs; [proton-ge-bin steamtinkerlaunch steam-play-none];
-          programs.steam.protontricks.enable = true;
           security.rtkit.enable = true;
           security.sudo.extraRules = [
             {
@@ -128,7 +107,6 @@
           };
           services.openssh.enable = true;
           services.userborn.enable = true;
-          services.xserver.videoDrivers = ["nvidia"];
           system.stateVersion = "25.05";
           time.timeZone = "America/Los_Angeles";
           users.mutableUsers = true;
@@ -152,6 +130,36 @@
           # TODO why isn't the builtin Plasma 6 notification daemon not working?
           home-manager.sharedModules = [{services.swaync.enable = true;}];
         }
+        ({pkgs, ...}: {
+          # Gaming
+          home-manager.sharedModules = [{home.packages = [pkgs.heroic];}];
+          programs.gamemode.enable = true;
+          programs.gamemode.enableRenice = true;
+          programs.steam.enable = true;
+          programs.steam.extraCompatPackages = with pkgs; [proton-ge-bin steamtinkerlaunch steam-play-none];
+          programs.steam.protontricks.enable = true;
+        })
+        {
+          # Facter
+          imports = [inputs.nixos-facter-modules.nixosModules.facter];
+          facter.reportPath = ./facter.json;
+        }
+        ({config, ...}: {
+          # Nvidia
+          hardware.nvidia = {
+            modesetting.enable = true;
+            open = true;
+            package = config.boot.kernelPackages.nvidiaPackages.stable;
+            powerManagement.enable = true;
+            # TODO do I need this to fix minor flickering? how would I even implement it?
+            # NOTE I don't have an iGPU but this fine-grained power management was suggested for graphical issues on suspend
+            # powerManagement.finegrained = true;
+            # prime.offload.enable = true;
+            # prime.intelBusId = "";
+            # prime.nvidiaBusId = "PCI:213:0:0";
+          };
+          services.xserver.videoDrivers = ["nvidia"];
+        })
         {
           # Firmware bug in ACPI DSDT table for Super IO + UART
           # Prevents kernel from even touching 8250 UART ports
