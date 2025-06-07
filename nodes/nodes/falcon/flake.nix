@@ -126,11 +126,8 @@
             pulse.enable = true;
             jack.enable = true;
           };
-          services.desktopManager.plasma6.enable = true;
-          services.displayManager.sddm.enable = true;
           services.openssh.enable = true;
           services.userborn.enable = true;
-          services.xserver.enable = true;
           services.xserver.videoDrivers = ["nvidia"];
           system.stateVersion = "25.05";
           time.timeZone = "America/Los_Angeles";
@@ -145,6 +142,16 @@
           };
           virtualisation.docker.enable = true;
         })
+        {
+          # Desktop Manager
+          services.desktopManager.plasma6.enable = true;
+          services.displayManager.sddm.enable = true;
+          services.displayManager.sddm.settings.General.DisplayServer = "wayland";
+          services.xserver.enable = true;
+
+          # TODO why isn't the builtin Plasma 6 notification daemon not working?
+          home-manager.sharedModules = [{services.swaync.enable = true;}];
+        }
         {
           # Firmware bug in ACPI DSDT table for Super IO + UART
           # Prevents kernel from even touching 8250 UART ports
