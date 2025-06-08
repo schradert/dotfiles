@@ -249,11 +249,11 @@
           # Shells
           home-manager.sharedModules = [
             ({config, lib, pkgs, ...}: {
-              options.programs.elvish.interactiveExtra = lib.mkOption {
+              options.falcon.programs.elvish.interactiveExtra = lib.mkOption {
                 type = lib.types.lines;
                 default = "";
               };
-              options.programs.xonsh.interactiveExtra = lib.mkOption {
+              options.falcon.programs.xonsh.interactiveExtra = lib.mkOption {
                 type = lib.types.lines;
                 default = "";
               };
@@ -265,10 +265,10 @@
                   nushell.enable = true;
                   zsh.enable = true;
                 };
-                xdg.configFile."elvish/rc.elv".source = pkgs.writeText "rc.elv" config.programs.elvish.interactiveExtra;
+                xdg.configFile."elvish/rc.elv".source = pkgs.writeText "rc.elv" config.falcon.programs.elvish.interactiveExtra;
                 xdg.configFile."xonsh/rc.xsh".source = pkgs.writeText "rc.xsh" ''
                   if __xonsh__.env.get("XONSH_INTERACTIVE"):
-                      ${config.programs.xonsh.interactiveExtra}
+                      ${config.falcon.programs.xonsh.interactiveExtra}
                 '';
               };
             })
@@ -282,8 +282,8 @@
           home-manager.sharedModules = [
             ({config, lib, ...}: {
               # No builtin integration in home-manager for these shells
-              programs.elvish.interactiveExtra = "eval (${lib.getExe config.programs.starship.package} init elvish)";
-              programs.xonsh.interactiveExtra = "execx($(${lib.getExe config.programs.starship.package} init xonsh))";
+              falcon.programs.elvish.interactiveExtra = "eval (${lib.getExe config.programs.starship.package} init elvish)";
+              falcon.programs.xonsh.interactiveExtra = "execx($(${lib.getExe config.programs.starship.package} init xonsh))";
             })
             ({lib, ...}: {
               programs.starship.enable = true;
