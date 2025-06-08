@@ -15,7 +15,11 @@
   outputs = inputs: {
     nixosConfigurations.falcon = inputs.nixpkgs.lib.nixosSystem {
       modules = [
-        ({config, lib, ...}: {
+        ({
+          config,
+          lib,
+          ...
+        }: {
           options.falcon.nixpkgs.config.allowUnfreePackages = lib.mkOption {
             type = with lib.types; listOf str;
             default = [];
@@ -38,7 +42,6 @@
           home-manager.sharedModules = [
             ({
               config,
-              lib,
               pkgs,
               ...
             }: let
@@ -248,7 +251,12 @@
         {
           # Shells
           home-manager.sharedModules = [
-            ({config, lib, pkgs, ...}: {
+            ({
+              config,
+              lib,
+              pkgs,
+              ...
+            }: {
               options.falcon.programs.elvish.interactiveExtra = lib.mkOption {
                 type = lib.types.lines;
                 default = "";
@@ -280,7 +288,11 @@
           # For right prompt in Bash
           programs.bash.blesh.enable = true;
           home-manager.sharedModules = [
-            ({config, lib, ...}: {
+            ({
+              config,
+              lib,
+              ...
+            }: {
               # No builtin integration in home-manager for these shells
               falcon.programs.elvish.interactiveExtra = "eval (${lib.getExe config.programs.starship.package} init elvish)";
               falcon.programs.xonsh.interactiveExtra = "execx($(${lib.getExe config.programs.starship.package} init xonsh))";
@@ -423,7 +435,11 @@
           # TODO why doesn't Continue work with vscodium? it just never loads...
           falcon.nixpkgs.config.allowUnfreePackages = ["vscode"];
           home-manager.sharedModules = [
-            ({lib, pkgs, ...}: {
+            ({
+              lib,
+              pkgs,
+              ...
+            }: {
               programs.vscode.package = lib.mkForce pkgs.vscode;
             })
           ];
@@ -470,9 +486,9 @@
           nixpkgs.config.cudaSupport = true;
           services.ollama.enable = true;
           services.ollama.loadModels = [
-            "llama3.1:8b"  # chat
-            "qwen2.5-coder:1.5b-base"  # autocomplete
-            "nomic-embed-text:latest"  # embeddings
+            "llama3.1:8b" # chat
+            "qwen2.5-coder:1.5b-base" # autocomplete
+            "nomic-embed-text:latest" # embeddings
           ];
         }
         ({pkgs, ...}: {

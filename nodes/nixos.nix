@@ -1,4 +1,12 @@
-{inputs, ...}: {
+{
+  config,
+  inputs,
+  ...
+}: let
+  inherit (config.canivete) nodes;
+  pubKey = inputs.self + "/${config.canivete.sops.directory}/me.pub";
+in {
+  perSystem.canivete.pre-commit.settings.excludes = ["nodes/nodes/.+\\.json"];
   dotfiles = {
     config,
     lib,
@@ -66,11 +74,11 @@
                   image = "debian-12";
                 };
                 metadata_startup_script = "sed -i 's/PermitRootLogin no/PermitRootLogin prohibit-password/g' /etc/ssh/sshd_config";
-                metadata.ssh-keys = "root:${fileContents (inputs.self + "/${sops.directory}/me.pub")} root";
+                metadata.ssh-keys = "root:${fileContents pubKey} root";
                 service_account.email = "\${ google_service_account.compute.email }";
                 service_account.scopes = ["cloud-platform"];
 
-                inherit (node) hostname;
+                inherit (nodes.${name}) hostname;
                 network_interface.subnetwork = "\${ google_compute_subnetwork.main.name }";
                 can_ip_forward = true;
               }
@@ -101,11 +109,7 @@
     };
     config = mkMerge [
       {
-        nixos = {
-          flake,
-          pkgs,
-          ...
-        }: {
+        nixos = {pkgs, ...}: {
           imports = [inputs.nur.modules.nixos.default];
           boot.loader.systemd-boot.enable = true;
           environment.systemPackages = with pkgs; [ranger vim];
@@ -116,7 +120,7 @@
           # TODO should this go upstream? worth checking how stable this is and community commentary thereof
           services.userborn.enable = true;
           system.stateVersion = "25.05";
-          users.users.root.openssh.authorizedKeys.keys = [(fileContents (inputs.self + "/${flake.config.canivete.sops.directory}/me.pub"))];
+          users.users.root.openssh.authorizedKeys.keys = [(fileContents pubKey)];
         };
         shared = {lib, ...}: {
           options.dotfiles.profiles.client.enable = lib.mkEnableOption "client configuration";
@@ -127,6 +131,7 @@
           config,
           flake,
           lib,
+          options,
           ...
         }: {
           config = lib.mkIf config.dotfiles.profiles.client.enable (lib.mkMerge [

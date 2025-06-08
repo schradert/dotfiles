@@ -1,4 +1,4 @@
-{
+flake @ {
   canivete,
   config,
   inputs,
@@ -7,7 +7,7 @@
 }: let
   inherit (canivete) mkModuleOption;
   inherit (config.dotfiles) domain me nodes people root nixos darwin droid home-manager opentofu kubenix shared system;
-  inherit (lib) mapAttrs mkEnableOption mkForce mkIf mkOption types;
+  inherit (lib) mapAttrs mkEnableOption mkForce mkIf mkOption mkMerge types;
   inherit (types) attrsOf str submodule;
   keyFile = "/root/.config/sops/age/keys.txt";
 in {
@@ -74,19 +74,12 @@ in {
           (mkIf config.clouds.hetzner.enable {
             plugins = ["hetznercloud/hcloud"];
             modules.provider.hcloud.token = canivete.vals.sops.default "hetzner/token";
+            modules.resource.hcloud_ssh_key.me = {
+              name = "me";
+              public_key = "\${ file(\"\${local.SOPS_DIR}/me.pub\") }";
+            };
           })
         ];
-        opentofu.kubernetes.cluster = "deploy";
-        opentofu.modules = {
-          config = mkMerge [
-            (mkIf config.clouds.hetzner.enable {
-              resource.hcloud_ssh_key.me = {
-                name = "me";
-                public_key = "\${ file(\"\${local.SOPS_DIR}/me.pub\") }";
-              };
-            })
-          ];
-        };
         kubenix = {pkgs, ...}: {
           # NOTE nothing currently defined upstream and I don't know what features I'm even using
           options.kubernetes.api.resources."kapp.k14s.io".v1alpha1.Config = mkOption {
@@ -167,7 +160,7 @@ in {
       # TODO put this into a module
       canivete.devShells.shells.default = {
         packages = [pkgs.hcloud];
-        shellHook = "export HCLOUD_TOKEN=$(${lib.getExe config.canivete.sops.package} --decrypt --extract '[\"hetzner\"][\"token\"]' \"${default}\")";
+        shellHook = "export HCLOUD_TOKEN=$(${lib.getExe config.canivete.sops.package} --decrypt --extract '[\"hetzner\"][\"token\"]' \"${flake.config.canivete.sops.default}\")";
       };
       canivete.kubenix.clusters.deploy = kubenix;
       canivete.opentofu.workspaces.deploy = {...}: {imports = [opentofu];};
