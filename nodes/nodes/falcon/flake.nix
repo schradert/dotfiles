@@ -419,6 +419,62 @@
             })
           ];
         }
+        {
+          # TODO why doesn't Continue work with vscodium? it just never loads...
+          falcon.nixpkgs.config.allowUnfreePackages = ["vscode"];
+          home-manager.sharedModules = [
+            ({lib, pkgs, ...}: {
+              programs.vscode.package = lib.mkForce pkgs.vscode;
+            })
+          ];
+        }
+        {
+          # VSCode
+          falcon.nixpkgs.config.allowUnfreePackages = [
+            "cuda_cccl"
+            "cuda_cudart"
+            "cuda_nvcc"
+            "libcublas"
+          ];
+          home-manager.sharedModules = [
+            ({pkgs, ...}: {
+              programs.vscode = {
+                enable = true;
+                package = pkgs.vscodium;
+                profiles.default = {
+                  enableExtensionUpdateCheck = false;
+                  extensions = with pkgs.vscode-extensions; [
+                    jnoortheen.nix-ide
+                    (pkgs.vscode-utils.buildVscodeMarketplaceExtension {
+                      mktplcRef = {
+                        name = "continue";
+                        publisher = "Continue";
+                        version = "1.1.40";
+                        sha256 = "sha256-P4rhoj4Juag7cfB9Ca8eRmHRA10Rb4f7y5bNGgVZt+E=";
+                        arch = "linux-x64";
+                      };
+                      nativeBuildInputs = [pkgs.autoPatchelfHook];
+                      buildInputs = [pkgs.stdenv.cc.cc.lib];
+                    })
+                  ];
+                  userSettings = {
+                    "editor.guides.bracketPairs" = true;
+                    "editor.insertSpaces" = true;
+                    "editor.tabSize" = 4;
+                    "editor.inlineSuggest.enabled" = true;
+                  };
+                };
+              };
+            })
+          ];
+          nixpkgs.config.cudaSupport = true;
+          services.ollama.enable = true;
+          services.ollama.loadModels = [
+            "llama3.1:8b"  # chat
+            "qwen2.5-coder:1.5b-base"  # autocomplete
+            "nomic-embed-text:latest"  # embeddings
+          ];
+        }
       ];
     };
   };
