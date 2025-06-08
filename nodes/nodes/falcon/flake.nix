@@ -15,6 +15,13 @@
   outputs = inputs: {
     nixosConfigurations.falcon = inputs.nixpkgs.lib.nixosSystem {
       modules = [
+        ({config, lib, ...}: {
+          options.falcon.nixpkgs.config.allowUnfreePackages = lib.mkOption {
+            type = with lib.types; listOf str;
+            default = [];
+          };
+          config.nixpkgs.config.allowUnfreePredicate = pkg: lib.elem (lib.getName pkg) config.falcon.nixpkgs.config.allowUnfreePackages;
+        })
         ({
           config,
           lib,
@@ -26,6 +33,7 @@
           boot.loader.systemd-boot.enable = true;
           boot.loader.efi.canTouchEfiVariables = true;
           environment.systemPackages = with pkgs; [ranger vim pavucontrol];
+          falcon.nixpkgs.config.allowUnfreePackages = ["beeper" "spotify"];
           home-manager.backupFileExtension = "bak";
           home-manager.sharedModules = [
             ({
@@ -73,16 +81,6 @@
           home-manager.useGlobalPkgs = true;
           i18n.defaultLocale = "en_US.UTF-8";
           networking.hostName = "falcon";
-          nixpkgs.config.allowUnfreePredicate = pkg:
-            lib.elem (lib.getName pkg) [
-              "beeper"
-              "nvidia-x11"
-              "nvidia-settings"
-              "nvidia-persistenced"
-              "spotify"
-              "steam"
-              "steam-unwrapped"
-            ];
           security.rtkit.enable = true;
           security.sudo.extraRules = [
             {
@@ -136,6 +134,7 @@
         }
         ({pkgs, ...}: {
           # Gaming
+          falcon.nixpkgs.config.allowUnfreePackages = ["steam" "steam-unwrapped"];
           home-manager.sharedModules = [{home.packages = [pkgs.heroic];}];
           programs.gamemode.enable = true;
           programs.gamemode.enableRenice = true;
@@ -162,6 +161,12 @@
             # prime.intelBusId = "";
             # prime.nvidiaBusId = "PCI:213:0:0";
           };
+          falcon.nixpkgs.config.allowUnfreePackages = [
+            "nvidia-x11"
+            "nvidia-settings"
+            "nvidia-persistenced"
+          ];
+
           services.xserver.videoDrivers = ["nvidia"];
         })
         {
