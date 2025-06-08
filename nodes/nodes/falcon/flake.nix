@@ -47,7 +47,6 @@
               home.packages = with pkgs; [brave beeper legcord spotify lazydocker k3d nix-inspect nix-fast-build bitwarden];
               home.stateVersion = "25.05";
               nix.extraOptions = "experimental-features = nix-command flakes";
-              programs.bash.enable = true;
               programs.bat.enable = true;
               programs.btop.enable = true;
               programs.dircolors.enable = true;
@@ -69,7 +68,6 @@
               programs.yazi.enable = true;
               programs.zellij.enable = true;
               programs.zoxide.enable = true;
-              programs.zsh.enable = true;
             })
           ];
           home-manager.users.tristan.home.username = "tristan";
@@ -242,6 +240,37 @@
           stylix.enable = true;
           stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/dracula.yaml";
         })
+        {
+          # Shells
+          home-manager.sharedModules = [
+            ({config, lib, pkgs, ...}: {
+              options.programs.elvish.interactiveExtra = lib.mkOption {
+                type = lib.types.lines;
+                default = "";
+              };
+              options.programs.xonsh.interactiveExtra = lib.mkOption {
+                type = lib.types.lines;
+                default = "";
+              };
+              config = {
+                home.packages = [pkgs.elvish];
+                programs = {
+                  bash.enable = true;
+                  fish.enable = true;
+                  nushell.enable = true;
+                  zsh.enable = true;
+                };
+                xdg.configFile."elvish/rc.elv".source = pkgs.writeText "rc.elv" config.programs.elvish.interactiveExtra;
+                xdg.configFile."xonsh/rc.xsh".source = pkgs.writeText "rc.xsh" ''
+                  if __xonsh__.env.get("XONSH_INTERACTIVE"):
+                      ${config.programs.xonsh.interactiveExtra}
+                '';
+              };
+            })
+          ];
+          # I don't want to recreate this module in home-manager
+          programs.xonsh.enable = true;
+        }
       ];
     };
   };
