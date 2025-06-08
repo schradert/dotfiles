@@ -165,6 +165,7 @@
           services.xserver.videoDrivers = ["nvidia"];
         })
         {
+          # TODO did this actually work? (it did at first but then maybe not...)
           # Firmware bug in ACPI DSDT table for Super IO + UART
           # Prevents kernel from even touching 8250 UART ports
           boot.kernelParams = ["8250.nr_uarts=0"];
