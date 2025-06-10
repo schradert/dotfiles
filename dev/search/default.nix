@@ -10,8 +10,9 @@
       python3Packages.howdoi
       ripgrep
       sherlock
+      # TODO compare features I use with outfieldr
+      tealdeer
       thefuck
-      tldr
       wiki-tui
     ];
     dotfiles.programs = let
