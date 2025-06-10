@@ -532,6 +532,13 @@
                   };
                 };
               };
+              zed-editor = {
+                enable = true;
+                extensions = ["dracula" "nix"];
+                extraPackages = with pkgs; [nixd];
+                installRemoteServer = true;
+                userSettings.telemetry.metrics = false;
+              };
             };
           })
         ];
