@@ -56,7 +56,6 @@ in {
       };
       config = {
         _module.args = {inherit canivete;};
-        home-manager.programs.home-manager.enable = true;
         nixos = {
           config,
           pkgs,
@@ -97,7 +96,6 @@ in {
     });
   };
   config = {
-    # TODO is this what impermanence is for?
     # Deploy root first without tailscale + cilium to avoid infinite recursion/lockout
     flake.nixosConfigurations.bootstrap = config.flake.nixosConfigurations.${root}.extendModules {
       modules = [

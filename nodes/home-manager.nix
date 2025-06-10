@@ -41,5 +41,6 @@ in {
       # TODO how can I get the user UID?
       XDG_RUNTIME_DIR = "/run/user/1000";
     };
+    config.programs.home-manager.enable = true;
   };
 }
