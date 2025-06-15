@@ -67,10 +67,8 @@ in {
         sopsFile = sshFile me;
       };
     };
-  };
-  perSystem.canivete.opentofu.workspaces.deploy = {
-    plugins = ["integrations/github" "gitlabhq/gitlab"];
-    modules.default = {
+    opentofu.plugins = ["integrations/github" "gitlabhq/gitlab"];
+    opentofu.modules = {
       provider.github.token = canivete.vals.sops "default.yaml#/github_pat";
       resource.github_user_ssh_key = pipe config.canivete.meta.people.users [
         (filterAttrs (_: hasAttrByPath ["accounts" "github"]))

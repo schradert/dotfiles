@@ -5,16 +5,19 @@
     lib,
     ...
   }: let
-    inherit (config.dotfiles.network.static) enable provider;
-    inherit (lib) mkEnableOption mkIf mkMerge types;
+    inherit (config.network.static) enable provider;
+    inherit (lib) flatten mkEnableOption mkIf mkMerge optional types;
+    providers = flatten [
+      (optional config.clouds.hetzner.enable "hetzner")
+      (optional config.clouds.google.enable "google")
+    ];
   in {
-    options.dotfiles.network.static = {
+    options.network.static = {
       enable = mkEnableOption "Static IP address";
-      provider = canivete.mkNullableOption (types.enum ["google" "hetzner"]) {description = "Cloud provider with static IP";};
+      provider = canivete.mkNullableOption (types.enum providers) {description = "Cloud provider with static IP";};
     };
     config = mkIf enable (mkMerge [
       (mkIf (provider == "google") {
-        opentofu.plugins = ["opentofu/google"];
         opentofu.modules = {
           locals.root_ip = "\${ google_compute_address.root.address }";
           resource.google_project_service.compute = {
@@ -29,7 +32,6 @@
         };
       })
       (mkIf (provider == "hetzner") {
-        opentofu.plugins = ["hetznercloud/hcloud"];
         opentofu.modules.locals.root_ip = "\${ hcloud_primary_ip.root.ip_address }";
         opentofu.modules.resource.hcloud_primary_ip.root = {
           name = "root";

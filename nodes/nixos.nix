@@ -13,8 +13,8 @@ in {
     ...
   }: let
     inherit (config) root;
-    inherit (lib) fileContents mkDefault mkForce mkIf mkMerge mkOption types;
-    inherit (types) attrsOf enum submodule;
+    inherit (lib) fileContents genList mkDefault mkForce mkIf mkMerge mkOption types;
+    inherit (types) attrsOf attrTag enum submodule;
   in {
     options.nodes = mkOption {
       type = attrsOf (submodule ({
@@ -23,23 +23,26 @@ in {
         ...
       }: {
         options.platform = mkOption {
-          type = enum ["prem" "google" "hetzner"];
-          default = "prem";
+          default.prem = {};
+          # TODO make this dynamic to activated clouds
+          type = attrTag {
+            prem = mkOption {
+              type = submodule {};
+            };
+            google = mkOption {
+              type = submodule {};
+            };
+            hetzner = mkOption {
+              type = submodule {
+                options.server_type = mkOption {
+                  type = enum (genList (i: "cpx${builtins.toString (i + 1)}1") 3);
+                };
+              };
+            };
+          };
         };
         config = mkMerge [
-          # FIXME only propagate these modules to NixOS!
-          (mkIf (config.platform == "prem") {
-            system = {config, ...}: {
-              # TODO are these actually general enough to apply to any NixOS-compatible device I buy?
-              boot.initrd.availableKernelModules = ["ahci" "usb_storage" "sd_mod"];
-              boot.loader.efi.canTouchEfiVariables = true;
-              hardware.enableRedistributableFirmware = mkDefault true;
-              hardware.cpu.intel.updateMicrocode = mkDefault config.hardware.enableRedistributableFirmware;
-              hardware.cpu.amd.updateMicrocode = mkDefault config.hardware.enableRedistributableFirmware;
-              time.timeZone = "America/Los_Angeles";
-            };
-          })
-          (mkIf (config.platform == "google") {
+          (mkIf (config.platform ? google) {
             system = {modulesPath, ...}: {
               # FIXME why is it failing with these upstream modules?
               imports = [
@@ -85,16 +88,15 @@ in {
             ];
             opentofu.modules.module."nixos_${name}_system_install".depends_on = ["google_compute_instance.${name}"];
           })
-          (mkIf (config.platform == "hetzner") {
+          (mkIf (config.platform ? hetzner) {
             system.imports = with inputs.srvos.nixosModules; [server hardware-hetzner-cloud];
             opentofu.modules.resource.hcloud_server.${name} = mkMerge [
               (mkIf (name == root) {public_net.ipv4 = "\${ local.root_ip }";})
               {
                 depends_on = ["hcloud_ssh_key.me"];
                 inherit name;
+                inherit (config.platform.hetzner) server_type;
                 location = "ash";
-                # TODO parameterize the server_type
-                server_type = "cpx31";
                 image = "debian-12";
                 keep_disk = true;
                 ssh_keys = ["me"];

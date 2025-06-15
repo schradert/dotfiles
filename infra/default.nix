@@ -41,24 +41,9 @@
         lychee.toml.exclude = ["file://*"];
       };
     };
-    canivete.kubenix.clusters.prod.deploy.fetchKubeconfig = "ssh ${config.canivete.meta.root} sudo k3s kubectl config view --raw | sed 's/127\.0\.0\.1/${config.canivete.meta.domain}/'";
     # URLs built with substitution
     # TODO error: repetition quantifier expects a valid decimal: "^.+\${.+}.+$"
     # canivete.pre-commit.settings.hooks.lychee.settings.toml.exclude = [];
-    # FIXME add these hardcoded static IPs
-    canivete.opentofu.workspaces.deploy.configuration.module = {
-      nixos_sirver_system_install.target_host = mkForce "192.168.50.23";
-      nixos_axolotl_system_install.target_host = mkForce "192.168.50.250";
-      nixos_bonobo_system_install.target_host = mkForce "192.168.50.142";
-      nixos_chinchilla_system_install.target_host = mkForce "192.168.50.85";
-      nixos_dingo_system_install.target_host = mkForce "192.168.50.105";
-      nixos_octopus_system_install.target_host = mkForce "192.168.50.53";
-      nixos_systeamadeck_system_install.target_host = mkForce "192.168.50.176";
-      # FIXME finish nixos-anywhere? install on WSL
-      # nixos_echidna_system_install.target_host = mkForce "";
-      # FIXME finish nixos-anywhere install
-      # nixos_falcon_system_install.target_host = mkForce "";
-    };
   };
   canivete.meta.people.users.tristan = {
     name = "Tristan Schrader";
@@ -82,39 +67,47 @@
       };
     };
 
-    services = {
-      cert-manager.enable = true;
-      cert-manager.provider.cloudflare.token = canivete.vals.sops.default "cloudflare/token";
-      cilium.enable = true;
-      coredns.enable = true;
-      descheduler.enable = true;
-      external-dns.enable = true;
-      external-secrets.enable = true;
-      gatus.enable = true;
-      kubelet-csr-approver.enable = true;
-      oauth2-proxy.enable = true;
-      nginx.enable = true;
-      openebs.enable = true;
-      prometheus.enable = true;
-      reloader.enable = true;
-      snapshot-controller.enable = true;
-      spegel.enable = true;
-      volsync.enable = true;
-
-      postgres.enable = true;
-      grafana.enable = true;
-      clickhouse.enable = true;
-      windmill.enable = true;
-
-      jitsi.enable = true;
-      immich.enable = true;
-      excalidraw.enable = true;
-      excalidraw.release.values.ingress = {
-        annotations = [];
-        className = "";
-      };
-      # TODO add all of the services
-      # TODO decouple services
+    kubenix.kubernetes.resources.namespaces = {
+      # TODO define all namespaces (dynamically?!)
+      cicd = {};
+      monitoring = {};
+      security = {};
+      storage = {};
     };
+
+    # services = {
+    #   cert-manager.enable = true;
+    #   cert-manager.provider.cloudflare.token = canivete.vals.sops.default "cloudflare/token";
+    #   cilium.enable = true;
+    #   coredns.enable = true;
+    #   descheduler.enable = true;
+    #   external-dns.enable = true;
+    #   external-secrets.enable = true;
+    #   gatus.enable = true;
+    #   kubelet-csr-approver.enable = true;
+    #   oauth2-proxy.enable = true;
+    #   nginx.enable = true;
+    #   openebs.enable = true;
+    #   prometheus.enable = true;
+    #   reloader.enable = true;
+    #   snapshot-controller.enable = true;
+    #   spegel.enable = true;
+    #   volsync.enable = true;
+
+    #   postgres.enable = true;
+    #   grafana.enable = true;
+    #   clickhouse.enable = true;
+    #   windmill.enable = true;
+
+    #   jitsi.enable = true;
+    #   immich.enable = true;
+    #   excalidraw.enable = true;
+    #   excalidraw.release.values.ingress = {
+    #     annotations = [];
+    #     className = "";
+    #   };
+    #   # TODO add all of the services
+    #   # TODO decouple services
+    # };
   };
 }

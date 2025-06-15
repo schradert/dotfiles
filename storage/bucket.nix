@@ -6,16 +6,19 @@
     ...
   }: let
     inherit (canivete.vals.sops) default;
-    inherit (config.dotfiles.storage.bucket) enable provider;
-    inherit (lib) mkEnableOption mkIf mkMerge types;
+    inherit (config.storage.bucket) enable provider;
+    inherit (lib) flatten mkEnableOption mkIf mkMerge optional types;
+    providers = flatten [
+      (optional config.clouds.hetzner.enable "hetzner")
+      (optional config.clouds.google.enable "google")
+    ];
   in {
-    options.dotfiles.storage.bucket = {
+    options.storage.bucket = {
       enable = mkEnableOption "Common storage bucket for objects";
-      provider = canivete.mkNullableOption (types.enum ["google" "hetzner"]) {description = "Cloud provider with static IP";};
+      provider = canivete.mkNullableOption (types.enum providers) {description = "Cloud provider with static IP";};
     };
     config = mkIf enable (mkMerge [
       (mkIf (provider == "google") {
-        opentofu.plugins = ["opentofu/google"];
         opentofu.modules = {flake, ...}: {
           google_project_service.storage = {
             depends_on = ["google_project_service.resourcemanager"];
