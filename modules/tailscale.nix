@@ -5,12 +5,12 @@ in {
     inherit (config) domain root;
     inherit (lib) mkEnableOption mkOption types mkMerge mkIf concatStringsSep optional flatten mkForce getExe optionalAttrs;
     # TODO dynamic
-    url = "https://headscale.${domain}";
+    url = "https://headscale.${domain}:8080";
   in {
     options.nodes = canivete.mkNestedSubmodule ({config, name, ...}: {
       opentofu = {pkgs, ...}: let
         inherit (nodes.${name}.profiles.system.canivete.configuration.config.dotfiles.services) headscale;
-        secret_resources = ["headscale_pre_auth_key.${name}" "shell_script.tailscale_k3s_auth-${name}"];
+        secret_resources = ["shell_script.headscale_pre_auth_key-${name}" "shell_script.tailscale_k3s_auth-${name}"];
       in {
         module."nixos_${name}_system_install".depends_on = mkIf (!headscale.enable) secret_resources;
         resource = {
@@ -61,7 +61,7 @@ in {
     }: {
       options.dotfiles.tailscale.enable = mkEnableOption "Tailscale daemon" // {default = true;};
       config = mkIf config.dotfiles.tailscale.enable {
-        canivete.kubernetes.k3s.vpn-auth-file = config.sops.secrets."tailscale/k3s_auth".path;
+        canivete.kubernetes.k3s.vpn-auth-file = config.sops.secrets."tailscale/${node.name}/k3s_auth".path;
         networking.firewall.trustedInterfaces = [config.services.tailscale.interfaceName];
         services.cloud-init.enable = false;
         services.k3s.extraFlags = [
@@ -71,15 +71,15 @@ in {
         services.tailscale = {
           enable = true;
           openFirewall = true;
-          authKeyFile = config.sops.secrets."tailscale/pre_auth_key".path;
+          authKeyFile = config.sops.secrets."tailscale/${node.name}/pre_auth_key".path;
           extraUpFlags = mkMerge [
             ["--login-server" url]
             (mkIf config.dotfiles.profiles.server.enable ["--advertise-routes" "10.0.0.0/8"])
           ];
           useRoutingFeatures = "client";
         };
-        sops.secrets."tailscale/k3s_auth" = {};
-        sops.secrets."tailscale/pre_auth_key" = {};
+        sops.secrets."tailscale/${node.name}/k3s_auth" = {};
+        sops.secrets."tailscale/${node.name}/pre_auth_key" = {};
         systemd.services.k3s = {
           # NOTE for some reason I still have to use path instead of providing an absolute path above...
           path = [config.services.tailscale.package pkgs.iproute2 pkgs.jq];

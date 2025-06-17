@@ -83,7 +83,7 @@
         nixpkgs.overlays = [flake.inputs.headscale.overlay];
         # NOTE https://tailscale.com/kb/1082/firewall-ports
         networking.firewall.allowedUDPPorts = [3478];
-        networking.firewall.allowedTCPPorts = [port acme_port];
+        networking.firewall.allowedTCPPorts = [80 port acme_port];
         # LetsEncrypt only calls port 80 so we need something to forward temporarily
         networking.firewall.extraCommands = "iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port ${toString acme_port}";
         services.headscale = {

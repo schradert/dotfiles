@@ -7,7 +7,7 @@ flake @ {
 }: let
   inherit (canivete) mkModuleOption;
   inherit (config.dotfiles) domain me nodes people nixos darwin droid home-manager kubenix shared system;
-  inherit (lib) mapAttrs mkDefault mkEnableOption mkForce mkIf mkOption mkMerge types;
+  inherit (lib) flip mapAttrs mkDefault mkEnableOption mkForce mkIf mkOption mkMerge types;
   inherit (types) attrsOf str submodule;
 in {
   options.dotfiles = mkOption {
@@ -51,7 +51,16 @@ in {
       # TODO why does this fail with "-oPermitLocalCommand: not found"?
       # sshOpts = ["StrictHostKeyChecking=accept-new"];
       canivete.modules = {inherit droid nixos darwin home-manager shared system;};
-      nodes = mapAttrs (name: modules: {profiles.system.canivete.configuration = modules.system;}) nodes;
+      nodes = flip mapAttrs nodes (name: modules: {
+        hostname = "${name}.ssh.${domain}";
+        profiles.system.canivete.configuration.imports = [
+          modules.system
+          {
+            networking.domain = "ssh.${domain}";
+            networking.hostName = mkForce name;
+          }
+        ];
+      });
     };
     canivete.meta = {
       inherit domain;
