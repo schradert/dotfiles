@@ -140,6 +140,7 @@ in {
     bonobo.hostname = mkForce "192.168.50.142";
     chinchilla.hostname = mkForce "192.168.50.85";
     dingo.hostname = mkForce "192.168.50.105";
+    axolotl.hostname = mkForce "192.168.50.250";
   };
   dotfiles.nodes = {
     bootstrap = {
@@ -228,12 +229,12 @@ in {
         networking.hostId = "d1960666";
       };
     };
-    # TODO deploy
     axolotl = {
       platform.prem.install_host = "192.168.50.250";
       system = {
         # TODO Deactivate auto sleep
         disko = diskoZfs "/dev/disk/by-id/nvme-SPCC_M.2_PCIE_SSD_30012119169" [] {};
+        dotfiles.nixpkgs.config.allowUnfreePackages = ["displaylink"];
         dotfiles.profiles.client.enable = true;
         dotfiles.profiles.client.workstation.enable = true;
         # home-manager.sharedModules = [{dotfiles.programs.macchina.networkInterface = "enp0s31f6";}];

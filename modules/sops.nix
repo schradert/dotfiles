@@ -8,6 +8,7 @@
         module."nixos_${name}_system_install" = {
           extra_environment.SOPS_BIN = "\${ local.SOPS_BIN }";
           extra_environment.SOPS_DIR = "\${ local.SOPS_DIR }";
+          # FIXME chown doesn't seem to work below...
           extra_files_script = toString (pkgs.writeShellScript "extra-files-script" ''
             key_f="$(pwd)${keyFile}"
             mkdir -p "$(dirname "$key_f")"
