@@ -2,6 +2,7 @@
   flake.nixosConfigurations.bootstrap-install = config.flake.nixosConfigurations.bootstrap.extendModules {
     modules = [
       {
+        # TODO should this be a full server?
         # canivete.kubernetes.enable = false;
         dotfiles.tailscale.enable = false;
         # dotfiles.cilium.enable = false;

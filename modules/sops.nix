@@ -15,7 +15,7 @@
             $SOPS_BIN --decrypt "$SOPS_DIR/${config.me}.txt" >"$key_f"
             popd
             chmod 400 "$key_f"
-            chown -R ${config.me}:users /home/${config.me}
+            chown -R ${config.me}:users "$(pwd)/home/${config.me}"
           '');
         };
       };

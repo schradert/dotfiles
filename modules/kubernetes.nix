@@ -12,7 +12,6 @@
     }: {
       _module.args = {inherit (inputs.nix2container.packages.${pkgs.system}) nix2container;};
       canivete.kubernetes.images.airgap = config.services.k3s.package.airgapImages;
-      canivete.kubernetes.k3s.tls-san = lib.mkForce [domain];
     };
     config.opentofu.kubernetes.cluster = "deploy";
     config.kubenix = {config, lib, pkgs, ...}: {

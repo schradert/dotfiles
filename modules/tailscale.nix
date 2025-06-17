@@ -58,15 +58,22 @@ in {
       node,
       pkgs,
       ...
-    }: {
-      options.dotfiles.tailscale.enable = mkEnableOption "Tailscale daemon" // {default = true;};
-      config = mkIf config.dotfiles.tailscale.enable {
+    }: let
+      inherit (config.dotfiles) tailscale;
+    in {
+      options.dotfiles.tailscale = {
+        enable = mkEnableOption "Tailscale daemon" // {default = true;};
+        interface = canivete.mkNullableOption types.str {description = "External interface for tailscale node";};
+      };
+      config = mkIf tailscale.enable {
         canivete.kubernetes.k3s.vpn-auth-file = config.sops.secrets."tailscale/${node.name}/k3s_auth".path;
         networking.firewall.trustedInterfaces = [config.services.tailscale.interfaceName];
         services.cloud-init.enable = false;
-        services.k3s.extraFlags = [
-          "--node-ip=$$(tailscale ip --4)"
-          "--node-external-ip=$$(ip -family inet -json addr show scope global dev eth0 | jq --raw-output '.[0].addr_info[0].local')"
+        services.k3s.extraFlags = mkMerge [
+          ["--node-ip=$$(tailscale ip --4)"]
+          (mkIf (tailscale.interface != null) [
+            "--node-external-ip=$$(ip -family inet -json addr show scope global dev ${tailscale.interface} | jq --raw-output '.[0].addr_info[0].local')"
+          ])
         ];
         services.tailscale = {
           enable = true;

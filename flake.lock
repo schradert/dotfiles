@@ -250,11 +250,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1750062790,
-        "narHash": "sha256-+OYc76rlThXNPr15i5Xb56WeTe99jImZa5gQgw4KBrE=",
+        "lastModified": 1750156943,
+        "narHash": "sha256-O9U5u0vDP9Q5WgcKPOfG4WJ9SN5o2hi0/fY9ZvsrK8I=",
         "owner": "schradert",
         "repo": "canivete",
-        "rev": "2919e59549aae5ae4719077c4777f18abc38fb30",
+        "rev": "08619246a00985768e5df513b6b45e6683902b33",
         "type": "github"
       },
       "original": {

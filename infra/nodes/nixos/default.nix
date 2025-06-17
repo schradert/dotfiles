@@ -132,6 +132,15 @@
   };
 in {
   perSystem.canivete.pre-commit.settings.excludes = ["nodes/nodes/.+\\.json"];
+  # FIXME don't override
+  # NOTE current thought is to install servers and deploy k8s before doing server/client updates
+  canivete.deploy.nodes = {
+    sirver.hostname = mkForce "192.168.50.185";
+    octopus.hostname = mkForce "192.168.50.53";
+    bonobo.hostname = mkForce "192.168.50.142";
+    chinchilla.hostname = mkForce "192.168.50.85";
+    dingo.hostname = mkForce "192.168.50.105";
+  };
   dotfiles.nodes = {
     bootstrap = {
       platform.hetzner.server_type = "cpx11";
@@ -156,9 +165,10 @@ in {
       };
     };
     sirver = {
-      install_host = "192.168.50.117";
+      platform.prem.install_host = "192.168.50.23";
       system = {
         boot.initrd.availableKernelModules = ["sr_mod"];
+        canivete.kubernetes.root = true;
         disko = diskoZfs "/dev/disk/by-id/scsi-35000c50067faa64b" [
           "/dev/disk/by-id/scsi-35000c50067fb404b"
           "/dev/disk/by-id/scsi-35000c50067fc5df3"
@@ -169,6 +179,7 @@ in {
           "/dev/disk/by-id/scsi-35000c50067fe560f"
         ] {};
         dotfiles.profiles.server.enable = true;
+        dotfiles.tailscale.interface = "br0";
         networking.hostId = "799f2113";
         # Mini switch on spare LAN to connect another system (dingo)
         networking.bridges.br0.interfaces = ["eno3" "eno4"];
@@ -176,7 +187,7 @@ in {
       };
     };
     octopus = {
-      install_host = "192.168.50.53";
+      platform.prem.install_host = "192.168.50.53";
       system = {
         boot.initrd.availableKernelModules = ["sr_mod"];
         disko = diskoZfs "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d2e2991b17e" [
@@ -190,10 +201,11 @@ in {
         ] {};
         dotfiles.profiles.server.enable = true;
         networking.hostId = "101915fa";
+        services.k3s.role = "server";
       };
     };
     bonobo = {
-      install_host = "192.168.50.142";
+      platform.prem.install_host = "192.168.50.142";
       system = {
         disko = diskoZfs "/dev/disk/by-id/ata-Micron_1100_SATA_256GB_165015496CBD" [] {};
         dotfiles.profiles.server.enable = true;
@@ -201,7 +213,7 @@ in {
       };
     };
     chinchilla = {
-      install_host = "192.168.50.85";
+      platform.prem.install_host = "192.168.50.85";
       system = {
         disko = diskoZfs "/dev/disk/by-id/ata-MTFDDAK256TBN-1AR1ZABHA_UGXVK01J7BDCER" [] {};
         dotfiles.profiles.server.enable = true;
@@ -209,7 +221,7 @@ in {
       };
     };
     dingo = {
-      install_host = "192.168.50.105";
+      platform.prem.install_host = "192.168.50.105";
       system = {
         disko = diskoZfs "/dev/disk/by-id/ata-LITEON_IT_LCS-256L9S_SD0E97900L2TH61100DL" [] {};
         dotfiles.profiles.server.enable = true;
@@ -218,7 +230,7 @@ in {
     };
     # TODO deploy
     axolotl = {
-      install_host = "192.168.50.250";
+      platform.prem.install_host = "192.168.50.250";
       system = {
         # TODO Deactivate auto sleep
         disko = diskoZfs "/dev/disk/by-id/nvme-SPCC_M.2_PCIE_SSD_30012119169" [] {};
@@ -238,7 +250,7 @@ in {
     };
     # TODO deploy
     echidna = {
-      install_host = "192.168.50.xxx";
+      platform.prem.install_host = "192.168.50.xxx";
       system = {
         # TODO fix modules to beef up WSL
         imports = [inputs.nixos-wsl.nixosModules.default];
@@ -259,7 +271,7 @@ in {
     };
     # TODO deploy
     systeamadeck = {
-      install_host = "192.168.50.155";
+      platform.prem.install_host = "192.168.50.155";
       system = {pkgs, ...}: {
         imports = [inputs.jovian.nixosModules.jovian];
         disko = diskoZfs "/dev/disk/by-id/nvme-Phison_ESMP001TMN48C3-E21TS_23445M001T05978" [] {};
@@ -294,7 +306,7 @@ in {
       };
     };
     falcon = {
-      install_host = "192.168.50.215";
+      platform.prem.install_host = "192.168.50.215";
       system = {
         boot.initrd.availableKernelModules = ["sr_mod"];
         # Firmware bug in ACPI DSDT table for Super IO + UART

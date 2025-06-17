@@ -13,7 +13,7 @@ in {
     ...
   }: let
     inherit (lib) fileContents genList mkDefault mkForce mkIf mkMerge mkOption types;
-    inherit (types) attrsOf attrTag enum submodule;
+    inherit (types) attrsOf attrTag enum str submodule;
   in {
     options.nodes = canivete.mkNestedSubmodule ({config, name, ...}: {
       options.platform = mkOption {
@@ -21,7 +21,12 @@ in {
         # TODO make this dynamic to activated clouds
         type = attrTag {
           prem = mkOption {
-            type = submodule {};
+            type = submodule {
+              options.install_host = mkOption {
+                type = str;
+                description = "Initial installation target";
+              };
+            };
           };
           google = mkOption {
             type = submodule {};
@@ -41,6 +46,8 @@ in {
             systemd-boot.enable = true;
             efi.canTouchEfiVariables = true;
           };
+          system.dotfiles.tailscale.interface = mkDefault "eno1";
+          opentofu.module."nixos_${name}_system_install".target_host = mkForce config.platform.prem.install_host;
         })
         (mkIf (config.platform ? google) {
           system = {modulesPath, ...}: {
@@ -90,6 +97,7 @@ in {
         (mkIf (config.platform ? hetzner) {
           system.imports = with inputs.srvos.nixosModules; [server hardware-hetzner-cloud];
           system.dotfiles.facter.reportName = "hetzner";
+          system.dotfiles.tailscale.interface = "eth0";
           opentofu.resource.hcloud_server.${name} = mkMerge [
             {
               depends_on = ["hcloud_ssh_key.me"];
