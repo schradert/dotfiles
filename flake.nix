@@ -1,6 +1,6 @@
 {
   description = "System configuration";
-  outputs = inputs: inputs.canivete.lib.mkFlake {inherit inputs;} [./.] {};
+  outputs = inputs: inputs.canivete.lib.mkFlake {inherit inputs;} [./infra ./modules] {};
   inputs = {
     ### REPOSITORY
 

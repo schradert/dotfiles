@@ -5,10 +5,8 @@ in {
     profiles.system.canivete = {inherit (modules) opentofu;};
   });
   dotfiles = {...}: {
-    options.nodes = mkOption {
-      type = types.attrsOf (types.submodule {
-        options.opentofu = canivete.mkModuleOption {description = "Common OpenTofu configuration";};
-      });
+    options.nodes = canivete.mkNestedSubmodule {
+      options.opentofu = canivete.mkModuleOption {description = "Common OpenTofu configuration";};
     };
     options.opentofu = canivete.mkModuleOption {description = "Common OpenTofu configuration";};
     config.opentofu = {

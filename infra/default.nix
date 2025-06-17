@@ -53,9 +53,10 @@
   };
   dotfiles = {canivete, ...}: {
     domain = "trdos.me";
-    root = "sirver";
     me = "tristan";
     people.tristan = "tristan";
+
+    clouds.hetzner.enable = true;
 
     nixos = {pkgs, ...}: {
       # Convenient debugging image to bypass airgap
@@ -67,6 +68,7 @@
       };
     };
 
+    kubenix.canivete.root = "sirver";
     kubenix.kubernetes.resources.namespaces = {
       # TODO define all namespaces (dynamically?!)
       cicd = {};
@@ -75,11 +77,11 @@
       storage = {};
     };
 
-    # services = {
+    services = {
     #   cert-manager.enable = true;
     #   cert-manager.provider.cloudflare.token = canivete.vals.sops.default "cloudflare/token";
-    #   cilium.enable = true;
-    #   coredns.enable = true;
+      cilium.enable = true;
+      coredns.enable = true;
     #   descheduler.enable = true;
     #   external-dns.enable = true;
     #   external-secrets.enable = true;
@@ -108,6 +110,6 @@
     #   };
     #   # TODO add all of the services
     #   # TODO decouple services
-    # };
+    };
   };
 }
