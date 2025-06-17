@@ -77,7 +77,6 @@
     };
     nix2container.url = "github:nlewo/nix2container";
     nix2container.inputs.nixpkgs.follows = "nixpkgs";
-    nix2container.inputs.flake-utils.follows = "flake-utils";
     # NOTE Arion has no argument to prefer buildLayeredImage when streamLayeredImage doesn't work across systems
     # arion.url = "github:hercules-ci/arion";
     arion.url = "github:schradert/arion/build-layer-image";
