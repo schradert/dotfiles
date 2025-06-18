@@ -141,6 +141,8 @@ in {
     chinchilla.hostname = mkForce "192.168.50.85";
     dingo.hostname = mkForce "192.168.50.105";
     axolotl.hostname = mkForce "192.168.50.250";
+    falcon.hostname = mkForce "192.168.50.215";
+    falcon.remoteBuild = true;
   };
   dotfiles.nodes = {
     bootstrap = {
@@ -308,24 +310,36 @@ in {
     };
     falcon = {
       platform.prem.install_host = "192.168.50.215";
+      opentofu.module.nixos_falcon_system_install.build_on_remote = true;
       system = {
         boot.initrd.availableKernelModules = ["sr_mod"];
         # Firmware bug in ACPI DSDT table for Super IO + UART
         # Prevents kernel from even touching 8250 UART ports
         # TODO did this actually work? (it did at first but then maybe not...)
         boot.kernelParams = ["8250.nr_uarts=0"];
-        # TODO convert to ZFS
-        disko = diskoExt4 "/dev/disk/by-id/nvme-PC801_NVMe_SK_hynix_1TB__SIABN06591CB93G1B" {
+        disko = diskoZfs "/dev/disk/by-id/nvme-PC801_NVMe_SK_hynix_1TB__SIABN06591CB93G1B" [] {
           devices.disk.data = {
             type = "disk";
             device = "/dev/disk/by-id/ata-TOSHIBA_MG08ADA400NY_X1Q0A2MPFYXG";
             content.type = "gpt";
-            content.partitions.data = {
+            content.partitions.zfs = {
               size = "100%";
-              content.type = "filesystem";
-              content.format = "ext4";
-              content.mountpoint = "/data";
+              content.type = "zfs";
+              content.pool = "data";
             };
+          };
+          devices.zpool.data = {
+            type = "zpool";
+            rootFsOptions = {
+              mountpoint = "none";
+              compression = "lz4";
+              acltype = "posixacl";
+              xattr = "sa";
+              "com.sun:auto-snapshot" = "true";
+            };
+            options.ashift = "12";
+            datasets.root.type = "zfs_fs";
+            datasets.root.mountpoint = "/data";
           };
         };
         dotfiles.profiles.client.enable = true;
@@ -356,6 +370,7 @@ in {
             ];
           })
         ];
+        networking.hostId = "fa7c0969";
         services.ollama.enable = true;
         services.ollama.loadModels = [
           "llama3.1:8b" # chat
