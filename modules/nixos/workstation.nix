@@ -8,6 +8,10 @@
       };
       dotfiles.profiles.client.code.enable = true;
       dotfiles.profiles.virtualization.enable = true;
+      dotfiles.nixpkgs.config.allowUnfreePackages = ["clickup"];
+      home-manager.sharedModules = [
+        ({pkgs, ...}: {home.packages = [pkgs.clickup];})
+      ];
     };
   };
 }
