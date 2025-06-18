@@ -9,7 +9,7 @@
           assertion = config.dotfiles.profiles.client.enable;
           message = "Video is for clients";
         };
-        home-manager.sharedModules = [{programs.obs-studio.enable = true;}];
+        dotfiles.programs.obs-studio.enable = true;
         users.users.${me}.extraGroups = ["video"];
       };
     };
