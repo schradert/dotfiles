@@ -2,7 +2,7 @@
   dotfiles = {config, ...}: let
     inherit (config) me;
   in {
-    nixos = {config, lib, ...}: {
+    nixos = {config, lib, perSystem, ...}: {
       options.dotfiles.profiles.client.audio.enable = lib.mkEnableOption "Audio processing";
       config = lib.mkIf config.dotfiles.profiles.client.audio.enable {
         assertions = lib.toList {
@@ -11,7 +11,14 @@
         };
         home-manager.sharedModules = [
           ({pkgs, ...}: {
-            home.packages = with pkgs; [pavucontrol spotify];
+            home.packages = with pkgs; [
+              helvum
+              pavucontrol
+              qpwgraph
+              spotify
+              perSystem.inputs'.wiremix.packages.wiremix
+            ];
+            services.easyeffects.enable = true;
           })
         ];
         dotfiles.nixpkgs.config.allowUnfreePackages = ["spotify"];

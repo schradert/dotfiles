@@ -1423,7 +1423,9 @@
         "pre-commit-hooks": [
           "pre-commit"
         ],
-        "systems": "systems",
+        "systems": [
+          "systems-linux"
+        ],
         "xdph": [
           "xdph"
         ]
@@ -2841,7 +2843,8 @@
         "srvos": "srvos",
         "stylix": "stylix",
         "superfile": "superfile",
-        "systems": "systems_3",
+        "systems": "systems_2",
+        "systems-linux": "systems-linux",
         "television": "television",
         "terranix": "terranix",
         "treefmt": "treefmt",
@@ -2850,6 +2853,7 @@
         "unison-src": "unison-src",
         "walker": "walker",
         "wezterm": "wezterm",
+        "wiremix": "wiremix",
         "xdph": "xdph",
         "yazi": "yazi",
         "zen-browser": "zen-browser",
@@ -3044,7 +3048,7 @@
           "nixpkgs"
         ],
         "nur": "nur_2",
-        "systems": "systems_2",
+        "systems": "systems",
         "tinted-foot": "tinted-foot",
         "tinted-kitty": "tinted-kitty",
         "tinted-schemes": "tinted-schemes",
@@ -3094,6 +3098,21 @@
     },
     "systems": {
       "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
+    "systems-linux": {
+      "locked": {
         "lastModified": 1689347949,
         "narHash": "sha256-12tWmuL2zgBgZkdoB6qXZsgJEH9LR3oUgpaQq2RbI80=",
         "owner": "nix-systems",
@@ -3108,21 +3127,6 @@
       }
     },
     "systems_2": {
-      "locked": {
-        "lastModified": 1681028828,
-        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
-        "owner": "nix-systems",
-        "repo": "default",
-        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-systems",
-        "repo": "default",
-        "type": "github"
-      }
-    },
-    "systems_3": {
       "locked": {
         "lastModified": 1681028828,
         "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
@@ -3447,6 +3451,29 @@
         "owner": "wez",
         "ref": "main",
         "repo": "wezterm",
+        "type": "github"
+      }
+    },
+    "wiremix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "systems": [
+          "systems-linux"
+        ]
+      },
+      "locked": {
+        "lastModified": 1750130566,
+        "narHash": "sha256-IKgzsShCQ+zsRVDQcV+FS7PgvyIKScDzy/Ufd5jFXXk=",
+        "owner": "tsowell",
+        "repo": "wiremix",
+        "rev": "d937979285baed97c6f2a07485fd1a7f98046288",
+        "type": "github"
+      },
+      "original": {
+        "owner": "tsowell",
+        "repo": "wiremix",
         "type": "github"
       }
     },

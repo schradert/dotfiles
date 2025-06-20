@@ -74,6 +74,9 @@
           });
         })
       ];
+      # TODO declarative pipewire config of a VAC loopback to use Droidcam OBS monitoring audio as mic input
+      # NOTE pactl module-null-sink ...
+      # NOTE pactl module-remap-source ...
     };
   };
 }

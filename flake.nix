@@ -164,6 +164,7 @@
     treefmt.url = "github:numtide/treefmt-nix";
     treefmt.inputs.nixpkgs.follows = "nixpkgs";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
+    systems-linux.url = "github:nix-systems/default-linux";
 
     # Network
     # NOTE https://github.com/awlsring/terraform-provider-headscale/issues/12
@@ -257,6 +258,9 @@
       parts.follows = "flake-parts";
       nci.follows = "nci";
     };
+    wiremix.url = "github:tsowell/wiremix";
+    wiremix.inputs.nixpkgs.follows = "nixpkgs";
+    wiremix.inputs.systems.follows = "systems-linux";
 
     # Browser
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
@@ -300,7 +304,7 @@
     # NOTE hyprland changes way too frequently that it might make sense to permanently version pin
     hyprland.url = "github:hyprwm/Hyprland/v0.46.0";
     hyprland.inputs.nixpkgs.follows = "nixpkgs";
-    hyprland.inputs.systems.url = "github:nix-systems/default-linux";
+    hyprland.inputs.systems.follows = "systems-linux";
     hyprland.inputs.pre-commit-hooks.follows = "pre-commit";
     hyprland-plugins.url = "github:hyprwm/hyprland-plugins/v0.46.0";
     hyprland-plugins.inputs.hyprland.follows = "hyprland";
