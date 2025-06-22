@@ -91,16 +91,18 @@
             image.useDigest = false;
             operator.image.useDigest = false;
 
-            endpointRoutes.enabled = true;
             bpf.masquerade = true;
             bpf.tproxy = true;
+            endpointRoutes.enabled = true;
 
             # Proxy
-            # FIXME add physical NICs
-            devices = ["tailscale0" "eth0"];
+            # TODO dynamically generate relevant devices (prem, cloud, etc.)
+            # TODO is there a way to specify this per device?
+            devices = ["tailscale0" "eno1" "br0"];
             kubeProxyReplacement = true;
             kubeProxyReplacementHealthzBindAddr = "0.0.0.0:10256";
-            k8sServiceHost = "k8s.${config.domain}";
+            # TODO convert this to Tailscale MagicDNS name
+            k8sServiceHost = "100.64.0.2";
             k8sServicePort = 6443;
 
             # TODO expand nodes and add hubble monitoring

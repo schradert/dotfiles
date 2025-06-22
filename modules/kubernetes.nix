@@ -20,7 +20,7 @@
         type = lib.types.attrsOf (lib.types.submodule {freeformType = (pkgs.formats.yaml {}).type;});
       };
       # Cannot be split into multiple lines because it's injected into a script
-      config.canivete.deploy.fetchKubeconfig = "ssh ${config.canivete.root} sudo k3s kubectl config view --raw | sed 's/127\.0\.0\.1/${domain}/'";
+      config.canivete.deploy.fetchKubeconfig = "ssh ${config.canivete.root} sudo k3s kubectl config view --raw | sed 's/127\.0\.0\.1/100.64.0.2/'";
     };
   };
 }

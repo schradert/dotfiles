@@ -5,7 +5,7 @@
       canivete.kubernetes.enable = true;
       dotfiles.cilium.enable = true;
       dotfiles.profiles.virtualization.enable = true;
-      services.k3s.serverAddr = "https://100.64.0.2:6443";
+      services.k3s.serverAddr = lib.mkIf (!config.canivete.kubernetes.root) "https://100.64.0.2:6443";
     };
   };
 }
