@@ -95,6 +95,8 @@
             bpf.tproxy = true;
             endpointRoutes.enabled = true;
 
+            # NOTE https://github.com/cilium/cilium/issues/38222#issuecomment-2908492347
+            tunnelProtocol = "geneve";
             # Proxy
             # TODO dynamically generate relevant devices (prem, cloud, etc.)
             # TODO is there a way to specify this per device?
