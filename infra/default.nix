@@ -57,6 +57,11 @@
     people.tristan = "tristan";
 
     clouds.hetzner.enable = true;
+    storage.bucket = {
+      enable = true;
+      provider = "backblaze";
+      minio.enable = true;
+    };
 
     nixos = {pkgs, ...}: {
       # Convenient debugging image to bypass airgap
