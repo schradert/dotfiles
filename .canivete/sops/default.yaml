@@ -20,6 +20,7 @@ bitwarden:
     key: ENC[AES256_GCM,data:QDTrPmFW5LmuFHFkl0sA5McBwu0=,iv:1ZMIiV/UIwZmefua25NUJTgOX6fmtHIlVDHpIlveVOM=,tag:aT5B3aJ3t78ScZ3LT0lX+g==,type:str]
 passwords:
     k3s-token: ENC[AES256_GCM,data:Qd0/Y2rdfJixVRf5lLoI4a4MsgYd,iv:R+Vc5Cv+J0XTc5WHDHaaPX+k/rk36e9nLDL9Az3Mnr0=,tag:sfSgwlGifAzDHrVXwdrr7A==,type:str]
+    restic: ENC[AES256_GCM,data:aikqZeL4Ti1tktR3syF0GLGwtkJv,iv:FGO4X1z5UdQHv7cA+458YVUWxAjO5QKU8Lve5x1KF6I=,tag:k6AvVY02njLHFUX03tYflQ==,type:str]
 tailscale:
     api_key: ENC[AES256_GCM,data:nDUm4p5VCr292389JsvmhItoHJzazaRmrb5SCMTNEbwHKOhO81YF/bQuTv1GbNG+2J/aMuG9,iv:iyFI3+L34LvkO3PiginO2OL9mM2LTO+LNwTswHKy7yg=,tag:5CA2rFZ0UsuoMdUHRWB/Mg==,type:str]
     bootstrap:
@@ -57,7 +58,7 @@ sops:
             RUVzTGVCL0p0bSs5d2Jpc3p0ZldtYUkKS9vx8/HR9ZeH0GB34mCBDDhCm2XLLCWX
             VDKZ48OMnlRRAFin9X/wj6RyUJlk0AWG6wgnlsLqnxE8m0+D1U2PDA==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-06-18T04:13:45Z"
-    mac: ENC[AES256_GCM,data:Q+yaKmM8uIeAZUaa7Poc7ct0+fjfKP0zY+SU8i8aDq62tIsBdypK12LCimoErht/v2aYzD1EAEDXZYL8jnffzTwbUOwxHmXOwZImAj+6mNpkmlbCQ2b9Ea94uuS/0z2HsSa5vaRqVgwnmIER4ANzul3y05DRLu5YZAHNGL+PfsY=,iv:LBeyLKe7XVbUbvm5UhilDstvFBt9ULZuhYgTmynwrjo=,tag:fw3zRz5ysempsl+B8zKYrQ==,type:str]
+    lastmodified: "2025-06-22T03:55:02Z"
+    mac: ENC[AES256_GCM,data:0TUrucC0c32H4TtvS++P9iOMAKnVwXK9jbWLkIcuHLyolgx4lAPtQzYYrSiqMtlxF+XLvtmzpqnLqZ5LVYeqA90LujjANGVTDbkq+RsvgumVq45/P0aphhKf7qPtGg/ghg0YByayyxRHhAQv2lFH+cApORic3x5S1XMLvZP++eE=,iv:Rr95WjURhfBqC4l094HUPgwHCzVJDLTPsYC0nnFs7eU=,tag:UgMW3ElSagwRYhhzqa8Lcw==,type:str]
     unencrypted_suffix: _unencrypted
     version: 3.10.2

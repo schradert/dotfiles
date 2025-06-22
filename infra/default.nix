@@ -90,6 +90,7 @@
       snapshot-controller.enable = true;
       openebs.enable = true;
       spegel.enable = true;
+      volsync.enable = true;
     #   descheduler.enable = true;
     #   external-dns.enable = true;
     #   external-secrets.enable = true;
@@ -99,7 +100,6 @@
     #   nginx.enable = true;
     #   prometheus.enable = true;
     #   reloader.enable = true;
-    #   volsync.enable = true;
 
     #   postgres.enable = true;
     #   grafana.enable = true;

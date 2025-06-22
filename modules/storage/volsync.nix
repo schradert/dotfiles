@@ -4,6 +4,7 @@
     lib,
     ...
   }: let
+    inherit (config.storage.bucket) minio;
     inherit (lib) flip mapAttrs mapAttrsToList mkDefault mkEnableOption mkIf mkMerge mkOption pipe setAttrByPath types;
     inherit (types) attrsOf coercedTo int listOf str submodule;
   in {
@@ -69,9 +70,6 @@
                 }: let
                   repository = "volsync--${name}--${pvc}";
                   inherit (canivete.vals.sops) default;
-                  # TODO is there a more ergonomic way that doesn't hardcode workspace?
-                  # TODO is this the best central place for defining this?
-                  inherit (perSystem.config.canivete.opentofu.workspaces.deploy.modules.config.provider) minio;
                 in
                   mkMerge [
                     # Some services use operators that allow configuration injection into PersistentVolumeClaim templates
@@ -86,11 +84,11 @@
                     # FIXME transfer all of these to respective modules
                     {
                       secrets.${repository}.data = mapAttrs (_: canivete.toBase64) {
-                        RESTIC_REPOSITORY = "s3:https://${minio.minio_server}/${default "hetzner/s3/bucket"}/backups/${repository}";
+                        RESTIC_REPOSITORY = "s3:https://${minio.server}/main/backups/${repository}";
                         RESTIC_PASSWORD = default "passwords/restic";
-                        AWS_ACCESS_KEY_ID = minio.minio_user;
-                        AWS_SECRET_ACCESS_KEY = minio.minio_password;
-                        AWS_DEFAULT_REGION = minio.minio_region;
+                        AWS_ACCESS_KEY_ID = minio.user;
+                        AWS_SECRET_ACCESS_KEY = minio.password;
+                        AWS_DEFAULT_REGION = minio.region;
                       };
                       replicationsources."${repository}-src".spec = {
                         sourcePVC = title;
