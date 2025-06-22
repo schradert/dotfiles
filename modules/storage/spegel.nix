@@ -9,11 +9,6 @@
     options.services.spegel.enable = mkEnableOption "spegel";
     config = mkIf config.services.spegel.enable {
       nixos = {pkgs, ...}: {
-        canivete.kubernetes.images.spegel = pkgs.dockerTools.pullImage {
-          imageName = "ghcr.io/spegel-org/spegel";
-          imageDigest = "sha256:7cec52c7c42cbff593087b6f3645bb58a7e1f1a5b861d767d062ce22533f9394";
-          hash = "sha256-rrvpS2EaG2zXkFSMnIhlZr4MiwmY7GPMTmBX5HaMNwg=";
-        };
         canivete.kubernetes.k3s.embedded-registry = true;
         environment.etc."rancher/k3s/registries.yaml".source = (pkgs.formats.yaml {}).generate "registries.yaml" {mirrors."*" = {};};
         # TODO is this custom containerd template necessary?
@@ -46,6 +41,14 @@
           [plugins."io.containerd.grpc.v1.cri".registry]
             config_path = "/var/lib/rancher/k3s/agent/etc/containerd/certs.d"
         '';
+        # Every node in the cluster before Spegel deployment needs to have the image available
+        services.k3s.images = [
+          (pkgs.dockerTools.pullImage {
+            imageName = "ghcr.io/spegel-org/spegel";
+            imageDigest = "sha256:7cec52c7c42cbff593087b6f3645bb58a7e1f1a5b861d767d062ce22533f9394";
+            hash = "sha256-rrvpS2EaG2zXkFSMnIhlZr4MiwmY7GPMTmBX5HaMNwg=";
+          })
+        ];
       };
       kubenix = {helm, ...}: {
         kubernetes.resources.kappconfig.kapp.changeGroupBindings = toList {
