@@ -7,3 +7,5 @@ Fair warning this repository does not follow more traditional patterns for infra
 - [ ] nix and cluster image garbage collector
 - [ ] write tailscaled service config and install
 - [ ] why do I have to `rm -rf /var/lib/rancher/k3s/agent/images && systemd-tmpfiles --create --remove` when a new image with same name is pushed?! (only applies to `buildImage` because symlink name is the same)
+- [ ] is input.self causing every node to redeploy even on unrelated changes?
+- [ ] set up essential services on Kubernetes before deploying the other nodes to the cluster
