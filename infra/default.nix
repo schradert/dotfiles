@@ -56,6 +56,7 @@
     me = "tristan";
     people.tristan = "tristan";
 
+    clouds.cloudflare.enable = true;
     clouds.hetzner.enable = true;
     storage.bucket = {
       enable = true;
@@ -80,27 +81,31 @@
       monitoring = {};
       security = {};
       storage = {};
+      network = {};
     };
 
     services = {
-    #   cert-manager.enable = true;
-    #   cert-manager.provider.cloudflare.token = canivete.vals.sops.default "cloudflare/token";
       cilium.enable = true;
       coredns.enable = true;
-      snapshot-controller.enable = true;
-      openebs.enable = true;
-      spegel.enable = true;
-      volsync.enable = true;
-    #   descheduler.enable = true;
-    #   external-dns.enable = true;
-    #   external-secrets.enable = true;
-    #   gatus.enable = true;
-    #   kubelet-csr-approver.enable = true;
-    #   oauth2-proxy.enable = true;
-    #   nginx.enable = true;
-    #   prometheus.enable = true;
-    #   reloader.enable = true;
+      # snapshot-controller.enable = true;
+      # openebs.enable = true;
+      # spegel.enable = true;
+      # volsync.enable = true;
+      # descheduler.enable = true;
+      # reloader.enable = true;
+      # external-dns.enable = true;
+      # cloudflared.enable = true;
+      # kubelet-csr-approver.enable = true;
+      # cert-manager.enable = true;
+      # cert-manager.provider.cloudflare.token = canivete.vals.sops.default "cloudflare/pat";
+      # external-secrets.enable = true;
+      # nginx.enable = true;
+      # prometheus.enable = true;
+      # keycloak.enable = true;
+      # oauth2-proxy.enable = true;
+      # oauth2-proxy.provider = "keycloak";
 
+    #   gatus.enable = true;
     #   postgres.enable = true;
     #   grafana.enable = true;
     #   clickhouse.enable = true;

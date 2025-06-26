@@ -78,7 +78,8 @@
             spegel.containerdSock = "/run/k3s/containerd/containerd.sock";
             spegel.containerdContentPath = "/var/lib/rancher/k3s/agent/containerd/io.containerd.content.v1.content";
             spegel.containerdRegistryConfigPath = "/var/lib/rancher/k3s/agent/etc/containerd/certs.d";
-            # TODO serviceMonitor.enabled = true;
+            # TODO ordering cycle?
+            # serviceMonitor.enabled = true;
           };
         };
 

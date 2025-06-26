@@ -61,7 +61,7 @@ in {
               ];
             };
             service.enabled = true;
-            serviceMonitor.enabled = true;
+            serviceMonitor.enabled = config.services.prometheus.enable;
             leaderElection.enabled = true;
           };
         };

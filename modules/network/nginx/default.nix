@@ -28,8 +28,6 @@
       kubenix = {helm, ...}: {
         kubernetes.helm.releases = let
           release = {inherit namespace chart values;};
-          # TODO can I use a different namespace?
-          # namespace = "network";
           namespace = "kube-system";
           chart = helm.fetch {
             repo = "https://kubernetes.github.io/ingress-nginx";
@@ -101,9 +99,7 @@
             values.fullnameOverride = "nginx-internal";
             values.controller = {
               service.annotations."external-dns.alpha.kubernetes.io/hostname" = "internal.${domain}";
-              # FIXME choose Tailscale IP
-              # TODO should this be a tailscale IP if I switch to VPN?
-              # service.annotations."lbipam.cilium.io/ips" = "192.168.50.201";
+              service.annotations."lbipam.cilium.io/ips" = "100.64.1.1";
               ingressClassResource.name = "internal";
               ingressClassResource.default = true;
               ingressClassResource.controllerValue = "k8s.io/internal";
@@ -115,8 +111,7 @@
             values.fullnameOverride = "nginx-external";
             values.controller = {
               service.annotations."external-dns.alpha.kubernetes.io/hostname" = "external.${domain}";
-              # FIXME choose Tailscale IP
-              # service.annotations."lbipam.cilium.io/ips" = "192.168.50.202";
+              service.annotations."lbipam.cilium.io/ips" = "100.64.1.2";
               ingressClassResource.name = "external";
               ingressClassResource.controllerValue = "k8s.io/external";
               # admissionWebhooks = admissionWebhook "external";

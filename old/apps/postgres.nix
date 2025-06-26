@@ -152,10 +152,10 @@ in {
               values.envs.targetNamespace = "*";
               values.ingress = {
                 enabled = true;
-                annotations."external-dns.alpha.kubernetes.io/target" = "external.${domain}";
+                annotations."external-dns.alpha.kubernetes.io/target" = "internal.${domain}";
                 annotations."nginx.ingress.kubernetes.io/auth-url" = "https://oauth2-proxy.${domain}/oauth2/auth?allowed_groups=/admin";
                 annotations."nginx.ingress.kubernetes.io/auth-signin" = "https://oauth2-proxy.${domain}/oauth2/start?rd=$scheme://$host$request_uri";
-                ingressClassName = "external";
+                ingressClassName = "internal";
                 hosts = toList {
                   host = "postgres.${domain}";
                   paths = ["/"];

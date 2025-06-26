@@ -11,16 +11,16 @@
           gping
           hwatch
           iftop
-          lazyjournal
           lnav
           lsof
           procps
-          systemctl-tui
           trippy
           zenith
         ]
         (lib.mkIf stdenv.hostPlatform.isLinux [
           kmon
+          lazyjournal
+          systemctl-tui
           systeroid
         ])
       ];

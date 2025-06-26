@@ -68,7 +68,7 @@
       })
       (mkIf (provider == "backblaze") {
         storage.bucket.minio = {
-          server = "https://s3.us-west-004.backblazeb2.com";
+          server = "s3.us-west-004.backblazeb2.com";
           user = default "backblaze/application_key_id";
           password = default "backblaze/application_key";
           region = "us-west-004";

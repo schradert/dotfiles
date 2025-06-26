@@ -8,7 +8,7 @@
     inherit (lib) hasSuffix mkEnableOption mkIf pipe;
     version = "70.3.0";
     certgen-tag = "v1.5.2";
-    admission-tag = "main";
+    admission-tag = "v0.83.0";
     subdomain = "grafana.${domain}";
   in {
     options.services.prometheus.enable = mkEnableOption "prometheus";
@@ -61,8 +61,8 @@
           };
           prometheus-admission-webhook = pullImage {
             imageName = "quay.io/prometheus-operator/admission-webhook";
-            imageDigest = "sha256:d7f8ab9af48c41696e421dafc3ddc0550117aae65d7bb3e576ad1f1dbff8ec36";
-            hash = "sha256-In9GVoPqPUphoeqEElAALDAiL6Ya4LzTc5oy1Py3vcg=";
+            imageDigest = "sha256:b0d9c9e531e9d40e91d0789de1e4839d9218c18c5071b229408265caad3f39f5";
+            hash = "sha256-7Xo/AsDDAfmwj89bPwvmDZqg+enBBvpkgd1OXXH205o=";
             finalImageTag = admission-tag;
           };
           prometheus-config-reloader = pullImage {
@@ -153,8 +153,8 @@
               ingress = {
                 enabled = true;
                 hosts = [subdomain];
-                ingressClassName = "nginx";
-                annotations."external-dns.alpha.kubernetes.io/target" = "nginx.${domain}";
+                ingressClassName = "internal";
+                annotations."external-dns.alpha.kubernetes.io/target" = "internal.${domain}";
                 annotations."nginx.ingress.kubernetes.io/auth-url" = "https://oauth2-proxy.${domain}/oauth2/auth";
                 annotations."nginx.ingress.kubernetes.io/auth-signin" = "https://oauth2-proxy.${domain}/oauth2/start?rd=$scheme://$host$request_uri";
               };

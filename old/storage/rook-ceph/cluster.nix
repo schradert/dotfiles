@@ -57,8 +57,8 @@
             monitoring.enabled = true;
             monitoring.createPrometheusRules = true;
             ingress.dashboard = {
-              ingressClassName = "external";
-              annotations."external-dns.alpha.kubernetes.io/target" = "external.${domain}";
+              ingressClassName = "internal";
+              annotations."external-dns.alpha.kubernetes.io/target" = "internal.${domain}";
               annotations."nginx.ingress.kubernetes.io/auth-url" = "https://oauth2-proxy.${domain}/oauth2/auth?allowed_emails=me@trdos.me";
               annotations."nginx.ingress.kubernetes.io/auth-signin" = "https://oauth2-proxy.${domain}/oauth2/start?rd=$scheme://$host$request_uri";
               host.name = subdomain;

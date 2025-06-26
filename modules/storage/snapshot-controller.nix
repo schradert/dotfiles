@@ -30,9 +30,7 @@
         kubernetes.helm.releases.snapshot-controller = {
           namespace = "storage";
           inherit chart;
-          # TODO configure
-          # values.controller.serviceMonitor.create = true;
-          # values.webhook.enabled = false;
+          values.controller.serviceMonitor.create = true;
         };
       };
     };

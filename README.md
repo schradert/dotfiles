@@ -4,8 +4,29 @@ Fair warning this repository does not follow more traditional patterns for infra
 
 ## TODO
 
+- [ ] only evaluate packages for opentofu config (it's currently building kubenix config every time...)
+- [ ] is input.self causing every node to redeploy even on unrelated changes? (sops-install-service has to be restarted EVERY time)
 - [ ] nix and cluster image garbage collector
 - [ ] write tailscaled service config and install
 - [ ] why do I have to `rm -rf /var/lib/rancher/k3s/agent/images && systemd-tmpfiles --create --remove` when a new image with same name is pushed?! (only applies to `buildImage` because symlink name is the same)
-- [ ] is input.self causing every node to redeploy even on unrelated changes?
 - [ ] set up essential services on Kubernetes before deploying the other nodes to the cluster
+- [ ] kubernetes namespaces
+- [ ] repo folder organization
+- [ ] replace nginx with cilium
+- [ ] is spegel not working? (kubectl run doesn't work if pod is scheduled on a node without it..., but deploying with kapp clearly does)
+- [ ] non hostNetwork pods can't seem to connect to remote servers...
+- [ ] why do Ihave to wipe k3s like this?
+
+```bash
+sudo systemctl stop k3s
+sudo pkill -9 -f k3s
+sudo findmnt -rn -o TARGET |
+  grep -E '^(/var/lib/kubelet/|/run/k3s/|/run/netns/|/run/cilium/)' |
+  sort -r |
+  xargs -r -n1 sudo umount -l
+sudo rm -rf /var/lib/rancher /var/lib/kubelet /var/lib/cni /run/cilium /run/k3s /run/netns
+```
+
+- [ ] what is missing from this to cause old container IDs to not be found
+- [ ] is there a better way to deploy containers that doesn't cause k3s startup to take so damn long?
+- [ ] what is cuasing the cilium crd conflict?

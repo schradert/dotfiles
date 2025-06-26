@@ -39,35 +39,36 @@ in {
       home-manager = {
         config,
         pkgs,
+        systemConfiguration,
         ...
       }: {
-        config = mkIf (config.dotfiles.workstation.enable || config.canivete.kubernetes.enable) {
+        config = mkIf (config.dotfiles.profiles.client.workstation.enable || systemConfiguration.config.canivete.kubernetes.enable) {
           home.packages = [pkgs.cmctl];
-          programs.k9s.plugin.plugins = let
-            bash = getExe pkgs.bash;
-            cmctl = getExe pkgs.cmctl;
-            less = getExe pkgs.less;
-          in {
-            cert-status = {
-              shortCut = "Shift-S";
-              description = "Certificate status";
-              scopes = ["certificates"];
-              confirm = false;
-              background = false;
-              command = bash;
-              args = ["-c" "${cmctl} status certificate --context $CONTEXT --namespace $NAMESPACE $NAME |& ${less}"];
-            };
-            cert-renew = {
-              shortCut = "Shift-R";
-              description = "Certificate renew";
-              scopes = ["certificates"];
-              confirm = true;
-              background = false;
-              command = bash;
-              args = ["-c" "${cmctl} renew --context $CONTEXT --namespace $NAMESPACE $NAME |& ${less}"];
-            };
-            # TODO get secret from a certificate!
-          };
+          # programs.k9s.plugin.plugins = let
+          #   bash = getExe pkgs.bash;
+          #   cmctl = getExe pkgs.cmctl;
+          #   less = getExe pkgs.less;
+          # in {
+          #   cert-status = {
+          #     shortCut = "Shift-S";
+          #     description = "Certificate status";
+          #     scopes = ["certificates"];
+          #     confirm = false;
+          #     background = false;
+          #     command = bash;
+          #     args = ["-c" "${cmctl} status certificate --context $CONTEXT --namespace $NAMESPACE $NAME |& ${less}"];
+          #   };
+          #   cert-renew = {
+          #     shortCut = "Shift-R";
+          #     description = "Certificate renew";
+          #     scopes = ["certificates"];
+          #     confirm = true;
+          #     background = false;
+          #     command = bash;
+          #     args = ["-c" "${cmctl} renew --context $CONTEXT --namespace $NAMESPACE $NAME |& ${less}"];
+          #   };
+          #   # TODO get secret from a certificate!
+          # };
         };
       };
       nixos = {pkgs, ...}: let
@@ -156,7 +157,7 @@ in {
             clusterissuers.letsencrypt-staging = mkClusterIssuer "letsencrypt-staging" "https://acme-staging-v02.api.letsencrypt.org/directory";
             certificates.${domainName}.spec = {
               secretName = "${domainName}-tls";
-              issuerRef.name = "letsencrypt-production";
+              issuerRef.name = "letsencrypt-staging";
               issuerRef.kind = "ClusterIssuer";
               commonName = domain;
               dnsNames = [domain "*.${domain}"];

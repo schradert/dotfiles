@@ -24,7 +24,6 @@
         home.stateVersion = "25.11";
         programs = {
           bat.enable = true;
-          btop.enable = true;
           dircolors.enable = true;
           eza.enable = true;
           fzf.enable = true;

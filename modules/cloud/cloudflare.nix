@@ -9,7 +9,7 @@ in {
   dotfiles = {config, ...}: {
     options.clouds.cloudflare.enable = lib.mkEnableOption "Cloudflare";
     config = lib.mkIf config.clouds.cloudflare.enable {
-      opentofu.plugins = ["cloudflare/cloudflare/4.43.0"];
+      opentofu.plugins = ["cloudflare/cloudflare/5.6.0"];
       opentofu.modules = {
         provider.cloudflare.api_token = canivete.vals.sops.default "cloudflare/pat";
         data.cloudflare_accounts.main.name = email;

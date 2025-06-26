@@ -131,15 +131,18 @@
     };
   };
 in {
+  # disabledModules = [./systeamdeck.nix];
   perSystem.canivete.pre-commit.settings.excludes = ["nodes/nodes/.+\\.json"];
   # FIXME don't override
   # NOTE current thought is to install servers and deploy k8s before doing server/client updates
   canivete.deploy.nodes = {
     sirver.hostname = mkForce "192.168.50.185";
-    octopus.hostname = mkForce "192.168.50.53";
-    bonobo.hostname = mkForce "192.168.50.142";
-    chinchilla.hostname = mkForce "192.168.50.85";
-    dingo.hostname = mkForce "192.168.50.105";
+    sirver.activationTimeout = 600;
+    sirver.confirmTimeout = 600;
+    # octopus.hostname = mkForce "192.168.50.53";
+    # bonobo.hostname = mkForce "192.168.50.142";
+    # chinchilla.hostname = mkForce "192.168.50.85";
+    # dingo.hostname = mkForce "192.168.50.105";
     axolotl.hostname = mkForce "192.168.50.250";
     falcon.hostname = mkForce "192.168.50.215";
     falcon.remoteBuild = true;
@@ -187,50 +190,51 @@ in {
         # Mini switch on spare LAN to connect another system (dingo)
         networking.bridges.br0.interfaces = ["eno3" "eno4"];
         networking.interfaces.br0.useDHCP = true;
+        services.tailscale.enable = mkForce false;
       };
     };
-    octopus = {
-      platform.prem.install_host = "192.168.50.53";
-      system = {
-        boot.initrd.availableKernelModules = ["sr_mod"];
-        disko = diskoZfs "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d2e2991b17e" [
-          "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d462aff700b"
-          "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d552bdede19"
-          "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d622ca764e8"
-          "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d6f2d66f068"
-          "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d7c2e2ed82e"
-          "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d8a2f011f94"
-          "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d962fc2bcad"
-        ] {};
-        dotfiles.profiles.server.enable = true;
-        networking.hostId = "101915fa";
-        services.k3s.role = "server";
-      };
-    };
-    bonobo = {
-      platform.prem.install_host = "192.168.50.142";
-      system = {
-        disko = diskoZfs "/dev/disk/by-id/ata-Micron_1100_SATA_256GB_165015496CBD" [] {};
-        dotfiles.profiles.server.enable = true;
-        networking.hostId = "b090b069";
-      };
-    };
-    chinchilla = {
-      platform.prem.install_host = "192.168.50.85";
-      system = {
-        disko = diskoZfs "/dev/disk/by-id/ata-MTFDDAK256TBN-1AR1ZABHA_UGXVK01J7BDCER" [] {};
-        dotfiles.profiles.server.enable = true;
-        networking.hostId = "c419c417";
-      };
-    };
-    dingo = {
-      platform.prem.install_host = "192.168.50.105";
-      system = {
-        disko = diskoZfs "/dev/disk/by-id/ata-LITEON_IT_LCS-256L9S_SD0E97900L2TH61100DL" [] {};
-        dotfiles.profiles.server.enable = true;
-        networking.hostId = "d1960666";
-      };
-    };
+    # octopus = {
+    #   platform.prem.install_host = "192.168.50.53";
+    #   system = {
+    #     boot.initrd.availableKernelModules = ["sr_mod"];
+    #     disko = diskoZfs "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d2e2991b17e" [
+    #       "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d462aff700b"
+    #       "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d552bdede19"
+    #       "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d622ca764e8"
+    #       "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d6f2d66f068"
+    #       "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d7c2e2ed82e"
+    #       "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d8a2f011f94"
+    #       "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d962fc2bcad"
+    #     ] {};
+    #     dotfiles.profiles.server.enable = true;
+    #     networking.hostId = "101915fa";
+    #     services.k3s.role = "server";
+    #   };
+    # };
+    # bonobo = {
+    #   platform.prem.install_host = "192.168.50.142";
+    #   system = {
+    #     disko = diskoZfs "/dev/disk/by-id/ata-Micron_1100_SATA_256GB_165015496CBD" [] {};
+    #     dotfiles.profiles.server.enable = true;
+    #     networking.hostId = "b090b069";
+    #   };
+    # };
+    # chinchilla = {
+    #   platform.prem.install_host = "192.168.50.85";
+    #   system = {
+    #     disko = diskoZfs "/dev/disk/by-id/ata-MTFDDAK256TBN-1AR1ZABHA_UGXVK01J7BDCER" [] {};
+    #     dotfiles.profiles.server.enable = true;
+    #     networking.hostId = "c419c417";
+    #   };
+    # };
+    # dingo = {
+    #   platform.prem.install_host = "192.168.50.105";
+    #   system = {
+    #     disko = diskoZfs "/dev/disk/by-id/ata-LITEON_IT_LCS-256L9S_SD0E97900L2TH61100DL" [] {};
+    #     dotfiles.profiles.server.enable = true;
+    #     networking.hostId = "d1960666";
+    #   };
+    # };
     axolotl = {
       platform.prem.install_host = "192.168.50.250";
       system = {

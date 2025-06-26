@@ -71,16 +71,6 @@
         };
       };
       config = mkIf config.dotfiles.services.headscale.enable {
-        dotfiles.services.headscale.policy = {
-          acls = mkDefault [
-            {
-              action = "accept";
-              src = ["*"];
-              dst = ["*:*"];
-            }
-          ];
-          autoApprovers.routes."10.0.0.0/8" = ["main"];
-        };
         nixpkgs.overlays = [flake.inputs.headscale.overlay];
         # NOTE https://tailscale.com/kb/1082/firewall-ports
         networking.firewall.allowedUDPPorts = [3478];

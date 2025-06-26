@@ -3,7 +3,7 @@
 in {
   dotfiles = {canivete, config, lib, ...}: let
     inherit (config) domain root;
-    inherit (lib) mkEnableOption mkOption types mkMerge mkIf concatStringsSep optional flatten mkForce getExe optionalAttrs;
+    inherit (lib) mkDefault mkEnableOption mkOption types mkMerge mkIf concatStringsSep optional flatten mkForce getExe optionalAttrs;
     # TODO dynamic
     url = "https://headscale.${domain}:8080";
   in {
@@ -14,8 +14,11 @@ in {
       in {
         module."nixos_${name}_system_install".depends_on = mkIf (!headscale.enable) secret_resources;
         resource = {
-          null_resource."nixos_${name}_system".depends_on = mkIf headscale.enable secret_resources;
+          # NOTE this is temporary while my headscale state broke...
+          null_resource."nixos_${name}_system".depends_on = secret_resources;
+          # null_resource."nixos_${name}_system".depends_on = mkIf headscale.enable secret_resources;
           # TODO maybe there's a way to create sops phases too usptream?
+          # NOTE watch out for https://github.com/awlsring/terraform-provider-headscale/issues/11
           headscale_pre_auth_key.${name} = {
             user = "\${ headscale_user.main.name }";
             reusable = true;
@@ -64,33 +67,33 @@ in {
       options.dotfiles.tailscale = {
         enable = mkEnableOption "Tailscale daemon" // {default = true;};
         interface = canivete.mkNullableOption types.str {description = "External interface for tailscale node";};
+        routes = canivete.mkArgsOption {description = "Subnet routes to advertise";};
       };
       config = mkIf tailscale.enable {
-        canivete.kubernetes.k3s.vpn-auth-file = config.sops.secrets."tailscale/${node.name}/k3s_auth".path;
-        networking.firewall.trustedInterfaces = [config.services.tailscale.interfaceName];
+        # canivete.kubernetes.k3s.vpn-auth-file = config.sops.secrets."tailscale/${node.name}/k3s_auth".path;
+        # networking.firewall.trustedInterfaces = [config.services.tailscale.interfaceName];
         services.cloud-init.enable = false;
         services.k3s.extraFlags = mkMerge [
-          ["--node-ip=$$(tailscale ip --4)"]
-          (mkIf (tailscale.interface != null) [
-            "--node-external-ip=$$(ip -family inet -json addr show scope global dev ${tailscale.interface} | jq --raw-output '.[0].addr_info[0].local')"
-          ])
+          # ["--node-external-ip=$$(tailscale ip --4)"]
+          # ["--node-ip=$$(tailscale ip --4)"]
+          # (mkIf (tailscale.interface != null) [
+            # "--node-external-ip=$$(ip -family inet -json addr show scope global dev ${tailscale.interface} | jq --raw-output '.[0].addr_info[0].local')"
+          # ])
         ];
         services.tailscale = {
           enable = true;
           openFirewall = true;
           authKeyFile = config.sops.secrets."tailscale/${node.name}/pre_auth_key".path;
-          extraUpFlags = mkMerge [
-            ["--login-server" url]
-            (mkIf config.dotfiles.profiles.server.enable ["--advertise-routes" "10.0.0.0/8"])
-          ];
-          useRoutingFeatures = "client";
+          extraUpFlags = ["--login-server" url];
+          extraSetFlags = ["--advertise-routes" (concatStringsSep "," tailscale.routes)];
+          useRoutingFeatures = mkDefault (if config.dotfiles.profiles.server.enable then "both" else "client");
         };
         sops.secrets."tailscale/${node.name}/k3s_auth" = {};
         sops.secrets."tailscale/${node.name}/pre_auth_key" = {};
         systemd.services.k3s = {
           # NOTE for some reason I still have to use path instead of providing an absolute path above...
           path = [config.services.tailscale.package pkgs.iproute2 pkgs.jq];
-          requires = ["tailscaled-autoconnect.service"];
+          # requires = ["tailscaled-autoconnect.service"];
           serviceConfig.ExecStart = let
             # NOTE ALL OF THIS HAD TO BE COPIED FROM UPSTREAM TO OVERRIDE... don't get me started on why
             cfg = config.services.k3s;
@@ -128,7 +131,7 @@ in {
           in
             mkForce "${getExe pkgs.bash} -c '${command}'";
         };
-        systemd.services.tailscaled-autoconnect.requires = ["sops-install-secrets.service"];
+        # systemd.services.tailscaled-autoconnect.requires = ["sops-install-secrets.service"];
       };
     };
   };

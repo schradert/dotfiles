@@ -42,11 +42,15 @@ in {
       };
       config = mkMerge [
         (mkIf (config.platform ? prem) {
-          system.boot.loader = {
-            systemd-boot.enable = true;
-            efi.canTouchEfiVariables = true;
+          system = {config, ...}: {
+            boot.loader = {
+              systemd-boot.enable = true;
+              efi.canTouchEfiVariables = true;
+            };
+            # dotfiles.services.headscale.policy.autoApprovers.routes."192.168.50.0/24" = ["main"];
+            dotfiles.tailscale.interface = mkDefault "eno1";
+            # dotfiles.tailscale.routes = mkIf config.dotfiles.profiles.server.enable ["192.168.50.0/24"];
           };
-          system.dotfiles.tailscale.interface = mkDefault "eno1";
           opentofu.module."nixos_${name}_system_install".target_host = mkForce config.platform.prem.install_host;
         })
         (mkIf (config.platform ? google) {

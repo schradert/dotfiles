@@ -6,33 +6,38 @@
   }: let
     inherit (lib) mapAttrs mkIf mkEnableOption toList recursiveUpdate;
     inherit (config) domain root services;
+    image = {
+      imageName = "docker.io/cloudflare/cloudflared";
+      imageDigest = "sha256:09598b52370639bc74daa2faf78731e0922af686f7fb0a6415c6d5c8f0f003b1";
+      hash = "sha256-asDmVbmBZzNHVIHgrXY/8f5ozC4VdB5CnuUiHxhaa0U=";
+      finalImageTag = "2025.6.1";
+    };
   in {
     options.services.cloudflared.enable = mkEnableOption "Cloudflared Tunnel";
     config = mkIf services.cloudflared.enable {
-      opentofu.passwords.cloudflare-tunnel-secret.length = 21;
+      nixos = {pkgs, ...}: {canivete.kubernetes.images.cloudflared = pkgs.dockerTools.pullImage image;};
       opentofu.sops = {
-        cloudflare-account-id.value = "\${ data.cloudflare_accounts.main.accounts[0].id }";
-        cloudflare-account-id.path = ["cloudflare" "account_id"];
-        cloudflare-tunnel-cname.value = "\${ cloudflare_zero_trust_tunnel_cloudflared.main.cname }";
-        cloudflare-tunnel-cname.path = ["cloudflare" "tunnel" "cname"];
-        cloudflare-tunnel-token.value = "\${ cloudflare_zero_trust_tunnel_cloudflared.main.tunnel_token }";
+        cloudflare-tunnel-token.value = "\${ data.cloudflare_zero_trust_tunnel_cloudflared_token.main.token }";
         cloudflare-tunnel-token.path = ["cloudflare" "tunnel" "token"];
         cloudflare-tunnel-id.value = "\${ cloudflare_zero_trust_tunnel_cloudflared.main.id }";
         cloudflare-tunnel-id.path = ["cloudflare" "tunnel" "id"];
-        cloudflare-tunnel-secret-base64.value = "\${ cloudflare_zero_trust_tunnel_cloudflared.main.secret }";
-        cloudflare-tunnel-secret-base64.path = ["cloudflare" "tunnel" "secret"];
       };
-      opentofu.modules.resource.cloudflare_zero_trust_tunnel_cloudflared.main = {
-        account_id = "\${ data.cloudflare_accounts.main.accounts[0].id }";
-        name = "main";
-        secret = "\${ base64encode(random_password.cloudflare-tunnel-secret.result) }";
-        config_src = "local";
+      opentofu.modules = {
+        resource.cloudflare_zero_trust_tunnel_cloudflared.main = {
+          account_id = "\${ data.cloudflare_accounts.main.result[0].id }";
+          name = "main";
+          config_src = "local";
+        };
+        data.cloudflare_zero_trust_tunnel_cloudflared_token.main = {
+          account_id = "\${ data.cloudflare_accounts.main.result[0].id }";
+          tunnel_id = "\${ cloudflare_zero_trust_tunnel_cloudflared.main.id }";
+        };
       };
       kubenix = {canivete, ...}: let
         inherit (canivete.vals.sops) default;
         subdomain = "external.${domain}";
-        credsPath = "/etc/cloudflared/creds/credentials.json";
-        configPath = "/etc/cloudflared/config/config.yaml";
+        credsPath = "/etc/cloudflared/token.txt";
+        configPath = "/etc/cloudflared/config.yaml";
         port = 8080;
         probe = {
           enabled = true;
@@ -48,43 +53,35 @@
         };
       in {
         kubernetes.helm.releases.cloudflared = {
-          namespace = "network";
+          namespace = "kube-system";
           extraResources.dnsendpoints.cloudflared-tunnel.spec.endpoints = toList {
             dnsName = subdomain;
             recordType = "CNAME";
-            targets = [(default "cloudflare/tunnel/cname")];
+            targets = ["${default "cloudflare/tunnel/id"}.cfargotunnel.com"];
           };
           values = {
-            secrets.cloudflared.data = mapAttrs (_: canivete.toBase64) {
-              TUNNEL_ID = default "cloudflare/tunnel/id";
-              "credentials.json" = builtins.toJSON {
-                AccountTag = default "cloudflare/account_id";
-                TunnelSecret = default "cloudflare/tunnel/secret";
-                TunnelID = default "cloudflare/tunnel/id";
-              };
-            };
-            configMaps.cloudflared.data = {
-              NO_AUTOUPDATE = "true";
-              TUNNEL_CRED_FILE = credsPath;
-              TUNNEL_METRICS = "0.0.0.0:8080";
-              "config.yaml" = builtins.toJSON {
-                originRequest.originServerName = subdomain;
-                ingress = [
-                  {
-                    hostname = domain;
-                    service = "https://nginx-external-controller.network.svc.cluster.local:443";
-                  }
-                  {
-                    hostname = domain;
-                    service = "ssh://${root}:22";
-                  }
-                  {
-                    hostname = "*.${domain}";
-                    service = "https://nginx-external-controller.network.svc.cluster.local:443";
-                  }
-                  {service = "http_status:404";}
-                ];
-              };
+            secrets.cloudflared.stringData."token.txt" = default "cloudflare/tunnel/token";
+            configMaps.cloudflared.data."config.yaml" = builtins.toJSON {
+              tunnel = default "cloudflare/tunnel/id";
+              token-file = credsPath;
+              no-autoupdate = true;
+              metrics = "0.0.0.0:8080";
+              originRequest.originServerName = subdomain;
+              ingress = [
+                # {
+                #   hostname = domain;
+                #   service = "https://nginx-external-controller.network.svc.cluster.local:443";
+                # }
+                # {
+                #   hostname = domain;
+                #   service = "ssh://${root}:22";
+                # }
+                # {
+                #   hostname = "*.${domain}";
+                #   service = "https://nginx-external-controller.network.svc.cluster.local:443";
+                # }
+                {service = "http_status:404";}
+              ];
             };
             controllers.cloudflared = {
               replicas = 2;
@@ -97,13 +94,9 @@
                 labelSelector.matchLabels."app.kubernetes.io/name" = "cloudflared";
               };
               containers.cloudflared = {
-                image.repository = "docker.io/cloudflare/cloudflared";
-                image.tag = "2024.9.1";
-                args = ["tunnel" "--config" configPath "run" "$(TUNNEL_ID)"];
-                envFrom = [
-                  {secret = "cloudflared";}
-                  {configMapRef.name = "cloudflared";}
-                ];
+                image.repository = image.imageName;
+                image.tag = image.finalImageTag;
+                args = ["tunnel" "--config" configPath "run"];
                 probes.liveness = probe;
                 probes.readiness = probe;
                 probes.startup = recursiveUpdate probe {spec.failureThreshold = 30;};
@@ -136,7 +129,7 @@
               name = "cloudflared";
               globalMounts = toList {
                 path = credsPath;
-                subPath = "credentials.json";
+                subPath = "token.txt";
                 readOnly = true;
               };
             };
