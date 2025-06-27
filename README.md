@@ -7,8 +7,7 @@ Fair warning this repository does not follow more traditional patterns for infra
 - [ ] only evaluate packages for opentofu config (it's currently building kubenix config every time...)
 - [ ] is input.self causing every node to redeploy even on unrelated changes? (sops-install-service has to be restarted EVERY time)
 - [ ] nix and cluster image garbage collector
-- [ ] write tailscaled service config and install
-- [ ] why do I have to `rm -rf /var/lib/rancher/k3s/agent/images && systemd-tmpfiles --create --remove` when a new image with same name is pushed?! (only applies to `buildImage` because symlink name is the same)
+- [ ] why do I have to `rm -rf /var/lib/rancher/k3s/agent/images && systemd-tmpfiles --create --remove` when a new image with same name is pushed?! (only applies to `buildImage` because symlink name is the same) (could be with systemd-tmpfiles-resetup)
 - [ ] set up essential services on Kubernetes before deploying the other nodes to the cluster
 - [ ] kubernetes namespaces
 - [ ] repo folder organization
@@ -29,4 +28,6 @@ sudo rm -rf /var/lib/rancher /var/lib/kubelet /var/lib/cni /run/cilium /run/k3s 
 
 - [ ] what is missing from this to cause old container IDs to not be found
 - [ ] is there a better way to deploy containers that doesn't cause k3s startup to take so damn long?
-- [ ] what is cuasing the cilium crd conflict?
+- [ ] what is causing the cilium crd conflict?
+- [ ] pin every single container (pullPolicy = Never, useDigest = true, repo +tag +digest)
+- [ ] why `experimental-features "dynamic-derivations"` with `eval "$(nix eval --raw .#...null_resource.kubernetes.provisioner.local-exec.command)"`

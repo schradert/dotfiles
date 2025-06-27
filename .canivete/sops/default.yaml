@@ -19,7 +19,7 @@ bitwarden:
     id: ENC[AES256_GCM,data:6HOysrFcoxxL7v9ju7027eLB/ndQKOQu1yrDTfyVbGYuXnWM,iv:jEkQO/x8GZNKCM2+0H1iTM2zFhiV0QFPLgS0Y6YpzCk=,tag:CkWH7EYdRYEniwNcNFvlCA==,type:str]
     key: ENC[AES256_GCM,data:QDTrPmFW5LmuFHFkl0sA5McBwu0=,iv:1ZMIiV/UIwZmefua25NUJTgOX6fmtHIlVDHpIlveVOM=,tag:aT5B3aJ3t78ScZ3LT0lX+g==,type:str]
 passwords:
-    k3s-token: ENC[AES256_GCM,data:Qd0/Y2rdfJixVRf5lLoI4a4MsgYd,iv:R+Vc5Cv+J0XTc5WHDHaaPX+k/rk36e9nLDL9Az3Mnr0=,tag:sfSgwlGifAzDHrVXwdrr7A==,type:str]
+    k3s-token: ENC[AES256_GCM,data:wIIC71BNgiLp2z+vMUVTaHBTxOAl,iv:nKP7WxFoJEEVbCVxtsRoaRkQePTkcnUrK+Cw6rarVco=,tag:4p1d+DwZG5iGjHU6LLs3lw==,type:str]
     restic: ENC[AES256_GCM,data:aikqZeL4Ti1tktR3syF0GLGwtkJv,iv:FGO4X1z5UdQHv7cA+458YVUWxAjO5QKU8Lve5x1KF6I=,tag:k6AvVY02njLHFUX03tYflQ==,type:str]
     grafana-admin: ENC[AES256_GCM,data:F0va68W4Boxc8FKWPyubTrQu2P3e,iv:PsjAEv4pbd7k6RK3fVp+DBECTfkgL6muXlymt5SSOMQ=,tag:WVYg6t/4pgJLmayoGkSNLg==,type:str]
 tailscale:
@@ -59,7 +59,7 @@ sops:
             RUVzTGVCL0p0bSs5d2Jpc3p0ZldtYUkKS9vx8/HR9ZeH0GB34mCBDDhCm2XLLCWX
             VDKZ48OMnlRRAFin9X/wj6RyUJlk0AWG6wgnlsLqnxE8m0+D1U2PDA==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-06-24T18:40:10Z"
-    mac: ENC[AES256_GCM,data:w9iPntLZXuxNPhc9BcbIyOnHgbvwYKSmFPlq+v4tln6Ruvz2T1BDCS3xq6Z5jylC8zUZhmnbYP09u0yUTiot8JPsnMTRjR5rwhKTlOrOa4XenmTyTKxcb22P6DnAuEOcT1vW3HmFvBGf8W6gsgB7eJtxREakH1e0OM+QkrJyAuQ=,iv:6ZBtDZDjqiS6ybvFAhTWaB1cFkAYEDvW6ra4PpgyGvc=,tag:QlLAoGFnvqUr8oPasQNXBA==,type:str]
+    lastmodified: "2025-06-26T03:32:54Z"
+    mac: ENC[AES256_GCM,data:fd6ORoCXSNu9e9BRPMP/aU3S0inpXS5I6mdASnehnnF3iltYsyPLNDs0g7gujGU0DROE69f+oWVc8GmZ8HkkwWXjt3qL89m9b8Rq738MgdD6Bc1y88jxNq2CDx/x7DW5Pjq96iinECnVlroPrPQxVuhETPOy+FJSqvls6qYg3d8=,iv:SF5O229poxgZoCkdT7Iv7G9l5IJRY/19bp6vw59GZSA=,tag:WpYeEtkT6fMdCdR0oxS3jg==,type:str]
     unencrypted_suffix: _unencrypted
     version: 3.10.2

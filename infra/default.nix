@@ -7,27 +7,19 @@
   # FIXME why is k3s CRASHING?! overloading it with deployment requests at the beginning?
   # FIXME why is nixos_sirver_system failing initial deployment? i have to run twice
   # TODO how should I integrate this
-  # TODO get headscale_api_key to wait for node installation to be reachable
   # TODO why is kubernetes in opentofu showing up sensitive
   # TODO why does openebs-localpv-provisioner fail?
   # NOTE /builds + /modules are just temporary out of store symlinks
   flake.dotfiles = lib.mapAttrs (_: lib.getAttr "dotfiles") config.allSystems;
   flake.overlays.nur = inputs.nur.overlays.default;
   perSystem = {
-    config,
     pkgs,
     system,
     ...
   }: let
     inherit (lib) getExe mkForce;
-    deploy = "nix run .#canivete.${system}.opentofu.script -- --workspace deploy";
   in {
-    apps.deploy.program = pkgs.writeShellScriptBin "deploy" "${deploy} \"$@\"";
-    apps.deploy-all.program = pkgs.writeShellScriptBin "deploy-all" ''
-      set -euo pipefail
-      ${deploy} -auto-approve -target shell_script.headscale_api_key
-      ${deploy} -auto-approve
-    '';
+    apps.deploy.program = pkgs.writeShellScriptBin "deploy" "nix run .#canivete.${system}.opentofu.script -- --workspace deploy \"$@\"";
     canivete.pre-commit = {
       languages.shell.enable = true;
       settings.hooks = {
@@ -57,7 +49,6 @@
     people.tristan = "tristan";
 
     clouds.cloudflare.enable = true;
-    clouds.hetzner.enable = true;
     storage.bucket = {
       enable = true;
       provider = "backblaze";
@@ -73,15 +64,16 @@
         finalImageTag = "2.28.3";
       };
     };
-
-    kubenix.canivete.root = "sirver";
-    kubenix.kubernetes.resources.namespaces = {
-      # TODO define all namespaces (dynamically?!)
-      cicd = {};
-      monitoring = {};
-      security = {};
-      storage = {};
-      network = {};
+    kubenix = {
+      canivete.root = "sirver";
+      kubernetes.resources.namespaces = {
+        # TODO define all namespaces (dynamically?!)
+        cicd = {};
+        monitoring = {};
+        security = {};
+        storage = {};
+        network = {};
+      };
     };
 
     services = {
@@ -105,21 +97,21 @@
       # oauth2-proxy.enable = true;
       # oauth2-proxy.provider = "keycloak";
 
-    #   gatus.enable = true;
-    #   postgres.enable = true;
-    #   grafana.enable = true;
-    #   clickhouse.enable = true;
-    #   windmill.enable = true;
+      #   gatus.enable = true;
+      #   postgres.enable = true;
+      #   grafana.enable = true;
+      #   clickhouse.enable = true;
+      #   windmill.enable = true;
 
-    #   jitsi.enable = true;
-    #   immich.enable = true;
-    #   excalidraw.enable = true;
-    #   excalidraw.release.values.ingress = {
-    #     annotations = [];
-    #     className = "";
-    #   };
-    #   # TODO add all of the services
-    #   # TODO decouple services
+      #   jitsi.enable = true;
+      #   immich.enable = true;
+      #   excalidraw.enable = true;
+      #   excalidraw.release.values.ingress = {
+      #     annotations = [];
+      #     className = "";
+      #   };
+      #   # TODO add all of the services
+      #   # TODO decouple services
     };
   };
 }

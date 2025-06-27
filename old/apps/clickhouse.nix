@@ -70,7 +70,6 @@
                 })
                 (writeTextDir "etc/odbcinst.ini" (generators.toINI {} {FreeTDS.Driver = "/usr/lib/x86_64-linux-gnu/odbc/libtdsodbc.so";}))
                 # TODO how to pass this file in through a volume?
-                # TODO figure out MagicDNS on Tailscale to prevent hardcoding IP addresses subject to change
                 (writeTextDir "etc/odbc.ini" (generators.toINI {} {
                   # FIXME only add actual databases here
                   test = {

@@ -1,5 +1,9 @@
-{config, inputs, lib, ...}: let
-  inherit (config.canivete.meta) domain;
+{
+  config,
+  inputs,
+  lib,
+  ...
+}: let
   inherit (builtins) elemAt genList length listToAttrs toString;
   inherit (lib) mergeAttrs mkForce nameValuePair optionalAttrs pipe recursiveUpdate;
   # Disko does not actually merge NixOS modules (major bummer!)
@@ -7,136 +11,99 @@
   # NOTE https://github.com/nix-community/disko/issues/678
   # NOTE https://github.com/NixOS/nixpkgs/pull/284551
   # FIXME sirver + octopus fail on first boot and emergency mode must be manually skipped
-  diskoZfs = root: raid: recursiveUpdate {
-    devices.disk = pipe raid [
-      length
-      (genList (index: nameValuePair "raid-${toString (index + 1)}" {
-        type = "disk";
-        device = elemAt raid index;
-        content.type = "zfs";
-        content.pool = "raid";
-      }))
-      listToAttrs
-      (mergeAttrs {
-        root = {
-          device = root;
-          type = "disk";
-          content.type = "gpt";
-          content.partitions = {
-            ESP = {
-              type = "EF00";
-              size = "1G";
-              content = {
-                type = "filesystem";
-                format = "vfat";
-                mountpoint = "/boot";
-                mountOptions = ["umask=0077" "nofail"];
+  diskoZfs = root: raid:
+    recursiveUpdate {
+      devices.disk = pipe raid [
+        length
+        (genList (index:
+          nameValuePair "raid-${toString (index + 1)}" {
+            type = "disk";
+            device = elemAt raid index;
+            content.type = "zfs";
+            content.pool = "raid";
+          }))
+        listToAttrs
+        (mergeAttrs {
+          root = {
+            device = root;
+            type = "disk";
+            content.type = "gpt";
+            content.partitions = {
+              ESP = {
+                type = "EF00";
+                size = "1G";
+                content = {
+                  type = "filesystem";
+                  format = "vfat";
+                  mountpoint = "/boot";
+                  mountOptions = ["umask=0077" "nofail"];
+                };
+              };
+              zfs = {
+                size = "100%";
+                content.type = "zfs";
+                content.pool = "root";
               };
             };
-            zfs = {
-              size = "100%";
-              content.type = "zfs";
-              content.pool = "root";
+          };
+        })
+      ];
+      devices.zpool =
+        {
+          root = {
+            type = "zpool";
+            rootFsOptions = {
+              mountpoint = "none";
+              compression = "lz4";
+              acltype = "posixacl";
+              xattr = "sa";
+              "com.sun:auto-snapshot" = "true";
+            };
+            options.ashift = "12";
+            datasets = {
+              root.type = "zfs_fs";
+              root.mountpoint = "/";
+              home.type = "zfs_fs";
+              home.mountpoint = "/home";
+              tmp.type = "zfs_fs";
+              tmp.mountpoint = "/tmp";
+              tmp.options.sync = "disabled";
             };
           };
-        };
-      })
-    ];
-    devices.zpool = {
-      root = {
-        type = "zpool";
-        rootFsOptions = {
-          mountpoint = "none";
-          compression = "lz4";
-          acltype = "posixacl";
-          xattr = "sa";
-          "com.sun:auto-snapshot" = "true";
-        };
-        options.ashift = "12";
-        datasets = {
-          root.type = "zfs_fs";
-          root.mountpoint = "/";
-          home.type = "zfs_fs";
-          home.mountpoint = "/home";
-          tmp.type = "zfs_fs";
-          tmp.mountpoint = "/tmp";
-          tmp.options.sync = "disabled";
-        };
-      };
-    } // (optionalAttrs (length raid > 0) {
-      raid = {
-        type = "zpool";
-        rootFsOptions = {
-          mountpoint = "none";
-          compression = "lz4";
-          acltype = "posixacl";
-          xattr = "sa";
-          "com.sun:auto-snapshot" = "true";
-        };
-        options.ashift = "12";
-        mode.topology.type = "topology";
-        mode.topology.vdev = [
-          {
-            mode = "raidz1";
-            members = raid;
-          }
-        ];
-        datasets.raid = {
-          type = "zfs_fs";
-          mountpoint = "/mnt/raid";
-        };
-      };
-    });
-  };
-  diskoExt4 = base: recursiveUpdate {
-    devices.disk.base = {
-      device = base;
-      type = "disk";
-      content.type = "gpt";
-      content.partitions = {
-        boot = {
-          priority = 1;
-          type = "EF02";
-          size = "1M";
-        };
-        ESP = {
-          priority = 2;
-          type = "EF00";
-          size = "512M";
-          content = {
-            type = "filesystem";
-            format = "vfat";
-            mountpoint = "/boot";
-            mountOptions = ["umask=077"];
+        }
+        // (optionalAttrs (length raid > 0) {
+          raid = {
+            type = "zpool";
+            rootFsOptions = {
+              mountpoint = "none";
+              compression = "lz4";
+              acltype = "posixacl";
+              xattr = "sa";
+              "com.sun:auto-snapshot" = "true";
+            };
+            options.ashift = "12";
+            mode.topology.type = "topology";
+            mode.topology.vdev = [
+              {
+                mode = "raidz1";
+                members = raid;
+              }
+            ];
+            datasets.raid = {
+              type = "zfs_fs";
+              mountpoint = "/mnt/raid";
+            };
           };
-        };
-        root = {
-          priority = 3;
-          end = "-1G";
-          content = {
-            type = "filesystem";
-            format = "ext4";
-            mountpoint = "/";
-            # TODO where does root partition need to be resizable
-            # mountOptions = ["defaults" "x-systemd.growfs"];
-          };
-        };
-        swap = {
-          size = "100%";
-          content.type = "swap";
-          content.discardPolicy = "both";
-          content.resumeDevice = true;
-        };
-      };
+        });
     };
-  };
 in {
   # disabledModules = [./systeamdeck.nix];
   perSystem.canivete.pre-commit.settings.excludes = ["nodes/nodes/.+\\.json"];
   # FIXME don't override
   # NOTE current thought is to install servers and deploy k8s before doing server/client updates
   canivete.deploy.nodes = {
-    sirver.hostname = mkForce "192.168.50.185";
+    # NOTE this IP is not currently predictable from the bridging
+    sirver.hostname = mkForce "192.168.50.58";
     sirver.activationTimeout = 600;
     sirver.confirmTimeout = 600;
     # octopus.hostname = mkForce "192.168.50.53";
@@ -148,28 +115,6 @@ in {
     falcon.remoteBuild = true;
   };
   dotfiles.nodes = {
-    bootstrap = {
-      platform.hetzner.server_type = "cpx11";
-      opentofu.locals.bootstrap_ip = "\${ hcloud_server.bootstrap.ipv4_address }";
-      system = {config, ...}: {
-        services.cloudflare-dyndns = {
-          enable = true;
-          domains = ["headscale.${domain}" "bootstrap.ssh.${domain}"];
-          apiTokenFile = config.sops.secrets."cloudflare/pat".path;
-        };
-        sops.secrets."cloudflare/pat" = {};
-        # TODO convert to general server
-        # dotfiles.profiles.server.enable = true;
-
-        # TODO get ZFS and nixos-facter working
-        disko = diskoExt4 "/dev/sda" {
-          devices.disk.base.content.partitions.root.content.mountOptions = ["defaults" "x-systemd.growfs"];
-        };
-        facter.reportPath = mkForce null;
-        # disko = diskoZfs "/dev/sda" [] {};
-        # networking.hostId = "b008583a";
-      };
-    };
     sirver = {
       platform.prem.install_host = "192.168.50.23";
       system = {
@@ -185,12 +130,10 @@ in {
           "/dev/disk/by-id/scsi-35000c50067fe560f"
         ] {};
         dotfiles.profiles.server.enable = true;
-        dotfiles.tailscale.interface = "br0";
         networking.hostId = "799f2113";
         # Mini switch on spare LAN to connect another system (dingo)
         networking.bridges.br0.interfaces = ["eno3" "eno4"];
         networking.interfaces.br0.useDHCP = true;
-        services.tailscale.enable = mkForce false;
       };
     };
     # octopus = {

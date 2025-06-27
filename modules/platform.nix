@@ -8,14 +8,17 @@
 in {
   dotfiles = {
     canivete,
-    config,
     lib,
     ...
   }: let
-    inherit (lib) fileContents genList mkDefault mkForce mkIf mkMerge mkOption types;
-    inherit (types) attrsOf attrTag enum str submodule;
+    inherit (lib) fileContents genList mkForce mkIf mkMerge mkOption types;
+    inherit (types) attrTag enum str submodule;
   in {
-    options.nodes = canivete.mkNestedSubmodule ({config, name, ...}: {
+    options.nodes = canivete.mkNestedSubmodule ({
+      config,
+      name,
+      ...
+    }: {
       options.platform = mkOption {
         default.prem = {};
         # TODO make this dynamic to activated clouds
@@ -42,14 +45,9 @@ in {
       };
       config = mkMerge [
         (mkIf (config.platform ? prem) {
-          system = {config, ...}: {
-            boot.loader = {
-              systemd-boot.enable = true;
-              efi.canTouchEfiVariables = true;
-            };
-            # dotfiles.services.headscale.policy.autoApprovers.routes."192.168.50.0/24" = ["main"];
-            dotfiles.tailscale.interface = mkDefault "eno1";
-            # dotfiles.tailscale.routes = mkIf config.dotfiles.profiles.server.enable ["192.168.50.0/24"];
+          system.boot.loader = {
+            systemd-boot.enable = true;
+            efi.canTouchEfiVariables = true;
           };
           opentofu.module."nixos_${name}_system_install".target_host = mkForce config.platform.prem.install_host;
         })
@@ -101,7 +99,6 @@ in {
         (mkIf (config.platform ? hetzner) {
           system.imports = with inputs.srvos.nixosModules; [server hardware-hetzner-cloud];
           system.dotfiles.facter.reportName = "hetzner";
-          system.dotfiles.tailscale.interface = "eth0";
           opentofu.resource.hcloud_server.${name} = mkMerge [
             {
               depends_on = ["hcloud_ssh_key.me"];
