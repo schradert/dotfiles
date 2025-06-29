@@ -11,12 +11,19 @@
       sha256 = "sha256-8APlI4afYvU/CO8LKN0Lsj9JJOBniWV9qjQh/mo7FJ8=";
       finalImageTag = "v0.3.0";
     };
+    k3sSandboxImage = {
+      imageName = "rancher/mirrored-pause";
+      imageDigest = "sha256:74c4244427b7312c5b901fe0f67cbc53683d06f4f24c6faee65d4182bf0fa893";
+      sha256 = "sha256-IbuPXoalV8gKCZGMteRzkeG65o4GCu3G+UX+lVLAo2I=";
+      finalImageTag = "3.6";
+    };
   in {
     options.services.spegel.enable = mkEnableOption "spegel";
     config = mkIf config.services.spegel.enable {
       nixos = {pkgs, ...}: let
         toml = name: content: builtins.toString ((pkgs.formats.toml {}).generate name content);
       in {
+        # TODO only for server nodes
         # canivete.kubernetes.k3s = mkIf (config.services.k3s.role == "server") {embedded-registry = true;};
         environment.etc."rancher/k3s/registries.yaml".source = (pkgs.formats.yaml {}).generate "registries.yaml" {mirrors."*" = {};};
         # TODO is the embedded version more performant and flexible? why wouldn't embedded-registry work?!
@@ -71,7 +78,7 @@
           '');
         };
         # Every node in the cluster before Spegel deployment needs to have the image available
-        services.k3s.images = [(pkgs.dockerTools.pullImage image)];
+        services.k3s.images = builtins.map pkgs.dockerTools.pullImage [image k3sSandboxImage];
       };
       kubenix = {helm, ...}: {
         kubernetes.helm.releases.spegel = {
