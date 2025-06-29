@@ -1,68 +1,71 @@
 {
   description = "System configuration";
-  outputs = inputs: inputs.canivete.lib.mkFlake {inherit inputs;} [./infra ./modules] {
-    # Test Nixidy
-    perSystem = {canivete, inputs', lib, pkgs, system, ...}: {
-      packages.nixidy = inputs'.nixidy.packages.default;
-      legacyPackages.nixidyEnvs.${system} = inputs.nixidy.lib.mkEnvs {
-        envs.prod.modules = [
-          ({charts, lib, ...}: {
-            nixidy.applicationImports = [
-              # (builtins.toString (inputs'.nixidy.packages.generators.fromCRD {
-              #   name = "argo";
-              #   src = charts.argoproj.argo-cd;
-              #   crds = ["templates/crds/crd-application.yaml"];
-              # }))
-            ];
-            nixidy.bootstrapManifest.enable = true;
-            nixidy.target = {
-              repository = "https://github.com/schradert/dotfiles.git";
-              branch = "main";
-              rootPath = "./gen/argo/prod";
-            };
-            applications.argo = {
-              namespace = "cicd";
-              helm.releases.argod = {
-                chart = charts.argoproj.argo-cd;
-                # values.crds.install = false;
-                values.configs.cmp = {
-                  create = true;
-                  plugins.nixidy.generate.command = ["sh" "-c" "nix run .#nixidy -- build .#prod"];
+  outputs = inputs:
+    inputs.canivete.lib.mkFlake {inherit inputs;} [./infra ./modules] {
+      perSystem = {
+        inputs',
+        lib,
+        pkgs,
+        system,
+        ...
+      }: {
+        packages.nixidy = inputs'.nixidy.packages.default;
+        legacyPackages.nixidyEnvs.${system} = inputs.nixidy.lib.mkEnvs {
+          inherit pkgs;
+          charts = inputs.nixhelm.chartsDerivations.${system};
+          envs.prod.modules = [
+            ({
+              charts,
+              lib,
+              ...
+            }: {
+              nixidy.applicationImports = [
+                (inputs'.nixidy.packages.generators.fromCRD {
+                  name = "cilium";
+                  src = pkgs.fetchFromGitHub {
+                    owner = "cilium";
+                    repo = "cilium";
+                    rev = "v1.17.5";
+                    hash = "sha256-frpu1kJICbZFwmH/KQ2pZHcS2M+XvLvxZpzVxok2eM8=";
+                  };
+                  crds = ["pkg/k3s/apis/cilium.io/client/crds/v2/ciliumnetworkpolicies.yaml"];
+                })
+              ];
+              nixidy.bootstrapManifest.enable = true;
+              nixidy.target = {
+                repository = "https://github.com/schradert/dotfiles.git";
+                branch = "main";
+                rootPath = "./gen/argo/prod";
+              };
+              applications.argo = {
+                namespace = "cicd";
+                helm.releases.argod = {
+                  chart = charts.argoproj.argo-cd;
+                  values.configs.cmp = {
+                    create = true;
+                    # TODO fix this auto-generation manifests
+                    plugins.nixidy.generate.command = ["sh" "-c" "nix run .#nixidy -- build .#prod"];
+                  };
                 };
               };
-            };
-            applications.spegel = {
-              namespace = "storage";
-              helm.releases.spegel = {
-                chart = lib.helm.downloadHelmChart {
-                  repo = "oci://ghcr.io/spegel-org/helm-charts";
-                  chart = "spegel";
-                  version = "0.3.0";
-                  chartHash = "sha256-KsuZvpTAV4KM4NoOctzclHZt+KUudupM44QwGFC1BzA=";
+              applications.spegel = {
+                namespace = "storage";
+                helm.releases.spegel = {
+                  chart = lib.helm.downloadHelmChart {
+                    repo = "oci://ghcr.io/spegel-org/helm-charts";
+                    chart = "spegel";
+                    version = "0.3.0";
+                    chartHash = "sha256-KsuZvpTAV4KM4NoOctzclHZt+KUudupM44QwGFC1BzA=";
+                  };
+                  values.image.pullPolicy = "Never";
                 };
-                values.image.pullPolicy = "Never";
+                resources.apps.v1.DaemonSet.spegel.spec.template.spec.containers.registry.env.GOMEMLIMIT.valueFrom.resourceFieldRef.divisor = lib.mkForce "1";
               };
-              resources.apps.v1.DaemonSet.spegel.spec.template.spec.containers.registry.env.GOMEMLIMIT.valueFrom.resourceFieldRef.divisor = lib.mkForce "1";
-            };
-          })
-        ];
-        charts = inputs.nixhelm.chartsDerivations.${system};
-        modules = [
-          # (inputs'.nixidy.packages.generators.fromCRD {
-          #   name = "cilium";
-          #   src = pkgs.fetchFromGitHub {
-          #     owner = "cilium";
-          #     repo = "cilium";
-          #     rev = "v1.17.5";
-          #     hash = "sha256-frpu1kJICbZFwmH/KQ2pZHcS2M+XvLvxZpzVxok2eM8=";
-          #   };
-          #   crds = ["pkg/k3s/apis/cilium.io/client/crds/v2/ciliumnetworkpolicies.yaml"];
-          # })
-        ];
-        inherit pkgs;
+            })
+          ];
+        };
       };
     };
-  };
   inputs = {
     ### Test Nixidy
     nixidy.url = "github:arnarg/nixidy/v0.13.0";

@@ -30,7 +30,7 @@
         # Authenticate with GitHub to avoid harsh rate-limiting on anonymous requests causing lychee to fail
         lychee.settings.flags = "--github-token \"$(${getExe pkgs.gh} auth token)\"";
         # Pretty much never will a hardcoded path be matched
-        lychee.toml.exclude = ["file://*"];
+        lychee.toml.exclude = ["file://*" "http://127.0.0.*"];
       };
     };
     # URLs built with substitution

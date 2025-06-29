@@ -7,7 +7,7 @@
     lib,
     ...
   }: let
-    inherit (lib) mapAttrs mkEnableOption mkIf mkForce mkMerge toList pipe hasSuffix;
+    inherit (lib) mapAttrs mkEnableOption mkIf mkForce mkMerge pipe hasSuffix;
     images = {
       cilium = {
         imageName = "quay.io/cilium/cilium";

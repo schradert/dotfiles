@@ -4,7 +4,7 @@
     lib,
     ...
   }: let
-    inherit (lib) mkEnableOption mkForce mkIf toList;
+    inherit (lib) mkEnableOption mkForce mkIf;
     image = {
       imageName = "ghcr.io/spegel-org/spegel";
       imageDigest = "sha256:4f9f7cf0b8006f2a17599f0a9f2fa6c02c7a206726f2a89ca26c42622346d17f";
@@ -14,7 +14,7 @@
   in {
     options.services.spegel.enable = mkEnableOption "spegel";
     config = mkIf config.services.spegel.enable {
-      nixos = {config, pkgs, ...}: let
+      nixos = {pkgs, ...}: let
         toml = name: content: builtins.toString ((pkgs.formats.toml {}).generate name content);
       in {
         # canivete.kubernetes.k3s = mkIf (config.services.k3s.role == "server") {embedded-registry = true;};

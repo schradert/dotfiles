@@ -5,8 +5,9 @@ Fair warning this repository does not follow more traditional patterns for infra
 ## NOTE
 
 1. don't add other nodes into the cluster until cilium + coredns + spegel exist
-  - I should bootstrap this!
-  - does the cilium image also need to be propagated to all nodes ahead of time?
+
+- I should bootstrap this!
+- does the cilium image also need to be propagated to all nodes ahead of time?
 
 ## TODO
 

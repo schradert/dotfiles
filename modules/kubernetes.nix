@@ -5,6 +5,7 @@
   ...
 }: {
   perSystem.canivete.kubenix.clusters.deploy = config.dotfiles.kubenix;
+  perSystem.canivete.pre-commit.settings.hooks.lychee.toml.exclude = ["https://192.168.50.*"];
   dotfiles = _: {
     options.kubenix = canivete.mkModuleOption {description = "Common kubenix configuration";};
     config.nixos = {
