@@ -4,8 +4,8 @@
     lib,
     ...
   }: let
-    inherit (lib) mapAttrs mkIf mkEnableOption toList recursiveUpdate;
-    inherit (config) domain root services;
+    inherit (lib) mkIf mkEnableOption toList recursiveUpdate;
+    inherit (config) domain services;
     image = {
       imageName = "docker.io/cloudflare/cloudflared";
       imageDigest = "sha256:09598b52370639bc74daa2faf78731e0922af686f7fb0a6415c6d5c8f0f003b1";
