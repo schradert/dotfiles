@@ -79,9 +79,9 @@
     services = {
       cilium.enable = true;
       coredns.enable = true;
+      spegel.enable = true;
       # snapshot-controller.enable = true;
       # openebs.enable = true;
-      # spegel.enable = true;
       # volsync.enable = true;
       # descheduler.enable = true;
       # reloader.enable = true;
