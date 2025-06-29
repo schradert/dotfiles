@@ -106,7 +106,7 @@ in {
     sirver.hostname = mkForce "192.168.50.58";
     sirver.activationTimeout = 600;
     sirver.confirmTimeout = 600;
-    # octopus.hostname = mkForce "192.168.50.53";
+    octopus.hostname = mkForce "192.168.50.53";
     # bonobo.hostname = mkForce "192.168.50.142";
     # chinchilla.hostname = mkForce "192.168.50.85";
     # dingo.hostname = mkForce "192.168.50.105";
@@ -136,24 +136,26 @@ in {
         networking.interfaces.br0.useDHCP = true;
       };
     };
-    # octopus = {
-    #   platform.prem.install_host = "192.168.50.53";
-    #   system = {
-    #     boot.initrd.availableKernelModules = ["sr_mod"];
-    #     disko = diskoZfs "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d2e2991b17e" [
-    #       "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d462aff700b"
-    #       "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d552bdede19"
-    #       "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d622ca764e8"
-    #       "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d6f2d66f068"
-    #       "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d7c2e2ed82e"
-    #       "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d8a2f011f94"
-    #       "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d962fc2bcad"
-    #     ] {};
-    #     dotfiles.profiles.server.enable = true;
-    #     networking.hostId = "101915fa";
-    #     services.k3s.role = "server";
-    #   };
-    # };
+    octopus = {
+      platform.prem.install_host = "192.168.50.53";
+      system = {
+        boot.initrd.availableKernelModules = ["sr_mod"];
+        disko = diskoZfs "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d2e2991b17e" [
+          "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d462aff700b"
+          "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d552bdede19"
+          "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d622ca764e8"
+          "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d6f2d66f068"
+          "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d7c2e2ed82e"
+          "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d8a2f011f94"
+          "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d962fc2bcad"
+        ] {};
+        dotfiles.profiles.server.enable = true;
+        networking.hostId = "101915fa";
+        services.k3s.role = "server";
+        # services.k3s.enable = mkForce false;
+        # systemd.services.k3s.enable = false;
+      };
+    };
     # bonobo = {
     #   platform.prem.install_host = "192.168.50.142";
     #   system = {
