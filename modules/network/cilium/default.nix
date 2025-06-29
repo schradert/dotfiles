@@ -105,15 +105,16 @@
               (source: source + "/pkg/k8s/apis/cilium.io/client/crds")
               (canivete.filesets.everything (name: _: hasSuffix ".yaml" name))
             ];
-          # kubernetes.resources.ciliumloadbalancerippools.main = {
-          #   metadata.annotations."kapp.k14s.io/change-group.cilium" = "cilium";
-          #   spec.blocks = [
-          #     {
-          #       start = "100.64.1.0";
-          #       stop = "100.64.1.255";
-          #     }
-          #   ];
-          # };
+          kubernetes.resources.ciliumloadbalancerippools.home = {
+            metadata.annotations."kapp.k14s.io/change-group.cilium" = "cilium";
+            spec.allowFirstLastIPs = "Yes";
+            spec.blocks = [
+              {
+                start = "192.168.50.251";
+                stop = "192.168.50.254";
+              }
+            ];
+          };
           kubernetes.helm.releases.cilium = {
             namespace = "kube-system";
             chart = helm.fetch {

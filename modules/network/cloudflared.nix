@@ -36,6 +36,7 @@
       kubenix = {canivete, ...}: let
         inherit (canivete.vals.sops) default;
         subdomain = "external.${domain}";
+        gateway = "https://cilium-gateway-external.kube-system.svc.cluster.local";
         credsPath = "/etc/cloudflared/token.txt";
         configPath = "/etc/cloudflared/config.yaml";
         port = 8080;
@@ -70,15 +71,11 @@
               ingress = [
                 {
                   hostname = domain;
-                  service = "https://nginx-external-controller.network.svc.cluster.local:443";
+                  service = gateway;
                 }
-                # {
-                #   hostname = domain;
-                #   service = "ssh://${root}:22";
-                # }
                 {
                   hostname = "*.${domain}";
-                  service = "https://nginx-external-controller.network.svc.cluster.local:443";
+                  service = gateway;
                 }
                 {service = "http_status:404";}
               ];
