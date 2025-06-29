@@ -30,7 +30,7 @@
         kubernetes.helm.releases.snapshot-controller = {
           namespace = "storage";
           inherit chart;
-          values.controller.serviceMonitor.create = true;
+          # values.controller.serviceMonitor.create = true;
         };
       };
     };

@@ -2,6 +2,12 @@
 
 Fair warning this repository does not follow more traditional patterns for infrastructure management and desktop dotfiles configuration seen in the Nix community. It is very much a work in progress, highly unstable, and obviously purpose built for myself. It is the most complete test of the functionality exposed by [canivete](https://github.com/schradert/canivete), a library for managing all kinds of infrastructure. The general idea of this work is to consolidate configuration for development workstations, server nodes, cluster deployments, Nix packaging, container builds, and more under a single umbrella with unlimited flexibility when modularizing and refactoring. Everything in this repo is ultimately deployable under a single `nix run`.
 
+## NOTE
+
+1. don't add other nodes into the cluster until cilium + coredns + spegel exist
+  - I should bootstrap this!
+  - does the cilium image also need to be propagated to all nodes ahead of time?
+
 ## TODO
 
 - [ ] only evaluate packages for opentofu config (it's currently building kubenix config every time...)
@@ -31,3 +37,4 @@ sudo rm -rf /var/lib/rancher /var/lib/kubelet /var/lib/cni /run/cilium /run/k3s 
 - [ ] what is causing the cilium crd conflict?
 - [ ] pin every single container (pullPolicy = Never, useDigest = true, repo +tag +digest)
 - [ ] why `experimental-features "dynamic-derivations"` with `eval "$(nix eval --raw .#...null_resource.kubernetes.provisioner.local-exec.command)"`
+- [ ] avoid hardcoding IPs!

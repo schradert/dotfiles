@@ -68,6 +68,8 @@
             boot.blacklistedKernelModules = ["netfilter"];
             boot.kernelModules = ["cls_bpf" "sch_ingress" "crypto_user" "iptable_raw" "xt_socket"];
             canivete.kubernetes.images = mapAttrs (_: pkgs.dockerTools.pullImage) images;
+            # Need Cilium DaemonSet images on all nodes before Spegel deployment will work
+            services.k3s.images = lib.attrVals ["cilium" "cilium-envoy"] config.canivete.kubernetes.images;
             # TODO build https://github.com/hengyoush/kyanos
             environment.systemPackages = [pkgs.bpftop];
             networking.firewall.trustedInterfaces = ["cilium+" "lxc+"];
@@ -103,24 +105,15 @@
               (source: source + "/pkg/k8s/apis/cilium.io/client/crds")
               (canivete.filesets.everything (name: _: hasSuffix ".yaml" name))
             ];
-          kubernetes.resources.ciliumloadbalancerippools.main = {
-            metadata.annotations."kapp.k14s.io/change-group.cilium" = "cilium";
-            spec.blocks = [
-              {
-                start = "100.64.1.0";
-                stop = "100.64.1.255";
-              }
-              # FIXME avoid hardcoding external IP
-              # {
-              #   start = "157.131.153.137";
-              #   stop = "157.131.153.137";
-              # }
-            ];
-          };
-          kubernetes.resources.kappconfig.kapp.changeGroupBindings = toList {
-            name = "not-cilium";
-            resourceMatchers = toList {notMatcher.matcher.hasAnnotationMatcher.keys = ["kapp.k14s.io/change-group.cilium"];};
-          };
+          # kubernetes.resources.ciliumloadbalancerippools.main = {
+          #   metadata.annotations."kapp.k14s.io/change-group.cilium" = "cilium";
+          #   spec.blocks = [
+          #     {
+          #       start = "100.64.1.0";
+          #       stop = "100.64.1.255";
+          #     }
+          #   ];
+          # };
           kubernetes.helm.releases.cilium = {
             namespace = "kube-system";
             chart = helm.fetch {
@@ -128,10 +121,6 @@
               chart = "cilium";
               version = "1.17.5";
               sha256 = "sha256-94xCDaau6blpHx+GmlCmR4QmNfV2b27lMM9hYuDd0do=";
-            };
-            overrides = toList {
-              metadata.annotations."kapp.k14s.io/change-group.cilium" = "cilium";
-              metadata.annotations."kapp.k14s.io/change-rule.cilium" = "upsert before upserting not-cilium";
             };
             values = mkMerge [
               {

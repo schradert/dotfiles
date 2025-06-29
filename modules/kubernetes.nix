@@ -5,7 +5,7 @@
   ...
 }: {
   perSystem.canivete.kubenix.clusters.deploy = config.dotfiles.kubenix;
-  dotfiles = {
+  dotfiles = _: {
     options.kubenix = canivete.mkModuleOption {description = "Common kubenix configuration";};
     config.nixos = {
       config,
