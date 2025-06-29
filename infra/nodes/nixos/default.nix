@@ -107,7 +107,7 @@ in {
     sirver.activationTimeout = 600;
     sirver.confirmTimeout = 600;
     octopus.hostname = mkForce "192.168.50.53";
-    # bonobo.hostname = mkForce "192.168.50.142";
+    bonobo.hostname = mkForce "192.168.50.142";
     # chinchilla.hostname = mkForce "192.168.50.85";
     # dingo.hostname = mkForce "192.168.50.105";
     axolotl.hostname = mkForce "192.168.50.250";
@@ -152,18 +152,18 @@ in {
         dotfiles.profiles.server.enable = true;
         networking.hostId = "101915fa";
         services.k3s.role = "server";
-        # services.k3s.enable = mkForce false;
-        # systemd.services.k3s.enable = false;
       };
     };
-    # bonobo = {
-    #   platform.prem.install_host = "192.168.50.142";
-    #   system = {
-    #     disko = diskoZfs "/dev/disk/by-id/ata-Micron_1100_SATA_256GB_165015496CBD" [] {};
-    #     dotfiles.profiles.server.enable = true;
-    #     networking.hostId = "b090b069";
-    #   };
-    # };
+    bonobo = {
+      platform.prem.install_host = "192.168.50.142";
+      system = {
+        disko = diskoZfs "/dev/disk/by-id/ata-Micron_1100_SATA_256GB_165015496CBD" [] {};
+        dotfiles.profiles.server.enable = true;
+        networking.hostId = "b090b069";
+        services.k3s.role = "server";
+        # TODO can I specify that this node should only have the etcd role and not control-plane or master?
+      };
+    };
     # chinchilla = {
     #   platform.prem.install_host = "192.168.50.85";
     #   system = {
