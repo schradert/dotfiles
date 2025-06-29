@@ -80,6 +80,7 @@
       cilium.enable = true;
       coredns.enable = true;
       spegel.enable = true;
+      argocd.enable = true;
       # snapshot-controller.enable = true;
       # openebs.enable = true;
       # volsync.enable = true;

@@ -28,7 +28,7 @@
             host."http://127.0.0.1:30020".capabilities = ["pull" "resolve"];
             host."http://127.0.0.1:30021".capabilities = ["pull" "resolve"];
           };
-          "/var/lib/rancher/k3s/agent/etc/containerd/config-v3.toml.tmpl"."L+".argument = builtins.toString ((pkgs.formats.toml {}).generate "config-v3.toml.tmpl" ''
+          "/var/lib/rancher/k3s/agent/etc/containerd/config-v3.toml.tmpl"."L+".argument = builtins.toString (pkgs.writeText "config-v3.toml.tmpl" ''
             version = 3
             root = "/var/lib/rancher/k3s/agent/containerd"
             state = "/run/k3s/containerd"
