@@ -68,18 +68,18 @@
               metrics = "0.0.0.0:8080";
               originRequest.originServerName = subdomain;
               ingress = [
-                # {
-                #   hostname = domain;
-                #   service = "https://nginx-external-controller.network.svc.cluster.local:443";
-                # }
+                {
+                  hostname = domain;
+                  service = "https://nginx-external-controller.network.svc.cluster.local:443";
+                }
                 # {
                 #   hostname = domain;
                 #   service = "ssh://${root}:22";
                 # }
-                # {
-                #   hostname = "*.${domain}";
-                #   service = "https://nginx-external-controller.network.svc.cluster.local:443";
-                # }
+                {
+                  hostname = "*.${domain}";
+                  service = "https://nginx-external-controller.network.svc.cluster.local:443";
+                }
                 {service = "http_status:404";}
               ];
             };
@@ -107,14 +107,14 @@
             };
             service.cloudflared.controller = "cloudflared";
             service.cloudflared.ports.http.port = port;
-            serviceMonitor.cloudflared.serviceName = "cloudflared";
-            serviceMonitor.cloudflared.endpoints = toList {
-              port = "http";
-              scheme = "http";
-              path = "/metrics";
-              interval = "1m";
-              scrapeTimeout = "30s";
-            };
+            # serviceMonitor.cloudflared.serviceName = "cloudflared";
+            # serviceMonitor.cloudflared.endpoints = toList {
+            #   port = "http";
+            #   scheme = "http";
+            #   path = "/metrics";
+            #   interval = "1m";
+            #   scrapeTimeout = "30s";
+            # };
             persistence.config = {
               type = "configMap";
               name = "cloudflared";

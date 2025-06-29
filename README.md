@@ -5,6 +5,7 @@ Fair warning this repository does not follow more traditional patterns for infra
 ## NOTE
 
 1. don't add other nodes into the cluster until cilium + coredns + spegel exist
+2. can pass `-- --log-format internal-json -v |& nom --json` to deploy-rs for `nix-output-monitor` tree output
 
 - I should bootstrap this!
 - does the cilium image also need to be propagated to all nodes ahead of time?
@@ -39,3 +40,5 @@ sudo rm -rf /var/lib/rancher /var/lib/kubelet /var/lib/cni /run/cilium /run/k3s 
 - [ ] pin every single container (pullPolicy = Never, useDigest = true, repo +tag +digest)
 - [ ] why `experimental-features "dynamic-derivations"` with `eval "$(nix eval --raw .#...null_resource.kubernetes.provisioner.local-exec.command)"`
 - [ ] avoid hardcoding IPs!
+- [ ] automatic `sudo chown -R tristan:users /home/tristan/.config`
+- [ ] automatic update host key in ~/.ssh/known_hosts when reinstalling a system

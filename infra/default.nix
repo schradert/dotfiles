@@ -81,16 +81,17 @@
       coredns.enable = true;
       spegel.enable = true;
       argocd.enable = true;
-      # snapshot-controller.enable = true;
-      # openebs.enable = true;
+      external-dns.enable = true;
+      cloudflared.enable = true;
+      kubelet-csr-approver.enable = true;
+      cert-manager.enable = true;
+      cert-manager.provider.cloudflare.token = canivete.vals.sops.default "cloudflare/pat";
+
+      snapshot-controller.enable = true;
+      openebs.enable = true;
       # volsync.enable = true;
       # descheduler.enable = true;
       # reloader.enable = true;
-      # external-dns.enable = true;
-      # cloudflared.enable = true;
-      # kubelet-csr-approver.enable = true;
-      # cert-manager.enable = true;
-      # cert-manager.provider.cloudflare.token = canivete.vals.sops.default "cloudflare/pat";
       # external-secrets.enable = true;
       # nginx.enable = true;
       # prometheus.enable = true;
