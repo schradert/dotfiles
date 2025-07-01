@@ -79,7 +79,7 @@
             pods.grafana-test.metadata.annotations."kapp.k14s.io/change-rule.grafana" = "upsert after upserting grafana";
             deployments.grafana.metadata.annotations."kapp.k14s.io/change-group.grafana" = "grafana";
             # NOTE /var/lib/grafana contents are frequently only owned by grafana
-            replicationsources.volsync--grafana--grafana-src.spec.restic.moverSecurityContext.runAsUser = 472;
+            replicationsources.volsync--grafana--grafana-src.spec.restic.moverSecurityContext.fsGroup = 472;
           };
           values = {
             # TODO dashboards + providers + plugins
