@@ -104,13 +104,14 @@
 
       crossplane.enable = true;
 
+      postgres.enable = true;
+
       # keycloak.enable = true;
       # nginx.enable = true;
       # oauth2-proxy.enable = true;
       # oauth2-proxy.provider = "keycloak";
 
       #   gatus.enable = true;
-      #   postgres.enable = true;
       #   clickhouse.enable = true;
       #   windmill.enable = true;
 

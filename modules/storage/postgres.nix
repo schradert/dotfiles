@@ -41,18 +41,11 @@ in {
         };
       }
       (mkIf config.services.postgres.enable {
-        home-manager = {pkgs, ...}: {
-          # TODO should I bring back dotfiles.profiles.databases.enable setting?
-          home.packages = with pkgs; [
-            dbeaver-bin
-            gobang
-            lazysql
-            rainfrog
-            harlequin
-            dblab
-          ];
-        };
-        nixos = {pkgs, ...}: let
+        nixos = {
+          config,
+          pkgs,
+          ...
+        }: let
           inherit (pkgs.dockerTools) pullImage;
         in {
           canivete.kubernetes.images = {
@@ -68,14 +61,25 @@ in {
               hash = "sha256-+z4BmHLAvCOcJZQskV0FiM0ud8edOTjSYr9GO67n5VQ=";
               finalImageTag = "4.0-p2";
             };
-            # NOTE pending decision on logical-backup
-            # logical-backup = pullImage {
-            #   imageName = "ghcr.io/zalando/postgres-operator/logical-backup";
-            #   imageDigest = "sha256:c8c600e4ca0acdfb7843e2943ae0274763c8f1c03fef5245dc0912a4cbd15c18";
-            #   hash = "sha256-8cRPlsaITKxW5bO+dHIWWf/pWqY1asqnY+oPAVMH3Ew=";
-            #   finalImageTag = "v1.14.0";
-            # };
+            postgres-ui = pullImage {
+              imageName = "ghcr.io/zalando/postgres-operator-ui";
+              imageDigest = "sha256:e4ecdaebeaabe6e5444ada2a2409b1c94bba627290a652c10e1322cd29fb0c14";
+              hash = "sha256-wYQVXdljf303Jdy/8v5+XwwWTL6xztO8IT2Ic3OHt1g=";
+              finalImageTag = "v1.12.2";
+            };
           };
+          home-manager.sharedModules = mkIf config.dotfiles.profiles.client.workstation.enable [
+            ({pkgs, ...}: {
+              home.packages = with pkgs; [
+                dbeaver-bin
+                gobang
+                lazysql
+                rainfrog
+                harlequin
+                dblab
+              ];
+            })
+          ];
         };
         kubenix = {
           canivete,
@@ -99,8 +103,9 @@ in {
               (source: source + "/charts/postgres-operator/crds")
               (canivete.filesets.files (name: _: hasSuffix ".yaml" name))
             ];
-          kubernetes.helm.releases.postgres = {
+          kubernetes.helm.releases = {
             postgres = {
+              namespace = "storage";
               chart = helm.fetch {
                 inherit repo;
                 chart = "postgres-operator";
@@ -124,24 +129,9 @@ in {
               };
               # NOTE /home/postgres/pgdata/pgroot/data is only accessible by the postgres user
               extraResources.replicationsources.volsync--postgres--postgres-src.spec.restic.moverSecurityContext.runAsUser = 101;
-              # TODO are there advantages over this logical-backup process compared to volsync?
-              # NOTE this path was considered because there is no way to override dataSourceRef
-              # extraResources.secrets.postgres-logical-backup.data = mapAttrs (_: toBase64) {
-              #   AWS_ACCESS_KEY_ID = minio.minio_user;
-              #   AWS_SECRET_ACCESS_KEY = minio.minio_password;
-              # };
-              # values.configLogicalBackup = {
-              #   logical_backup_docker_image = "ghcr.io/zalando/postgres-operator/logical-backup:v1.14.0";
-              #   logical_backup_s3_bucket = vals.sops.default "hetzner/s3/bucket";
-              #   logical_backup_s3_bucket_prefix = "backups/volsync--postgres--pgdata-main-0";
-              #   logical_backup_s3_region = minio.minio_region;
-              #   logical_backup_s3_endpoint = minio.minio_server;
-              #   logical_backup_s3_retention_time = "8 days";
-              #   logical_backup_schedule = "0 4 * * *";
-              #   logical_backup_cronjob_environment_secret = "postgres-logical-backup";
-              # };
             };
             postgres-ui = {
+              namespace = "storage";
               chart = helm.fetch {
                 repo = repo-ui;
                 chart = "postgres-operator-ui";
@@ -150,15 +140,12 @@ in {
               };
               values.envs.resourcesVisible = "True";
               values.envs.targetNamespace = "*";
-              values.ingress = {
-                enabled = true;
-                annotations."external-dns.alpha.kubernetes.io/target" = "internal.${domain}";
-                annotations."nginx.ingress.kubernetes.io/auth-url" = "https://oauth2-proxy.${domain}/oauth2/auth?allowed_groups=/admin";
-                annotations."nginx.ingress.kubernetes.io/auth-signin" = "https://oauth2-proxy.${domain}/oauth2/start?rd=$scheme://$host$request_uri";
-                ingressClassName = "internal";
-                hosts = toList {
-                  host = "postgres.${domain}";
-                  paths = ["/"];
+              extraResources.httproutes.postgres-ui.spec = {
+                hostnames = ["postgres.${domain}"];
+                parentRefs = toList {
+                  name = "internal";
+                  namespace = "kube-system";
+                  sectionName = "https";
                 };
               };
             };
