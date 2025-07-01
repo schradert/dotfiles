@@ -102,6 +102,8 @@
       kube-state-metrics.enable = true;
       grafana.enable = true;
 
+      crossplane.enable = true;
+
       # keycloak.enable = true;
       # nginx.enable = true;
       # oauth2-proxy.enable = true;
