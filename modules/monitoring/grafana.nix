@@ -4,127 +4,108 @@
     lib,
     ...
   }: let
-    inherit (config) domain;
-    inherit (lib) concatStringsSep toList mkIf mkEnableOption;
+    inherit (config) domain services;
+    inherit (lib) toList mkIf mkEnableOption;
+    hostname = "grafana.${domain}";
+    url = "https" + "://${hostname}";
   in {
     options.services.grafana.enable = mkEnableOption "Grafana";
-    config = mkIf config.services.grafana.enable {
-      opentofu.passwords.grafana-admin-password.length = 21;
+    config = mkIf services.grafana.enable {
+      nixos = {pkgs, ...}: let
+        inherit (pkgs.dockerTools) pullImage;
+      in {
+        canivete.kubernetes.images = {
+          bats = pullImage {
+            imageName = "docker.io/bats/bats";
+            imageDigest = "sha256:f9e5272f8ccd9a21554e461c596b08553d052af78e509b8dffbd80ba89a34164";
+            hash = "sha256-7lwKAAaviV6ooSFlA6N+6iKJw7gu3mEE33PX7qU38mM=";
+            finalImageTag = "v1.4.1";
+          };
+          sidecar = pullImage {
+            imageName = "quay.io/kiwigrid/k8s-sidecar";
+            imageDigest = "sha256:b50fb46b5b3291fb82e85429781a27a5c36fe97f330908afe00652ee6c425459";
+            hash = "sha256-uOOusYZNegkmZ22HSQpf2SqnkvSbdBRsWFWIOBmKMDo=";
+            finalImageTag = "1.30.5";
+          };
+          grafana = pullImage {
+            imageName = "docker.io/grafana/grafana";
+            imageDigest = "sha256:b5b59bfc7561634c2d7b136c4543d702ebcc94a3da477f21ff26f89ffd4214fa";
+            hash = "sha256-or+YBB5b/WKrpYMbXBl9Ugn60LLl+bpfaA3QENcYnig=";
+            finalImageTag = "12.0.2";
+          };
+        };
+      };
+      opentofu.passwords.grafana-admin.length = 21;
       kubenix = {
         canivete,
         helm,
         ...
       }: {
-        # TODO liveness probe failed
+        dotfiles.gatus.endpoints.grafana.url = url;
         kubernetes.helm.releases.grafana = {
-          namespace = "observability";
+          namespace = "monitoring";
           chart = helm.fetch {
-            repo = "https://grafana.github.io/helm-charts";
             chart = "grafana";
-            version = "8.5.1";
-            sha256 = "rMWbpho4/HpV9ZyLoJboasXKDwdhbdiPzq+kdKUfCfc=";
+            version = "9.2.9";
+            chartUrl = "oci://ghcr.io/grafana/helm-charts/grafana";
+            sha256 = "sha256-826Q+jgK+RHFqFuA3tpZuc4E7AyDuXnUSgbkBjLgqW4=";
           };
-          extraResources.secrets.grafana-secret.stringData = {
-            admin-user = "admin";
-            admin-password = canivete.vals.sops.default "passwords/grafana-admin-password";
+          dotfiles.volsync.pvcs.grafana = {
+            title = "grafana";
+            uid = 472;
+            gid = 472;
           };
-          extraResources.configMaps.grafana-configmap.data = {
-            GF_ANALYTICS_CHECK_FOR_UPDATES = "false";
-            GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES = "false";
-            GF_ANALYTICS_REPORTING_ENABLED = "false";
-            GF_AUTH_ANONYMOUS_ENABLED = "false";
-            GF_AUTH_BASIC_ENABLED = "false";
-            GF_DATE_FORMATS_USE_BROWSER_LOCALE = "true";
-            GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH = "/tmp/dashboards/home.json";
-            GF_EXPLORE_ENABLED = "true";
-            GF_FEATURE_TOGGLES_ENABLE = "publicDashboards";
-            GF_LOG_MODE = "console";
-            GF_NEWS_NEWS_FEED_ENABLED = "false";
-            GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS = concatStringsSep "," ["natel-discrete-panel" "pr0ps-trackmap-panel" "panodata-map-panel"];
-            GF_SECURITY_ANGULAR_SUPPORT_ENABLED = "true";
-            GF_SECURITY_COOKIE_SAMESITE = "grafana";
-            GF_SERVER_ROOT_URL = "https" + "://" + "grafana.${domain}";
+          extraResources = {
+            configMaps.grafana.data = {
+              GF_ANALYTICS_CHECK_FOR_UPDATES = "false";
+              GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES = "false";
+              GF_ANALYTICS_REPORTING_ENABLED = "false";
+              GF_AUTH_ANONYMOUS_ENABLED = "false";
+              GF_AUTH_BASIC_ENABLED = "false";
+              GF_DATE_FORMATS_USE_BROWSER_LOCALE = "true";
+              GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH = "/tmp/dashboards/home.json";
+              GF_EXPLORE_ENABLED = "true";
+              GF_FEATURE_TOGGLES_ENABLE = "publicDashboards";
+              GF_LOG_MODE = "console";
+              GF_NEWS_NEWS_FEED_ENABLED = "false";
+              GF_SECURITY_COOKIE_SAMESITE = "grafana";
+              GF_SERVER_ROOT_URL = url;
+            };
+            secrets.grafana-admin.stringData = {
+              admin-user = "admin";
+              admin-password = canivete.vals.sops.default "passwords/grafana-admin";
+            };
+            # Overrides
+            pods.grafana-test.metadata.annotations."kapp.k14s.io/change-rule.grafana" = "upsert after upserting grafana";
+            deployments.grafana.metadata.annotations."kapp.k14s.io/change-group.grafana" = "grafana";
+            # NOTE /var/lib/grafana contents are frequently only owned by grafana
+            replicationsources.volsync--grafana--grafana-src.spec.restic.moverSecurityContext.runAsUser = 472;
           };
           values = {
-            admin.existingSecret = "grafana-secret";
+            # TODO dashboards + providers + plugins
+            admin.existingSecret = "grafana-admin";
             annotations."reloader.stakater.com/auto" = "true";
-            # dashboardProviders."dashboardproviders.yaml".apiVersion = 1;
-            # dashboardProviders."dashboardproviders.yaml".providers = nix.toList {
-            #   name = "default";
-            #   type = "file";
-            #   orgId = 1;
-            #   editable = true;
-            #   disableDeletion = false;
-            #   folder = "";
-            #   # TODO fix "path does not exist"
-            #   options.path = "/var/lib/grafana/dashboards/default";
-            # };
-            # TODO find gnetId and revision
-            # dashboards.default = {
-            #   k8s-api-server.datasource = "Prometheus";
-            #   k8s-global.datasource = "Prometheus";
-            #   k8s-nodes.datasource = "Prometheus";
-            #   k8s-namespaces.datasource = "Prometheus";
-            #   k8s-pods.datasource = "Prometheus";
-            #   k8s-volumes.datasource = "Prometheus";
-            # };
-            datasources."datasources.yaml".apiVersion = 1;
-            envFromConfigMaps = [{name = "grafana-configmap";}];
-            "grafana.ini".analytics = {
-              check_for_updates = false;
-              check_for_plugin_updates = false;
-              reporting_enabled = false;
-            };
-            "grafana.ini"."auth.anonymous" = {
+            envFromConfigMaps = [{name = "grafana";}];
+            # Image owned by kubelet-csr-approver
+            initChownData.image.tag = "latest";
+            persistence.enabled = true;
+            route.main = {
               enabled = true;
-              org_id = 1;
-              org_name = "Main Org.";
-              org_role = "Viewer";
+              hostnames = [hostname];
+              parentRefs = toList {
+                name = "internal";
+                namespace = "kube-system";
+                sectionName = "https";
+              };
             };
-            "grafana.ini".news.news_feed_enabled = false;
-            imageRenderer.enabled = true;
-            ingress = {
-              enabled = true;
-              ingressClassName = "internal";
-              annotations."external-dns.alpha.kubernetes.io/target" = "internal.${domain}";
-              hosts = ["grafana.${domain}"];
-            };
-            persistence.enabled = false;
-            # TODO what other plugins do I want?
-            plugins = [
-              "grafana-clock-panel"
-              "grafana-piechart-panel"
-              "grafana-worldmap-panel"
-              "natel-discrete-panel"
-              "pr0ps-trackmap-panel"
-              "vonage-status-panel"
-            ];
-            rbac.pspEnabled = true;
-            resources.limits.memory = "512Mi";
-            resources.requests.cpu = "50m";
-            resources.requests.memory = "128Mi";
             serviceAccount.create = true;
             serviceAccount.autoMount = true;
-            serviceMonitor.enabled = true;
-            sidecar.dashboards = {
-              enabled = true;
-              searchNamespace = "ALL";
-              label = "grafana_dashboard";
-              folderAnnotation = "grafana_folder";
-              provider.disableDelete = true;
-              provider.foldersFromFilesStructure = true;
-            };
-            sidecar.datasources = {
-              enabled = true;
-              searchNamespace = "ALL";
-              labelValue = "";
-            };
-            testFramework.enabled = false;
-            topologySpreadConstraints = toList {
-              maxSkew = 1;
-              topologyKey = "kubernetes.io/hostname";
-              whenUnsatisfiable = "DoNotSchedule";
-              labelSelector.matchLabels."app.kubernetes.io/name" = "grafana";
+            serviceMonitor.enabled = services.prometheus.enable;
+            sidecar = {
+              dashboards.enabled = true;
+              dashboards.searchNamespace = "ALL";
+              datasources.enabled = true;
+              datasources.searchNamespace = "ALL";
             };
           };
         };

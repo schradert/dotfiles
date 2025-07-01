@@ -4,12 +4,13 @@
     lib,
     ...
   }: let
+    inherit (config) services;
     inherit (lib) mkEnableOption mkForce mkIf toList mapAttrs' nameValuePair;
     namespace = "security";
     name = "external-secrets-kubernetes";
   in {
     options.services.external-secrets.enable = mkEnableOption "external-secrets";
-    config = mkIf config.services.external-secrets.enable {
+    config = mkIf services.external-secrets.enable {
       nixos = {pkgs, ...}: {
         canivete.kubernetes.images.external-secrets = pkgs.dockerTools.pullImage {
           imageName = "oci.external-secrets.io/external-secrets/external-secrets";
@@ -52,7 +53,7 @@
             version = "0.15.1";
             sha256 = "sha256-mLzcibX7bEbo0Jp0OzVJ2BDUGI3ffiVcSJN0Gf1KXEA=";
           };
-          values.serviceMonitor.enabled = true;
+          values.serviceMonitor.enabled = services.prometheus.enable;
           extraResources = {
             clustersecretstores = mapAttrs' (ns: _:
               nameValuePair "kubernetes-${ns}" {

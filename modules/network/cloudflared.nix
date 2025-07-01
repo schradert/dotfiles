@@ -4,7 +4,7 @@
     lib,
     ...
   }: let
-    inherit (lib) mkIf mkEnableOption toList recursiveUpdate;
+    inherit (lib) mkIf mkEnableOption mkMerge toList recursiveUpdate;
     inherit (config) domain services;
     image = {
       imageName = "docker.io/cloudflare/cloudflared";
@@ -60,77 +60,81 @@
             recordType = "CNAME";
             targets = ["${default "cloudflare/tunnel/id"}.cfargotunnel.com"];
           };
-          values = {
-            secrets.cloudflared.stringData."token.txt" = default "cloudflare/tunnel/token";
-            configMaps.cloudflared.data."config.yaml" = builtins.toJSON {
-              tunnel = default "cloudflare/tunnel/id";
-              token-file = credsPath;
-              no-autoupdate = true;
-              metrics = "0.0.0.0:8080";
-              originRequest.originServerName = subdomain;
-              ingress = [
-                {
-                  hostname = domain;
-                  service = gateway;
-                }
-                {
-                  hostname = "*.${domain}";
-                  service = gateway;
-                }
-                {service = "http_status:404";}
-              ];
-            };
-            controllers.cloudflared = {
-              replicas = 2;
-              strategy = "RollingUpdate";
-              annotations."reloader.stakater.com/auto" = "true";
-              pod.topologySpreadConstraints = toList {
-                maxSkew = 1;
-                topologyKey = "kubernetes.io/hostname";
-                whenUnsatisfiable = "DoNotSchedule";
-                labelSelector.matchLabels."app.kubernetes.io/name" = "cloudflared";
+          values = mkMerge [
+            {
+              secrets.cloudflared.stringData."token.txt" = default "cloudflare/tunnel/token";
+              configMaps.cloudflared.data."config.yaml" = builtins.toJSON {
+                tunnel = default "cloudflare/tunnel/id";
+                token-file = credsPath;
+                no-autoupdate = true;
+                metrics = "0.0.0.0:8080";
+                originRequest.originServerName = subdomain;
+                ingress = [
+                  {
+                    hostname = domain;
+                    service = gateway;
+                  }
+                  {
+                    hostname = "*.${domain}";
+                    service = gateway;
+                  }
+                  {service = "http_status:404";}
+                ];
               };
-              containers.cloudflared = {
-                image.repository = image.imageName;
-                image.tag = image.finalImageTag;
-                args = ["tunnel" "--config" configPath "run"];
-                probes.liveness = probe;
-                probes.readiness = probe;
-                probes.startup = recursiveUpdate probe {spec.failureThreshold = 30;};
-                resources.requests.cpu = "10m";
-                resources.requests.memory = "128Mi";
-                resources.limits.memory = "256Mi";
+              controllers.cloudflared = {
+                replicas = 2;
+                strategy = "RollingUpdate";
+                annotations."reloader.stakater.com/auto" = "true";
+                pod.topologySpreadConstraints = toList {
+                  maxSkew = 1;
+                  topologyKey = "kubernetes.io/hostname";
+                  whenUnsatisfiable = "DoNotSchedule";
+                  labelSelector.matchLabels."app.kubernetes.io/name" = "cloudflared";
+                };
+                containers.cloudflared = {
+                  image.repository = image.imageName;
+                  image.tag = image.finalImageTag;
+                  args = ["tunnel" "--config" configPath "run"];
+                  probes.liveness = probe;
+                  probes.readiness = probe;
+                  probes.startup = recursiveUpdate probe {spec.failureThreshold = 30;};
+                  resources.requests.cpu = "10m";
+                  resources.requests.memory = "128Mi";
+                  resources.limits.memory = "256Mi";
+                };
               };
-            };
-            service.cloudflared.controller = "cloudflared";
-            service.cloudflared.ports.http.port = port;
-            # serviceMonitor.cloudflared.serviceName = "cloudflared";
-            # serviceMonitor.cloudflared.endpoints = toList {
-            #   port = "http";
-            #   scheme = "http";
-            #   path = "/metrics";
-            #   interval = "1m";
-            #   scrapeTimeout = "30s";
-            # };
-            persistence.config = {
-              type = "configMap";
-              name = "cloudflared";
-              globalMounts = toList {
-                path = configPath;
-                subPath = "config.yaml";
-                readOnly = true;
+              service.cloudflared.controller = "cloudflared";
+              service.cloudflared.ports.http.port = port;
+              persistence.config = {
+                type = "configMap";
+                name = "cloudflared";
+                globalMounts = toList {
+                  path = configPath;
+                  subPath = "config.yaml";
+                  readOnly = true;
+                };
               };
-            };
-            persistence.creds = {
-              type = "secret";
-              name = "cloudflared";
-              globalMounts = toList {
-                path = credsPath;
-                subPath = "token.txt";
-                readOnly = true;
+              persistence.creds = {
+                type = "secret";
+                name = "cloudflared";
+                globalMounts = toList {
+                  path = credsPath;
+                  subPath = "token.txt";
+                  readOnly = true;
+                };
               };
-            };
-          };
+            }
+            (mkIf services.prometheus.enable {
+              serviceMonitor.cloudflared.serviceName = "cloudflared";
+              serviceMonitor.cloudflared.endpoints = toList {
+                port = "http";
+                scheme = "http";
+                path = "/metrics";
+                interval = "1m";
+                scrapeTimeout = "30s";
+              };
+            })
+          ];
         };
       };
     };

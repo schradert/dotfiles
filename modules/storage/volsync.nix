@@ -11,11 +11,7 @@
     options.services.volsync.enable = mkEnableOption "Volsync";
     config = mkMerge [
       {
-        kubenix = {
-          canivete,
-          perSystem,
-          ...
-        }: {
+        kubenix = {canivete, ...}: {
           options.kubernetes.helm.releases = mkOption {
             type = attrsOf (submodule ({
               config,

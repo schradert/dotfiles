@@ -90,19 +90,25 @@
 
       snapshot-controller.enable = true;
       openebs.enable = true;
-      # volsync.enable = true;
-      # descheduler.enable = true;
-      # reloader.enable = true;
-      # external-secrets.enable = true;
-      # nginx.enable = true;
-      # prometheus.enable = true;
+      volsync.enable = true;
+
+      descheduler.enable = true;
+      reloader.enable = true;
+      external-secrets.enable = true;
+
+      prometheus.enable = true;
+      alertmanager.enable = true;
+      node-exporter.enable = true;
+      kube-state-metrics.enable = true;
+      grafana.enable = true;
+
       # keycloak.enable = true;
+      # nginx.enable = true;
       # oauth2-proxy.enable = true;
       # oauth2-proxy.provider = "keycloak";
 
       #   gatus.enable = true;
       #   postgres.enable = true;
-      #   grafana.enable = true;
       #   clickhouse.enable = true;
       #   windmill.enable = true;
 

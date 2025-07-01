@@ -5,7 +5,7 @@
     ...
   }: let
     inherit (config) domain;
-    inherit (config.services) external-secrets gatus postgres;
+    inherit (config.services) external-secrets gatus postgres prometheus;
     inherit (lib) attrValues mkEnableOption mkIf mkMerge mkOption types;
     inherit (types) attrsOf str submodule;
     tag = "v5.12.0";
@@ -89,7 +89,7 @@
                 hosts = [subdomain];
               };
               secrets = true;
-              serviceMonitor.enabled = true;
+              serviceMonitor.enabled = prometheus.enable;
               config = {
                 # TODO decouple from postgres
                 storage.type = "postgres";

@@ -4,6 +4,7 @@
     lib,
     ...
   }: let
+    inherit (config) services;
     inherit (lib) mkEnableOption mkForce mkIf;
     image = {
       imageName = "ghcr.io/spegel-org/spegel";
@@ -19,7 +20,7 @@
     };
   in {
     options.services.spegel.enable = mkEnableOption "spegel";
-    config = mkIf config.services.spegel.enable {
+    config = mkIf services.spegel.enable {
       nixos = {pkgs, ...}: let
         toml = name: content: builtins.toString ((pkgs.formats.toml {}).generate name content);
       in {
@@ -102,8 +103,7 @@
               containerdRegistryConfigPath = "/var/lib/rancher/k3s/agent/etc/containerd/certs.d";
               containerdSock = "/run/k3s/containerd/containerd.sock";
             };
-            # TODO ordering cycle?
-            # serviceMonitor.enabled = true;
+            serviceMonitor.enabled = services.prometheus.enable;
           };
         };
 

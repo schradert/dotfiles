@@ -9,7 +9,7 @@
     ...
   }: let
     inherit (lib) concatStringsSep mkEnableOption mkIf toList;
-    inherit (config) domain;
+    inherit (config) domain services;
     bucketNames = {
       chunks = "loki-chunks";
       ruler = "loki-ruler";
@@ -38,7 +38,7 @@
     };
   in {
     options.services.loki.enable = mkEnableOption "loki";
-    config = mkIf config.services.loki.enable {
+    config = mkIf services.loki.enable {
       nixos = {pkgs, ...}: {canivete.kubernetes.images.loki = pkgs.dockerTools.pullImage image;};
       kubenix = {helm, ...}: {
         # TODO configure grafana dashboard
@@ -141,7 +141,7 @@
               dashboards.enabled = true;
               dashboards.annotations.grafana_folder = "Loki";
               rules.enabled = true;
-              serviceMonitor.enabled = true;
+              serviceMonitor.enabled = services.prometheus.enable;
             };
             sidecar.rules.searchNamespace = "ALL";
             lokiCanary.enabled = false;

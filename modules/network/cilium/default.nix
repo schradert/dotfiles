@@ -129,14 +129,11 @@
                 dashboards.enabled = true;
                 devices = ["br0" "eno1"];
                 envoy.rollOutPods = true;
-                # envoy.prometheus.serviceMonitor.enabled = true;
                 hubble = {
-                  # metrics.serviceMonitor.enabled = true;
                   metrics.dashboards.enabled = true;
                   relay.enabled = true;
                   relay.rollOutPods = true;
                   relay.prometheus.enabled = true;
-                  # relay.prometheus.serviceMonitor.enabled = true;
                   ui.enabled = true;
                   ui.rollOutPods = true;
                 };
@@ -150,13 +147,10 @@
                 operator = {
                   dashboards.enabled = true;
                   prometheus.enabled = true;
-                  # prometheus.serviceMonitor.enabled = true;
                   replicas = 1;
                   rollOutPods = true;
                 };
                 prometheus.enabled = true;
-                # prometheus.serviceMonitor.enabled = true;
-                prometheus.serviceMonitor.trustCRDsExist = true;
                 rollOutCiliumPods = true;
                 routingMode = "native";
               }
@@ -169,6 +163,14 @@
                 image = pinImage images.cilium;
                 operator.image.override = with images.cilium-operator; "${imageName}:${finalImageTag}";
               }
+              (mkIf config.services.prometheus.enable {
+                envoy.prometheus.serviceMonitor.enabled = true;
+                hubble.metrics.serviceMonitor.enabled = true;
+                hubble.relay.prometheus.serviceMonitor.enabled = true;
+                operator.prometheus.serviceMonitor.enabled = true;
+                prometheus.serviceMonitor.enabled = true;
+                prometheus.serviceMonitor.trustCRDsExist = true;
+              })
             ];
           };
         };

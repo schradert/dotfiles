@@ -13,7 +13,10 @@
         pkgs,
         ...
       }: {
-        canivete.ifd.crds.gateways = "gateway.networking.k8s.io/v1/Gateway";
+        canivete.ifd.crds = {
+          gateways = "gateway.networking.k8s.io/v1/Gateway";
+          httproutes = "gateway.networking.k8s.io/v1/HTTPRoute";
+        };
         kubernetes.imports =
           pipe {
             owner = "kubernetes-sigs";

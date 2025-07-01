@@ -3,9 +3,11 @@
     config,
     lib,
     ...
-  }: {
+  }: let
+    inherit (config) services;
+  in {
     options.services.snapshot-controller.enable = lib.mkEnableOption "snapshot-controller";
-    config = lib.mkIf config.services.snapshot-controller.enable {
+    config = lib.mkIf services.snapshot-controller.enable {
       nixos = {pkgs, ...}: {
         canivete.kubernetes.images.snapshot-controller = pkgs.dockerTools.pullImage {
           imageName = "registry.k8s.io/sig-storage/snapshot-controller";
@@ -30,7 +32,7 @@
         kubernetes.helm.releases.snapshot-controller = {
           namespace = "storage";
           inherit chart;
-          # values.controller.serviceMonitor.create = true;
+          values.controller.serviceMonitor.create = services.prometheus.enable;
         };
       };
     };

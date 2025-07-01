@@ -56,7 +56,7 @@
             txtPrefix = "k8s.";
             logFormat = "json";
             domainFilters = [config.domain];
-            # serviceMonitor.enabled = true;
+            serviceMonitor.enabled = config.services.prometheus.enable;
             podAnnotations."reloader.stakater.com/auto" = "true";
             resources.requests.cpu = "13m";
             resources.requests.memory = "42M";

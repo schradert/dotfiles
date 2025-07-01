@@ -9,5 +9,6 @@
       metasploit
       flawz
     ];
+    # programs.sniffnet.enable = true;
   };
 }

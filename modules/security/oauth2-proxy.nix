@@ -107,7 +107,7 @@
               annotations."external-dns.alpha.kubernetes.io/target" = "external.${domain}";
               hosts = [hostname];
             };
-            metrics.serviceMonitor.enabled = true;
+            metrics.serviceMonitor.enabled = services.prometheus.enable;
           };
           extraResources.configMaps.oauth2-proxy-configmap.data."oauth2_proxy.cfg" =
             pipe

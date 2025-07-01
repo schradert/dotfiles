@@ -32,7 +32,7 @@
           values = {
             image.tag = "latest";
             metrics.enable = true;
-            # metrics.serviceMonitor.enabled = true;
+            metrics.serviceMonitor.enabled = config.services.prometheus.enable;
             # TODO is this even necessary?
             # providerRegex = pipe self.nixosConfigurations [
             #   (filterAttrs (_: cfg: cfg.config.canivete.kubernetes.enable))
