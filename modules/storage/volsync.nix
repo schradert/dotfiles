@@ -4,7 +4,7 @@
     lib,
     ...
   }: let
-    inherit (config.storage.bucket) minio;
+    inherit (config.storage.bucket) minio buckets;
     inherit (lib) flip mapAttrs mapAttrsToList mkDefault mkEnableOption mkIf mkMerge mkOption pipe setAttrByPath types;
     inherit (types) attrsOf coercedTo int listOf str submodule;
   in {
@@ -84,7 +84,7 @@
                     # FIXME transfer all of these to respective modules
                     {
                       secrets.${repository}.data = mapAttrs (_: canivete.toBase64) {
-                        RESTIC_REPOSITORY = "s3:https://${minio.server}/main/backups/${repository}";
+                        RESTIC_REPOSITORY = "s3:https://${minio.server}/${buckets.volsync}/${repository}";
                         RESTIC_PASSWORD = default "passwords/restic";
                         AWS_ACCESS_KEY_ID = minio.user;
                         AWS_SECRET_ACCESS_KEY = minio.password;
@@ -127,7 +127,10 @@
         };
       }
       (mkIf config.services.volsync.enable {
+        storage.bucket.buckets.volsync = "volsync";
         opentofu.passwords.restic.length = 21;
+        # TODO prevent hardcoding bucket provider
+        opentofu.modules.resource.null_resource.kubernetes.depends_on = ["b2_bucket.volsync"];
         nixos = {pkgs, ...}: let
           inherit (pkgs.dockerTools) pullImage;
         in {

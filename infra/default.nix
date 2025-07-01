@@ -52,7 +52,8 @@
     storage.bucket = {
       enable = true;
       provider = "backblaze";
-      minio.enable = true;
+      # NOTE can't seem to do this with B2 buckets
+      # minio.enable = true;
     };
 
     nixos = {pkgs, ...}: {
