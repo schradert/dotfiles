@@ -14,6 +14,17 @@
           finalImageTag = "v1.3.0";
         };
       };
+      nixidy = {lib, ...}: {
+        applications.reloader = {
+          namespace = "cicd";
+          helm.releases.reloader.chart = lib.helm.downloadHelmChart {
+            chart = "reloader";
+            version = "2.0.0";
+            repo = "oci://ghcr.io/stakater/charts";
+            chartHash = "sha256-4CZBHcYEobVSqBWJg6bNRKi5iGgzwYP6N+PtUL6Zfy0=";
+          };
+        };
+      };
       kubenix = {helm, ...}: {
         kubernetes.helm.releases.reloader = {
           namespace = "cicd";

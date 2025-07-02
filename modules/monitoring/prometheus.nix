@@ -48,6 +48,59 @@
           };
         };
       };
+      nixidy = {charts, ...}: {
+        dotfiles.crds.prometheus = {
+          src = charts.prometheus-community.kube-prometheus-stack;
+          prefix = "charts/crds/crds/crd-";
+          crds = ["prometheuses" "prometheusrules" "servicemonitors"];
+        };
+        applications.prometheus = {
+          namespace = "monitoring";
+          dotfiles.volsync.pvcs.prometheus = {
+            title = "prometheus-prometheus-kube-prometheus-prometheus-db-prometheus-prometheus-kube-prometheus-prometheus-0";
+            # TODO what happens with multiple deployments???
+            # TODO resurrect this injection when StorageClass changes
+            # path = ["prometheuses" "prometheus-kube-prometheus-prometheus" "spec" "storage" "volumeClaimTemplate"];
+          };
+          helm.releases.prometheus = {
+            chart = charts.prometheus-community.kube-prometheus-stack;
+            values = {
+              crds.enabled = false;
+              kubelet.enabled = true;
+              kubeApiServer.enabled = true;
+              prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec = {
+                accessModes = ["ReadWriteOnce"];
+                resources.requests.storage = "10Gi";
+              };
+              prometheus.route.main = {
+                enabled = true;
+                hostnames = ["prometheus.${domain}"];
+                parentRefs = toList {
+                  name = "internal";
+                  namespace = "kube-system";
+                  sectionName = "https";
+                };
+              };
+              prometheusOperator.admissionWebhooks = {
+                deployment.enabled = true;
+                deployment.image.tag = admission-tag;
+                patch.image.tag = certgen-tag;
+              };
+
+              # Deployed separately
+              alertmanager.enabled = false;
+              kubeControllerManager.enabled = false;
+              kubeEtcd.enabled = false;
+              kubeProxy.enabled = false;
+              kubeScheduler.enabled = false;
+              kubeStateMetrics.enabled = false;
+              nodeExporter.enabled = false;
+              grafana.enabled = false;
+              grafana.forceDeployDashboards = true;
+            };
+          };
+        };
+      };
       kubenix = {
         canivete,
         helm,

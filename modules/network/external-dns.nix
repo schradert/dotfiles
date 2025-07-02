@@ -14,6 +14,50 @@
           finalImageTag = "v0.17.0";
         };
       };
+      nixidy = {canivete, charts, inputs', ...}: {
+        dotfiles.crds.external-dns = {
+          src = charts.external-dns.external-dns;
+          crds = ["crds/dnsendpoints.externaldns.k8s.io"];
+        };
+        applications.external-dns = {
+          namespace = "kube-system";
+          helm.releases.external-dns = {
+            chart = charts.external-dns.external-dns;
+            values = {
+              provider.name = "cloudflare";
+              env = lib.toList {
+                name = "CF_API_TOKEN";
+                valueFrom.secretKeyRef = {
+                  name = "external-dns";
+                  key = "cloudflare_pat";
+                };
+              };
+              extraArgs = [
+                "--cloudflare-dns-records-per-page=1000"
+                "--cloudflare-proxied"
+                "--crd-source-apiversion=externaldns.k8s.io/v1alpha1"
+                "--crd-source-kind=DNSEndpoint"
+                "--events"
+                "--ignore-ingress-tls-spec"
+                "--ingress-class=external"
+              ];
+              policy = "sync";
+              sources = ["crd" "ingress"];
+              txtOwnerId = "main";
+              txtPrefix = "k8s.";
+              logFormat = "json";
+              domainFilters = [config.domain];
+              serviceMonitor.enabled = config.services.prometheus.enable;
+              podAnnotations."reloader.stakater.com/auto" = "true";
+              resources.requests.cpu = "13m";
+              resources.requests.memory = "42M";
+              resources.limits.memory = "42M";
+              # TODO spec.template.spec.enableServiceLinks false for deployment?
+            };
+          };
+          resources.secrets.external-dns.data.cloudflare_pat = canivete.toBase64 (canivete.vals.sops.default "cloudflare/pat");
+        };
+      };
       kubenix = {
         canivete,
         helm,

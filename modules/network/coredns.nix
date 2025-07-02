@@ -14,6 +14,20 @@
           finalImageTag = "1.12.0";
         };
       };
+      nixidy = {lib, ...}: {
+        applications.coredns = {
+          namespace = "kube-system";
+          helm.releases.coredns = {
+            chart = lib.helm.downloadHelmChart {
+              chart = "coredns";
+              version = "1.39.2";
+              repo = "https://coredns.github.io/helm";
+              chartHash = "sha256-801r6B6OTNB+Ds+G8vRi8ReXN4bLzb6L/8N+Ufu9P5k=";
+            };
+            values.service.clusterIP = "10.43.0.10";
+          };
+        };
+      };
       kubenix = {helm, ...}: {
         kubernetes.helm.releases.coredns = {
           namespace = "kube-system";

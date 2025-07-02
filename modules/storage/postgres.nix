@@ -10,7 +10,7 @@ in {
   }: let
     inherit (config) domain;
     inherit (lib) attrValues concat hasSuffix mkEnableOption mkForce mkIf mkMerge mkOption pipe toList types;
-    inherit (types) attrs attrsOf either listOf submodule str;
+    inherit (types) attrs anything attrsOf either listOf nullOr submodule str;
     databases = mkOption {
       default = {};
       type = attrsOf str;
@@ -36,6 +36,27 @@ in {
               };
               config.databases.${name} = name;
               config.users.${name} = ["createdb"];
+            }));
+          };
+        };
+        nixidy = {pkgs, ...}: {
+          options.dotfiles.postgres = mkOption {
+            default = {};
+            description = "Main postgres instance configuration";
+            type = attrsOf (submodule ({name, ...}: {
+              freeformType = (pkgs.formats.yaml {}).type;
+              options = {
+                inherit databases;
+                users = mkOption {
+                  default = {};
+                  # TODO i think this really should be a list, but something weird with generated `loaOf str`
+                  # type = attrsOf (listOf str);
+                  type = attrsOf str;
+                  description = "Users to create in the database for this application";
+                };
+              };
+              config.databases.${name} = name;
+              config.users.${name} = "createdb";
             }));
           };
         };
@@ -76,6 +97,108 @@ in {
               ];
             })
           ];
+        };
+        nixidy = {config, lib, ...}: let
+          chart = lib.helm.downloadHelmChart {
+            chart = "postgres-operator";
+            version = "1.14.0";
+            inherit repo;
+            chartHash = "sha256-VB3RglaZ9Zu3F2GdcLpVh899d6o7LRg6VDsiq5U6NsA=";
+          };
+        in {
+          dotfiles.crds.postgres = {
+            src = chart;
+            prefix = "crds/";
+            crds = ["operatorconfigurations" "postgresqls" "postgresteams"];
+          };
+          nixidy.applicationImports = [
+            ({options, config, ...}: {
+              # TODO why is metadata not determined from the CRD?
+              # NOTE this is how it is done in the generated kubernetes core modules
+              options.resources."acid.zalan.do".v1 = {
+                OperatorConfiguration = mkOption {
+                  type = attrsOf (submodule {
+                    options.metadata = mkOption {
+                      type = nullOr (submodule {
+                        options = config.definitions."io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta".options or {};
+                        config = config.definitions."io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta".config or {};
+                      });
+                    };
+                  });
+                };
+                postgresql = mkOption {
+                  type = attrsOf (submodule {
+                    options.metadata = mkOption {
+                      type = nullOr (submodule {
+                        options = config.definitions."io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta".options or {};
+                        config = config.definitions."io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta".config or {};
+                      });
+                    };
+                    # options.spec = mkOption {
+                    #   type = submodule {
+                    #     options.users = mkOption {
+                    #       type = attrsOf (listOf str);
+                    #       default = {};
+                    #     };
+                    #     # Doesn't seem to merge properly without this...
+                    #     # options = {inherit databases;};
+                    #   };
+                    # };
+                  });
+                };
+              };
+            })
+          ];
+          applications.postgres = {
+            namespace = "storage";
+            dotfiles.volsync.pvcs.postgres = {
+              title = "pgdata-main-0";
+              gid = 103;
+            };
+            helm.releases.postgres = {inherit chart;};
+            helm.releases.postgres-ui = {
+              chart = lib.helm.downloadHelmChart {
+                chart = "postgres-operator-ui";
+                version = "1.12.2";
+                repo = repo-ui;
+                chartHash = "SkuTSWzFhQV4lYgTnSWCuwAHloOz4dz7K8YreNEltes=";
+              };
+              values.envs.resourcesVisible = "True";
+              values.envs.targetNamespace = "*";
+            };
+            resources = {
+              "gateway.networking.k8s.io".v1.HTTPRoute.postgres-ui.spec = {
+                hostnames = ["postgres.${domain}"];
+                parentRefs = toList {
+                  name = "internal";
+                  namespace = "kube-system";
+                  sectionName = "https";
+                };
+                rules = toList {
+                  backendRefs = toList {
+                    name = "postgres-ui-postgres-operator-ui";
+                    port = 80;
+                  };
+                };
+              };
+              # NOTE /home/postgres/pgdata/pgroot/data is only accessible by the postgres user
+              "volsync.backube".v1alpha1.ReplicationSource.volsync--postgres--postgres-src.spec.restic.moverSecurityContext.runAsUser = 101;
+              "acid.zalan.do".v1.postgresql.main.spec = pipe config.dotfiles.postgres [
+                attrValues
+                (concat (toList {
+                  teamId = "acid";
+                  volume.size = "10Gi";
+                  numberOfInstances = 1;
+                  users.superadmin = "superuser";  # TODO ["superuser"]
+                  postgresql.version = "16";
+                }))
+                mkMerge
+              ];
+              # TODO is there a cleaner way to ensure the value is parsed correctly, like type casting? bug report?
+              # NOTE https://github.com/zalando/postgres-operator/blob/68c4b496365f02afb57b9066492dfa319120622a/charts/postgres-operator/values.yaml#L488
+              "scheduling.k8s.io".v1.PriorityClass.postgres-postgres-operator-pod.value = mkForce 1000000;
+            };
+          };
         };
         kubenix = {
           canivete,

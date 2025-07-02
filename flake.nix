@@ -1,8 +1,12 @@
 {
   description = "System configuration";
   outputs = inputs:
-    inputs.canivete.lib.mkFlake {inherit inputs;} [./infra ./modules] {
+    inputs.canivete.lib.mkFlake {inherit inputs;} [./infra ./modules] ({config, ...}: {
+      dotfiles = {canivete, lib, ...}: {
+        options.nixidy = canivete.mkModuleOption {description = "Common nixidy configuration";};
+      };
       perSystem = {
+        canivete,
         inputs',
         lib,
         pkgs,
@@ -13,59 +17,48 @@
         legacyPackages.nixidyEnvs.${system} = inputs.nixidy.lib.mkEnvs {
           inherit pkgs;
           charts = inputs.nixhelm.chartsDerivations.${system};
-          envs.prod.modules = [
-            ({
-              charts,
-              lib,
-              ...
-            }: {
-              nixidy.applicationImports = [
-                (inputs'.nixidy.packages.generators.fromCRD {
-                  name = "cilium";
-                  src = pkgs.fetchFromGitHub {
-                    owner = "cilium";
-                    repo = "cilium";
-                    rev = "v1.17.5";
-                    hash = "sha256-frpu1kJICbZFwmH/KQ2pZHcS2M+XvLvxZpzVxok2eM8=";
+          modules = [
+            config.dotfiles.nixidy
+            ({config, inputs', ...}: {
+              options.dotfiles.crds = lib.mkOption {
+                default = {};
+                type = with lib.types; attrsOf (submodule ({name, ...}: {
+                  options.name = lib.mkOption {
+                    type = str;
+                    default = name;
                   };
-                  crds = ["pkg/k3s/apis/cilium.io/client/crds/v2/ciliumnetworkpolicies.yaml"];
-                })
-              ];
+                  options.src = lib.mkOption {
+                    type = package;
+                  };
+                  options.crds = lib.mkOption {
+                    type = listOf str;
+                  };
+                  options.prefix = lib.mkOption {
+                    type = str;
+                    default = "";
+                  };
+                }));
+              };
+              config.nixidy.applicationImports = lib.flip lib.mapAttrsToList config.dotfiles.crds (_: crd: builtins.toString (inputs'.nixidy.packages.generators.fromCRD {
+                inherit (crd) name src;
+                crds = builtins.map (file: crd.prefix + file + ".yaml") crd.crds;
+              }));
+            })
+          ];
+          extraSpecialArgs = {inherit canivete inputs';};
+          envs.prod.modules = [
+            {
               nixidy.bootstrapManifest.enable = true;
               nixidy.target = {
                 repository = "https://github.com/schradert/dotfiles.git";
                 branch = "main";
                 rootPath = "./gen/argo/prod";
               };
-              applications.argo = {
-                namespace = "cicd";
-                helm.releases.argod = {
-                  chart = charts.argoproj.argo-cd;
-                  values.configs.cmp = {
-                    create = true;
-                    # TODO fix this auto-generation manifests
-                    plugins.nixidy.generate.command = ["sh" "-c" "nix run .#nixidy -- build .#prod"];
-                  };
-                };
-              };
-              applications.spegel = {
-                namespace = "storage";
-                helm.releases.spegel = {
-                  chart = lib.helm.downloadHelmChart {
-                    repo = "oci://ghcr.io/spegel-org/helm-charts";
-                    chart = "spegel";
-                    version = "0.3.0";
-                    chartHash = "sha256-KsuZvpTAV4KM4NoOctzclHZt+KUudupM44QwGFC1BzA=";
-                  };
-                  values.image.pullPolicy = "Never";
-                };
-                resources.apps.v1.DaemonSet.spegel.spec.template.spec.containers.registry.env.GOMEMLIMIT.valueFrom.resourceFieldRef.divisor = lib.mkForce "1";
-              };
-            })
+            }
           ];
         };
       };
-    };
+    });
   inputs = {
     ### Test Nixidy
     nixidy.url = "github:arnarg/nixidy/v0.13.0";

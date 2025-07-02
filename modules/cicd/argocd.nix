@@ -30,6 +30,21 @@
           };
         };
       };
+      nixidy = {charts, ...}: {
+        applications.argo = {
+          namespace = "cicd";
+          helm.releases.argod = {
+            chart = charts.argoproj.argo-cd;
+            values = {
+              global.domain = "argocd.${config.domain}";
+              global.image.pullPolicy = "Never";
+              configs.cmp.create = true;
+              # TODO fix this auto-generation manifests
+              # configs.cmp.plugins.nixidy.generate.command = ["sh" "-c" "nix run .#nixidy -- build .#prod"];
+            };
+          };
+        };
+      };
       kubenix = {helm, ...}: {
         kubernetes.helm.releases.argocd = {
           namespace = "cicd";

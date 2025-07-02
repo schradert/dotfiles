@@ -87,6 +87,88 @@
         };
       }
       (mkIf config.services.cilium.enable {
+        nixidy = {charts, pkgs, ...}: {
+          dotfiles.crds.cilium = {
+            src = pkgs.fetchFromGitHub {
+              owner = "cilium";
+              repo = "cilium";
+              rev = "v1.17.5";
+              hash = "sha256-frpu1kJICbZFwmH/KQ2pZHcS2M+XvLvxZpzVxok2eM8=";
+            };
+            prefix = "pkg/k8s/apis/cilium.io/client/crds/";
+            crds = [
+              "v2/ciliumendpoints"
+              "v2/ciliumenvoyconfigs"
+              "v2/ciliumidentities"
+              "v2alpha1/ciliumloadbalancerippools"
+              "v2/ciliumnodes"
+            ];
+          };
+          applications.cilium = {
+            namespace = "kube-system";
+            resources."cilium.io".v2alpha1.CiliumLoadBalancerIPPool.home.spec = {
+              allowFirstLastIPs = "Yes";
+              blocks = [
+                {
+                  start = "192.168.50.251";
+                  stop = "192.168.50.254";
+                }
+              ];
+            };
+            helm.releases.cilium = {
+              chart = charts.cilium.cilium;
+              values = mkMerge [
+                {
+                  autoDirectNodeRoutes = true;
+                  dashboards.enabled = true;
+                  devices = ["br0" "eno1"];
+                  envoy.rollOutPods = true;
+                  hubble = {
+                    metrics.dashboards.enabled = true;
+                    relay.enabled = true;
+                    relay.rollOutPods = true;
+                    relay.prometheus.enabled = true;
+                    ui.enabled = true;
+                    ui.rollOutPods = true;
+                  };
+                  # TODO why doesn't this actually change the Pod CIDRs on CiliumNode?
+                  # ipam.operator.clusterPoolIPv4PodCIDRList = ["10.42.0.0/16"];
+                  # ipv4NativeRoutingCIDR = "10.42.0.0/16";
+                  ipv4NativeRoutingCIDR = "10.0.0.0/8";
+                  kubeProxyReplacement = true;
+                  k8sServiceHost = "192.168.50.58";
+                  k8sServicePort = 6443;
+                  operator = {
+                    dashboards.enabled = true;
+                    prometheus.enabled = true;
+                    replicas = 1;
+                    rollOutPods = true;
+                  };
+                  prometheus.enabled = true;
+                  rollOutCiliumPods = true;
+                  routingMode = "native";
+                }
+                {
+                  # Pinned images
+                  envoy.image = pinImage images.cilium-envoy;
+                  hubble.relay.image = pinImage images.cilium-hubble-relay;
+                  hubble.ui.backend.image = pinImage images.cilium-hubble-ui-backend;
+                  hubble.ui.frontend.image = pinImage images.cilium-hubble-ui-frontend;
+                  image = pinImage images.cilium;
+                  operator.image.override = with images.cilium-operator; "${imageName}:${finalImageTag}";
+                }
+                (mkIf config.services.prometheus.enable {
+                  envoy.prometheus.serviceMonitor.enabled = true;
+                  hubble.metrics.serviceMonitor.enabled = true;
+                  hubble.relay.prometheus.serviceMonitor.enabled = true;
+                  operator.prometheus.serviceMonitor.enabled = true;
+                  prometheus.serviceMonitor.enabled = true;
+                  prometheus.serviceMonitor.trustCRDsExist = true;
+                })
+              ];
+            };
+          };
+        };
         kubenix = {
           canivete,
           helm,

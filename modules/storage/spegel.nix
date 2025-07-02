@@ -81,6 +81,35 @@
         # Every node in the cluster before Spegel deployment needs to have the image available
         services.k3s.images = builtins.map pkgs.dockerTools.pullImage [image k3sSandboxImage];
       };
+      nixidy = {lib, ...}: {
+        applications.spegel = {
+          namespace = "storage";
+          helm.releases.spegel = {
+            chart = lib.helm.downloadHelmChart {
+              repo = "oci://ghcr.io/spegel-org/helm-charts";
+              chart = "spegel";
+              version = "0.3.0";
+              chartHash = "sha256-KsuZvpTAV4KM4NoOctzclHZt+KUudupM44QwGFC1BzA=";
+            };
+            values = {
+              image.pullPolicy = "Never";
+              image.repository = image.imageName;
+              image.tag = image.finalImageTag;
+              image.digest = "";
+              # TODO can I not specify digest?
+              # image.digest = image.imageDigest;
+              spegel = {
+                containerdContentPath = "/var/lib/rancher/k3s/agent/containerd/io.containerd.content.v1.content";
+                containerdMirrorAdd = false;
+                containerdRegistryConfigPath = "/var/lib/rancher/k3s/agent/etc/containerd/certs.d";
+                containerdSock = "/run/k3s/containerd/containerd.sock";
+              };
+              serviceMonitor.enabled = services.prometheus.enable;
+            };
+          };
+          resources.apps.v1.DaemonSet.spegel.spec.template.spec.containers.registry.env.GOMEMLIMIT.valueFrom.resourceFieldRef.divisor = lib.mkForce "1";
+        };
+      };
       kubenix = {helm, ...}: {
         kubernetes.helm.releases.spegel = {
           namespace = "storage";

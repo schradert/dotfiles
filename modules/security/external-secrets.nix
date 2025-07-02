@@ -19,6 +19,75 @@
           finalImageTag = "v0.18.1";
         };
       };
+      nixidy = {charts, pkgs, ...}: {
+        dotfiles.crds.external-secrets = {
+          src = pkgs.fetchFromGitHub {
+            owner = "external-secrets";
+            repo = "external-secrets";
+            rev = "v0.18.1";
+            hash = "sha256-E14vCLLOV96BIzhjLLpMhHpNja0/HwQAwRjYPySZWCA=";
+          };
+          prefix = "config/crds/bases/external-secrets.io_";
+          crds = ["clustersecretstores" "externalsecrets"];
+        };
+        applications.external-secrets = {
+          namespace = "security";
+          helm.releases.external-secrets = {
+            chart = charts.external-secrets.external-secrets;
+            values.serviceMonitor.enabled = services.prometheus.enable;
+          };
+          resources = {
+            "external-secrets.io".v1.ClusterSecretStore = mapAttrs' (ns: _:
+              nameValuePair "kubernetes-${ns}" {
+                spec.provider.kubernetes = {
+                  auth.serviceAccount = {inherit name namespace;};
+                  # TODO make one for all the namespaces
+                  remoteNamespace = "default";
+                  server.caProvider = {
+                    type = "ConfigMap";
+                    name = "kube-root-ca.crt";
+                    inherit namespace;
+                    key = "ca.crt";
+                  };
+                };
+                # TODO is this sufficient for all namespaces?
+              })
+              # TODO dynamic
+              {
+                cicd = {};
+                monitoring = {};
+                security = {};
+                storage = {};
+                network = {};
+              };
+            serviceAccounts.${name} = {};
+            clusterRoles.${name}.rules = [
+              {
+                apiGroups = [""];
+                resources = ["secrets"];
+                verbs = ["get" "list" "watch"];
+              }
+              {
+                # TODO is this actually necessary?
+                apiGroups = ["authorization.k8s.io"];
+                resources = ["selfsubjectrulesreviews"];
+                verbs = ["create"];
+              }
+            ];
+            clusterRoleBindings.${name} = {
+              roleRef = {
+                inherit name;
+                kind = "ClusterRole";
+                apiGroup = "rbac.authorization.k8s.io";
+              };
+              subjects = toList {
+                inherit name namespace;
+                kind = "ServiceAccount";
+              };
+            };
+          };
+        };
+      };
       kubenix = {
         config,
         helm,

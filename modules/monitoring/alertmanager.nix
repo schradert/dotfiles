@@ -17,6 +17,42 @@
           finalImageTag = "v0.28.1";
         };
       };
+      nixidy = {lib, ...}: {
+        applications.alertmanager = {
+          namespace = "monitoring";
+          helm.releases.alertmanager = {
+            chart = lib.helm.downloadHelmChart {
+              chart = "alertmanager";
+              version = "1.21.0";
+              repo = "oci://ghcr.io/prometheus-community/charts";
+              chartHash = "sha256-AmEfpH+wzsfWPgtPIVesO7eTmVC0l4E6nXHYLAVj4Xs=";
+            };
+            values = {
+              baseURL = "https" + "://${hostname}";
+              # TODO config receivers
+              # config = {};
+              configmapReload.enabled = true;
+              # Version from prometheus deployment
+              configmapReload.image.tag = "v0.81.0";
+              statefulSet.annotations."reloader.stakater.com/auto" = "true";
+            };
+          };
+          resources."gateway.networking.k8s.io".v1.HTTPRoute.alertmanager.spec = {
+            hostnames = [hostname];
+            parentRefs = toList {
+              name = "internal";
+              namespace = "kube-system";
+              sectionName = "https";
+            };
+            rules = toList {
+              backendRefs = toList {
+                name = "alertmanager";
+                port = 9093;
+              };
+            };
+          };
+        };
+      };
       kubenix = {helm, ...}: {
         kubernetes.helm.releases.alertmanager = {
           namespace = "monitoring";

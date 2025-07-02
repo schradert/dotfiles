@@ -16,6 +16,33 @@
           finalImageTag = "v8.2.1";
         };
       };
+      nixidy = {lib, ...}: let
+        chart = lib.helm.downloadHelmChart {
+          repo = "https://piraeus.io/helm-charts";
+          chart = "snapshot-controller";
+          version = "4.0.2";
+          chartHash = "sha256-RONBeALvdliIfnCcPnwqBwSbk68bUWOIvoUj3K3EuaE=";
+        };
+      in {
+        dotfiles.crds.snapshot-controller = {
+          src = chart;
+          crds = [
+            "groupsnapshot.storage.k8s.io_volumegroupsnapshotclasses"
+            "groupsnapshot.storage.k8s.io_volumegroupsnapshotcontents"
+            "groupsnapshot.storage.k8s.io_volumegroupsnapshots"
+            "snapshot.storage.k8s.io_volumesnapshotclasses"
+            "snapshot.storage.k8s.io_volumesnapshotcontents"
+            "snapshot.storage.k8s.io_volumesnapshots"
+          ];
+        };
+        applications.snapshot-controller = {
+          namespace = "storage";
+          helm.releases.snapshot-controller = {
+            inherit chart;
+            values.controller.serviceMonitor.create = services.prometheus.enable;
+          };
+        };
+      };
       kubenix = {
         canivete,
         helm,

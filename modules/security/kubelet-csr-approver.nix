@@ -20,6 +20,32 @@
           };
         };
       };
+      nixidy = {lib, ...}: {
+        applications.kubelet-csr-approver = {
+          namespace = "security";
+          helm.releases.kubelet-csr-approver = {
+            chart = lib.helm.downloadHelmChart {
+              repo = "https://postfinance.github.io/kubelet-csr-approver";
+              chart = "kubelet-csr-approver";
+              version = "1.2.6";
+              chartHash = "sha256-VDkMbt0h998J0GAihLSb/pXq2PcR6BM+q3aC1Hx+L9Y=";
+            };
+            values = {
+              image.tag = "latest";
+              metrics.enable = true;
+              metrics.serviceMonitor.enabled = config.services.prometheus.enable;
+              # TODO is this even necessary?
+              # providerRegex = pipe self.nixosConfigurations [
+              #   (filterAttrs (_: cfg: cfg.config.canivete.kubernetes.enable))
+              #   builtins.attrNames
+              #   (concatStringsSep "|")
+              #   (str: "^(${str})$")
+              # ];
+              # bypassDnsResolution = true;
+            };
+          };
+        };
+      };
       kubenix = {helm, ...}: {
         kubernetes.helm.releases.kubelet-csr-approver = {
           namespace = "security";

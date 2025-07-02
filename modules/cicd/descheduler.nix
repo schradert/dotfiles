@@ -17,6 +17,57 @@ in {
           finalImageTag = "v0.32.2";
         };
       };
+      nixidy = {lib, ...}: {
+        applications.descheduler = {
+          namespace = "cicd";
+          helm.releases.descheduler = {
+            chart = lib.helm.downloadHelmChart {
+              inherit repo;
+              chart = "descheduler";
+              version = "0.32.2";
+              chartHash = "sha256-y/i6hIV/YsNRF0U5HPunIsEGoA7i2613vtjKeLuYlk8=";
+            };
+            values = {
+              replicas = 1;
+              kind = "Deployment";
+              deschedulerPolicyAPIVersion = "descheduler/v1alpha2";
+              deschedulerPolicy.profiles = lib.toList {
+                name = "Default";
+                pluginConfig = [
+                  {name = "RemovePodsViolatingInterPodAntiAffinity";}
+                  {name = "RemovePodsViolatingNodeTaints";}
+                  {
+                    name = "RemovePodsViolatingNodeAffinity";
+                    args.nodeAffinityType = ["requiredDuringSchedulingIgnoredDuringExecution"];
+                  }
+                  {
+                    name = "RemovePodsViolatingTopologySpreadConstraint";
+                    args.constraints = ["DoNotSchedule" "ScheduleAnyway"];
+                  }
+                  {
+                    name = "DefaultEvictor";
+                    args = {
+                      evictFailedBarePods = true;
+                      evictLocalStoragePods = true;
+                      evictSystemCriticalPods = true;
+                      nodeFit = true;
+                    };
+                  }
+                ];
+                plugins.balance.enabled = ["RemovePodsViolatingTopologySpreadConstraint"];
+                plugins.deschedule.enabled = [
+                  "RemovePodsViolatingInterPodAntiAffinity"
+                  "RemovePodsViolatingNodeAffinity"
+                  "RemovePodsViolatingNodeTaints"
+                ];
+              };
+              service.enabled = true;
+              serviceMonitor.enabled = config.services.prometheus.enable;
+              leaderElection.enabled = true;
+            };
+          };
+        };
+      };
       kubenix = {helm, ...}: {
         kubernetes.helm.releases.descheduler = {
           namespace = "cicd";

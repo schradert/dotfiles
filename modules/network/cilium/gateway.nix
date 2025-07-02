@@ -8,6 +8,58 @@
     inherit (lib) mkIf hasSuffix pipe replaceStrings toList;
   in {
     config = mkIf config.services.cilium.enable {
+      nixidy = {pkgs, ...}: {
+        dotfiles.crds.gateway = {
+          src = pkgs.fetchFromGitHub {
+            owner = "kubernetes-sigs";
+            repo = "gateway-api";
+            rev = "v1.2.0";
+            hash = "sha256-mGT7PHEHBOK2OAhx3zi6NWzlrZd8pDy5a1sQ3QqClyM=";
+          };
+          prefix = "config/crd/standard/gateway.networking.k8s.io_";
+          crds = ["gateways" "httproutes"];
+        };
+        applications.cilium = {
+          helm.releases.cilium.values.gatewayAPI.enabled = true;
+          resources.gateways = let
+            gateway = name: ip: {
+              metadata.annotations."external-dns.alpha.kubernetes.io/target" = "${name}.${domain}";
+              spec = {
+                gatewayClassName = "cilium";
+                addresses = toList {
+                  type = "IPAddress";
+                  value = ip;
+                };
+                infrastructure.annotations."external-dns.alpha.kubernetes.io/hostname" = "${name}.${domain}";
+                listeners = [
+                  {
+                    name = "http";
+                    protocol = "HTTP";
+                    port = 80;
+                    hostname = "*.${domain}";
+                    allowedRoutes.namespaces.from = "All";
+                  }
+                  {
+                    name = "https";
+                    protocol = "HTTPS";
+                    port = 443;
+                    hostname = "*.${domain}";
+                    allowedRoutes.namespaces.from = "All";
+                    tls.certificateRefs = mkIf config.services.cert-manager.enable (toList {
+                      kind = "Secret";
+                      name = "${replaceStrings ["."] ["-"] domain}-tls";
+                      namespace = "security";
+                    });
+                  }
+                ];
+              };
+            };
+          in {
+            internal = gateway "internal" "192.168.50.251";
+            external = gateway "external" "192.168.50.252";
+          };
+        };
+      };
       kubenix = {
         canivete,
         pkgs,

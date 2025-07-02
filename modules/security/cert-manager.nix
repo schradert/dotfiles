@@ -101,6 +101,82 @@ in {
           };
         };
       };
+      nixidy = {charts, pkgs, ...}: {
+        dotfiles.crds.cert-manager = {
+          src = pkgs.fetchFromGitHub {
+            owner = "cert-manager";
+            repo = "cert-manager";
+            rev = "v1.18.1";
+            hash = "sha256-X2FWGW3085KKzXOce8j46xiPBjfH+K4clqrpQFpfWPA=";
+          };
+          prefix = "deploy/crds/crd-";
+          crds = [
+            "certificaterequests"
+            "certificates"
+            "challenges"
+            "clusterissuers"
+            "issuers"
+            "orders"
+          ];
+        };
+        applications.cert-manager = {
+          namespace = "security";
+          helm.releases.cert-manager = {
+            chart = charts.jetstack.cert-manager;
+            values = {
+              crds.enabled = true;
+              dns01RecursiveNameservers = concatStringsSep "," ["https://1.1.1.1:443/dns-query" "https://1.0.0.1:443/dns-query"];
+              dns01RecursiveNameserversOnly = true;
+              prometheus.enabled = true;
+              prometheus.servicemonitor.enabled = services.prometheus.enable;
+            };
+          };
+          resources = let
+            domainName = replaceStrings ["."] ["-"] domain;
+            mkClusterIssuer = name: server: {
+              metadata.annotations."chart.canivete.app/cert-manager" = "";
+              spec.acme = {
+                inherit server email;
+                privateKeySecretRef = {inherit name;};
+                solvers = toList (mkMerge [
+                  {selector.dnsZones = [domain];}
+                  (mkIf (provider ? google) {
+                    dns01.cloudDNS = {
+                      project = "";
+                      serviceAccountSecretRef = {
+                        name = "cert-manager";
+                        key = "credentials.json";
+                      };
+                    };
+                  })
+                  (mkIf (provider ? cloudflare) {
+                    dns01.cloudflare.apiTokenSecretRef = {
+                      name = "cert-manager";
+                      key = "cloudflare_api_token";
+                    };
+                  })
+                ]);
+              };
+            };
+          in {
+            secrets.cert-manager.data = mkMerge [
+              (mkIf (provider ? google) {"credentials.json" = toBase64 provider.google.credentials;})
+              (mkIf (provider ? cloudflare) {cloudflare_api_token = toBase64 provider.cloudflare.token;})
+            ];
+            "cert-manager.io".v1 = {
+              ClusterIssuer.letsencrypt-production = mkClusterIssuer "letsencrypt-production" "https://acme-v02.api.letsencrypt.org/directory";
+              ClusterIssuer.letsencrypt-staging = mkClusterIssuer "letsencrypt-staging" "https://acme-staging-v02.api.letsencrypt.org/directory";
+              Certificate.${domainName}.spec = {
+                secretName = "${domainName}-tls";
+                issuerRef.name = "letsencrypt-staging";
+                issuerRef.kind = "ClusterIssuer";
+                commonName = domain;
+                dnsNames = [domain "*.${domain}"];
+              };
+            };
+          };
+        };
+      };
       kubenix = {helm, ...}: {
         canivete.ifd.crds = {
           certificates = "cert-manager.io/v1/Certificate";

@@ -1,5 +1,6 @@
 {
   dotfiles = {
+    canivete,
     config,
     lib,
     ...
@@ -11,6 +12,48 @@
     options.services.volsync.enable = mkEnableOption "Volsync";
     config = mkMerge [
       {
+        nixidy = _: {
+          nixidy.applicationImports = [
+            ({config, ...}: {
+              options.dotfiles.volsync = {
+                enable = mkEnableOption "Volsync replication of PVCs" // {default = config.dotfiles.volsync.pvcs != null;};
+                pvcs =
+                  pipe ({config, ...}: {
+                    options = {
+                      title = mkOption {
+                        description = "Name of PVC (eventually) created";
+                        type = str;
+                      };
+                      path = mkOption {
+                        default = ["persistentVolumeClaims" config.title];
+                        description = "Location to inject dataSourceRef for ReplicationDestination";
+                        type = listOf str;
+                      };
+                      uid = mkOption {
+                        default = 101;
+                        description = "UID for podSecurityContext";
+                        type = int;
+                      };
+                      gid = mkOption {
+                        default = 101;
+                        description = "GID for podSecurityContext";
+                        type = int;
+                      };
+                      # TODO switch to a resizable, snapshottable storage class
+                      # NOTE openebs-hostpath Local PV is neither and doesn't support custom dataSourceRef
+                      # options.inject = canivete.mkEnabledOption "Inject dataSourceRef into a PVC";
+                      inject = mkEnableOption "Inject dataSourceRef into a PVC";
+                    };
+                  }) [
+                    submodule
+                    (coercedTo str (title: {inherit title;}))
+                    attrsOf
+                    (flip canivete.mkNullableOption {description = "Name of PVCs to replicate and back up"; default = {};})
+                  ];
+              };
+            })
+          ];
+        };
         kubenix = {canivete, ...}: {
           options.kubernetes.helm.releases = mkOption {
             type = attrsOf (submodule ({
@@ -142,6 +185,96 @@
               imageDigest = "sha256:2dd1ef4251b3a5881ab9289dce481de3fe30da7fc8da5e4dfed2d562964c888a";
               hash = "sha256-G/z2RbEyp53S3l2OACtuoFSddpuVY4gQ5Yc9PiddYn0=";
               finalImageTag = "0.12.1";
+            };
+          };
+        };
+        nixidy = {lib, pkgs, ...}: {
+          dotfiles.crds.volsync = {
+            src = pkgs.fetchFromGitHub {
+              owner = "backube";
+              repo = "volsync";
+              rev = "v0.12.1";
+              hash = "sha256-8aqZakHtqFII+7NxAFjQuaJtAAhrZubEvJIQe5COqJ8=";
+            };
+            prefix = "bundle/manifests/volsync.backube_";
+            crds = ["replicationdestinations" "replicationsources"];
+          };
+          nixidy.applicationImports = [
+            ({config, name, ...}: let
+              inherit (config.dotfiles) volsync;
+            in {
+              config = mkIf (volsync.enable && volsync.pvcs != null) {
+                resources = mkMerge (flip mapAttrsToList volsync.pvcs (pvc: {
+                  title,
+                  inject,
+                  path,
+                  uid,
+                  gid,
+                }: let
+                  repository = "volsync--${name}--${pvc}";
+                  inherit (canivete.vals.sops) default;
+                in
+                  mkMerge [
+                    # Some services use operators that allow configuration injection into PersistentVolumeClaim templates
+                    # Some still don't offer ways to inject so we have to do this manually
+                    (mkIf inject (setAttrByPath path {
+                      spec.dataSourceRef = {
+                        kind = "ReplicationDestination";
+                        apiGroup = "volsync.backube";
+                        name = "${repository}-dst";
+                      };
+                    }))
+                    # FIXME transfer all of these to respective modules
+                    {
+                      secrets.${repository}.data = mapAttrs (_: canivete.toBase64) {
+                        RESTIC_REPOSITORY = "s3:https://${minio.server}/${buckets.volsync}/${repository}";
+                        RESTIC_PASSWORD = default "passwords/restic";
+                        AWS_ACCESS_KEY_ID = minio.user;
+                        AWS_SECRET_ACCESS_KEY = minio.password;
+                        AWS_DEFAULT_REGION = minio.region;
+                      };
+
+                      "volsync.backube".v1alpha1.ReplicationSource."${repository}-src".spec = {
+                        sourcePVC = title;
+                        trigger.schedule = "0 4 * * *";
+                        restic = {
+                          # TODO is it worth using OpenEBS Mayastor for PiT Snapshot/Clone?
+                          # Copy every day at 4am, pruning every 8 days down to 1 per day/week/month/year
+                          moverSecurityContext.fsGroup = gid;
+                          copyMethod = "Direct";
+                          pruneIntervalDays = 8;
+                          inherit repository;
+                          retain = {
+                            daily = 1;
+                            weekly = 1;
+                            monthly = 1;
+                            yearly = 1;
+                          };
+                        };
+                      };
+                      "volsync.backube".v1alpha1.ReplicationDestination."${repository}-dst".spec = {
+                        # Override this to track restoration
+                        trigger.manual = mkDefault "1";
+                        restic = {
+                          moverSecurityContext.runAsGroup = gid;
+                          moverSecurityContext.runAsUser = uid;
+                          copyMethod = "Direct";
+                          destinationPVC = title;
+                          inherit repository;
+                        };
+                      };
+                    }
+                  ]));
+              };
+            })
+          ];
+          applications.volsync = {
+            namespace = "storage";
+            helm.releases.volsync.chart = lib.helm.downloadHelmChart {
+              chart = "volsync";
+              version = "0.12.1";
+              repo = "https://backube.github.io/helm-charts";
+              chartHash = "sha256-+ytyqmvUPZynLDivVXjEhmd1uHH3MaaCsYo35Na6sX4=";
             };
           };
         };
