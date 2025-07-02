@@ -14,9 +14,9 @@
       nixos = {pkgs, ...}: {
         canivete.kubernetes.images.external-secrets = pkgs.dockerTools.pullImage {
           imageName = "oci.external-secrets.io/external-secrets/external-secrets";
-          imageDigest = "sha256:6d7fcb0f6f3c40bf5f5980b9b9b0ef6bf89de7c1867a0de8d463b78024b80890";
-          hash = "sha256-YGiCb77W7CLtYrW2OoBT0QTp+8sPIndKbv5QeU2y4n8=";
-          finalImageTag = "v0.15.1";
+          imageDigest = "sha256:4dc2c0ab1382615adee23db464e6feb16d4e09efb70dbb4f1840f9dd3c3a8c2a";
+          hash = "sha256-vTW4WXbkih43x+/3QG+auxPgXz1WKivdpL5ed4hMWgs=";
+          finalImageTag = "v0.18.1";
         };
       };
       kubenix = {
