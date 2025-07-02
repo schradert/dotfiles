@@ -52,7 +52,7 @@
         #     type = "loki";
         #     uid = "loki";
         #     access = "proxy";
-        #     url = "http://loki-headless.observability.svc.cluster.local:80";
+        #     url = "http://loki-headless.monitoring.svc.cluster.local:80";
         #     jsonData.maxLines = 250;
         #   };
         # };
@@ -90,7 +90,7 @@
               podAnnotations."secret.reloader.stakater.com/reload" = "loki";
               rulerConfig = {
                 enable_alertmanager_v2 = true;
-                alertmanager_url = "http://prometheus-kube-prometheus-alertmanager.observability.svc.cluster.local:9093";
+                alertmanager_url = "http://prometheus-kube-prometheus-alertmanager.monitoring.svc.cluster.local:9093";
                 storage.type = "s3";
                 storage.s3 = {
                   s3forcepathstyle = true;

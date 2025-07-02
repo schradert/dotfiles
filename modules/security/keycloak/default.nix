@@ -48,9 +48,9 @@
             metrics = {
               enabled = true;
               serviceMonitor.enabled = true;
-              serviceMonitor.namespace = "observability";
+              serviceMonitor.namespace = "monitoring";
               prometheusRule.enabled = true;
-              prometheusRule.namespace = "observability";
+              prometheusRule.namespace = "monitoring";
             };
             postgresql.enabled = false;
             externalDatabase = {

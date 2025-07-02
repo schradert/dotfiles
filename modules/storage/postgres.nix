@@ -41,11 +41,7 @@ in {
         };
       }
       (mkIf config.services.postgres.enable {
-        nixos = {
-          config,
-          pkgs,
-          ...
-        }: let
+        nixos = {config, pkgs, ...}: let
           inherit (pkgs.dockerTools) pullImage;
         in {
           canivete.kubernetes.images = {
@@ -146,6 +142,12 @@ in {
                   name = "internal";
                   namespace = "kube-system";
                   sectionName = "https";
+                };
+                rules = toList {
+                  backendRefs = toList {
+                    name = "postgres-ui-postgres-operator-ui";
+                    port = 80;
+                  };
                 };
               };
             };

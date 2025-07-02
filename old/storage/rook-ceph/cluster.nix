@@ -79,7 +79,7 @@
                 enabled = true;
                 ssl = false;
                 urlPrefix = "/";
-                prometheusEndpoint = "http://prometheus-operated.observability.svc.cluster.local:9090";
+                prometheusEndpoint = "http://prometheus-operated.monitoring.svc.cluster.local:9090";
               };
               mgr.modules = [
                 {

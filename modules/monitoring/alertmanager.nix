@@ -3,9 +3,12 @@
     config,
     lib,
     ...
-  }: {
-    options.services.alertmanager.enable = lib.mkEnableOption "alertmanager";
-    config = lib.mkIf config.services.alertmanager.enable {
+  }: let
+    inherit (lib) mkEnableOption mkIf toList;
+    hostname = "alertmanager.${config.domain}";
+  in {
+    options.services.alertmanager.enable = mkEnableOption "alertmanager";
+    config = mkIf config.services.alertmanager.enable {
       nixos = {pkgs, ...}: {
         canivete.kubernetes.images.alertmanager = pkgs.dockerTools.pullImage {
           imageName = "quay.io/prometheus/alertmanager";
@@ -14,9 +17,7 @@
           finalImageTag = "v0.28.1";
         };
       };
-      kubenix = {helm, ...}: let
-        hostname = "alertmanager.${config.domain}";
-      in {
+      kubenix = {helm, ...}: {
         kubernetes.helm.releases.alertmanager = {
           namespace = "monitoring";
           chart = helm.fetch {
@@ -26,7 +27,7 @@
             sha256 = "sha256-AmEfpH+wzsfWPgtPIVesO7eTmVC0l4E6nXHYLAVj4Xs=";
           };
           values = {
-            baseURL = "https://${hostname}";
+            baseURL = "https" + "://${hostname}";
             # TODO config receivers
             # config = {};
             configmapReload.enabled = true;
@@ -36,10 +37,16 @@
           };
           extraResources.httproutes.alertmanager.spec = {
             hostnames = [hostname];
-            parentRefs = lib.toList {
+            parentRefs = toList {
               name = "internal";
               namespace = "kube-system";
               sectionName = "https";
+            };
+            rules = toList {
+              backendRefs = toList {
+                name = "alertmanager";
+                port = "http";
+              };
             };
           };
         };
