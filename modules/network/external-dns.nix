@@ -14,7 +14,11 @@
           finalImageTag = "v0.17.0";
         };
       };
-      nixidy = {canivete, charts, inputs', ...}: {
+      nixidy = {
+        canivete,
+        charts,
+        ...
+      }: {
         dotfiles.crds.external-dns = {
           src = charts.external-dns.external-dns;
           crds = ["crds/dnsendpoints.externaldns.k8s.io"];

@@ -87,7 +87,11 @@
         };
       }
       (mkIf config.services.cilium.enable {
-        nixidy = {charts, pkgs, ...}: {
+        nixidy = {
+          charts,
+          pkgs,
+          ...
+        }: {
           dotfiles.crds.cilium = {
             src = pkgs.fetchFromGitHub {
               owner = "cilium";

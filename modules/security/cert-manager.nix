@@ -11,7 +11,7 @@ in {
     inherit (canivete) mkNullableOption toBase64;
     inherit (config) domain services;
     inherit (services.cert-manager) enable provider;
-    inherit (lib) concatStringsSep getExe replaceStrings toList mkIf mkEnableOption mkMerge mkOption types;
+    inherit (lib) concatStringsSep replaceStrings toList mkIf mkEnableOption mkMerge mkOption types;
     inherit (types) attrTag str submodule;
   in {
     options.services.cert-manager = {
@@ -101,7 +101,11 @@ in {
           };
         };
       };
-      nixidy = {charts, pkgs, ...}: {
+      nixidy = {
+        charts,
+        pkgs,
+        ...
+      }: {
         dotfiles.crds.cert-manager = {
           src = pkgs.fetchFromGitHub {
             owner = "cert-manager";

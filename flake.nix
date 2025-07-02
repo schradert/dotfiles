@@ -2,7 +2,7 @@
   description = "System configuration";
   outputs = inputs:
     inputs.canivete.lib.mkFlake {inherit inputs;} [./infra ./modules] ({config, ...}: {
-      dotfiles = {canivete, lib, ...}: {
+      dotfiles = {canivete, ...}: {
         options.nixidy = canivete.mkModuleOption {description = "Common nixidy configuration";};
       };
       perSystem = {
@@ -19,30 +19,36 @@
           charts = inputs.nixhelm.chartsDerivations.${system};
           modules = [
             config.dotfiles.nixidy
-            ({config, inputs', ...}: {
+            ({
+              config,
+              inputs',
+              ...
+            }: {
               options.dotfiles.crds = lib.mkOption {
                 default = {};
-                type = with lib.types; attrsOf (submodule ({name, ...}: {
-                  options.name = lib.mkOption {
-                    type = str;
-                    default = name;
-                  };
-                  options.src = lib.mkOption {
-                    type = package;
-                  };
-                  options.crds = lib.mkOption {
-                    type = listOf str;
-                  };
-                  options.prefix = lib.mkOption {
-                    type = str;
-                    default = "";
-                  };
-                }));
+                type = with lib.types;
+                  attrsOf (submodule ({name, ...}: {
+                    options.name = lib.mkOption {
+                      type = str;
+                      default = name;
+                    };
+                    options.src = lib.mkOption {
+                      type = package;
+                    };
+                    options.crds = lib.mkOption {
+                      type = listOf str;
+                    };
+                    options.prefix = lib.mkOption {
+                      type = str;
+                      default = "";
+                    };
+                  }));
               };
-              config.nixidy.applicationImports = lib.flip lib.mapAttrsToList config.dotfiles.crds (_: crd: builtins.toString (inputs'.nixidy.packages.generators.fromCRD {
-                inherit (crd) name src;
-                crds = builtins.map (file: crd.prefix + file + ".yaml") crd.crds;
-              }));
+              config.nixidy.applicationImports = lib.flip lib.mapAttrsToList config.dotfiles.crds (_: crd:
+                builtins.toString (inputs'.nixidy.packages.generators.fromCRD {
+                  inherit (crd) name src;
+                  crds = builtins.map (file: crd.prefix + file + ".yaml") crd.crds;
+                }));
             })
           ];
           extraSpecialArgs = {inherit canivete inputs';};

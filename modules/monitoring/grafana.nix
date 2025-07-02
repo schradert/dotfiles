@@ -36,7 +36,11 @@
         };
       };
       opentofu.passwords.grafana-admin.length = 21;
-      nixidy = {canivete, charts, ...}: {
+      nixidy = {
+        canivete,
+        charts,
+        ...
+      }: {
         applications.grafana = {
           namespace = "monitoring";
           helm.releases.grafana = {

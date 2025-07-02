@@ -1,6 +1,10 @@
 {
   # NOTE https://www.keycloak.org/2024/09/realm-config-management-tools-survey-results
-  dotfiles = {config, lib, ...}: let
+  dotfiles = {
+    config,
+    lib,
+    ...
+  }: let
     realm_id = "\${ keycloak_realm.primary.id }";
     hostname = "keycloak.${config.domain}";
   in {

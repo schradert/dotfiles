@@ -33,7 +33,11 @@
           tunnel_id = "\${ cloudflare_zero_trust_tunnel_cloudflared.main.id }";
         };
       };
-      nixidy = {canivete, charts, ...}: let
+      nixidy = {
+        canivete,
+        charts,
+        ...
+      }: let
         inherit (canivete.vals.sops) default;
         subdomain = "external.${domain}";
         gateway = "https://cilium-gateway-external.kube-system.svc.cluster.local";

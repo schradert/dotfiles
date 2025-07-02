@@ -48,7 +48,10 @@
                     submodule
                     (coercedTo str (title: {inherit title;}))
                     attrsOf
-                    (flip canivete.mkNullableOption {description = "Name of PVCs to replicate and back up"; default = {};})
+                    (flip canivete.mkNullableOption {
+                      description = "Name of PVCs to replicate and back up";
+                      default = {};
+                    })
                   ];
               };
             })
@@ -188,7 +191,11 @@
             };
           };
         };
-        nixidy = {lib, pkgs, ...}: {
+        nixidy = {
+          lib,
+          pkgs,
+          ...
+        }: {
           dotfiles.crds.volsync = {
             src = pkgs.fetchFromGitHub {
               owner = "backube";
@@ -200,7 +207,11 @@
             crds = ["replicationdestinations" "replicationsources"];
           };
           nixidy.applicationImports = [
-            ({config, name, ...}: let
+            ({
+              config,
+              name,
+              ...
+            }: let
               inherit (config.dotfiles) volsync;
             in {
               config = mkIf (volsync.enable && volsync.pvcs != null) {

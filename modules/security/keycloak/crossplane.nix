@@ -1,7 +1,12 @@
 {
-  dotfiles = {canivete, config, lib, ...}: let
+  dotfiles = {
+    canivete,
+    config,
+    lib,
+    ...
+  }: let
     inherit (canivete.vals.sops) default;
-    inherit (lib) forEach hasSuffix mapAttrs mkEnableOption mkIf pipe toList;
+    inherit (lib) forEach mapAttrs mkEnableOption mkIf pipe toList;
     hostname = "keycloak.${config.domain}";
   in {
     options.services.keycloak.crossplane.enable = mkEnableOption "Crossplane configuration of Keycloak";

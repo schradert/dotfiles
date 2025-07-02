@@ -19,7 +19,11 @@
     options.services.crossplane.enable = mkEnableOption "crossplane";
     config = mkIf config.services.crossplane.enable {
       nixos = {pkgs, ...}: {canivete.kubernetes.images = mapAttrs (_: pkgs.dockerTools.pullImage) images;};
-      nixidy = {lib, pkgs, ...}: {
+      nixidy = {
+        lib,
+        pkgs,
+        ...
+      }: {
         dotfiles.crds.crossplane = {
           src = pkgs.fetchFromGitHub {
             owner = "crossplane";

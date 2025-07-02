@@ -62,7 +62,11 @@ in {
         };
       }
       (mkIf config.services.postgres.enable {
-        nixos = {config, pkgs, ...}: let
+        nixos = {
+          config,
+          pkgs,
+          ...
+        }: let
           inherit (pkgs.dockerTools) pullImage;
         in {
           canivete.kubernetes.images = {
@@ -98,7 +102,11 @@ in {
             })
           ];
         };
-        nixidy = {config, lib, ...}: let
+        nixidy = {
+          config,
+          lib,
+          ...
+        }: let
           chart = lib.helm.downloadHelmChart {
             chart = "postgres-operator";
             version = "1.14.0";
@@ -112,7 +120,11 @@ in {
             crds = ["operatorconfigurations" "postgresqls" "postgresteams"];
           };
           nixidy.applicationImports = [
-            ({options, config, ...}: {
+            ({
+              options,
+              config,
+              ...
+            }: {
               # TODO why is metadata not determined from the CRD?
               # NOTE this is how it is done in the generated kubernetes core modules
               options.resources."acid.zalan.do".v1 = {
@@ -189,7 +201,7 @@ in {
                   teamId = "acid";
                   volume.size = "10Gi";
                   numberOfInstances = 1;
-                  users.superadmin = "superuser";  # TODO ["superuser"]
+                  users.superadmin = "superuser"; # TODO ["superuser"]
                   postgresql.version = "16";
                 }))
                 mkMerge

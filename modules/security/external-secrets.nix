@@ -19,7 +19,11 @@
           finalImageTag = "v0.18.1";
         };
       };
-      nixidy = {charts, pkgs, ...}: {
+      nixidy = {
+        charts,
+        pkgs,
+        ...
+      }: {
         dotfiles.crds.external-secrets = {
           src = pkgs.fetchFromGitHub {
             owner = "external-secrets";
@@ -37,21 +41,22 @@
             values.serviceMonitor.enabled = services.prometheus.enable;
           };
           resources = {
-            "external-secrets.io".v1.ClusterSecretStore = mapAttrs' (ns: _:
-              nameValuePair "kubernetes-${ns}" {
-                spec.provider.kubernetes = {
-                  auth.serviceAccount = {inherit name namespace;};
-                  # TODO make one for all the namespaces
-                  remoteNamespace = "default";
-                  server.caProvider = {
-                    type = "ConfigMap";
-                    name = "kube-root-ca.crt";
-                    inherit namespace;
-                    key = "ca.crt";
+            "external-secrets.io".v1.ClusterSecretStore =
+              mapAttrs' (ns: _:
+                nameValuePair "kubernetes-${ns}" {
+                  spec.provider.kubernetes = {
+                    auth.serviceAccount = {inherit name namespace;};
+                    # TODO make one for all the namespaces
+                    remoteNamespace = "default";
+                    server.caProvider = {
+                      type = "ConfigMap";
+                      name = "kube-root-ca.crt";
+                      inherit namespace;
+                      key = "ca.crt";
+                    };
                   };
-                };
-                # TODO is this sufficient for all namespaces?
-              })
+                  # TODO is this sufficient for all namespaces?
+                })
               # TODO dynamic
               {
                 cicd = {};
