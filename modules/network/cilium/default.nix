@@ -7,7 +7,7 @@
     lib,
     ...
   }: let
-    inherit (lib) mapAttrs mkEnableOption mkIf mkForce mkMerge pipe hasSuffix;
+    inherit (lib) mapAttrs mkEnableOption mkIf mkForce mkMerge;
     images = {
       cilium = {
         imageName = "quay.io/cilium/cilium";
@@ -110,7 +110,7 @@
           };
           applications.cilium = {
             namespace = "kube-system";
-            resources."cilium.io".v2alpha1.CiliumLoadBalancerIPPool.home.spec = {
+            resources.ciliumLoadBalancerIPPools.home.spec = {
               allowFirstLastIPs = "Yes";
               blocks = [
                 {
@@ -171,93 +171,6 @@
                 })
               ];
             };
-          };
-        };
-        kubenix = {
-          canivete,
-          helm,
-          pkgs,
-          ...
-        }: {
-          canivete.ifd.crds.ciliumloadbalancerippools = "cilium.io/v2alpha1/CiliumLoadBalancerIPPool";
-          kubernetes.imports =
-            pipe {
-              owner = "cilium";
-              repo = "cilium";
-              rev = "v1.17.5";
-              hash = "sha256-frpu1kJICbZFwmH/KQ2pZHcS2M+XvLvxZpzVxok2eM8=";
-            } [
-              pkgs.fetchFromGitHub
-              (source: source + "/pkg/k8s/apis/cilium.io/client/crds")
-              (canivete.filesets.everything (name: _: hasSuffix ".yaml" name))
-            ];
-          kubernetes.resources.ciliumloadbalancerippools.home = {
-            metadata.annotations."kapp.k14s.io/change-group.cilium" = "cilium";
-            spec.allowFirstLastIPs = "Yes";
-            spec.blocks = [
-              {
-                start = "192.168.50.251";
-                stop = "192.168.50.254";
-              }
-            ];
-          };
-          kubernetes.helm.releases.cilium = {
-            namespace = "kube-system";
-            chart = helm.fetch {
-              repo = "https://helm.cilium.io";
-              chart = "cilium";
-              version = "1.17.5";
-              sha256 = "sha256-94xCDaau6blpHx+GmlCmR4QmNfV2b27lMM9hYuDd0do=";
-            };
-            values = mkMerge [
-              {
-                autoDirectNodeRoutes = true;
-                dashboards.enabled = true;
-                devices = ["br0" "eno1"];
-                envoy.rollOutPods = true;
-                hubble = {
-                  metrics.dashboards.enabled = true;
-                  relay.enabled = true;
-                  relay.rollOutPods = true;
-                  relay.prometheus.enabled = true;
-                  ui.enabled = true;
-                  ui.rollOutPods = true;
-                };
-                # TODO why doesn't this actually change the Pod CIDRs on CiliumNode?
-                # ipam.operator.clusterPoolIPv4PodCIDRList = ["10.42.0.0/16"];
-                # ipv4NativeRoutingCIDR = "10.42.0.0/16";
-                ipv4NativeRoutingCIDR = "10.0.0.0/8";
-                kubeProxyReplacement = true;
-                k8sServiceHost = "192.168.50.58";
-                k8sServicePort = 6443;
-                operator = {
-                  dashboards.enabled = true;
-                  prometheus.enabled = true;
-                  replicas = 1;
-                  rollOutPods = true;
-                };
-                prometheus.enabled = true;
-                rollOutCiliumPods = true;
-                routingMode = "native";
-              }
-              {
-                # Pinned images
-                envoy.image = pinImage images.cilium-envoy;
-                hubble.relay.image = pinImage images.cilium-hubble-relay;
-                hubble.ui.backend.image = pinImage images.cilium-hubble-ui-backend;
-                hubble.ui.frontend.image = pinImage images.cilium-hubble-ui-frontend;
-                image = pinImage images.cilium;
-                operator.image.override = with images.cilium-operator; "${imageName}:${finalImageTag}";
-              }
-              (mkIf config.services.prometheus.enable {
-                envoy.prometheus.serviceMonitor.enabled = true;
-                hubble.metrics.serviceMonitor.enabled = true;
-                hubble.relay.prometheus.serviceMonitor.enabled = true;
-                operator.prometheus.serviceMonitor.enabled = true;
-                prometheus.serviceMonitor.enabled = true;
-                prometheus.serviceMonitor.trustCRDsExist = true;
-              })
-            ];
           };
         };
       })

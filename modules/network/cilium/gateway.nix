@@ -4,10 +4,14 @@
     lib,
     ...
   }: let
-    inherit (config) domain;
-    inherit (lib) mkIf hasSuffix pipe replaceStrings toList;
+    inherit (config) domain services;
+    inherit (lib) mkIf replaceStrings toList;
   in {
-    config = mkIf config.services.cilium.enable {
+    config = mkIf services.cilium.enable {
+      nixos.assertions = toList {
+        assertion = services.external-dns.enable && services.cert-manager.enable;
+        message = "Gateway API implementation in Cilium requires External DNS and Cert Manager";
+      };
       nixidy = {pkgs, ...}: {
         dotfiles.crds.gateway = {
           src = pkgs.fetchFromGitHub {
@@ -45,72 +49,11 @@
                     port = 443;
                     hostname = "*.${domain}";
                     allowedRoutes.namespaces.from = "All";
-                    tls.certificateRefs = mkIf config.services.cert-manager.enable (toList {
+                    tls.certificateRefs = toList {
                       kind = "Secret";
                       name = "${replaceStrings ["."] ["-"] domain}-tls";
                       namespace = "security";
-                    });
-                  }
-                ];
-              };
-            };
-          in {
-            internal = gateway "internal" "192.168.50.251";
-            external = gateway "external" "192.168.50.252";
-          };
-        };
-      };
-      kubenix = {
-        canivete,
-        pkgs,
-        ...
-      }: {
-        canivete.ifd.crds = {
-          gateways = "gateway.networking.k8s.io/v1/Gateway";
-          httproutes = "gateway.networking.k8s.io/v1/HTTPRoute";
-        };
-        kubernetes.imports =
-          pipe {
-            owner = "kubernetes-sigs";
-            repo = "gateway-api";
-            rev = "v1.2.0";
-            hash = "sha256-mGT7PHEHBOK2OAhx3zi6NWzlrZd8pDy5a1sQ3QqClyM=";
-          } [
-            pkgs.fetchFromGitHub
-            (source: source + "/config/crd/standard")
-            (canivete.filesets.everything (name: _: hasSuffix ".yaml" name))
-          ];
-        kubernetes.helm.releases.cilium = {
-          values.gatewayAPI.enabled = true;
-          extraResources.gateways = let
-            gateway = name: ip: {
-              metadata.annotations."external-dns.alpha.kubernetes.io/target" = "${name}.${domain}";
-              spec = {
-                gatewayClassName = "cilium";
-                addresses = toList {
-                  type = "IPAddress";
-                  value = ip;
-                };
-                infrastructure.annotations."external-dns.alpha.kubernetes.io/hostname" = "${name}.${domain}";
-                listeners = [
-                  {
-                    name = "http";
-                    protocol = "HTTP";
-                    port = 80;
-                    hostname = "*.${domain}";
-                    allowedRoutes.namespaces.from = "All";
-                  }
-                  {
-                    name = "https";
-                    protocol = "HTTPS";
-                    port = 443;
-                    hostname = "*.${domain}";
-                    allowedRoutes.namespaces.from = "All";
-                    tls.certificateRefs = mkIf config.services.cert-manager.enable (toList {
-                      kind = "Secret";
-                      name = "${replaceStrings ["."] ["-"] domain}-tls";
-                      namespace = "security";
-                    });
+                    };
                   }
                 ];
               };

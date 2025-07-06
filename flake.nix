@@ -13,6 +13,9 @@
         system,
         ...
       }: {
+        canivete.opentofu.workspaces.bootstrap = {
+          encryptedState.enable = false;
+        };
         packages.nixidy = inputs'.nixidy.packages.default;
         legacyPackages.nixidyEnvs.${system} = inputs.nixidy.lib.mkEnvs {
           inherit pkgs;
@@ -42,11 +45,15 @@
                       type = str;
                       default = "";
                     };
+                    options.namePrefix = lib.mkOption {
+                      type = str;
+                      default = "";
+                    };
                   }));
               };
               config.nixidy.applicationImports = lib.flip lib.mapAttrsToList config.dotfiles.crds (_: crd:
                 builtins.toString (inputs'.nixidy.packages.generators.fromCRD {
-                  inherit (crd) name src;
+                  inherit (crd) name src namePrefix;
                   crds = builtins.map (file: crd.prefix + file + ".yaml") crd.crds;
                 }));
             })
@@ -67,7 +74,7 @@
     });
   inputs = {
     ### Test Nixidy
-    nixidy.url = "github:arnarg/nixidy/v0.13.0";
+    nixidy.url = "github:arnarg/nixidy";
     nixidy.inputs.nixpkgs.follows = "nixpkgs";
     nixidy.inputs.flake-utils.follows = "flake-utils";
     nixidy.inputs.nix-kube-generators.follows = "nix-kube-generators";

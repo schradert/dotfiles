@@ -9,8 +9,8 @@ in {
     ...
   }: let
     inherit (config) domain;
-    inherit (lib) attrValues concat hasSuffix mkEnableOption mkForce mkIf mkMerge mkOption pipe toList types;
-    inherit (types) attrs anything attrsOf either listOf nullOr submodule str;
+    inherit (lib) attrValues concat mkEnableOption mkForce mkIf mkMerge mkOption pipe toList types;
+    inherit (types) attrsOf listOf nullOr submodule str;
     databases = mkOption {
       default = {};
       type = attrsOf str;
@@ -146,6 +146,7 @@ in {
                         config = config.definitions."io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta".config or {};
                       });
                     };
+                    # TODO why is it not accepting lists of strings with loaOf str?
                     # options.spec = mkOption {
                     #   type = submodule {
                     #     options.users = mkOption {
@@ -179,7 +180,7 @@ in {
               values.envs.targetNamespace = "*";
             };
             resources = {
-              "gateway.networking.k8s.io".v1.HTTPRoute.postgres-ui.spec = {
+              hTTPRoutes.postgres-ui.spec = {
                 hostnames = ["postgres.${domain}"];
                 parentRefs = toList {
                   name = "internal";
@@ -194,125 +195,22 @@ in {
                 };
               };
               # NOTE /home/postgres/pgdata/pgroot/data is only accessible by the postgres user
-              "volsync.backube".v1alpha1.ReplicationSource.volsync--postgres--postgres-src.spec.restic.moverSecurityContext.runAsUser = 101;
-              "acid.zalan.do".v1.postgresql.main.spec = pipe config.dotfiles.postgres [
+              replicationSources.volsync--postgres--postgres-src.spec.restic.moverSecurityContext.runAsUser = 101;
+              postgresqls.main.spec = pipe config.dotfiles.postgres [
                 attrValues
                 (concat (toList {
                   teamId = "acid";
                   volume.size = "10Gi";
                   numberOfInstances = 1;
-                  users.superadmin = "superuser"; # TODO ["superuser"]
+                  users.superadmin = "superuser";
                   postgresql.version = "16";
                 }))
                 mkMerge
               ];
               # TODO is there a cleaner way to ensure the value is parsed correctly, like type casting? bug report?
               # NOTE https://github.com/zalando/postgres-operator/blob/68c4b496365f02afb57b9066492dfa319120622a/charts/postgres-operator/values.yaml#L488
-              "scheduling.k8s.io".v1.PriorityClass.postgres-postgres-operator-pod.value = mkForce 1000000;
+              priorityClasses.postgres-postgres-operator-pod.value = mkForce 1000000;
             };
-          };
-        };
-        kubenix = {
-          canivete,
-          config,
-          helm,
-          pkgs,
-          ...
-        }: {
-          canivete.ifd.crds = {
-            operatorconfigurations = "acid.zalan.do/v1/OperatorConfiguration";
-            postgresqls = "acid.zalan.do/v1/postgresql";
-          };
-          kubernetes.imports =
-            pipe {
-              owner = "zalando";
-              repo = "postgres-operator";
-              rev = "v1.14.0";
-              hash = "sha256-DK7H43rZY93jN4ONOmcAnAZzuNEdqESGa0b6FEfg23s=";
-            } [
-              pkgs.fetchFromGitHub
-              (source: source + "/charts/postgres-operator/crds")
-              (canivete.filesets.files (name: _: hasSuffix ".yaml" name))
-            ];
-          kubernetes.helm.releases = {
-            postgres = {
-              namespace = "storage";
-              chart = helm.fetch {
-                inherit repo;
-                chart = "postgres-operator";
-                version = "1.14.0";
-                sha256 = "sha256-VB3RglaZ9Zu3F2GdcLpVh899d6o7LRg6VDsiq5U6NsA=";
-              };
-              extraResources.postgresqls.main.spec = pipe config.dotfiles.postgres [
-                attrValues
-                (concat (toList {
-                  teamId = "acid";
-                  volume.size = "10Gi";
-                  numberOfInstances = 1;
-                  users.superadmin = ["superuser"];
-                  postgresql.version = "16";
-                }))
-                mkMerge
-              ];
-              dotfiles.volsync.pvcs.postgres = {
-                title = "pgdata-main-0";
-                gid = 103;
-              };
-              # NOTE /home/postgres/pgdata/pgroot/data is only accessible by the postgres user
-              extraResources.replicationsources.volsync--postgres--postgres-src.spec.restic.moverSecurityContext.runAsUser = 101;
-            };
-            postgres-ui = {
-              namespace = "storage";
-              chart = helm.fetch {
-                repo = repo-ui;
-                chart = "postgres-operator-ui";
-                version = "1.12.2";
-                sha256 = "SkuTSWzFhQV4lYgTnSWCuwAHloOz4dz7K8YreNEltes=";
-              };
-              values.envs.resourcesVisible = "True";
-              values.envs.targetNamespace = "*";
-              extraResources.httproutes.postgres-ui.spec = {
-                hostnames = ["postgres.${domain}"];
-                parentRefs = toList {
-                  name = "internal";
-                  namespace = "kube-system";
-                  sectionName = "https";
-                };
-                rules = toList {
-                  backendRefs = toList {
-                    name = "postgres-ui-postgres-operator-ui";
-                    port = 80;
-                  };
-                };
-              };
-            };
-          };
-
-          # Overrides
-          kubernetes.api = _: {
-            options.resources."acid.zalan.do".v1 = {
-              # NOTE https://github.com/hall/kubenix/issues/34#issuecomment-1724690532
-              OperatorConfiguration = mkOption {
-                type = attrsOf (submodule {
-                  # TODO why doesn't this work? how can I provide a better type?
-                  # options.configuration = (config.kubernetes.customTypes.operatorconfigurations.module.configuration;
-                  options.configuration = mkOption {type = types.attrsOf types.anything;};
-                });
-              };
-              # Doesn't seem to merge properly without this...
-              postgresql = mkOption {
-                type = attrsOf (submodule {
-                  options.spec = mkOption {
-                    type = either attrs (submodule {
-                      options = {inherit databases;};
-                    });
-                  };
-                });
-              };
-            };
-            # TODO is there a cleaner way to ensure the value is parsed correctly, like type casting? bug report?
-            # NOTE https://github.com/zalando/postgres-operator/blob/68c4b496365f02afb57b9066492dfa319120622a/charts/postgres-operator/values.yaml#L488
-            config.resources."scheduling.k8s.io".v1.PriorityClass.postgres-postgres-operator-pod.value = mkForce 1000000;
           };
         };
       })

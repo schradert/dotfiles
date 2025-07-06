@@ -25,17 +25,6 @@
           };
         };
       };
-      kubenix = {helm, ...}: {
-        kubernetes.helm.releases.reloader = {
-          namespace = "cicd";
-          chart = helm.fetch {
-            chartUrl = "oci://ghcr.io/stakater/charts/reloader";
-            chart = "reloader";
-            version = "2.0.0";
-            sha256 = "sha256-4CZBHcYEobVSqBWJg6bNRKi5iGgzwYP6N+PtUL6Zfy0=";
-          };
-        };
-      };
     };
   };
 }

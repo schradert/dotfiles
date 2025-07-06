@@ -33,23 +33,6 @@
           };
         };
       };
-      kubenix = {helm, ...}: {
-        kubernetes.helm.releases.node-exporter = {
-          namespace = "monitoring";
-          chart = helm.fetch {
-            chart = "node-exporter";
-            version = "4.47.1";
-            chartUrl = "oci://ghcr.io/prometheus-community/charts/prometheus-node-exporter";
-            sha256 = "sha256-evsJ1VEd/oNsGqv/ZJ/2Yh+Kzmr+dzxa5l/mUIdG6w4=";
-          };
-          values = {
-            fullnameOverride = "node-exporter";
-            hostNetwork = false;
-            prometheus.monitor.enabled = true;
-            # TODO do I need to relabel anything?
-          };
-        };
-      };
     };
   };
 }

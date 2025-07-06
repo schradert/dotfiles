@@ -119,6 +119,7 @@ in {
       platform.prem.install_host = "192.168.50.23";
       system = {
         boot.initrd.availableKernelModules = ["sr_mod"];
+        boot.plymouth.enable = false;
         canivete.kubernetes.root = true;
         disko = diskoZfs "/dev/disk/by-id/scsi-35000c50067faa64b" [
           "/dev/disk/by-id/scsi-35000c50067fb404b"
@@ -140,6 +141,7 @@ in {
       platform.prem.install_host = "192.168.50.53";
       system = {
         boot.initrd.availableKernelModules = ["sr_mod"];
+        boot.plymouth.enable = false;
         disko = diskoZfs "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d2e2991b17e" [
           "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d462aff700b"
           "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d552bdede19"
@@ -262,6 +264,11 @@ in {
       opentofu.module.nixos_falcon_system_install.build_on_remote = true;
       system = {
         boot.initrd.availableKernelModules = ["sr_mod"];
+        boot.plymouth.enable = true;
+        # Desktop keeps getting stuck in ULP mode..., breaking networking connection
+        boot.extraModprobeConfig = ''
+          options e1000e EEE=0
+        '';
         # Firmware bug in ACPI DSDT table for Super IO + UART
         # Prevents kernel from even touching 8250 UART ports
         # TODO did this actually work? (it did at first but then maybe not...)

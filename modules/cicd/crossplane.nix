@@ -57,29 +57,6 @@
           };
         };
       };
-      kubenix = {helm, ...}: {
-        canivete.ifd.crds.providers = "pkg.crossplane.io/v1/Provider";
-        kubernetes.helm.releases.crossplane = {
-          namespace = "cicd";
-          chart = helm.fetch {
-            repo = "https://charts.crossplane.io/master";
-            chart = "crossplane";
-            version = "v2.0.0-rc.0.108.g3ce6a1399";
-            sha256 = "sha256-mlWUXSP8509/i0Wz/IpCInTHMjNjPCPLxL6K39vn3zU=";
-          };
-          values = {
-            # TODO why can't this be unmarshalled correctly?
-            # customAnnotations = mkIf services.reloader.enable {"reloader.stakater.com/auto" = "true";};
-            image.tag = images.crossplane.finalImageTag;
-            image.pullPolicy = "Never";
-            metrics.enabled = services.prometheus.enable;
-            # TODO configure real functionality
-            # provider.packages = [];
-            # configuration.packages = [];
-            # function.packages = [];
-          };
-        };
-      };
     };
   };
 }

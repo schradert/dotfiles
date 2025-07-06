@@ -1,4 +1,9 @@
-{canivete, config, lib, ...}: let
+{
+  canivete,
+  config,
+  lib,
+  ...
+}: let
   inherit (config.canivete.meta.people.my.profiles.default) email;
 in {
   perSystem = {pkgs, ...}: {
@@ -11,7 +16,7 @@ in {
     config = lib.mkIf config.clouds.cloudflare.enable {
       opentofu.plugins = ["cloudflare/cloudflare/5.6.0"];
       opentofu.modules = {
-        provider.cloudflare.api_token = canivete.vals.sops.default "cloudflare/pat";
+        provider.cloudflare.api_token = canivete.vals.sops.default "cloudflare";
         data.cloudflare_accounts.main.name = email;
       };
     };

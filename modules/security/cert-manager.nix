@@ -8,7 +8,7 @@ in {
     lib,
     ...
   }: let
-    inherit (canivete) mkNullableOption toBase64;
+    inherit (canivete) mkNullableOption;
     inherit (config) domain services;
     inherit (services.cert-manager) enable provider;
     inherit (lib) concatStringsSep replaceStrings toList mkIf mkEnableOption mkMerge mkOption types;
@@ -146,95 +146,36 @@ in {
                   {selector.dnsZones = [domain];}
                   (mkIf (provider ? google) {
                     dns01.cloudDNS = {
-                      project = "";
+                      inherit (provider.google) project;
                       serviceAccountSecretRef = {
                         name = "cert-manager";
-                        key = "credentials.json";
+                        key = "credentials";
                       };
                     };
                   })
                   (mkIf (provider ? cloudflare) {
                     dns01.cloudflare.apiTokenSecretRef = {
                       name = "cert-manager";
-                      key = "cloudflare_api_token";
+                      key = "credentials";
                     };
                   })
                 ]);
               };
             };
           in {
-            secrets.cert-manager.data = mkMerge [
-              (mkIf (provider ? google) {"credentials.json" = toBase64 provider.google.credentials;})
-              (mkIf (provider ? cloudflare) {cloudflare_api_token = toBase64 provider.cloudflare.token;})
-            ];
-            "cert-manager.io".v1 = {
-              ClusterIssuer.letsencrypt-production = mkClusterIssuer "letsencrypt-production" "https://acme-v02.api.letsencrypt.org/directory";
-              ClusterIssuer.letsencrypt-staging = mkClusterIssuer "letsencrypt-staging" "https://acme-staging-v02.api.letsencrypt.org/directory";
-              Certificate.${domainName}.spec = {
-                secretName = "${domainName}-tls";
-                issuerRef.name = "letsencrypt-staging";
-                issuerRef.kind = "ClusterIssuer";
-                commonName = domain;
-                dnsNames = [domain "*.${domain}"];
+            externalSecrets.cert-manager.spec = {
+              secretStoreRef.name = "bitwarden";
+              secretStoreRef.kind = "ClusterSecretStore";
+              data = toList {
+                secretKey = "credentials";
+                remoteRef.key = mkMerge [
+                  (mkIf (provider ? google) provider.google.token)
+                  (mkIf (provider ? cloudflare) provider.cloudflare.token)
+                ];
               };
             };
-          };
-        };
-      };
-      kubenix = {helm, ...}: {
-        canivete.ifd.crds = {
-          certificates = "cert-manager.io/v1/Certificate";
-          clusterissuers = "cert-manager.io/v1/ClusterIssuer";
-        };
-        kubernetes.helm.releases.cert-manager = {
-          namespace = "security";
-          chart = helm.fetch {
-            repo = "https://charts.jetstack.io";
-            chart = "cert-manager";
-            version = "v1.17.1";
-            sha256 = "sha256-CUKd2R911uTfr461MrVcefnfOgzOr96wk+guoIBHH0c=";
-          };
-          values = {
-            crds.enabled = true;
-            dns01RecursiveNameservers = concatStringsSep "," ["https://1.1.1.1:443/dns-query" "https://1.0.0.1:443/dns-query"];
-            dns01RecursiveNameserversOnly = true;
-            prometheus.enabled = true;
-            prometheus.servicemonitor.enabled = services.prometheus.enable;
-          };
-          extraResources = let
-            domainName = replaceStrings ["."] ["-"] domain;
-            mkClusterIssuer = name: server: {
-              metadata.annotations."chart.canivete.app/cert-manager" = "";
-              spec.acme = {
-                inherit server email;
-                privateKeySecretRef = {inherit name;};
-                solvers = toList (mkMerge [
-                  {selector.dnsZones = [domain];}
-                  (mkIf (provider ? google) {
-                    dns01.cloudDNS = {
-                      project = "";
-                      serviceAccountSecretRef = {
-                        name = "cert-manager";
-                        key = "credentials.json";
-                      };
-                    };
-                  })
-                  (mkIf (provider ? cloudflare) {
-                    dns01.cloudflare.apiTokenSecretRef = {
-                      name = "cert-manager";
-                      key = "cloudflare_api_token";
-                    };
-                  })
-                ]);
-              };
-            };
-          in {
-            secrets.cert-manager.data = mkMerge [
-              (mkIf (provider ? google) {"credentials.json" = toBase64 provider.google.credentials;})
-              (mkIf (provider ? cloudflare) {cloudflare_api_token = toBase64 provider.cloudflare.token;})
-            ];
-            clusterissuers.letsencrypt-production = mkClusterIssuer "letsencrypt-production" "https://acme-v02.api.letsencrypt.org/directory";
-            clusterissuers.letsencrypt-staging = mkClusterIssuer "letsencrypt-staging" "https://acme-staging-v02.api.letsencrypt.org/directory";
+            clusterIssuers.letsencrypt-production = mkClusterIssuer "letsencrypt-production" "https://acme-v02.api.letsencrypt.org/directory";
+            clusterIssuers.letsencrypt-staging = mkClusterIssuer "letsencrypt-staging" "https://acme-staging-v02.api.letsencrypt.org/directory";
             certificates.${domainName}.spec = {
               secretName = "${domainName}-tls";
               issuerRef.name = "letsencrypt-staging";

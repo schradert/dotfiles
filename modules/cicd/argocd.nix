@@ -45,21 +45,6 @@
           };
         };
       };
-      kubenix = {helm, ...}: {
-        kubernetes.helm.releases.argocd = {
-          namespace = "cicd";
-          chart = helm.fetch {
-            repo = "https://argoproj.github.io/argo-helm/";
-            chart = "argo-cd";
-            version = "8.1.2";
-            sha256 = "sha256-MCXyb4zz7wqlelwN74Yd4eX/zVT3Mkf4S25Z/sZsZG4=";
-          };
-          values = {
-            global.domain = "argocd.${config.domain}";
-            global.image.pullPolicy = "Never";
-          };
-        };
-      };
     };
   };
 }

@@ -5,8 +5,8 @@
     lib,
     ...
   }: let
-    inherit (config.storage.bucket) minio buckets;
-    inherit (lib) flip mapAttrs mapAttrsToList mkDefault mkEnableOption mkIf mkMerge mkOption pipe setAttrByPath types;
+    inherit (config.storage) bucket;
+    inherit (lib) flip mapAttrsToList mkDefault mkEnableOption mkIf mkMerge mkOption pipe setAttrByPath types;
     inherit (types) attrsOf coercedTo int listOf str submodule;
   in {
     options.services.volsync.enable = mkEnableOption "Volsync";
@@ -57,120 +57,13 @@
             })
           ];
         };
-        kubenix = {canivete, ...}: {
-          options.kubernetes.helm.releases = mkOption {
-            type = attrsOf (submodule ({
-              config,
-              name,
-              ...
-            }: let
-              inherit (config.dotfiles) volsync;
-            in {
-              options.dotfiles.volsync = {
-                enable = mkEnableOption "Volsync replication of PVCs" // {default = volsync.pvcs != null;};
-                pvcs =
-                  pipe ({config, ...}: {
-                    options = {
-                      title = mkOption {
-                        description = "Name of PVC (eventually) created";
-                        type = str;
-                      };
-                      path = mkOption {
-                        default = ["persistentVolumeClaims" config.title];
-                        description = "Location to inject dataSourceRef for ReplicationDestination";
-                        type = listOf str;
-                      };
-                      uid = mkOption {
-                        default = 101;
-                        description = "UID for podSecurityContext";
-                        type = int;
-                      };
-                      gid = mkOption {
-                        default = 101;
-                        description = "GID for podSecurityContext";
-                        type = int;
-                      };
-                      # TODO switch to a resizable, snapshottable storage class
-                      # NOTE openebs-hostpath Local PV is neither and doesn't support custom dataSourceRef
-                      # options.inject = canivete.mkEnabledOption "Inject dataSourceRef into a PVC";
-                      inject = mkEnableOption "Inject dataSourceRef into a PVC";
-                    };
-                  }) [
-                    submodule
-                    (coercedTo str (title: {inherit title;}))
-                    attrsOf
-                    (flip canivete.mkNullableOption {description = "Name of PVCs to replicate and back up";})
-                  ];
-              };
-              config = mkIf (volsync.enable && volsync.pvcs != null) {
-                extraResources = mkMerge (flip mapAttrsToList volsync.pvcs (pvc: {
-                  title,
-                  inject,
-                  path,
-                  uid,
-                  gid,
-                }: let
-                  repository = "volsync--${name}--${pvc}";
-                  inherit (canivete.vals.sops) default;
-                in
-                  mkMerge [
-                    # Some services use operators that allow configuration injection into PersistentVolumeClaim templates
-                    # Some still don't offer ways to inject so we have to do this manually
-                    (mkIf inject (setAttrByPath path {
-                      spec.dataSourceRef = {
-                        kind = "ReplicationDestination";
-                        apiGroup = "volsync.backube";
-                        name = "${repository}-dst";
-                      };
-                    }))
-                    # FIXME transfer all of these to respective modules
-                    {
-                      secrets.${repository}.data = mapAttrs (_: canivete.toBase64) {
-                        RESTIC_REPOSITORY = "s3:https://${minio.server}/${buckets.volsync}/${repository}";
-                        RESTIC_PASSWORD = default "passwords/restic";
-                        AWS_ACCESS_KEY_ID = minio.user;
-                        AWS_SECRET_ACCESS_KEY = minio.password;
-                        AWS_DEFAULT_REGION = minio.region;
-                      };
-                      replicationsources."${repository}-src".spec = {
-                        sourcePVC = title;
-                        trigger.schedule = "0 4 * * *";
-                        restic = {
-                          # TODO is it worth using OpenEBS Mayastor for PiT Snapshot/Clone?
-                          # Copy every day at 4am, pruning every 8 days down to 1 per day/week/month/year
-                          moverSecurityContext.fsGroup = gid;
-                          copyMethod = "Direct";
-                          pruneIntervalDays = 8;
-                          inherit repository;
-                          retain = {
-                            daily = 1;
-                            weekly = 1;
-                            monthly = 1;
-                            yearly = 1;
-                          };
-                        };
-                      };
-                      replicationdestinations."${repository}-dst".spec = {
-                        # Override this to track restoration
-                        trigger.manual = mkDefault "1";
-                        restic = {
-                          moverSecurityContext.runAsGroup = gid;
-                          moverSecurityContext.runAsUser = uid;
-                          copyMethod = "Direct";
-                          destinationPVC = title;
-                          inherit repository;
-                        };
-                      };
-                    }
-                  ]));
-              };
-            }));
-          };
-        };
       }
       (mkIf config.services.volsync.enable {
         storage.bucket.buckets.volsync = "volsync";
-        opentofu.passwords.restic.length = 21;
+        opentofu = {
+          dotfiles.secrets.restic.value = "\${ random_password.restic.result }";
+          modules.resource.random_password.restic.length = 21;
+        };
         # TODO prevent hardcoding bucket provider
         opentofu.modules.resource.null_resource.kubernetes.depends_on = ["b2_bucket.volsync"];
         nixos = {pkgs, ...}: let
@@ -206,6 +99,15 @@
             prefix = "bundle/manifests/volsync.backube_";
             crds = ["replicationdestinations" "replicationsources"];
           };
+          applications.volsync = {
+            namespace = "storage";
+            helm.releases.volsync.chart = lib.helm.downloadHelmChart {
+              chart = "volsync";
+              version = "0.12.1";
+              repo = "https://backube.github.io/helm-charts";
+              chartHash = "sha256-+ytyqmvUPZynLDivVXjEhmd1uHH3MaaCsYo35Na6sX4=";
+            };
+          };
           nixidy.applicationImports = [
             ({
               config,
@@ -223,7 +125,6 @@
                   gid,
                 }: let
                   repository = "volsync--${name}--${pvc}";
-                  inherit (canivete.vals.sops) default;
                 in
                   mkMerge [
                     # Some services use operators that allow configuration injection into PersistentVolumeClaim templates
@@ -235,17 +136,30 @@
                         name = "${repository}-dst";
                       };
                     }))
-                    # FIXME transfer all of these to respective modules
+                    # TODO transfer all of these to respective modules
                     {
-                      secrets.${repository}.data = mapAttrs (_: canivete.toBase64) {
-                        RESTIC_REPOSITORY = "s3:https://${minio.server}/${buckets.volsync}/${repository}";
-                        RESTIC_PASSWORD = default "passwords/restic";
-                        AWS_ACCESS_KEY_ID = minio.user;
-                        AWS_SECRET_ACCESS_KEY = minio.password;
-                        AWS_DEFAULT_REGION = minio.region;
+                      externalSecrets.${repository}.spec = {
+                        secretStoreRef.name = "bitwarden";
+                        secretStoreRef.kind = "ClusterSecretStore";
+                        data = [
+                          {
+                            secretKey = "restic";
+                            remoteRef.key = "restic";
+                          }
+                          {
+                            secretKey = "password";
+                            remoteRef.key = "bucket";
+                          }
+                        ];
+                        target.template.data = {
+                          RESTIC_REPOSITORY = "s3:https://${bucket.server}/${bucket.buckets.volsync}/${repository}";
+                          RESTIC_PASSWORD = "{{ .restic }}";
+                          AWS_ACCESS_KEY_ID = bucket.user;
+                          AWS_SECRET_ACCESS_KEY = "{{ .password }}";
+                          AWS_DEFAULT_REGION = bucket.region;
+                        };
                       };
-
-                      "volsync.backube".v1alpha1.ReplicationSource."${repository}-src".spec = {
+                      replicationSources."${repository}-src".spec = {
                         sourcePVC = title;
                         trigger.schedule = "0 4 * * *";
                         restic = {
@@ -263,7 +177,7 @@
                           };
                         };
                       };
-                      "volsync.backube".v1alpha1.ReplicationDestination."${repository}-dst".spec = {
+                      replicationDestinations."${repository}-dst".spec = {
                         # Override this to track restoration
                         trigger.manual = mkDefault "1";
                         restic = {
@@ -279,30 +193,6 @@
               };
             })
           ];
-          applications.volsync = {
-            namespace = "storage";
-            helm.releases.volsync.chart = lib.helm.downloadHelmChart {
-              chart = "volsync";
-              version = "0.12.1";
-              repo = "https://backube.github.io/helm-charts";
-              chartHash = "sha256-+ytyqmvUPZynLDivVXjEhmd1uHH3MaaCsYo35Na6sX4=";
-            };
-          };
-        };
-        kubenix = {helm, ...}: {
-          canivete.ifd.crds = {
-            replicationdestinations = "volsync.backube/v1alpha1/ReplicationDestination";
-            replicationsources = "volsync.backube/v1alpha1/ReplicationSource";
-          };
-          kubernetes.helm.releases.volsync = {
-            namespace = "storage";
-            chart = helm.fetch {
-              repo = "https://backube.github.io/helm-charts";
-              chart = "volsync";
-              version = "0.12.1";
-              sha256 = "sha256-+ytyqmvUPZynLDivVXjEhmd1uHH3MaaCsYo35Na6sX4=";
-            };
-          };
         };
       })
     ];

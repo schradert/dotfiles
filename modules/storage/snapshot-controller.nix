@@ -26,6 +26,7 @@
       in {
         dotfiles.crds.snapshot-controller = {
           src = chart;
+          prefix = "crds/";
           crds = [
             "groupsnapshot.storage.k8s.io_volumegroupsnapshotclasses"
             "groupsnapshot.storage.k8s.io_volumegroupsnapshotcontents"
@@ -41,25 +42,6 @@
             inherit chart;
             values.controller.serviceMonitor.create = services.prometheus.enable;
           };
-        };
-      };
-      kubenix = {
-        canivete,
-        helm,
-        ...
-      }: let
-        chart = helm.fetch {
-          repo = "https://piraeus.io/helm-charts";
-          chart = "snapshot-controller";
-          version = "4.0.2";
-          sha256 = "sha256-RONBeALvdliIfnCcPnwqBwSbk68bUWOIvoUj3K3EuaE=";
-        };
-      in {
-        kubernetes.imports = canivete.filesets.files (name: _: lib.hasSuffix ".yaml" name) "${chart}/crds";
-        kubernetes.helm.releases.snapshot-controller = {
-          namespace = "storage";
-          inherit chart;
-          values.controller.serviceMonitor.create = services.prometheus.enable;
         };
       };
     };

@@ -33,23 +33,6 @@
           };
         };
       };
-      kubenix = {helm, ...}: {
-        kubernetes.helm.releases.kube-state-metrics = {
-          namespace = "monitoring";
-          chart = helm.fetch {
-            chart = "kube-state-metrics";
-            version = "6.1.0";
-            chartUrl = "oci://ghcr.io/prometheus-community/charts/kube-state-metrics";
-            sha256 = "sha256-NXi8/TC11zmPNHPKYvcvOaMVdCmn2Y5krvnd7KyBTXE=";
-          };
-          values.fullnameOverride = "kube-state-metrics";
-          values.image.tag = "v2.15.0";
-          values.prometheus.monitor = {
-            enabled = true;
-            honorLabels = true;
-          };
-        };
-      };
     };
   };
 }

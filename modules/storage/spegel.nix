@@ -107,37 +107,8 @@
               serviceMonitor.enabled = services.prometheus.enable;
             };
           };
-          resources.apps.v1.DaemonSet.spegel.spec.template.spec.containers.registry.env.GOMEMLIMIT.valueFrom.resourceFieldRef.divisor = lib.mkForce "1";
+          resources.daemonSets.spegel.spec.template.spec.containers.registry.env.GOMEMLIMIT.valueFrom.resourceFieldRef.divisor = lib.mkForce "1";
         };
-      };
-      kubenix = {helm, ...}: {
-        kubernetes.helm.releases.spegel = {
-          namespace = "storage";
-          chart = helm.fetch {
-            chartUrl = "oci://ghcr.io/spegel-org/helm-charts/spegel";
-            chart = "spegel";
-            version = "0.3.0";
-            sha256 = "sha256-KsuZvpTAV4KM4NoOctzclHZt+KUudupM44QwGFC1BzA=";
-          };
-          values = {
-            image.pullPolicy = "Never";
-            image.repository = image.imageName;
-            image.tag = image.finalImageTag;
-            image.digest = "";
-            # TODO can I not specify digest?
-            # image.digest = image.imageDigest;
-            spegel = {
-              containerdContentPath = "/var/lib/rancher/k3s/agent/containerd/io.containerd.content.v1.content";
-              containerdMirrorAdd = false;
-              containerdRegistryConfigPath = "/var/lib/rancher/k3s/agent/etc/containerd/certs.d";
-              containerdSock = "/run/k3s/containerd/containerd.sock";
-            };
-            serviceMonitor.enabled = services.prometheus.enable;
-          };
-        };
-
-        # Overrides
-        kubernetes.api.resources.apps.v1.DaemonSet.spegel.spec.template.spec.containers.registry.env.GOMEMLIMIT.valueFrom.resourceFieldRef.divisor = mkForce "1";
       };
     };
   };

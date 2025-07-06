@@ -5,8 +5,7 @@
     ...
   }: let
     inherit (config) domain;
-    inherit (lib) hasSuffix mkEnableOption mkIf pipe toList;
-    version = "70.3.0";
+    inherit (lib) mkEnableOption mkIf toList;
     certgen-tag = "v1.5.2";
     admission-tag = "v0.83.0";
   in {
@@ -98,97 +97,6 @@
               grafana.enabled = false;
               grafana.forceDeployDashboards = true;
             };
-          };
-        };
-      };
-      kubenix = {
-        canivete,
-        helm,
-        pkgs,
-        ...
-      }: {
-        canivete.ifd.crds = {
-          alertmanagers = "monitoring.coreos.com/v1/Alertmanager";
-          prometheuses = "monitoring.coreos.com/v1/Prometheus";
-          prometheusrules = "monitoring.coreos.com/v1/PrometheusRule";
-          servicemonitors = "monitoring.coreos.com/v1/ServiceMonitor";
-        };
-        kubernetes.imports =
-          pipe {
-            owner = "prometheus-community";
-            repo = "helm-charts";
-            rev = "kube-prometheus-stack-${version}";
-            hash = "sha256-wwBqYfNlcITp0BrkDiCKVfiKMWivyJJ72RpHE+sKfVY=";
-          } [
-            pkgs.fetchFromGitHub
-            (source: source + "/charts/kube-prometheus-stack/charts/crds/crds")
-            (canivete.filesets.files (name: _: hasSuffix ".yaml" name))
-          ];
-        kubernetes.helm.releases.prometheus = {
-          namespace = "monitoring";
-          chart = helm.fetch {
-            repo = "https://prometheus-community.github.io/helm-charts";
-            chart = "kube-prometheus-stack";
-            inherit version;
-            sha256 = "sha256-ltn7BO6Se0LiI/3YWjQlJbIwklrI0q5/TSs525YN4bA=";
-          };
-          dotfiles.volsync.pvcs.prometheus = {
-            title = "prometheus-prometheus-kube-prometheus-prometheus-db-prometheus-prometheus-kube-prometheus-prometheus-0";
-            # TODO what happens with multiple deployments???
-            # TODO resurrect this injection when StorageClass changes
-            # path = ["prometheuses" "prometheus-kube-prometheus-prometheus" "spec" "storage" "volumeClaimTemplate"];
-          };
-          values = {
-            # Prevent kapp injecting its own label into service selectors for statefulsets managed by prometheus-operator
-            prometheus.service.annotations."kapp.k14s.io/disable-default-label-scoping-rules" = "";
-
-            crds.enabled = false;
-            kubelet.enabled = true;
-            kubeApiServer.enabled = true;
-            prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec = {
-              accessModes = ["ReadWriteOnce"];
-              resources.requests.storage = "10Gi";
-            };
-            prometheus.route.main = {
-              enabled = true;
-              hostnames = ["prometheus.${domain}"];
-              parentRefs = toList {
-                name = "internal";
-                namespace = "kube-system";
-                sectionName = "https";
-              };
-            };
-            prometheusOperator.admissionWebhooks = {
-              deployment.enabled = true;
-              deployment.image.tag = admission-tag;
-              patch.image.tag = certgen-tag;
-            };
-
-            # Deployed separately
-            alertmanager.enabled = false;
-            kubeControllerManager.enabled = false;
-            kubeEtcd.enabled = false;
-            kubeProxy.enabled = false;
-            kubeScheduler.enabled = false;
-            kubeStateMetrics.enabled = false;
-            nodeExporter.enabled = false;
-            grafana.enabled = false;
-            grafana.forceDeployDashboards = true;
-          };
-        };
-
-        # Overrides
-        kubernetes.api.resources = {
-          # Kubernetes API server modifies these in place automatically
-          "apiextensions.k8s.io".v1.CustomResourceDefinition = let
-            strategy.spec.conversion.strategy = "None";
-          in {
-            "prometheusagents.monitoring.coreos.com" = strategy;
-            "prometheuses.monitoring.coreos.com" = strategy;
-            "alertmanagers.monitoring.coreos.com" = strategy;
-            "alertmanagerconfigs.monitoring.coreos.com" = strategy;
-            "scrapeconfigs.monitoring.coreos.com" = strategy;
-            "thanosrulers.monitoring.coreos.com" = strategy;
           };
         };
       };

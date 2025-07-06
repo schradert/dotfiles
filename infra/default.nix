@@ -1,24 +1,26 @@
 {
+  canivete,
   config,
   inputs,
   lib,
   ...
-}: {
+}: let
+  inherit (canivete.vals.sops) default;
+  inherit (lib) getAttr getExe mapAttrs mkForce;
+in {
   # FIXME why is k3s CRASHING?! overloading it with deployment requests at the beginning?
   # FIXME why is nixos_sirver_system failing initial deployment? i have to run twice
   # TODO how should I integrate this
   # TODO why is kubernetes in opentofu showing up sensitive
   # TODO why does openebs-localpv-provisioner fail?
   # NOTE /builds + /modules are just temporary out of store symlinks
-  flake.dotfiles = lib.mapAttrs (_: lib.getAttr "dotfiles") config.allSystems;
+  flake.dotfiles = mapAttrs (_: getAttr "dotfiles") config.allSystems;
   flake.overlays.nur = inputs.nur.overlays.default;
   perSystem = {
     pkgs,
     system,
     ...
-  }: let
-    inherit (lib) getExe mkForce;
-  in {
+  }: {
     apps.deploy.program = pkgs.writeShellScriptBin "deploy" "nix run .#canivete.${system}.opentofu.script -- --workspace deploy \"$@\"";
     canivete.pre-commit = {
       languages.shell.enable = true;
@@ -43,7 +45,7 @@
     accounts.gitlab = "schrader.tristan";
     profiles.default.email = "t0rdos@pm.me";
   };
-  dotfiles = {canivete, ...}: {
+  dotfiles = {
     domain = "trdos.me";
     me = "tristan";
     people.tristan = "tristan";
@@ -52,8 +54,9 @@
     storage.bucket = {
       enable = true;
       provider = "backblaze";
-      # NOTE can't seem to do this with B2 buckets
-      # minio.enable = true;
+      region = "us-west-004";
+      user = "004099163b2ee630000000002";
+      password = default "backblaze";
     };
 
     nixos = {pkgs, ...}: {
@@ -86,7 +89,7 @@
       cloudflared.enable = true;
       kubelet-csr-approver.enable = true;
       cert-manager.enable = true;
-      cert-manager.provider.cloudflare.token = canivete.vals.sops.default "cloudflare/pat";
+      cert-manager.provider.cloudflare.token = "cloudflare/account/token";
 
       snapshot-controller.enable = true;
       openebs.enable = true;
@@ -95,6 +98,8 @@
       descheduler.enable = true;
       reloader.enable = true;
       external-secrets.enable = true;
+      external-secrets.bitwarden.organization_id = "ce96e43f-f2ce-4cd7-a36f-b30e0149eeaf";
+      external-secrets.bitwarden.project_id = "baf88382-abda-41b2-8d0f-b30e014c2db9";
 
       prometheus.enable = true;
       alertmanager.enable = true;

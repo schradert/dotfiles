@@ -35,12 +35,11 @@
           };
         };
       };
-      opentofu.passwords.grafana-admin.length = 21;
-      nixidy = {
-        canivete,
-        charts,
-        ...
-      }: {
+      opentofu = {
+        dotfiles.secrets.grafana.value = "\${ random_password.grafana.result }";
+        modules.resource.random_password.grafana.length = 21;
+      };
+      nixidy = {charts, ...}: {
         applications.grafana = {
           namespace = "monitoring";
           helm.releases.grafana = {
@@ -89,91 +88,26 @@
               GF_SECURITY_COOKIE_SAMESITE = "grafana";
               GF_SERVER_ROOT_URL = url;
             };
-            secrets.grafana-admin.stringData = {
-              admin-user = "admin";
-              admin-password = canivete.vals.sops.default "passwords/grafana-admin";
-            };
-            # NOTE /var/lib/grafana contents are frequently only owned by grafana
-            "volsync.backube".v1alpha1.ReplicationSource.volsync--grafana--grafana-src.spec.restic.moverSecurityContext.fsGroup = 472;
-          };
-          dotfiles.volsync.pvcs.grafana = {
-            title = "grafana";
-            uid = 472;
-            gid = 472;
-          };
-        };
-      };
-      kubenix = {
-        canivete,
-        helm,
-        ...
-      }: {
-        dotfiles.gatus.endpoints.grafana.url = url;
-        kubernetes.helm.releases.grafana = {
-          namespace = "monitoring";
-          chart = helm.fetch {
-            chart = "grafana";
-            version = "9.2.9";
-            chartUrl = "oci://ghcr.io/grafana/helm-charts/grafana";
-            sha256 = "sha256-826Q+jgK+RHFqFuA3tpZuc4E7AyDuXnUSgbkBjLgqW4=";
-          };
-          dotfiles.volsync.pvcs.grafana = {
-            title = "grafana";
-            uid = 472;
-            gid = 472;
-          };
-          extraResources = {
-            configMaps.grafana.data = {
-              GF_ANALYTICS_CHECK_FOR_UPDATES = "false";
-              GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES = "false";
-              GF_ANALYTICS_REPORTING_ENABLED = "false";
-              GF_AUTH_ANONYMOUS_ENABLED = "false";
-              GF_AUTH_BASIC_ENABLED = "false";
-              GF_DATE_FORMATS_USE_BROWSER_LOCALE = "true";
-              GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH = "/tmp/dashboards/home.json";
-              GF_EXPLORE_ENABLED = "true";
-              GF_FEATURE_TOGGLES_ENABLE = "publicDashboards";
-              GF_LOG_MODE = "console";
-              GF_NEWS_NEWS_FEED_ENABLED = "false";
-              GF_SECURITY_COOKIE_SAMESITE = "grafana";
-              GF_SERVER_ROOT_URL = url;
-            };
-            secrets.grafana-admin.stringData = {
-              admin-user = "admin";
-              admin-password = canivete.vals.sops.default "passwords/grafana-admin";
-            };
-            # Overrides
-            pods.grafana-test.metadata.annotations."kapp.k14s.io/change-rule.grafana" = "upsert after upserting grafana";
-            deployments.grafana.metadata.annotations."kapp.k14s.io/change-group.grafana" = "grafana";
-            # NOTE /var/lib/grafana contents are frequently only owned by grafana
-            replicationsources.volsync--grafana--grafana-src.spec.restic.moverSecurityContext.fsGroup = 472;
-          };
-          values = {
-            # TODO dashboards + providers + plugins
-            admin.existingSecret = "grafana-admin";
-            annotations."reloader.stakater.com/auto" = "true";
-            envFromConfigMaps = [{name = "grafana";}];
-            # Image owned by kubelet-csr-approver
-            initChownData.image.tag = "latest";
-            persistence.enabled = true;
-            route.main = {
-              enabled = true;
-              hostnames = [hostname];
-              parentRefs = toList {
-                name = "internal";
-                namespace = "kube-system";
-                sectionName = "https";
+            externalSecrets.grafana-admin.spec = {
+              secretStoreRef.name = "bitwarden";
+              secretStoreRef.kind = "ClusterSecretStore";
+              data = toList {
+                secretKey = "password";
+                remoteRef.key = "grafana";
+              };
+              target.template.data = {
+                admin-user = "admin";
+                admin-password = "{{ .password }}";
               };
             };
-            serviceAccount.create = true;
-            serviceAccount.autoMount = true;
-            serviceMonitor.enabled = services.prometheus.enable;
-            sidecar = {
-              dashboards.enabled = true;
-              dashboards.searchNamespace = "ALL";
-              datasources.enabled = true;
-              datasources.searchNamespace = "ALL";
-            };
+            # FIXME get these permission right
+            # NOTE /var/lib/grafana contents are frequently only owned by grafana
+            replicationSources.volsync--grafana--grafana-src.spec.restic.moverSecurityContext.fsGroup = 472;
+          };
+          dotfiles.volsync.pvcs.grafana = {
+            title = "grafana";
+            uid = 472;
+            gid = 472;
           };
         };
       };

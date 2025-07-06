@@ -28,18 +28,6 @@
           };
         };
       };
-      kubenix = {helm, ...}: {
-        kubernetes.helm.releases.coredns = {
-          namespace = "kube-system";
-          chart = helm.fetch {
-            repo = "https://coredns.github.io/helm";
-            chart = "coredns";
-            version = "1.39.2";
-            sha256 = "sha256-801r6B6OTNB+Ds+G8vRi8ReXN4bLzb6L/8N+Ufu9P5k=";
-          };
-          values.service.clusterIP = "10.43.0.10";
-        };
-      };
     };
   };
 }

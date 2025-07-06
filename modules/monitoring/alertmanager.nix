@@ -37,7 +37,7 @@
               statefulSet.annotations."reloader.stakater.com/auto" = "true";
             };
           };
-          resources."gateway.networking.k8s.io".v1.HTTPRoute.alertmanager.spec = {
+          resources.hTTPRoutes.alertmanager.spec = {
             hostnames = [hostname];
             parentRefs = toList {
               name = "internal";
@@ -48,40 +48,6 @@
               backendRefs = toList {
                 name = "alertmanager";
                 port = 9093;
-              };
-            };
-          };
-        };
-      };
-      kubenix = {helm, ...}: {
-        kubernetes.helm.releases.alertmanager = {
-          namespace = "monitoring";
-          chart = helm.fetch {
-            chart = "alertmanager";
-            version = "1.21.0";
-            chartUrl = "oci://ghcr.io/prometheus-community/charts/alertmanager";
-            sha256 = "sha256-AmEfpH+wzsfWPgtPIVesO7eTmVC0l4E6nXHYLAVj4Xs=";
-          };
-          values = {
-            baseURL = "https" + "://${hostname}";
-            # TODO config receivers
-            # config = {};
-            configmapReload.enabled = true;
-            # Version from prometheus deployment
-            configmapReload.image.tag = "v0.81.0";
-            statefulSet.annotations."reloader.stakater.com/auto" = "true";
-          };
-          extraResources.httproutes.alertmanager.spec = {
-            hostnames = [hostname];
-            parentRefs = toList {
-              name = "internal";
-              namespace = "kube-system";
-              sectionName = "https";
-            };
-            rules = toList {
-              backendRefs = toList {
-                name = "alertmanager";
-                port = "http";
               };
             };
           };

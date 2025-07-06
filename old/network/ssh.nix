@@ -69,7 +69,7 @@ in {
     };
     opentofu.plugins = ["integrations/github" "gitlabhq/gitlab"];
     opentofu.modules = {
-      provider.github.token = canivete.vals.sops "default.yaml#/github_pat";
+      provider.github.token = canivete.vals.sops "default.yaml#/github";
       resource.github_user_ssh_key = pipe config.canivete.meta.people.users [
         (filterAttrs (_: hasAttrByPath ["accounts" "github"]))
         (mapAttrs (name: _: {
@@ -77,7 +77,7 @@ in {
           key = fileContents (inputs.self + "/.canivete/sops/${name}.pub");
         }))
       ];
-      provider.gitlab.token = canivete.vals.sops "default.yaml#/gitlab_pat";
+      provider.gitlab.token = canivete.vals.sops "default.yaml#/gitlab";
       resource.gitlab_user_sshkey = pipe config.canivete.meta.people.users [
         (filterAttrs (_: hasAttrByPath ["accounts" "gitlab"]))
         (mapAttrs (name: _: {

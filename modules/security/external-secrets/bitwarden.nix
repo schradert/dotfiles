@@ -1,7 +1,13 @@
 {
-  dotfiles = {canivete, config, lib, ...}: let
+  perSystem.canivete.pre-commit.settings.hooks.lychee.toml.exclude = ["https://api.bitwarden.com" "https://identity.bitwarden.com"];
+  dotfiles = {
+    canivete,
+    config,
+    lib,
+    ...
+  }: let
     inherit (config.services.external-secrets) enable bitwarden;
-    inherit (lib) flip mapAttrs mkIf mkMerge mkOption recursiveUpdate toList types;
+    inherit (lib) flip mapAttrs mkIf mkOption recursiveUpdate toList types;
     mkStrOption = canivete.mkNullableOption types.str;
     image = {
       imageName = "ghcr.io/external-secrets/bitwarden-sdk-server";
