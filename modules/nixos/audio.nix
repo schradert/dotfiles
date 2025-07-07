@@ -2,7 +2,12 @@
   dotfiles = {config, ...}: let
     inherit (config) me;
   in {
-    nixos = {config, lib, perSystem, ...}: {
+    nixos = {
+      config,
+      lib,
+      perSystem,
+      ...
+    }: {
       options.dotfiles.profiles.client.audio.enable = lib.mkEnableOption "Audio processing";
       config = lib.mkIf config.dotfiles.profiles.client.audio.enable {
         assertions = lib.toList {
@@ -18,7 +23,6 @@
               spotify
               perSystem.inputs'.wiremix.packages.wiremix
             ];
-            services.easyeffects.enable = true;
           })
         ];
         dotfiles.nixpkgs.config.allowUnfreePackages = ["spotify"];
