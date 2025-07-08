@@ -2243,11 +2243,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1752013551,
-        "narHash": "sha256-Zl95+BMD6tTtRdAfmUaXdZcptthvxMYiYCLx5OL1C4I=",
+        "lastModified": 1752015670,
+        "narHash": "sha256-fPnlmdJSli5HL9BBQtLGCSLTnEx/B7/cElu4RqzRDjY=",
         "owner": "schradert",
         "repo": "nixidy",
-        "rev": "0e957c7d0016fc841e94336e50a3724d79406dd0",
+        "rev": "a9c722df4f8a9ebded3e735b89564fdb9c580595",
         "type": "github"
       },
       "original": {
