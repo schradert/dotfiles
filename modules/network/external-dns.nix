@@ -26,7 +26,7 @@
       in {
         dotfiles.crds.external-dns = {
           src = chart;
-          crds = ["crds/dnsendpoints.externaldns.k8s.io"];
+          prefix = "crds";
         };
         applications.external-dns = {
           namespace = "kube-system";

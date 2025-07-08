@@ -90,14 +90,13 @@
           ...
         }: {
           dotfiles.crds.volsync = {
+            prefix = "config/crd/bases";
             src = pkgs.fetchFromGitHub {
               owner = "backube";
               repo = "volsync";
               rev = "v0.12.1";
               hash = "sha256-8aqZakHtqFII+7NxAFjQuaJtAAhrZubEvJIQe5COqJ8=";
             };
-            prefix = "bundle/manifests/volsync.backube_";
-            crds = ["replicationdestinations" "replicationsources"];
           };
           applications.volsync = {
             namespace = "storage";

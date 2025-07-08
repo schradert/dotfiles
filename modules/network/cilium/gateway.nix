@@ -14,14 +14,15 @@
       };
       nixidy = {pkgs, ...}: {
         dotfiles.crds.gateway = {
+          install = true;
+          prefix = "config/crd/standard";
+          application = "cilium";
           src = pkgs.fetchFromGitHub {
             owner = "kubernetes-sigs";
             repo = "gateway-api";
             rev = "v1.2.0";
             hash = "sha256-mGT7PHEHBOK2OAhx3zi6NWzlrZd8pDy5a1sQ3QqClyM=";
           };
-          prefix = "config/crd/standard/gateway.networking.k8s.io_";
-          crds = ["gateways" "httproutes"];
         };
         applications.cilium = {
           helm.releases.cilium.values.gatewayAPI.enabled = true;

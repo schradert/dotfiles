@@ -250,11 +250,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1750634675,
-        "narHash": "sha256-gnJiu7w00dbZWL4xcX41WDnzpxfapEn3yCtqvvziTv4=",
+        "lastModified": 1752007761,
+        "narHash": "sha256-J/vSM1FZDZn7PLnSHBWuAQWzJ3hIRhGzosw0pgqDMxs=",
         "owner": "schradert",
         "repo": "canivete",
-        "rev": "734f7dcf573f05419bd9d0bef1a15e06749c9f1f",
+        "rev": "cc77483d90c567cde3ac57ef2e06a33be850cb3a",
         "type": "github"
       },
       "original": {
@@ -2243,11 +2243,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1751946310,
-        "narHash": "sha256-QnGLKewnU+3sC6BotoB42lM3fHdSmkhUxM/tzXzUxVs=",
+        "lastModified": 1752005824,
+        "narHash": "sha256-M9qLW5dDlq19l2fzQ+E0ryJfRbgKS2pltyHYiaTqmb4=",
         "owner": "schradert",
         "repo": "nixidy",
-        "rev": "beae06f379731b37697e415edcabb1049b332c0b",
+        "rev": "63317ad1255be27f94aa5da515b6994890954ce0",
         "type": "github"
       },
       "original": {

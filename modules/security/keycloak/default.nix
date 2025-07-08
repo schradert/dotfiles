@@ -73,7 +73,7 @@
                 KC_HEALTH_ENABLED = "true";
                 KC_HTTP_ENABLED = "true";
               };
-              hTTPRoutes.keycloak.spec = {
+              httpRoutes.keycloak.spec = {
                 hostnames = [hostname];
                 parentRefs = toList {
                   name = "external";
@@ -90,7 +90,7 @@
               };
             }
             (mkIf (services.external-secrets.enable && services.postgres.enable) {
-              "external-secrets.io".v1.ExternalSecret.keycloak.spec = {
+              externalSecrets.keycloak.spec = {
                 secretStoreRef.name = "kubernetes-default";
                 secretStoreRef.kind = "ClusterSecretStore";
                 dataFrom = [{extract.key = "keycloak.main.credentials.postgresql.acid.zalan.do";}];

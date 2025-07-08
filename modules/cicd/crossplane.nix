@@ -25,14 +25,14 @@
         ...
       }: {
         dotfiles.crds.crossplane = {
+          install = true;
+          prefix = "cluster/crds";
           src = pkgs.fetchFromGitHub {
             owner = "crossplane";
             repo = "crossplane";
             rev = "3ce6a1399";
             hash = "sha256-EA7DtFCdymeU6A+eEpl9+M1YTu8itbcu1u025JGonf0=";
           };
-          prefix = "cluster/crds/pkg.crossplane.io_";
-          crds = ["providers"];
         };
         applications.crossplane = {
           namespace = "cicd";

@@ -26,15 +26,7 @@
       in {
         dotfiles.crds.snapshot-controller = {
           src = chart;
-          prefix = "crds/";
-          crds = [
-            "groupsnapshot.storage.k8s.io_volumegroupsnapshotclasses"
-            "groupsnapshot.storage.k8s.io_volumegroupsnapshotcontents"
-            "groupsnapshot.storage.k8s.io_volumegroupsnapshots"
-            "snapshot.storage.k8s.io_volumesnapshotclasses"
-            "snapshot.storage.k8s.io_volumesnapshotcontents"
-            "snapshot.storage.k8s.io_volumesnapshots"
-          ];
+          prefix = "crds";
         };
         applications.snapshot-controller = {
           namespace = "storage";

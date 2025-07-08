@@ -37,7 +37,7 @@
               statefulSet.annotations."reloader.stakater.com/auto" = "true";
             };
           };
-          resources.hTTPRoutes.alertmanager.spec = {
+          resources.httpRoutes.alertmanager.spec = {
             hostnames = [hostname];
             parentRefs = toList {
               name = "internal";

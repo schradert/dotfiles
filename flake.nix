@@ -3,7 +3,8 @@
   outputs = inputs: inputs.canivete.lib.mkFlake {inherit inputs;} [./infra ./modules] {};
   inputs = {
     ### Test Nixidy
-    # TODO track https://github.com/arnarg/nixidy/pull/41
+    # TODO track https://github.com/arnarg/nixidy/pull/42
+    # TODO track https://github.com/arnarg/nixidy/pull/43
     # nixidy.url = "github:arnarg/nixidy";
     nixidy.url = "github:schradert/nixidy/working";
     nixidy.inputs.nixpkgs.follows = "nixpkgs";

@@ -5,8 +5,8 @@
   lib,
   ...
 }: let
-  inherit (builtins) concatStringsSep elem filter map;
-  inherit (lib) flatten flip mapAttrsToList mkDefault mkEnableOption mkIf mkMerge mkOption pipe toList types;
+  inherit (builtins) concatStringsSep elem filter map match readFile toString;
+  inherit (lib) filterAttrs flatten flip hasSuffix mapAttrsToList mkDefault mkEnableOption mkIf mkMerge mkOption pipe toList types;
   inherit (types) attrsOf listOf package str submodule;
   mkTypeOption = type: canivete.mkOverrideOption {inherit type;};
   getGVKN = o: concatStringsSep "/" [o.apiVersion o.kind o.metadata.name];
@@ -71,20 +71,34 @@ in {
             # TODO include CRDs: Cilium, Crossplane, Keycloak-Crossplane, Prometheus
             options.dotfiles.crds = mkOption {
               default = {};
-              type = attrsOf (submodule ({name, ...}: {
+              type = attrsOf (submodule ({
+                config,
+                name,
+                ...
+              }: {
                 options = {
                   src = mkTypeOption package {};
-                  crds = mkTypeOption (listOf str) {};
                   name = mkTypeOption str {default = name;};
-                  prefix = mkTypeOption str {default = "";};
                   namePrefix = mkTypeOption str {default = "";};
+                  attrNameOverrides = mkTypeOption (attrsOf str) {default = {};};
+                  crds = mkTypeOption (listOf str) {internal = true;};
+
+                  install = mkEnableOption "install CRDs";
+                  application = mkTypeOption str {default = name;};
+                  prefix = mkTypeOption str {default = "";};
+                  match = mkTypeOption str {default = ".+";};
                 };
+                config.crds = canivete.filesets.everything (name: _: hasSuffix ".yaml" name && match config.match name != null) (config.src + "/" + config.prefix);
               }));
             };
+            config.applications = pipe config.dotfiles.crds [
+              (filterAttrs (_: crd: crd.install))
+              (mapAttrsToList (_: crd: {${crd.application}.yamls = map readFile crd.crds;}))
+              mkMerge
+            ];
             config.nixidy.applicationImports = flip mapAttrsToList config.dotfiles.crds (_: crd:
               toString (inputs'.nixidy.packages.generators.fromCRD {
-                inherit (crd) name src namePrefix;
-                crds = map (file: crd.prefix + file + ".yaml") crd.crds;
+                inherit (crd) name src namePrefix crds attrNameOverrides;
               }));
           })
           # Namespaces

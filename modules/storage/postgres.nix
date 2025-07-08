@@ -116,8 +116,7 @@ in {
         in {
           dotfiles.crds.postgres = {
             src = chart;
-            prefix = "crds/";
-            crds = ["operatorconfigurations" "postgresqls" "postgresteams"];
+            prefix = "crds";
           };
           nixidy.applicationImports = [
             ({
@@ -180,7 +179,7 @@ in {
               values.envs.targetNamespace = "*";
             };
             resources = {
-              hTTPRoutes.postgres-ui.spec = {
+              httpRoutes.postgres-ui.spec = {
                 hostnames = ["postgres.${domain}"];
                 parentRefs = toList {
                   name = "internal";

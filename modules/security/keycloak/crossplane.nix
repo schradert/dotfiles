@@ -13,30 +13,25 @@
         dotfiles.secrets."keycloak/tristan".value = "\${ random_password.keycloak-tristan.result }";
         modules.resource.random_password.keycloak-tristan.length = 21;
       };
-      nixidy = {pkgs, ...}: {
+      nixidy = {pkgs, ...}: let
+        src = pkgs.fetchFromGitHub {
+          owner = "crossplane-contrib";
+          repo = "provider-keycloak";
+          rev = "v2.1.0";
+          hash = "sha256-EvDkWuN6n7jM3sddCnhsxomNQIv0tODp9b7GWtZL7J4=";
+        };
+      in {
         dotfiles.crds.keycloak = {
-          src = pkgs.fetchFromGitHub {
-            owner = "crossplane-contrib";
-            repo = "provider-keycloak";
-            rev = "v2.1.0";
-            hash = "sha256-EvDkWuN6n7jM3sddCnhsxomNQIv0tODp9b7GWtZL7J4=";
-          };
-          prefix = "package/crds/";
+          inherit src;
+          install = true;
+          prefix = "package/crds";
           namePrefix = "keycloak";
-          crds = [
-            "authenticationflow.keycloak.crossplane.io_flows"
-            "authenticationflow.keycloak.crossplane.io_subflows"
-            "authenticationflow.keycloak.crossplane.io_bindings"
-            "authenticationflow.keycloak.crossplane.io_executions"
-            "group.keycloak.crossplane.io_groups"
-            "group.keycloak.crossplane.io_memberships"
-            "keycloak.crossplane.io_providerconfigs"
-            "openidclient.keycloak.crossplane.io_clientscopes"
-            "openidgroup.keycloak.crossplane.io_groupmembershipprotocolmappers"
-            "realm.keycloak.crossplane.io_realms"
-            "realm.keycloak.crossplane.io_requiredactions"
-            "user.keycloak.crossplane.io_users"
-          ];
+          attrNameOverrides = {
+            "groups.user.keycloak.crossplane.io" = "keycloakUserGroups";
+            "roles.defaults.keycloak.crossplane.io" = "keycloakDefaultRoles";
+            "roles.group.keycloak.crossplane.io" = "keycloakGroupRoles";
+            "roles.user.keycloak.crossplane.io" = "keycloakUserRoles";
+          };
         };
         applications.keycloak.resources = {
           providers.keycloak = {

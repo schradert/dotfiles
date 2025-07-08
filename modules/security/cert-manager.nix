@@ -107,21 +107,13 @@ in {
         ...
       }: {
         dotfiles.crds.cert-manager = {
+          prefix = "deploy/crds";
           src = pkgs.fetchFromGitHub {
             owner = "cert-manager";
             repo = "cert-manager";
             rev = "v1.18.1";
             hash = "sha256-X2FWGW3085KKzXOce8j46xiPBjfH+K4clqrpQFpfWPA=";
           };
-          prefix = "deploy/crds/crd-";
-          crds = [
-            "certificaterequests"
-            "certificates"
-            "challenges"
-            "clusterissuers"
-            "issuers"
-            "orders"
-          ];
         };
         applications.cert-manager = {
           namespace = "security";

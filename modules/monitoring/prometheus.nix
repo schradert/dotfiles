@@ -5,7 +5,7 @@
     ...
   }: let
     inherit (config) domain;
-    inherit (lib) mkEnableOption mkIf toList;
+    inherit (lib) getExe mkEnableOption mkIf toList;
     certgen-tag = "v1.5.2";
     admission-tag = "v0.83.0";
   in {
@@ -47,11 +47,20 @@
           };
         };
       };
-      nixidy = {charts, ...}: {
-        dotfiles.crds.prometheus = {
-          src = charts.prometheus-community.kube-prometheus-stack;
-          prefix = "charts/crds/crds/crd-";
-          crds = ["prometheuses" "prometheusrules" "servicemonitors"];
+      nixidy = {
+        charts,
+        pkgs,
+        ...
+      }: {
+        dotfiles.crds.prometheus = let
+          chart = charts.prometheus-community.kube-prometheus-stack;
+          prefix = "charts/crds/crds";
+        in {
+          inherit prefix;
+          install = true;
+          # TODO how can I separate Prometheus CRDs into the different apps?
+          # Alertmanager config has invalid YAML (lone = needs to be quoted)
+          src = pkgs.patchOut chart "${getExe pkgs.gnused} --in-place \"s/- =$/- '='/\" $out/${prefix}/*.yaml";
         };
         applications.prometheus = {
           namespace = "monitoring";

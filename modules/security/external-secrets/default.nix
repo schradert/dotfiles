@@ -24,15 +24,15 @@
         pkgs,
         ...
       }: {
+        # Can't render with gomplate because "function 'toYaml' not defined"
         dotfiles.crds.external-secrets = {
+          prefix = "config/crds/bases";
           src = pkgs.fetchFromGitHub {
             owner = "external-secrets";
             repo = "external-secrets";
             rev = "v0.18.1";
             hash = "sha256-E14vCLLOV96BIzhjLLpMhHpNja0/HwQAwRjYPySZWCA=";
           };
-          prefix = "config/crds/bases/external-secrets.io_";
-          crds = ["clustersecretstores" "externalsecrets"];
         };
         applications.external-secrets = {
           namespace = "security";

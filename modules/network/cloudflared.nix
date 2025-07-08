@@ -68,8 +68,7 @@
               remoteRef.key = "cloudflare/tunnel/token";
             };
           };
-          # TODO what's this attrName?
-          resources."externaldns.k8s.io".v1alpha1.DNSEndpoint.cloudflared-tunnel.spec.endpoints = toList {
+          resources.dnsEndpoints.cloudflared-tunnel.spec.endpoints = toList {
             dnsName = subdomain;
             recordType = "CNAME";
             targets = ["${tunnel_id}.cfargotunnel.com"];

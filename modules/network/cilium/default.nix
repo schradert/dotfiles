@@ -93,20 +93,14 @@
           ...
         }: {
           dotfiles.crds.cilium = {
+            install = true;
+            prefix = "pkg/k8s/apis/cilium.io/client/crds";
             src = pkgs.fetchFromGitHub {
               owner = "cilium";
               repo = "cilium";
               rev = "v1.17.5";
               hash = "sha256-frpu1kJICbZFwmH/KQ2pZHcS2M+XvLvxZpzVxok2eM8=";
             };
-            prefix = "pkg/k8s/apis/cilium.io/client/crds/";
-            crds = [
-              "v2/ciliumendpoints"
-              "v2/ciliumenvoyconfigs"
-              "v2/ciliumidentities"
-              "v2alpha1/ciliumloadbalancerippools"
-              "v2/ciliumnodes"
-            ];
           };
           applications.cilium = {
             imports = [
