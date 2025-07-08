@@ -26,8 +26,7 @@ in {
       modules = [config.dotfiles.nixidy];
       charts = inputs.nixhelm.chartsDerivations.${system};
       extraSpecialArgs = {inherit inputs';};
-      # TODO submit PR to expose env name to modules
-      envs.prod.modules = [{nixidy.target.rootPath = "./generated/nixidy/prod";}];
+      envs.prod = {};
     };
   };
   dotfiles = _: {
@@ -60,7 +59,11 @@ in {
         # TODO fix these hardcoded values
         config.canivete.deploy.fetchKubeconfig = "ssh 192.168.50.58 sudo k3s kubectl config view --raw | sed 's/127\.0\.0\.1/192.168.50.58/'";
       };
-      nixidy = {lib, ...}: {
+      nixidy = {
+        env,
+        lib,
+        ...
+      }: {
         imports = [
           # CRDs
           ({
@@ -163,6 +166,7 @@ in {
             ];
           })
         ];
+        nixidy.target.rootPath = "./generated/nixidy/${env}";
         nixidy.defaults.helm.transformer = map (lib.kube.removeLabels [
           # Helm chart versions are just not necessary
           "app.kubernetes.io/version"
