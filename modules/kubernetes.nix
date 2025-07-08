@@ -2,43 +2,141 @@
   canivete,
   config,
   inputs,
+  lib,
   ...
-}: {
-  perSystem.canivete.kubenix.clusters.deploy = config.dotfiles.kubenix;
-  perSystem.canivete.pre-commit.settings.hooks.lychee.toml.exclude = ["https://192.168.50.*"];
-  dotfiles = _: {
-    options.kubenix = canivete.mkModuleOption {description = "Common kubenix configuration";};
-    config.nixos = {
-      config,
-      lib,
-      pkgs,
-      ...
-    }: {
-      config = lib.mkMerge [
-        {
-          _module.args = {inherit (inputs.nix2container.packages.${pkgs.system}) nix2container;};
-          canivete.kubernetes.images.airgap = config.services.k3s.package.airgapImages;
-        }
-        (lib.mkIf config.dotfiles.profiles.server.enable {
-          networking.firewall.allowedTCPPorts = [6443];
-          systemd.services.k3s.serviceConfig.TimeoutStartSec = 600;
-        })
-      ];
+}: let
+  inherit (lib) flip mapAttrsToList mkDefault mkIf mkMerge mkOption toList types;
+  inherit (types) attrsOf listOf package str submodule;
+  mkTypeOption = type: canivete.mkOverrideOption {inherit type;};
+in {
+  perSystem = {
+    inputs',
+    pkgs,
+    system,
+    ...
+  }: {
+    canivete.kubenix.clusters.deploy = config.dotfiles.kubenix;
+    canivete.opentofu.workspaces.bootstrap.encryptedState.enable = false;
+    canivete.pre-commit.settings.hooks.lychee.toml.exclude = ["https://192.168.50.*"];
+    packages.nixidy = inputs'.nixidy.packages.default;
+    legacyPackages.nixidyEnvs.${system} = inputs.nixidy.lib.mkEnvs {
+      inherit pkgs;
+      modules = [config.dotfiles.nixidy];
+      charts = inputs.nixhelm.chartsDerivations.${system};
+      extraSpecialArgs = {inherit inputs';};
+      # TODO submit PR to expose env name to modules
+      envs.prod.modules = [{nixidy.target.rootPath = "./generated/nixidy/prod";}];
     };
-    config.opentofu.kubernetes.cluster = "deploy";
-    config.kubenix = {
-      config,
-      lib,
-      pkgs,
-      ...
-    }: {
-      # nothing currently defined upstream and I don't know what features I'm even using
-      options.kubernetes.api.resources."kapp.k14s.io".v1alpha1.Config = lib.mkOption {
-        type = lib.types.attrsOf (lib.types.submodule {freeformType = (pkgs.formats.yaml {}).type;});
+  };
+  dotfiles = _: {
+    options.nixidy = canivete.mkModuleOption {description = "Common nixidy configuration";};
+    options.kubenix = canivete.mkModuleOption {description = "Common kubenix configuration";};
+    config = {
+      nixos = {
+        config,
+        pkgs,
+        ...
+      }: {
+        config = mkMerge [
+          {
+            _module.args = {inherit (inputs.nix2container.packages.${pkgs.system}) nix2container;};
+            canivete.kubernetes.images.airgap = config.services.k3s.package.airgapImages;
+          }
+          (mkIf config.dotfiles.profiles.server.enable {
+            networking.firewall.allowedTCPPorts = [6443];
+            systemd.services.k3s.serviceConfig.TimeoutStartSec = 600;
+          })
+        ];
       };
-      # Cannot be split into multiple lines because it's injected into a script
-      # TODO fix these hardcoded values
-      config.canivete.deploy.fetchKubeconfig = "ssh 192.168.50.58 sudo k3s kubectl config view --raw | sed 's/127\.0\.0\.1/192.168.50.58/'";
+      opentofu.kubernetes.cluster = "deploy";
+      kubenix = {pkgs, ...}: {
+        # nothing currently defined upstream and I don't know what features I'm even using
+        options.kubernetes.api.resources."kapp.k14s.io".v1alpha1.Config = mkOption {
+          type = attrsOf (submodule {freeformType = (pkgs.formats.yaml {}).type;});
+        };
+        # Cannot be split into multiple lines because it's injected into a script
+        # TODO fix these hardcoded values
+        config.canivete.deploy.fetchKubeconfig = "ssh 192.168.50.58 sudo k3s kubectl config view --raw | sed 's/127\.0\.0\.1/192.168.50.58/'";
+      };
+      nixidy = {lib, ...}: {
+        imports = [
+          # CRDs
+          ({
+            config,
+            inputs',
+            ...
+          }: {
+            # TODO include CRDs: Cilium, Crossplane, Keycloak-Crossplane, Prometheus
+            options.dotfiles.crds = mkOption {
+              default = {};
+              type = attrsOf (submodule ({name, ...}: {
+                options = {
+                  src = mkTypeOption package {};
+                  crds = mkTypeOption (listOf str) {};
+                  name = mkTypeOption str {default = name;};
+                  prefix = mkTypeOption str {default = "";};
+                  namePrefix = mkTypeOption str {default = "";};
+                };
+              }));
+            };
+            config.nixidy.applicationImports = flip mapAttrsToList config.dotfiles.crds (_: crd:
+              toString (inputs'.nixidy.packages.generators.fromCRD {
+                inherit (crd) name src namePrefix;
+                crds = map (file: crd.prefix + file + ".yaml") crd.crds;
+              }));
+          })
+          # Namespaces
+          ({config, ...}: {
+            nixidy.appOfApps.namespace = "cicd";
+            nixidy.applicationImports = [
+              (_: {
+                defaults = toList {
+                  kind = "Namespace";
+                  default.metadata.annotations."argocd.argoproj.io/sync-options" = mkDefault "Prune=confirm";
+                };
+              })
+            ];
+            applications.${config.nixidy.appOfApps.name} = {
+              defaults = toList {
+                kind = "Namespace";
+                default.metadata.annotations."argocd.argoproj.io/sync-options" = "Prune=false";
+              };
+              resources.namespaces = {
+                cicd = {};
+                monitoring = {};
+                network = {};
+                security = {};
+                storage = {};
+              };
+            };
+          })
+          # Synchronization
+          {
+            nixidy = {
+              applicationImports = [
+                (_: {
+                  syncPolicy.syncOptions = {
+                    applyOutOfSyncOnly = true;
+                    pruneLast = true;
+                    serverSideApply = true;
+                    failOnSharedResource = true;
+                  };
+                })
+              ];
+              defaults.syncPolicy.autoSync = {
+                enable = true;
+                prune = true;
+                selfHeal = true;
+              };
+            };
+          }
+        ];
+        nixidy.defaults.helm.transformer = map (lib.kube.removeLabels [
+          # Helm chart versions are just not necessary
+          "app.kubernetes.io/version"
+          "helm.sh/chart"
+        ]);
+      };
     };
   };
 }

@@ -68,16 +68,10 @@ in {
         finalImageTag = "2.28.3";
       };
     };
-    kubenix = {
-      canivete.root = "sirver";
-      kubernetes.resources.namespaces = {
-        # TODO define all namespaces (dynamically?!)
-        cicd = {};
-        monitoring = {};
-        security = {};
-        storage = {};
-        network = {};
-      };
+    kubenix.canivete.root = "sirver";
+    nixidy.nixidy.target = {
+      repository = "https://github.com/schradert/dotfiles.git";
+      branch = "main";
     };
 
     services = {

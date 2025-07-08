@@ -1,80 +1,11 @@
 {
   description = "System configuration";
-  outputs = inputs:
-    inputs.canivete.lib.mkFlake {inherit inputs;} [./infra ./modules] ({config, ...}: {
-      dotfiles = {canivete, ...}: {
-        options.nixidy = canivete.mkModuleOption {description = "Common nixidy configuration";};
-      };
-      perSystem = {
-        canivete,
-        inputs',
-        lib,
-        pkgs,
-        system,
-        ...
-      }: {
-        canivete.opentofu.workspaces.bootstrap = {
-          encryptedState.enable = false;
-        };
-        packages.nixidy = inputs'.nixidy.packages.default;
-        legacyPackages.nixidyEnvs.${system} = inputs.nixidy.lib.mkEnvs {
-          inherit pkgs;
-          charts = inputs.nixhelm.chartsDerivations.${system};
-          modules = [
-            config.dotfiles.nixidy
-            ({
-              config,
-              inputs',
-              ...
-            }: {
-              options.dotfiles.crds = lib.mkOption {
-                default = {};
-                type = with lib.types;
-                  attrsOf (submodule ({name, ...}: {
-                    options.name = lib.mkOption {
-                      type = str;
-                      default = name;
-                    };
-                    options.src = lib.mkOption {
-                      type = package;
-                    };
-                    options.crds = lib.mkOption {
-                      type = listOf str;
-                    };
-                    options.prefix = lib.mkOption {
-                      type = str;
-                      default = "";
-                    };
-                    options.namePrefix = lib.mkOption {
-                      type = str;
-                      default = "";
-                    };
-                  }));
-              };
-              config.nixidy.applicationImports = lib.flip lib.mapAttrsToList config.dotfiles.crds (_: crd:
-                builtins.toString (inputs'.nixidy.packages.generators.fromCRD {
-                  inherit (crd) name src namePrefix;
-                  crds = builtins.map (file: crd.prefix + file + ".yaml") crd.crds;
-                }));
-            })
-          ];
-          extraSpecialArgs = {inherit canivete inputs';};
-          envs.prod.modules = [
-            {
-              nixidy.bootstrapManifest.enable = true;
-              nixidy.target = {
-                repository = "https://github.com/schradert/dotfiles.git";
-                branch = "main";
-                rootPath = "./gen/argo/prod";
-              };
-            }
-          ];
-        };
-      };
-    });
+  outputs = inputs: inputs.canivete.lib.mkFlake {inherit inputs;} [./infra ./modules] {};
   inputs = {
     ### Test Nixidy
-    nixidy.url = "github:arnarg/nixidy";
+    # TODO track https://github.com/arnarg/nixidy/pull/41
+    # nixidy.url = "github:arnarg/nixidy";
+    nixidy.url = "github:schradert/nixidy/working";
     nixidy.inputs.nixpkgs.follows = "nixpkgs";
     nixidy.inputs.flake-utils.follows = "flake-utils";
     nixidy.inputs.nix-kube-generators.follows = "nix-kube-generators";
