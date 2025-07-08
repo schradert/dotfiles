@@ -32,6 +32,7 @@
       };
       nixidy = {charts, ...}: {
         applications.argo = {
+          dotfiles.bootstrap.enable = true;
           namespace = "cicd";
           helm.releases.argod = {
             chart = charts.argoproj.argo-cd;

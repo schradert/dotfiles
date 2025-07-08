@@ -109,6 +109,25 @@
             ];
           };
           applications.cilium = {
+            imports = [
+              (mkIf config.services.prometheus.enable {
+                dotfiles.bootstrap.exclude = builtins.map (name: "monitoring.coreos.com/v1/ServiceMonitor/${name}") [
+                  "cilium-agent"
+                  "cilium-envoy"
+                  "cilium-operator"
+                  "hubble-relay"
+                ];
+                helm.releases.cilium.values = {
+                  envoy.prometheus.serviceMonitor.enabled = true;
+                  hubble.metrics.serviceMonitor.enabled = true;
+                  hubble.relay.prometheus.serviceMonitor.enabled = true;
+                  operator.prometheus.serviceMonitor.enabled = true;
+                  prometheus.serviceMonitor.enabled = true;
+                  prometheus.serviceMonitor.trustCRDsExist = true;
+                };
+              })
+            ];
+            dotfiles.bootstrap.enable = true;
             namespace = "kube-system";
             resources.ciliumLoadBalancerIPPools.home.spec = {
               allowFirstLastIPs = "Yes";
@@ -161,14 +180,6 @@
                   image = pinImage images.cilium;
                   operator.image.override = with images.cilium-operator; "${imageName}:${finalImageTag}";
                 }
-                (mkIf config.services.prometheus.enable {
-                  envoy.prometheus.serviceMonitor.enabled = true;
-                  hubble.metrics.serviceMonitor.enabled = true;
-                  hubble.relay.prometheus.serviceMonitor.enabled = true;
-                  operator.prometheus.serviceMonitor.enabled = true;
-                  prometheus.serviceMonitor.enabled = true;
-                  prometheus.serviceMonitor.trustCRDsExist = true;
-                })
               ];
             };
           };

@@ -58,7 +58,7 @@
         };
         canivete.kubernetes.images.bitwarden-sdk-server = pkgs.dockerTools.pullImage image;
       };
-      kubenix.kubernetes.resources.secrets.external-secrets-bitwarden.data.token = canivete.toBase64 (canivete.vals.sops.default "bitwarden");
+      nixidy.applications.__bootstrap.resources.secrets.external-secrets-bitwarden.data.token = canivete.toBase64 (canivete.vals.sops.default "bitwarden");
       nixidy.applications.external-secrets = {
         helm.releases.external-secrets.values.bitwarden-sdk-server = {
           enabled = true;

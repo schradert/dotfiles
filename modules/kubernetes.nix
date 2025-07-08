@@ -5,9 +5,11 @@
   lib,
   ...
 }: let
-  inherit (lib) flip mapAttrsToList mkDefault mkIf mkMerge mkOption toList types;
+  inherit (builtins) concatStringsSep elem filter map;
+  inherit (lib) flatten flip mapAttrsToList mkDefault mkEnableOption mkIf mkMerge mkOption pipe toList types;
   inherit (types) attrsOf listOf package str submodule;
   mkTypeOption = type: canivete.mkOverrideOption {inherit type;};
+  getGVKN = o: concatStringsSep "/" [o.apiVersion o.kind o.metadata.name];
 in {
   perSystem = {
     inputs',
@@ -112,24 +114,40 @@ in {
           })
           # Synchronization
           {
-            nixidy = {
-              applicationImports = [
-                (_: {
-                  syncPolicy.syncOptions = {
-                    applyOutOfSyncOnly = true;
-                    pruneLast = true;
-                    serverSideApply = true;
-                    failOnSharedResource = true;
-                  };
-                })
-              ];
-              defaults.syncPolicy.autoSync = {
-                enable = true;
-                prune = true;
-                selfHeal = true;
-              };
+            nixidy.applicationImports = [
+              (_: {
+                syncPolicy.syncOptions = {
+                  applyOutOfSyncOnly = true;
+                  pruneLast = true;
+                  serverSideApply = true;
+                  failOnSharedResource = true;
+                };
+              })
+            ];
+            nixidy.defaults.syncPolicy.autoSync = {
+              enable = true;
+              prune = true;
+              selfHeal = true;
             };
           }
+          # Bootstrap
+          ({config, ...}: {
+            nixidy.applicationImports = [
+              (_: {
+                options.dotfiles.bootstrap = {
+                  enable = mkEnableOption "importing resources into cluster bootstrap";
+                  exclude = mkTypeOption (listOf str) {default = [];};
+                };
+              })
+            ];
+            applications.__bootstrap.objects = pipe config.nixidy.publicApps [
+              (filter (name: name != config.nixidy.appOfApps.name))
+              (map (name: config.applications.${name}))
+              (filter (app: app.dotfiles.bootstrap.enable))
+              (map (app: filter (obj: !(elem (getGVKN obj) app.dotfiles.bootstrap.exclude)) app.objects))
+              flatten
+            ];
+          })
         ];
         nixidy.defaults.helm.transformer = map (lib.kube.removeLabels [
           # Helm chart versions are just not necessary
