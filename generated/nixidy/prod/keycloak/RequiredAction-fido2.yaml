@@ -1,0 +1,11 @@
+apiVersion: realm.keycloak.crossplane.io/v1alpha1
+kind: RequiredAction
+metadata:
+  name: fido2
+spec:
+  forProvider:
+    alias: webauthn-register-passwordless
+    defaultAction: true
+    enabled: true
+    name: WebAuthn Register Passwordless
+    realmId: primary

@@ -1,0 +1,10 @@
+apiVersion: openidgroup.keycloak.crossplane.io/v1alpha1
+kind: GroupMembershipProtocolMapper
+metadata:
+  name: groups
+spec:
+  forProvider:
+    claimName: groups
+    clientScopeId: groups
+    name: group-membership-mapper
+    realmId: primary

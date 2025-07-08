@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argo
+  namespace: cicd
+spec:
+  destination:
+    namespace: cicd
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: ./generated/nixidy/prod/argo
+    repoURL: https://github.com/schradert/dotfiles.git
+    targetRevision: main
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ApplyOutOfSyncOnly=true
+      - FailOnSharedResource=true
+      - PruneLast=true
+      - ServerSideApply=true

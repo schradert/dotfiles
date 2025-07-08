@@ -1,0 +1,8 @@
+apiVersion: authenticationflow.keycloak.crossplane.io/v1alpha1
+kind: Bindings
+metadata:
+  name: browser
+spec:
+  forProvider:
+    browserFlow: fido2
+    realmId: primary

@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: trdos-me
+  namespace: security
+spec:
+  commonName: trdos.me
+  dnsNames:
+    - trdos.me
+    - '*.trdos.me'
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-staging
+  secretName: trdos-me-tls

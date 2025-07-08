@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app.kubernetes.io/instance: snapshot-controller
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: snapshot-controller
+  name: snapshot-controller
+  namespace: storage
+spec:
+  endpoints:
+    - path: /metrics
+      port: http
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: snapshot-controller
+      app.kubernetes.io/name: snapshot-controller

@@ -1,0 +1,17 @@
+apiVersion: acid.zalan.do/v1
+kind: postgresql
+metadata:
+  name: main
+  namespace: storage
+spec:
+  databases:
+    keycloak: keycloak
+  numberOfInstances: 1
+  postgresql:
+    version: "16"
+  teamId: acid
+  users:
+    keycloak: createdb
+    superadmin: superuser
+  volume:
+    size: 10Gi

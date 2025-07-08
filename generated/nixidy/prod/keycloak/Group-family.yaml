@@ -1,0 +1,8 @@
+apiVersion: group.keycloak.crossplane.io/v1alpha1
+kind: Group
+metadata:
+  name: family
+spec:
+  forProvider:
+    name: family
+    realmId: primary

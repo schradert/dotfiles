@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    service.kubernetes.io/topology-mode: auto
+  labels:
+    app.kubernetes.io/instance: spegel
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: spegel
+  name: spegel-registry
+  namespace: storage
+spec:
+  ports:
+    - name: registry
+      nodePort: 30021
+      port: 5000
+      protocol: TCP
+      targetPort: registry
+  selector:
+    app.kubernetes.io/instance: spegel
+    app.kubernetes.io/name: spegel
+  type: NodePort

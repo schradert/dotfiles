@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/instance: alertmanager
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: alertmanager
+  name: alertmanager-headless
+  namespace: monitoring
+spec:
+  clusterIP: None
+  ports:
+    - name: http
+      port: 9093
+      protocol: TCP
+      targetPort: http
+  selector:
+    app.kubernetes.io/instance: alertmanager
+    app.kubernetes.io/name: alertmanager

@@ -1,0 +1,37 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  labels:
+    app: kube-prometheus-stack-admission
+    app.kubernetes.io/component: prometheus-operator-webhook
+    app.kubernetes.io/instance: prometheus
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kube-prometheus-stack-prometheus-operator
+    app.kubernetes.io/part-of: kube-prometheus-stack
+    chart: kube-prometheus-stack-75.6.1
+    heritage: Helm
+    release: prometheus
+  name: prometheus-kube-prometheus-admission
+webhooks:
+  - admissionReviewVersions:
+      - v1
+      - v1beta1
+    clientConfig:
+      service:
+        name: prometheus-kube-prometheus-operator-webhook
+        namespace: monitoring
+        path: /admission-prometheusrules/validate
+    failurePolicy: Ignore
+    name: prometheusrulemutate.monitoring.coreos.com
+    rules:
+      - apiGroups:
+          - monitoring.coreos.com
+        apiVersions:
+          - '*'
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - prometheusrules
+    sideEffects: None
+    timeoutSeconds: 10

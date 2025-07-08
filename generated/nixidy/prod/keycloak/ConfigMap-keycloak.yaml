@@ -1,0 +1,12 @@
+apiVersion: v1
+data:
+  KC_DB: postgres
+  KC_FEATURES: hostname:v2
+  KC_HEALTH_ENABLED: "true"
+  KC_HOSTNAME: keycloak.trdos.me
+  KC_HTTP_ENABLED: "true"
+  KC_METRICS_ENABLED: "true"
+kind: ConfigMap
+metadata:
+  name: keycloak
+  namespace: security

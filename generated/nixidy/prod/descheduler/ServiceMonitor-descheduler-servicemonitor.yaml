@@ -1,0 +1,24 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app.kubernetes.io/instance: descheduler
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: descheduler
+  name: descheduler-servicemonitor
+  namespace: cicd
+spec:
+  endpoints:
+    - honorLabels: true
+      port: http-metrics
+      scheme: https
+      tlsConfig:
+        insecureSkipVerify: true
+  jobLabel: jobLabel
+  namespaceSelector:
+    matchNames:
+      - cicd
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: descheduler
+      app.kubernetes.io/name: descheduler

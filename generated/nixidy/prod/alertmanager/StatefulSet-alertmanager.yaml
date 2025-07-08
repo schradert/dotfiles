@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations:
+    reloader.stakater.com/auto: "true"
+  labels:
+    app.kubernetes.io/instance: alertmanager
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: alertmanager
+  name: alertmanager
+  namespace: monitoring
+spec:
+  minReadySeconds: 0
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: alertmanager
+      app.kubernetes.io/name: alertmanager
+  serviceName: alertmanager-headless
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: alertmanager
+        app.kubernetes.io/name: alertmanager
+    spec:
+      automountServiceAccountToken: true
+      containers:
+        - args:
+            - --watched-dir=/etc/alertmanager
+            - --reload-url=http://127.0.0.1:9093/-/reload
+          image: quay.io/prometheus-operator/prometheus-config-reloader:v0.81.0
+          imagePullPolicy: IfNotPresent
+          name: alertmanager-configmap-reload
+          resources: {}
+          volumeMounts:
+            - mountPath: /etc/alertmanager
+              name: config
+        - args:
+            - --storage.path=/alertmanager
+            - --config.file=/etc/alertmanager/alertmanager.yml
+            - --web.external-url=https://alertmanager.trdos.me
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: status.podIP
+          image: quay.io/prometheus/alertmanager:v0.28.1
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          name: alertmanager
+          ports:
+            - containerPort: 9093
+              name: http
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources: {}
+          securityContext:
+            runAsGroup: 65534
+            runAsNonRoot: true
+            runAsUser: 65534
+          volumeMounts:
+            - mountPath: /etc/alertmanager
+              name: config
+            - mountPath: /alertmanager
+              name: storage
+      securityContext:
+        fsGroup: 65534
+      serviceAccountName: alertmanager
+      volumes:
+        - configMap:
+            name: alertmanager
+          name: config
+  volumeClaimTemplates:
+    - metadata:
+        name: storage
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 50Mi

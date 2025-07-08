@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app.kubernetes.io/instance: spegel
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: spegel
+  name: spegel
+  namespace: storage
+spec:
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: spegel
+      app.kubernetes.io/name: spegel
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: spegel
+        app.kubernetes.io/name: spegel
+    spec:
+      containers:
+        - args:
+            - registry
+            - --log-level=INFO
+            - --mirror-resolve-retries=3
+            - --mirror-resolve-timeout=20ms
+            - --registry-addr=:5000
+            - --router-addr=:5001
+            - --metrics-addr=:9090
+            - --containerd-sock=/run/k3s/containerd/containerd.sock
+            - --containerd-namespace=k8s.io
+            - --containerd-registry-config-path=/var/lib/rancher/k3s/agent/etc/containerd/certs.d
+            - --bootstrap-kind=dns
+            - --dns-bootstrap-domain=spegel-bootstrap.storage.svc.cluster.local.
+            - --resolve-latest-tag=true
+            - --containerd-content-path=/var/lib/rancher/k3s/agent/containerd/io.containerd.content.v1.content
+            - --debug-web-enabled=false
+          env:
+            - name: DATA_DIR
+              value: ""
+            - name: GOMEMLIMIT
+              valueFrom:
+                resourceFieldRef:
+                  divisor: "1"
+                  resource: limits.memory
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          image: ghcr.io/spegel-org/spegel:v0.3.0
+          imagePullPolicy: Never
+          name: registry
+          ports:
+            - containerPort: 5000
+              hostPort: 30020
+              name: registry
+              protocol: TCP
+            - containerPort: 5001
+              name: router
+              protocol: TCP
+            - containerPort: 9090
+              name: metrics
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: registry
+          resources:
+            limits:
+              memory: 128Mi
+            requests:
+              memory: 128Mi
+          securityContext:
+            readOnlyRootFilesystem: true
+          startupProbe:
+            failureThreshold: 60
+            httpGet:
+              path: /healthz
+              port: registry
+            periodSeconds: 3
+          volumeMounts:
+            - mountPath: /run/k3s/containerd/containerd.sock
+              name: containerd-sock
+            - mountPath: /var/lib/rancher/k3s/agent/containerd/io.containerd.content.v1.content
+              name: containerd-content
+              readOnly: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      priorityClassName: system-node-critical
+      securityContext: {}
+      serviceAccountName: spegel
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+        - effect: NoExecute
+          operator: Exists
+        - effect: NoSchedule
+          operator: Exists
+      volumes:
+        - hostPath:
+            path: /run/k3s/containerd/containerd.sock
+            type: Socket
+          name: containerd-sock
+        - hostPath:
+            path: /var/lib/rancher/k3s/agent/containerd/io.containerd.content.v1.content
+            type: Directory
+          name: containerd-content
+  updateStrategy: {}

@@ -1,0 +1,11 @@
+apiVersion: v1
+data:
+  config.yaml: '{"ingress":[{"hostname":"trdos.me","service":"https://cilium-gateway-external.kube-system.svc.cluster.local"},{"hostname":"*.trdos.me","service":"https://cilium-gateway-external.kube-system.svc.cluster.local"},{"service":"http_status:404"}],"metrics":"0.0.0.0:8080","no-autoupdate":true,"originRequest":{"originServerName":"external.trdos.me"},"token-file":"/etc/cloudflared/token.txt","tunnel":"5e99ff76-16a5-436a-aa5e-e8dbeb53bda4"}'
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: cloudflared
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: cloudflared
+  name: cloudflared
+  namespace: kube-system

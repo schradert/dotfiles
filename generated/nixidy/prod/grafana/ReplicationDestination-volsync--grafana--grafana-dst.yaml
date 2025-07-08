@@ -1,0 +1,15 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: volsync--grafana--grafana-dst
+  namespace: monitoring
+spec:
+  restic:
+    copyMethod: Direct
+    destinationPVC: grafana
+    moverSecurityContext:
+      runAsGroup: 472
+      runAsUser: 472
+    repository: volsync--grafana--grafana
+  trigger:
+    manual: "1"

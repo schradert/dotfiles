@@ -1,0 +1,11 @@
+apiVersion: authenticationflow.keycloak.crossplane.io/v1alpha1
+kind: Execution
+metadata:
+  name: fido2
+spec:
+  forProvider:
+    authenticator: webauthn-passwordless
+    parentFlowAlias: fido2-subflow
+    priority: 3
+    realmId: primary
+    requirement: REQUIRED

@@ -1,0 +1,21 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: volsync--postgres--postgres-src
+  namespace: storage
+spec:
+  restic:
+    copyMethod: Direct
+    moverSecurityContext:
+      fsGroup: 103
+      runAsUser: 101
+    pruneIntervalDays: 8
+    repository: volsync--postgres--postgres
+    retain:
+      daily: 1
+      monthly: 1
+      weekly: 1
+      yearly: 1
+  sourcePVC: pgdata-main-0
+  trigger:
+    schedule: 0 4 * * *

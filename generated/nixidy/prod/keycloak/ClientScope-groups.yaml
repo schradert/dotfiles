@@ -1,0 +1,10 @@
+apiVersion: openidclient.keycloak.crossplane.io/v1alpha1
+kind: ClientScope
+metadata:
+  name: groups
+spec:
+  forProvider:
+    description: When requested, this scope will map a user's group memberships to a claim
+    includeInTokenScope: true
+    name: groups
+    realmId: primary

@@ -1,0 +1,10 @@
+apiVersion: group.keycloak.crossplane.io/v1alpha1
+kind: Memberships
+metadata:
+  name: admin
+spec:
+  forProvider:
+    groupId: admin
+    members:
+      - tristan
+    realmId: primary

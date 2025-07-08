@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    k8s-app: hubble-relay
+  name: hubble-relay-metrics
+  namespace: kube-system
+spec:
+  clusterIP: None
+  ports:
+    - name: metrics
+      port: 9966
+      protocol: TCP
+      targetPort: prometheus
+  selector:
+    k8s-app: hubble-relay
+  type: ClusterIP

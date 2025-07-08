@@ -1,0 +1,13 @@
+apiVersion: scheduling.k8s.io/v1
+description: Use only for databases controlled by Postgres operator
+globalDefault: false
+kind: PriorityClass
+metadata:
+  labels:
+    app.kubernetes.io/instance: postgres
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgres-operator
+  name: postgres-postgres-operator-pod
+  namespace: storage
+preemptionPolicy: PreemptLowerPriority
+value: 1000000

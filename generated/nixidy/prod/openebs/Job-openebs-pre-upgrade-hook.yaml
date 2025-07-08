@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    helm.sh/hook: pre-upgrade
+    helm.sh/hook-delete-policy: hook-succeeded
+    helm.sh/hook-weight: "0"
+  labels:
+    app.kubernetes.io/instance: openebs
+    app.kubernetes.io/managed-by: Helm
+  name: openebs-pre-upgrade-hook
+  namespace: storage
+spec:
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: openebs
+        app.kubernetes.io/managed-by: Helm
+      name: openebs-pre-upgrade-hook
+    spec:
+      containers:
+        - args:
+            - (kubectl annotate --overwrite crd volumesnapshots.snapshot.storage.k8s.io volumesnapshotclasses.snapshot.storage.k8s.io volumesnapshotcontents.snapshot.storage.k8s.io helm.sh/resource-policy=keep || true) && (kubectl -n storage delete deploy -l openebs.io/component-name=openebs-localpv-provisioner --ignore-not-found)
+          command:
+            - /bin/sh
+            - -c
+          image: docker.io/bitnami/kubectl:1.25.15
+          imagePullPolicy: IfNotPresent
+          name: pre-upgrade-job
+      restartPolicy: Never
+      serviceAccountName: openebs-pre-upgrade-hook

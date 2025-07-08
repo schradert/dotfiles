@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    reloader.stakater.com/auto: "true"
+  labels:
+    app.kubernetes.io/controller: cloudflared
+    app.kubernetes.io/instance: cloudflared
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: cloudflared
+  name: cloudflared
+  namespace: kube-system
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: cloudflared
+      app.kubernetes.io/instance: cloudflared
+      app.kubernetes.io/name: cloudflared
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        checksum/configMaps: 64c09c4255c16d25b5a21704f51ad55a1bda2b3891bf58b4f071e9ce2cbe4650
+      labels:
+        app.kubernetes.io/controller: cloudflared
+        app.kubernetes.io/instance: cloudflared
+        app.kubernetes.io/name: cloudflared
+    spec:
+      automountServiceAccountToken: true
+      containers:
+        - args:
+            - tunnel
+            - --config
+            - /etc/cloudflared/config.yaml
+            - run
+          image: docker.io/cloudflare/cloudflared:2025.6.1
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+          name: cloudflared
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+          startupProbe:
+            failureThreshold: 30
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+          volumeMounts:
+            - mountPath: /etc/cloudflared/config.yaml
+              name: config
+              readOnly: true
+              subPath: config.yaml
+            - mountPath: /etc/cloudflared/token.txt
+              name: creds
+              readOnly: true
+              subPath: token.txt
+      dnsPolicy: ClusterFirst
+      enableServiceLinks: false
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      serviceAccountName: default
+      volumes:
+        - configMap:
+            name: cloudflared
+          name: config
+        - name: creds
+          secret:
+            secretName: cloudflared

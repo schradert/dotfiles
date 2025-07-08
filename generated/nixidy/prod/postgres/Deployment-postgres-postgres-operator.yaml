@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/instance: postgres
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgres-operator
+  name: postgres-postgres-operator
+  namespace: storage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: postgres
+      app.kubernetes.io/name: postgres-operator
+  template:
+    metadata:
+      annotations:
+        checksum/config: 4e3584542580a7fd9875b414687b84045015431aa64bad7709d1331e8a718f76
+      labels:
+        app.kubernetes.io/instance: postgres
+        app.kubernetes.io/name: postgres-operator
+    spec:
+      affinity: {}
+      containers:
+        - env:
+            - name: POSTGRES_OPERATOR_CONFIGURATION_OBJECT
+              value: postgres-postgres-operator
+          image: ghcr.io/zalando/postgres-operator:v1.14.0
+          imagePullPolicy: IfNotPresent
+          name: postgres-operator
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            limits:
+              cpu: 500m
+              memory: 500Mi
+            requests:
+              cpu: 100m
+              memory: 250Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+      nodeSelector: {}
+      serviceAccountName: postgres-postgres-operator
+      tolerations: []

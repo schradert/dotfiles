@@ -1,0 +1,11 @@
+apiVersion: authenticationflow.keycloak.crossplane.io/v1alpha1
+kind: Execution
+metadata:
+  name: cookie
+spec:
+  forProvider:
+    authenticator: auth-cookie
+    parentFlowAlias: fido2
+    priority: 1
+    realmId: primary
+    requirement: ALTERNATIVE

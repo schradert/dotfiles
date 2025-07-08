@@ -1,0 +1,35 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  annotations:
+    external-dns.alpha.kubernetes.io/target: external.trdos.me
+  name: external
+  namespace: kube-system
+spec:
+  addresses:
+    - type: IPAddress
+      value: 192.168.50.252
+  gatewayClassName: cilium
+  infrastructure:
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: external.trdos.me
+  listeners:
+    - allowedRoutes:
+        namespaces:
+          from: All
+      hostname: '*.trdos.me'
+      name: http
+      port: 80
+      protocol: HTTP
+    - allowedRoutes:
+        namespaces:
+          from: All
+      hostname: '*.trdos.me'
+      name: https
+      port: 443
+      protocol: HTTPS
+      tls:
+        certificateRefs:
+          - kind: Secret
+            name: trdos-me-tls
+            namespace: security

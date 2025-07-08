@@ -1,0 +1,15 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: volsync--prometheus--prometheus-dst
+  namespace: monitoring
+spec:
+  restic:
+    copyMethod: Direct
+    destinationPVC: prometheus-prometheus-kube-prometheus-prometheus-db-prometheus-prometheus-kube-prometheus-prometheus-0
+    moverSecurityContext:
+      runAsGroup: 101
+      runAsUser: 101
+    repository: volsync--prometheus--prometheus
+  trigger:
+    manual: "1"

@@ -1,0 +1,11 @@
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: cloudflared-tunnel
+  namespace: kube-system
+spec:
+  endpoints:
+    - dnsName: external.trdos.me
+      recordType: CNAME
+      targets:
+        - 5e99ff76-16a5-436a-aa5e-e8dbeb53bda4.cfargotunnel.com

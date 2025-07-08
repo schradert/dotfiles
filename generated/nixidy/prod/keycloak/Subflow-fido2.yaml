@@ -1,0 +1,10 @@
+apiVersion: authenticationflow.keycloak.crossplane.io/v1alpha1
+kind: Subflow
+metadata:
+  name: fido2
+spec:
+  forProvider:
+    alias: fido2-subflow
+    parentFlowAlias: fido2
+    realmId: primary
+    requirement: REQUIRED

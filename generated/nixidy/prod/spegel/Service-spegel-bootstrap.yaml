@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/instance: spegel
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: spegel
+  name: spegel-bootstrap
+  namespace: storage
+spec:
+  clusterIP: None
+  ports:
+    - name: router
+      port: 5001
+      protocol: TCP
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/instance: spegel
+    app.kubernetes.io/name: spegel

@@ -1,0 +1,10 @@
+apiVersion: realm.keycloak.crossplane.io/v1alpha1
+kind: Realm
+metadata:
+  name: primary
+spec:
+  forProvider:
+    displayName: Primary (keycloak.trdos.me)
+    enabled: true
+    realm: primary
+    registrationAllowed: false

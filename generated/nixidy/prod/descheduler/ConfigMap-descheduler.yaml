@@ -1,0 +1,42 @@
+apiVersion: v1
+data:
+  policy.yaml: |
+    apiVersion: "descheduler/v1alpha2"
+    kind: "DeschedulerPolicy"
+    profiles:
+    - name: Default
+      pluginConfig:
+      - name: RemovePodsViolatingInterPodAntiAffinity
+      - name: RemovePodsViolatingNodeTaints
+      - args:
+          nodeAffinityType:
+          - requiredDuringSchedulingIgnoredDuringExecution
+        name: RemovePodsViolatingNodeAffinity
+      - args:
+          constraints:
+          - DoNotSchedule
+          - ScheduleAnyway
+        name: RemovePodsViolatingTopologySpreadConstraint
+      - args:
+          evictFailedBarePods: true
+          evictLocalStoragePods: true
+          evictSystemCriticalPods: true
+          nodeFit: true
+        name: DefaultEvictor
+      plugins:
+        balance:
+          enabled:
+          - RemovePodsViolatingTopologySpreadConstraint
+        deschedule:
+          enabled:
+          - RemovePodsViolatingInterPodAntiAffinity
+          - RemovePodsViolatingNodeAffinity
+          - RemovePodsViolatingNodeTaints
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: descheduler
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: descheduler
+  name: descheduler
+  namespace: cicd

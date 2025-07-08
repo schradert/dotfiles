@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: crossplane-rbac-manager
+    app.kubernetes.io/component: cloud-infrastructure-controller
+    app.kubernetes.io/instance: crossplane
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: crossplane
+    app.kubernetes.io/part-of: crossplane
+    release: crossplane
+  name: crossplane-rbac-manager
+  namespace: cicd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crossplane-rbac-manager
+      release: crossplane
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"
+      labels:
+        app: crossplane-rbac-manager
+        app.kubernetes.io/component: cloud-infrastructure-controller
+        app.kubernetes.io/instance: crossplane
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: crossplane
+        app.kubernetes.io/part-of: crossplane
+        release: crossplane
+    spec:
+      containers:
+        - args:
+            - rbac
+            - start
+            - --provider-clusterrole=crossplane:allowed-provider-permissions
+          env:
+            - name: GOMAXPROCS
+              valueFrom:
+                resourceFieldRef:
+                  containerName: crossplane
+                  divisor: "1"
+                  resource: limits.cpu
+            - name: GOMEMLIMIT
+              valueFrom:
+                resourceFieldRef:
+                  containerName: crossplane
+                  divisor: "1"
+                  resource: limits.memory
+            - name: LEADER_ELECTION
+              value: "true"
+          image: xpkg.crossplane.io/crossplane/crossplane:v2.0.0-rc.0.108.g3ce6a1399
+          imagePullPolicy: Never
+          name: crossplane
+          ports:
+            - containerPort: 8080
+              name: metrics
+          resources:
+            limits:
+              cpu: 100m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 65532
+            runAsUser: 65532
+      initContainers:
+        - args:
+            - rbac
+            - init
+          env:
+            - name: GOMAXPROCS
+              valueFrom:
+                resourceFieldRef:
+                  containerName: crossplane-init
+                  divisor: "1"
+                  resource: limits.cpu
+            - name: GOMEMLIMIT
+              valueFrom:
+                resourceFieldRef:
+                  containerName: crossplane-init
+                  divisor: "1"
+                  resource: limits.memory
+          image: xpkg.crossplane.io/crossplane/crossplane:v2.0.0-rc.0.108.g3ce6a1399
+          imagePullPolicy: Never
+          name: crossplane-init
+          resources:
+            limits:
+              cpu: 100m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 65532
+            runAsUser: 65532
+      serviceAccountName: rbac-manager

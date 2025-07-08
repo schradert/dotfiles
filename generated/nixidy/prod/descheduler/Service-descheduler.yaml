@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/instance: descheduler
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: descheduler
+  name: descheduler
+  namespace: cicd
+spec:
+  clusterIP: None
+  ports:
+    - name: http-metrics
+      port: 10258
+      protocol: TCP
+      targetPort: 10258
+  selector:
+    app.kubernetes.io/instance: descheduler
+    app.kubernetes.io/name: descheduler
+  type: ClusterIP

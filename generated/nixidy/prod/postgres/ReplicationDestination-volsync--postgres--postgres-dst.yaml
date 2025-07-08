@@ -1,0 +1,15 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: volsync--postgres--postgres-dst
+  namespace: storage
+spec:
+  restic:
+    copyMethod: Direct
+    destinationPVC: pgdata-main-0
+    moverSecurityContext:
+      runAsGroup: 103
+      runAsUser: 101
+    repository: volsync--postgres--postgres
+  trigger:
+    manual: "1"

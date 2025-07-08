@@ -1,0 +1,17 @@
+apiVersion: user.keycloak.crossplane.io/v1alpha1
+kind: User
+metadata:
+  name: tristan
+spec:
+  forProvider:
+    email: tristanschrader@pm.me
+    firstName: Tristan
+    initialPassword:
+      - temporary: true
+        valueSecretRef:
+          key: tristan
+          name: keycloak-crossplane
+          namespace: security
+    lastName: Schrader
+    realmId: primary
+    username: tristan

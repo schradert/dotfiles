@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app.kubernetes.io/instance: spegel
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: spegel
+  name: spegel
+  namespace: storage
+spec:
+  endpoints:
+    - interval: 60s
+      port: metrics
+      scrapeTimeout: 30s
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: metrics
+      app.kubernetes.io/instance: spegel
+      app.kubernetes.io/name: spegel
