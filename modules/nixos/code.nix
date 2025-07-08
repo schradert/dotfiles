@@ -1,5 +1,9 @@
 {
-  dotfiles.nixos = {config, lib, ...}: {
+  dotfiles.nixos = {
+    config,
+    lib,
+    ...
+  }: {
     options.dotfiles.profiles.client.code.enable = lib.mkEnableOption "coding tools";
     config = lib.mkIf config.dotfiles.profiles.client.code.enable {
       assertions = lib.toList {
@@ -13,6 +17,7 @@
             direnv.enable = true;
             gh.enable = true;
             git.enable = true;
+            git.lfs.enable = true;
             navi.enable = true;
             wezterm.enable = true;
             vscode = {
