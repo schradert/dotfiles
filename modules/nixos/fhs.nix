@@ -1,5 +1,11 @@
 {
-  dotfiles.nixos = {config, flake, lib, pkgs, ...}: {
+  dotfiles.nixos = {
+    config,
+    flake,
+    lib,
+    pkgs,
+    ...
+  }: {
     options.dotfiles.profiles.client.fhs.enable = lib.mkEnableOption "FHS compatibility system-wide";
     config = lib.mkIf config.dotfiles.profiles.client.fhs.enable {
       assertions = lib.toList {

@@ -2,7 +2,11 @@
   dotfiles = {config, ...}: let
     inherit (config) me;
   in {
-    nixos = {config, lib, ...}: {
+    nixos = {
+      config,
+      lib,
+      ...
+    }: {
       options.dotfiles.profiles.client.video.enable = lib.mkEnableOption "Video processing";
       config = lib.mkIf config.dotfiles.profiles.client.video.enable {
         assertions = lib.toList {

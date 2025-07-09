@@ -1,13 +1,12 @@
-flake @ {
+{
   canivete,
   config,
-  inputs,
   lib,
   ...
 }: let
   inherit (canivete) mkModuleOption;
-  inherit (config.dotfiles) domain me nodes people nixos darwin droid home-manager kubenix shared system;
-  inherit (lib) flip mapAttrs mkDefault mkEnableOption mkForce mkIf mkOption mkMerge types;
+  inherit (config.dotfiles) domain me nodes people nixos darwin droid home-manager shared system;
+  inherit (lib) flip mapAttrs mkDefault mkForce mkOption types;
   inherit (types) attrsOf str submodule;
 in {
   options.dotfiles = mkOption {

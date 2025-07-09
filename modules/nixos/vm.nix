@@ -2,7 +2,11 @@
   dotfiles = {config, ...}: let
     inherit (config) me;
   in {
-    nixos = {config, lib, ...}: {
+    nixos = {
+      config,
+      lib,
+      ...
+    }: {
       options.dotfiles.profiles.virtualization.enable = lib.mkEnableOption "virtualization";
       config = lib.mkIf config.dotfiles.profiles.virtualization.enable {
         home-manager.sharedModules = [

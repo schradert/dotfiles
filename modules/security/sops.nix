@@ -1,5 +1,10 @@
 {inputs, ...}: {
-  dotfiles = {canivete, config, lib, ...}: let
+  dotfiles = {
+    canivete,
+    config,
+    lib,
+    ...
+  }: let
     keyFile = "/home/${config.me}/.config/sops/age/keys.txt";
   in {
     config.nixos.sops.age.keyFile = lib.mkForce keyFile;

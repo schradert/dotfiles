@@ -7,11 +7,7 @@
   inherit (lib) attrNames mkOption types;
   inherit (types) enum str;
 in {
-  dotfiles.home-manager = {
-    config,
-    pkgs,
-    ...
-  }: let
+  dotfiles.home-manager = {config, ...}: let
     inherit (config.home) username;
   in {
     options.dotfiles.profile = mkOption {

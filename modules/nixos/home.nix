@@ -1,12 +1,22 @@
 {
-  dotfiles.nixos = {config, flake, lib, options, ...}: {
+  dotfiles.nixos = {
+    config,
+    flake,
+    lib,
+    options,
+    ...
+  }: {
     home-manager.backupFileExtension = "bak";
     home-manager.sharedModules = [
       {
         options.dotfiles = options.dotfiles;
         config.dotfiles = config.dotfiles;
       }
-      ({config, pkgs, ...}: {
+      ({
+        config,
+        pkgs,
+        ...
+      }: {
         home.homeDirectory = "/${
           if pkgs.stdenv.isDarwin
           then "Users"

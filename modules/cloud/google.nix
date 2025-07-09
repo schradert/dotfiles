@@ -1,7 +1,11 @@
 {config, ...}: let
   inherit (config.canivete.meta.people.my.profiles.default) email;
 in {
-  perSystem = {lib, pkgs, ...}: {
+  perSystem = {
+    lib,
+    pkgs,
+    ...
+  }: {
     config = lib.mkIf config.dotfiles.clouds.google.enable {
       canivete.devShells.shells.default.packages = [pkgs.google-cloud-sdk];
     };

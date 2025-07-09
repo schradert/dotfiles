@@ -1,5 +1,9 @@
 {
-  dotfiles.nixos = {config, lib, ...}: {
+  dotfiles.nixos = {
+    config,
+    lib,
+    ...
+  }: {
     options.dotfiles.profiles.client.plasma.enable = lib.mkEnableOption "Plasma KDE Desktop Manager";
     config = lib.mkIf config.dotfiles.profiles.client.plasma.enable {
       assertions = lib.toList {

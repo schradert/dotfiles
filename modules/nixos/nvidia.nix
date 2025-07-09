@@ -1,5 +1,9 @@
 {
-  dotfiles.nixos = {config, lib, ...}: {
+  dotfiles.nixos = {
+    config,
+    lib,
+    ...
+  }: {
     options.dotfiles.profiles.nvidia.enable = lib.mkEnableOption "Nvidia";
     config = lib.mkIf config.dotfiles.profiles.nvidia.enable {
       hardware.nvidia = {

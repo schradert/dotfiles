@@ -2,7 +2,11 @@
   dotfiles.nixos = {
     home-manager.sharedModules = [
       inputs.nix-index-database.hmModules.nix-index
-      ({config, pkgs, ...}: {
+      ({
+        config,
+        pkgs,
+        ...
+      }: {
         home.packages = with pkgs; [nix-inspect nix-fast-build];
         nix.extraOptions = "experimental-features = nix-command flakes";
         programs.nix-index.package = pkgs.nix-index-with-db;
@@ -17,14 +21,16 @@
       (final: prev: {
         nix-index-unwrapped = inputs.nix-index.packages.${prev.system}.default;
         nix-index-with-db = prev.nix-index-with-db.overrideAttrs (old: {
-          buildCommand = old.buildCommand + ''
-            rm -f "$out/etc/profile.d/command-not-found.nu"
-            substitute \
-              "${final.nix-index-unwrapped}/etc/profile.d/command-not-found.nu" \
-              "$out/etc/profile.d/command-not-found.nu" \
-              --replace-fail "${final.nix-index-unwrapped}" "$out"
-            sed --in-place '32s/--top-level //' "$out/etc/profile.d/command-not-found.nu"
-          '';
+          buildCommand =
+            old.buildCommand
+            + ''
+              rm -f "$out/etc/profile.d/command-not-found.nu"
+              substitute \
+                "${final.nix-index-unwrapped}/etc/profile.d/command-not-found.nu" \
+                "$out/etc/profile.d/command-not-found.nu" \
+                --replace-fail "${final.nix-index-unwrapped}" "$out"
+              sed --in-place '32s/--top-level //' "$out/etc/profile.d/command-not-found.nu"
+            '';
         });
       })
     ];

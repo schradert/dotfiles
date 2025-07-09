@@ -19,7 +19,10 @@ in {
   }: {
     canivete.kubenix.clusters.deploy = config.dotfiles.kubenix;
     canivete.opentofu.workspaces.bootstrap.encryptedState.enable = false;
-    canivete.pre-commit.settings.hooks.lychee.toml.exclude = ["https://192.168.50.*"];
+    canivete.pre-commit.settings = {
+      excludes = ["generated"];
+      hooks.lychee.toml.exclude = ["https://192.168.50.*"];
+    };
     packages.nixidy = inputs'.nixidy.packages.default;
     legacyPackages.nixidyEnvs.${system} = inputs.nixidy.lib.mkEnvs {
       inherit pkgs;
@@ -71,7 +74,6 @@ in {
             inputs',
             ...
           }: {
-            # TODO include CRDs: Cilium, Crossplane, Keycloak-Crossplane, Prometheus
             options.dotfiles.crds = mkOption {
               default = {};
               type = attrsOf (submodule ({

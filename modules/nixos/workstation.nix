@@ -1,5 +1,9 @@
 {
-  dotfiles.nixos = {config, lib, ...}: {
+  dotfiles.nixos = {
+    config,
+    lib,
+    ...
+  }: {
     options.dotfiles.profiles.client.workstation.enable = lib.mkEnableOption "workstation";
     config = lib.mkIf config.dotfiles.profiles.client.workstation.enable {
       assertions = lib.toList {

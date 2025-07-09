@@ -10,7 +10,7 @@ in {
   }: let
     inherit (config) domain;
     inherit (lib) attrValues concat mkEnableOption mkForce mkIf mkMerge mkOption pipe toList types;
-    inherit (types) attrsOf listOf nullOr submodule str;
+    inherit (types) attrsOf nullOr submodule str;
     databases = mkOption {
       default = {};
       type = attrsOf str;

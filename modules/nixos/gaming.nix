@@ -1,5 +1,10 @@
 {
-  dotfiles.nixos = {config, lib, pkgs, ...}: {
+  dotfiles.nixos = {
+    config,
+    lib,
+    pkgs,
+    ...
+  }: {
     options.dotfiles.profiles.client.gaming.enable = lib.mkEnableOption "Gaming";
     config = lib.mkIf config.dotfiles.profiles.client.gaming.enable {
       assertions = lib.toList {

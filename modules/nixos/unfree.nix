@@ -1,5 +1,9 @@
 {
-  dotfiles.nixos = {config, lib, ...}: {
+  dotfiles.nixos = {
+    config,
+    lib,
+    ...
+  }: {
     options.dotfiles.nixpkgs.config.allowUnfreePackages = lib.mkOption {
       type = with lib.types; listOf str;
       default = [];

@@ -1,5 +1,9 @@
 {
-  dotfiles.nixos = {config, lib, pkgs, ...}: {
+  dotfiles.nixos = {
+    config,
+    lib,
+    ...
+  }: {
     options.dotfiles.profiles.client.enable = lib.mkEnableOption "client";
     config = lib.mkIf config.dotfiles.profiles.client.enable {
       dotfiles.profiles.client = {

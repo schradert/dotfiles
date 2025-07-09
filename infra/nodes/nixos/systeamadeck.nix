@@ -23,7 +23,11 @@
         };
       };
     }
-    ({lib, pkgs, ...}: {
+    ({
+      lib,
+      pkgs,
+      ...
+    }: {
       # Volume Boost
       jovian.decky-loader.extraPackages = [pkgs.pulseaudio];
       jovian.decky-loader.plugins.volume-boost.enable = true;

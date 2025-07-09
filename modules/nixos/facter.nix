@@ -1,5 +1,14 @@
-{config, inputs, ...}: {
-  dotfiles.nixos = {config, lib, node, ...}: {
+{
+  config,
+  inputs,
+  ...
+}: {
+  dotfiles.nixos = {
+    config,
+    lib,
+    node,
+    ...
+  }: {
     imports = [inputs.nixos-facter-modules.nixosModules.facter];
     options.dotfiles.facter.reportName = lib.mkOption {
       type = lib.types.str;
