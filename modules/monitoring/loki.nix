@@ -125,14 +125,7 @@
               enabled = true;
               ingressClassName = "internal";
               hosts = ["loki.${domain}"];
-              annotations = {
-                "external-dns.alpha.kubernetes.io/target" = "internal.${domain}";
-                "nginx.ingress.kubernetes.io/whitelist-source-range" = concatStringsSep "," [
-                  "10.0.0.0/8"
-                  "172.16.0.0/12"
-                  "192.168.0.0/16"
-                ];
-              };
+              annotations."external-dns.alpha.kubernetes.io/target" = "internal.${domain}";
             };
             read = component;
             write = component // {persistence.storageClass = "openebs-hostpath";};

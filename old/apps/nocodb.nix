@@ -142,13 +142,9 @@ in {
             serviceAccount.create = true;
             ingress = {
               enabled = true;
-              className = "nginx";
               # Invalid Ingress definition without port...
               # Kubenix only supports integers here, not service port names
               port = 8080;
-              annotations."external-dns.alpha.kubernetes.io/target" = "nginx.${domain}";
-              annotations."nginx.ingress.kubernetes.io/auth-url" = "https://oauth2-proxy.${domain}/oauth2/auth";
-              annotations."nginx.ingress.kubernetes.io/auth-signin" = "https://oauth2-proxy.${domain}/oauth2/start?rd=$scheme://$host$request_uri";
               hosts = toList {
                 host = hostname;
                 paths = toList {

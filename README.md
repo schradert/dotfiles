@@ -26,7 +26,6 @@ Fair warning this repository does not follow more traditional patterns for infra
 - [ ] set up essential services on Kubernetes before deploying the other nodes to the cluster
 - [ ] kubernetes namespaces
 - [ ] repo folder organization
-- [ ] replace nginx with cilium
 - [ ] is spegel not working? (kubectl run doesn't work if pod is scheduled on a node without it..., but deploying with kapp clearly does)
 - [ ] non hostNetwork pods can't seem to connect to remote servers...
 - [ ] why do Ihave to wipe k3s like this?

@@ -49,7 +49,6 @@
           };
           ingress.plex = {
             annotations."external-dns.alpha.kubernetes.io/target" = "external.${domain}";
-            annotations."nginx.ingress.kubernetes.io/backend-protocol" = "HTTPS";
             className = "external";
             hosts = toList {
               host = subdomain;

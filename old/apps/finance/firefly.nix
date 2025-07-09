@@ -72,12 +72,6 @@
               ingress = {
                 enabled = true;
                 className = "external";
-                annotations = {
-                  "external-dns.alpha.kubernetes.io/target" = "external.${domain}";
-                  "nginx.ingress.kubernetes.io/auth-url" = "https://oauth2-proxy.${domain}/oauth2/auth?allowed_groups=/family";
-                  "nginx.ingress.kubernetes.io/auth-signin" = "https://oauth2-proxy.${domain}/oauth2/start?rd=$scheme://$host$request_uri";
-                  "nginx.ingress.kubernetes.io/auth-response-headers" = "X-Auth-Request-Email, X-Auth-Request-Preferred-Username";
-                };
                 hosts = [subdomain];
               };
               resources.requests.cpu = "100m";
@@ -97,12 +91,6 @@
               ingress = {
                 enabled = true;
                 className = "external";
-                annotations = {
-                  "external-dns.alpha.kubernetes.io/target" = "external.${domain}";
-                  "nginx.ingress.kubernetes.io/auth-url" = "https://oauth2-proxy.${domain}/oauth2/auth?allowed_emails=me@trdos.me";
-                  "nginx.ingress.kubernetes.io/auth-signin" = "https://oauth2-proxy.${domain}/oauth2/start?rd=$scheme://$host$request_uri";
-                  "nginx.ingress.kubernetes.io/auth-response-headers" = "X-Auth-Request-Email, X-Auth-Request-Preferred-Username";
-                };
                 hosts = ["firefly-importer-tristan.${domain}"];
               };
               resources.requests.cpu = "100m";

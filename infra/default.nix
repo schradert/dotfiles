@@ -110,7 +110,6 @@ in {
 
       gatus.enable = true;
 
-      # nginx.enable = true;
       # oauth2-proxy.enable = true;
       # oauth2-proxy.provider = "keycloak";
 

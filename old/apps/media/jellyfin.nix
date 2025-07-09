@@ -61,10 +61,6 @@
             service.jellyfin.controller = "jellyfin";
             service.jellyfin.ports.http.port = port;
             ingress.jellyfin = {
-              # annotations."nginx.ingress.kubernetes.io/backend-protocol" = "HTTPS";
-              annotations."external-dns.alpha.kubernetes.io/target" = "external.${domain}";
-              annotations."nginx.ingress.kubernetes.io/auth-url" = "https://oauth2-proxy.${domain}/oauth2/auth?allowed_groups=/family";
-              annotations."nginx.ingress.kubernetes.io/auth-signin" = "https://oauth2-proxy.${domain}/oauth2/start?rd=$scheme://$host$request_uri";
               className = "external";
               hosts = toList {
                 host = subdomain;

@@ -46,14 +46,6 @@
           service.actual.controller = "actual";
           service.actual.ports.http.port = port;
           ingress.actual = {
-            annotations = {
-              "external-dns.alpha.kubernetes.io/target" = "external.${domain}";
-              "nginx.ingress.kubernetes.io/auth-url" = "https://oauth2-proxy.${domain}/oauth2/auth?allowed_emails=me@trdos.me";
-              "nginx.ingress.kubernetes.io/auth-signin" = "https://oauth2-proxy.${domain}/oauth2/start?rd=$scheme://$host$request_uri";
-              # TODO is this even secure?
-              "nginx.ingress.kubernetes.io/auth-snippet" = "proxy_set_header X-Actual-Password ${canivete.vals.sops.default "passwords/actual"}";
-              "nginx.ingress.kubernetes.io/auth-response-headers" = "X-Actual-Password";
-            };
             className = "external";
             hosts = toList {
               host = subdomain;

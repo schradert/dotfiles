@@ -58,9 +58,6 @@ in {
         scrapeTimeout = "10s";
       };
       ingress.rclone = {
-        annotations."external-dns.alpha.kubernetes.io/target" = "external.${domain}";
-        annotations."nginx.ingress.kubernetes.io/auth-url" = "https://oauth2-proxy.${domain}/oauth2/auth?allowed_emails=me@trdos.me";
-        annotations."nginx.ingress.kubernetes.io/auth-signin" = "https://oauth2-proxy.${domain}/oauth2/start?rd=$scheme://$host$request_uri";
         className = "external";
         hosts = toList {
           host = "rclone.${domain}";

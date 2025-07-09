@@ -97,12 +97,7 @@
           ];
           values = {
             postgresql.enabled = false;
-            ingress = {
-              className = "external";
-              annotations."external-dns.alpha.kubernetes.io/target" = "external.${domain}";
-              annotations."nginx.ingress.kubernetes.io/auth-url" = "https://oauth2-proxy.${domain}/oauth2/auth";
-              annotations."nginx.ingress.kubernetes.io/auth-signin" = "https://oauth2-proxy.${domain}/oauth2/start?rd=$scheme://$host$request_uri";
-            };
+            ingress.className = "external";
             windmill = {
               databaseUrlSecretName = "windmill-secret";
               baseDomain = subdomain;
