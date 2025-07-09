@@ -1,0 +1,14 @@
+apiVersion: openidclient.keycloak.crossplane.io/v1alpha1
+kind: ClientDefaultScopes
+metadata:
+  name: oauth2-proxys
+spec:
+  forProvider:
+    clientId: oauth2-proxy
+    defaultScopes:
+      - profile
+      - email
+      - roles
+      - web-origins
+      - groups
+    realmId: primary

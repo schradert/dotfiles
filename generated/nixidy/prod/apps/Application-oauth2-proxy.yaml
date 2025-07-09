@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: oauth2-proxy
+  namespace: cicd
+spec:
+  destination:
+    namespace: security
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: ./generated/nixidy/prod/oauth2-proxy
+    repoURL: https://github.com/schradert/dotfiles.git
+    targetRevision: main
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ApplyOutOfSyncOnly=true
+      - FailOnSharedResource=true
+      - PruneLast=true
+      - ServerSideApply=true

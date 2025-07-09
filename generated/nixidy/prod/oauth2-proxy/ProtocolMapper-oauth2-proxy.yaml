@@ -1,0 +1,11 @@
+apiVersion: client.keycloak.crossplane.io/v1alpha1
+kind: ProtocolMapper
+metadata:
+  name: oauth2-proxy
+spec:
+  forProvider:
+    clientId: oauth2-proxy
+    config:
+      included.client.audience: oauth2-proxy
+    name: aud-mapper-oauth2-proxy
+    realmId: primary

@@ -88,12 +88,14 @@ in {
       snapshot-controller.enable = true;
       openebs.enable = true;
       volsync.enable = true;
+      postgres.enable = true;
 
       descheduler.enable = true;
       reloader.enable = true;
       external-secrets.enable = true;
       external-secrets.bitwarden.organization_id = "ce96e43f-f2ce-4cd7-a36f-b30e0149eeaf";
       external-secrets.bitwarden.project_id = "baf88382-abda-41b2-8d0f-b30e014c2db9";
+      crossplane.enable = true;
 
       prometheus.enable = true;
       alertmanager.enable = true;
@@ -101,18 +103,12 @@ in {
       kube-state-metrics.enable = true;
       grafana.enable = true;
       loki.enable = true;
-
-      crossplane.enable = true;
-
-      postgres.enable = true;
+      gatus.enable = true;
 
       keycloak.enable = true;
       keycloak.crossplane.enable = true;
-
-      gatus.enable = true;
-
-      # oauth2-proxy.enable = true;
-      # oauth2-proxy.provider = "keycloak";
+      oauth2-proxy.enable = true;
+      oauth2-proxy.provider = "keycloak";
 
       #   clickhouse.enable = true;
       #   windmill.enable = true;

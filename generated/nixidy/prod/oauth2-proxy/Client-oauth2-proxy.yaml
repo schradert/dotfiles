@@ -1,0 +1,15 @@
+apiVersion: openidclient.keycloak.crossplane.io/v1alpha1
+kind: Client
+metadata:
+  name: oauth2-proxy
+spec:
+  forProvider:
+    accessType: PUBLIC
+    clientId: oauth2-proxy
+    description: OAuth2 Proxy
+    enabled: true
+    name: OAuth2 Proxy
+    realmId: primary
+    standardFlowEnabled: true
+    validRedirectUris:
+      - https://oauth2-proxy.trdos.me/oauth2/callback
