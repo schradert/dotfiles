@@ -100,6 +100,7 @@ in {
       node-exporter.enable = true;
       kube-state-metrics.enable = true;
       grafana.enable = true;
+      loki.enable = true;
 
       crossplane.enable = true;
 

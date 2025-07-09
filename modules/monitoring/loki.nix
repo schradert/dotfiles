@@ -1,146 +1,51 @@
 {
-  # TODO s3 object storage?
-  # TODO authn on ingress? or better to use gateway?
-  # TODO manage deprecation and migration to grafana/meta-monitoring-chart
-  # TODO why can't I do string templating with env vars
   dotfiles = {
     config,
     lib,
     ...
   }: let
-    inherit (lib) concatStringsSep mkEnableOption mkIf toList;
-    inherit (config) domain services;
-    bucketNames = {
-      chunks = "loki-chunks";
-      ruler = "loki-ruler";
-    };
-    component = {
-      replicas = 2;
-      extraArgs = ["-config.expand-env=true"];
-      extraEnvFrom = [
-        {secretRef.name = "loki-chunks";}
-        {configMapRef.name = "loki-chunks";}
-        {
-          secretRef.name = "loki-ruler";
-          prefix = "RULER_";
-        }
-        {
-          configMapRef.name = "loki-ruler";
-          prefix = "RULER_";
-        }
-      ];
-    };
     image = {
-      imageName = "";
-      imageDigest = "";
-      hash = "";
-      finalImageTag = "";
+      imageName = "grafana/loki";
+      imageDigest = "sha256:a74594532eec4cc313401beedc4dd2708c43674c032084b1aeb87c14a5be1745";
+      hash = "sha256-tgP1TCoykKpKCTyn/S4FLkd+dYAYYJlKX0DZTy+Y1RU=";
+      finalImageTag = "3.5.1";
     };
   in {
-    options.services.loki.enable = mkEnableOption "loki";
-    config = mkIf services.loki.enable {
+    options.services.loki.enable = lib.mkEnableOption "loki";
+    config = lib.mkIf config.services.loki.enable {
       nixos = {pkgs, ...}: {canivete.kubernetes.images.loki = pkgs.dockerTools.pullImage image;};
-      kubenix = {helm, ...}: {
-        # TODO configure grafana dashboard
-        # kubernetes.helm.releases.grafana.values.datasources."datasources.yaml" = {
-        #   deleteDatasources = toList {
-        #     name = "Loki";
-        #     orgId = 1;
-        #   };
-        #   datasources = toList {
-        #     name = "Loki";
-        #     type = "loki";
-        #     uid = "loki";
-        #     access = "proxy";
-        #     url = "http://loki-headless.monitoring.svc.cluster.local:80";
-        #     jsonData.maxLines = 250;
-        #   };
-        # };
-        kubernetes.helm.releases.loki = {
+      nixidy = {charts, ...}: {
+        applications.loki = {
           namespace = "monitoring";
-          chart = helm.fetch {
-            repo = "https://grafana.github.io/helm-charts";
-            chart = "loki";
-            version = "6.12.0";
-            sha256 = "YUtEIUiQWRzlttfOOgDk1xfTaiAZ12tIgpGr1QcMpro=";
-          };
-          values = rec {
-            global.extraEnvFrom = [
-              {secretRef.name = "loki-chunks";}
-              {configMapRef.name = "loki-chunks";}
-              {
-                secretRef.name = "loki-ruler";
-                prefix = "RULER_";
-              }
-              {
-                configMapRef.name = "loki-ruler";
-                prefix = "RULER_";
-              }
-            ];
-            deploymentMode = "SimpleScalable";
-            loki = {
-              auth_enabled = false;
-              analytics.reporting_enabled = false;
-              commonConfig.replication_factor = 2;
-              compactor.working_directory = "/var/loki/compactor/retention";
-              compactor.delete_request_store = "s3";
-              compactor.retention_enabled = true;
-              ingester.chunk_encoding = "lz4-1M";
-              # TODO limits config? query_scheduler?
-              podAnnotations."secret.reloader.stakater.com/reload" = "loki";
-              rulerConfig = {
-                enable_alertmanager_v2 = true;
-                alertmanager_url = "http://prometheus-kube-prometheus-alertmanager.monitoring.svc.cluster.local:9093";
-                storage.type = "s3";
-                storage.s3 = {
-                  s3forcepathstyle = true;
-                  bucketnames = "\${RULER_BUCKET_NAME}";
-                  endpoint = "http://rook-ceph-rgw-ceph-objectstore.storage.svc.cluster.local:80";
-                  access_key_id = "\${RULER_AWS_ACCESS_KEY_ID}";
-                  secret_access_key = "\${RULER_AWS_SECRET_ACCESS_KEY}";
-                  region = "\${RULER_BUCKET_REGION}";
-                };
+          helm.releases.loki = {
+            chart = charts.grafana.loki;
+            values = {
+              deploymentMode = "SingleBinary";
+              backend.replicas = 0;
+              gateway.replicas = 0;
+              loki.commonConfig.replication_factor = 1;
+              read.replicas = 0;
+              singleBinary.replicas = 1;
+              write.replicas = 0;
+
+              singleBinary.persistence.enabled = true;
+              loki.storage.type = "filesystem";
+              loki.compactor = {
+                working_directory = "/var/loki/compactor/retention";
+                delete_request_store = "filesystem";
+                retention_enabled = true;
               };
-              schemaConfig.configs = toList {
+
+              # Seems like I HAVE to define this: https://grafana.com/docs/loki/latest/operations/storage/schema/
+              loki.schemaConfig.configs = lib.toList {
                 from = "2024-04-01";
+                object_store = "filesystem";
                 store = "tsdb";
-                object_store = "s3";
                 schema = "v13";
-                index.prefix = "loki_index_";
+                index.prefix = "index_";
                 index.period = "24h";
               };
-              storage.type = "s3";
-              storage.bucketNames = bucketNames // {admin = "loki-admin";};
-              storage.s3 = {
-                s3ForcePathStyle = true;
-                endpoint = "http://rook-ceph-rgw-ceph-objectstore.storage.svc.cluster.local:80";
-                accessKeyId = "\${AWS_ACCESS_KEY_ID}";
-                secretAccessKey = "\${AWS_SECRET_ACCESS_KEY}";
-                region = "\${BUCKET_REGION}";
-              };
-              tracing.enabled = true;
             };
-            gateway.enabled = false;
-            ingress = {
-              enabled = true;
-              ingressClassName = "internal";
-              hosts = ["loki.${domain}"];
-              annotations."external-dns.alpha.kubernetes.io/target" = "internal.${domain}";
-            };
-            read = component;
-            write = component // {persistence.storageClass = "openebs-hostpath";};
-            backend = component // {persistence.storageClass = "openebs-hostpath";};
-            monitoring = {
-              dashboards.enabled = true;
-              dashboards.annotations.grafana_folder = "Loki";
-              rules.enabled = true;
-              serviceMonitor.enabled = services.prometheus.enable;
-            };
-            sidecar.rules.searchNamespace = "ALL";
-            lokiCanary.enabled = false;
-            test.enabled = false;
-            chunksCache.enabled = false;
-            resultsCache.enabled = false;
           };
         };
       };
