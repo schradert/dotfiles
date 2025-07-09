@@ -108,11 +108,12 @@ in {
       keycloak.enable = true;
       keycloak.crossplane.enable = true;
 
+      gatus.enable = true;
+
       # nginx.enable = true;
       # oauth2-proxy.enable = true;
       # oauth2-proxy.provider = "keycloak";
 
-      #   gatus.enable = true;
       #   clickhouse.enable = true;
       #   windmill.enable = true;
 

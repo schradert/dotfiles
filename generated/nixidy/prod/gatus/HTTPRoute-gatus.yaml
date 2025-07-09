@@ -1,0 +1,16 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: gatus
+  namespace: gatus
+spec:
+  hostnames:
+    - gatus.trdos.me
+  parentRefs:
+    - name: external
+      namespace: kube-system
+      sectionName: https
+  rules:
+    - backendRefs:
+        - name: gatus
+          port: 80

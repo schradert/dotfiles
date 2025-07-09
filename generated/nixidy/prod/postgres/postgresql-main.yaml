@@ -5,12 +5,14 @@ metadata:
   namespace: storage
 spec:
   databases:
+    gatus: gatus
     keycloak: keycloak
   numberOfInstances: 1
   postgresql:
     version: "16"
   teamId: acid
   users:
+    gatus: createdb
     keycloak: createdb
     superadmin: superuser
   volume:

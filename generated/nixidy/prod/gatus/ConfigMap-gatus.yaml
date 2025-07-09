@@ -1,0 +1,33 @@
+apiVersion: v1
+data:
+  config.yaml: |
+    connectivity:
+      checker:
+        interval: 1m
+        target: 1.1.1.1:53
+    debug: false
+    endpoints:
+    - client:
+        dns-resolver: tcp://1.1.1.1:53
+      conditions:
+      - '[STATUS] == 200'
+      group: external
+      interval: 1m
+      name: gatus
+      url: https://gatus.trdos.me
+    metrics: true
+    storage:
+      caching: true
+      path: $GATUS_DB_URI
+      type: postgres
+    ui:
+      header: Status
+      title: Status | Gatus
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: gatus
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: gatus
+  name: gatus
+  namespace: monitoring
