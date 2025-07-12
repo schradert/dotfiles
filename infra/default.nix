@@ -111,6 +111,8 @@ in {
       oauth2-proxy.provider = "keycloak";
       vaultwarden.enable = true;
 
+      jellyfin.enable = true;
+
       #   clickhouse.enable = true;
       #   windmill.enable = true;
 

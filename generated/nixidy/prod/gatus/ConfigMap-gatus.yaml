@@ -15,6 +15,14 @@ data:
       interval: 1m
       name: gatus
       url: https://gatus.trdos.me
+    - client:
+        dns-resolver: tcp://1.1.1.1:53
+      conditions:
+      - '[STATUS] == 200'
+      group: external
+      interval: 1m
+      name: jellyfin
+      url: https://jellyfin.trdos.me
     metrics: true
     storage:
       caching: true
