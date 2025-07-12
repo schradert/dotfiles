@@ -5,6 +5,7 @@ metadata:
   namespace: storage
 spec:
   databases:
+    autobrr: autobrr
     gatus: gatus
     keycloak: keycloak
     vaultwarden: vaultwarden
@@ -13,6 +14,7 @@ spec:
     version: "16"
   teamId: acid
   users:
+    autobrr: createdb
     gatus: createdb
     keycloak: createdb
     superadmin: superuser

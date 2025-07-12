@@ -1,0 +1,14 @@
+apiVersion: v1
+data:
+  AUTOBRR__CHECK_FOR_UPDATES: "false"
+  AUTOBRR__HOST: 0.0.0.0
+  AUTOBRR__LOG_LEVEL: INFO
+  AUTOBRR__SESSION_SECRET_FILE: /secrets/session_secret.txt
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: autobrr
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: autobrr
+  name: autobrr
+  namespace: media

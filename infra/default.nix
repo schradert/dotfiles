@@ -112,6 +112,7 @@ in {
       vaultwarden.enable = true;
 
       jellyfin.enable = true;
+      autobrr.enable = true;
 
       #   clickhouse.enable = true;
       #   windmill.enable = true;

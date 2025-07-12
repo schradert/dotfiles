@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    reloader.stakater.com/auto: "true"
+  labels:
+    app.kubernetes.io/controller: autobrr
+    app.kubernetes.io/instance: autobrr
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: autobrr
+  name: autobrr
+  namespace: media
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: autobrr
+      app.kubernetes.io/instance: autobrr
+      app.kubernetes.io/name: autobrr
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        checksum/configMaps: 97e44b3c82fb5b5d2d831353a89930e5f4114fcc3ca59e3de6b585536f90a8c8
+      labels:
+        app.kubernetes.io/controller: autobrr
+        app.kubernetes.io/instance: autobrr
+        app.kubernetes.io/name: autobrr
+    spec:
+      automountServiceAccountToken: true
+      containers:
+        - envFrom:
+            - configMapRef:
+                name: autobrr
+          image: ghcr.io/autobrr/autobrr:v1.63.1
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 7474
+            timeoutSeconds: 1
+          name: autobrr
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 7474
+            timeoutSeconds: 1
+          startupProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 7474
+            timeoutSeconds: 1
+          volumeMounts:
+            - mountPath: /config
+              name: config
+            - mountPath: /config/log
+              name: tmpfs
+              subPath: log
+            - mountPath: /tmp
+              name: tmpfs
+              subPath: tmp
+      dnsPolicy: ClusterFirst
+      enableServiceLinks: false
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      serviceAccountName: default
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: autobrr
+        - emptyDir: {}
+          name: tmpfs
