@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/instance: vaultwarden
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: vaultwarden
+    app.kubernetes.io/service: vaultwarden
+  name: vaultwarden
+  namespace: dotfiles
+spec:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    app.kubernetes.io/controller: vaultwarden
+    app.kubernetes.io/instance: vaultwarden
+    app.kubernetes.io/name: vaultwarden
+  type: ClusterIP

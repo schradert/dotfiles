@@ -4,6 +4,7 @@ cloudflare: ENC[AES256_GCM,data:uNODwoUb5IvnLzlRe/LkfcgrKoQDNSfcrPFJ3netO19ty7KV
 opentofu_pw: ENC[AES256_GCM,data:aa2RytQl/fgkKADVeQBLyDbTyh/nm9I+,iv:cUYcwZt8VV9dFGpNXD76i5ZBL7JySQFjZxmS092jVOk=,tag:Zwh8CXbAIaGEmEaqV6FdYA==,type:str]
 backblaze: ENC[AES256_GCM,data:FSnGSbdJZMwuDCOx3pX6tS8hihdVHzUbXhnBJz6Kyg==,iv:Mu9WXuKSkUyGs2UzNPEhUBQ0Dz5P/cuiEPFQlZed+bk=,tag:QPGDCdi1uX2E5rwVVvQfWQ==,type:str]
 bitwarden: ENC[AES256_GCM,data:sSao2xNrRNp6KgSDLYsdwL9jQU5IDt0d2lWc8KTwLg7UaBOFOzwpdxM8Zi2NYuSg0ZuwFruR5LGXKxu1Webqdc7vz98J77Wg7x4u5/aQiSBFMeFPTUnnCJiRGqj5rQ==,iv:sLbZJIStTz7EwDG+fqxmxaBwqB2t2h0UiRuuFZZ4Otg=,tag:sYrGLlTXbD8g4qLOEwNaWQ==,type:str]
+vaultwarden: ENC[AES256_GCM,data:vepR3nA0znNaH4H9gNAgMDjkEis=,iv:WeKdzmLagb7PpAO1FPLWrqouIPvtboomh4i02uFH0CI=,tag:Uln91veM9OYuTKhr3r98Ig==,type:str]
 passwords:
     k3s-token: ENC[AES256_GCM,data:wIIC71BNgiLp2z+vMUVTaHBTxOAl,iv:nKP7WxFoJEEVbCVxtsRoaRkQePTkcnUrK+Cw6rarVco=,tag:4p1d+DwZG5iGjHU6LLs3lw==,type:str]
 sops:
@@ -17,7 +18,7 @@ sops:
             RUVzTGVCL0p0bSs5d2Jpc3p0ZldtYUkKS9vx8/HR9ZeH0GB34mCBDDhCm2XLLCWX
             VDKZ48OMnlRRAFin9X/wj6RyUJlk0AWG6wgnlsLqnxE8m0+D1U2PDA==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-07-06T04:43:03Z"
-    mac: ENC[AES256_GCM,data:cfvU5WojgVR+FBO7IUsCB3FJcKXz5mu8Aus/5SW9j7mfRt8XLKJyloLoaU9q55bcZOLL++q8CScqxc79qxxwDg5f8yLP5uzdTKnj5VpsWvZ3JynUAJAp5Vi7TeC2AXSXphvqhUrEjhSFhPWOcCFHmLMBY6s+8ksmN1d8EufA6cM=,iv:zDp0pIst5CXiDteUmrE1ecpU8KvLdoPRXxXa6bvwWi8=,tag:6dfuum7+qltFWBU5YAoGMA==,type:str]
+    lastmodified: "2025-07-09T19:56:09Z"
+    mac: ENC[AES256_GCM,data:UtY6WFpAKjZf4Ik8J4lkmjHvyIYrrjlp/B54oe7pOg4Cy+amhICzTPBtRB641E7v3xlnMQr6VzGHYddaZdoKfXUkBqDPwEDjuA2rKA9aZLAu3isenPWjhJbCiDJx6crFoAtY6EVQhews+KkgWjdYJaCxZvzpO2IWuLD54UKfRRA=,iv:v3b/cBssZN3nF3CapatjmUI2d7/gptjswz5cVKz51xU=,tag:MGA3p4bLPVUo8XurV3MC8Q==,type:str]
     unencrypted_suffix: _unencrypted
     version: 3.10.2

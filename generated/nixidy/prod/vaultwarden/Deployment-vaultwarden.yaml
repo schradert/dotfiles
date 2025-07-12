@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    reloader.stakater.com/auto: "true"
+  labels:
+    app.kubernetes.io/controller: vaultwarden
+    app.kubernetes.io/instance: vaultwarden
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: vaultwarden
+  name: vaultwarden
+  namespace: dotfiles
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: vaultwarden
+      app.kubernetes.io/instance: vaultwarden
+      app.kubernetes.io/name: vaultwarden
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        checksum/configMaps: 7899f9e741049a6cbb9de69e05190189ecedea6dc663897833357bf2a59eafe1
+      labels:
+        app.kubernetes.io/controller: vaultwarden
+        app.kubernetes.io/instance: vaultwarden
+        app.kubernetes.io/name: vaultwarden
+    spec:
+      automountServiceAccountToken: true
+      containers:
+        - image: dotfiles/vaultwarden:1.34.1
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 80
+            timeoutSeconds: 1
+          name: vaultwarden
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 80
+            timeoutSeconds: 1
+          startupProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 80
+            timeoutSeconds: 1
+          volumeMounts:
+            - mountPath: /.env
+              name: config
+              readOnly: true
+            - mountPath: /data
+              name: data
+            - mountPath: /secrets
+              name: secrets
+              readOnly: true
+      dnsPolicy: ClusterFirst
+      enableServiceLinks: false
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      serviceAccountName: default
+      volumes:
+        - configMap:
+            name: vaultwarden
+          name: config
+        - name: data
+          persistentVolumeClaim:
+            claimName: vaultwarden
+        - name: secrets
+          secret:
+            secretName: vaultwarden

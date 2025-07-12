@@ -109,6 +109,7 @@ in {
       keycloak.crossplane.enable = true;
       oauth2-proxy.enable = true;
       oauth2-proxy.provider = "keycloak";
+      vaultwarden.enable = true;
 
       #   clickhouse.enable = true;
       #   windmill.enable = true;
