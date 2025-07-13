@@ -10,6 +10,8 @@ spec:
     keycloak: keycloak
     radarr-log: radarr
     radarr-main: radarr
+    sonarr-log: sonarr
+    sonarr-main: sonarr
     vaultwarden: vaultwarden
   numberOfInstances: 1
   postgresql:
@@ -20,6 +22,7 @@ spec:
     gatus: createdb
     keycloak: createdb
     radarr: createdb
+    sonarr: createdb
     superadmin: superuser
     vaultwarden: createdb
   volume:

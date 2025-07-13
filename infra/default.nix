@@ -115,6 +115,7 @@ in {
       autobrr.enable = true;
       bazarr.enable = true;
       radarr.enable = true;
+      sonarr.enable = true;
 
       #   clickhouse.enable = true;
       #   windmill.enable = true;
