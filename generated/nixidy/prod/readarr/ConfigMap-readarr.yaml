@@ -1,0 +1,19 @@
+apiVersion: v1
+data:
+  READARR__APP__INSTANCENAME: readarr
+  READARR__AUTH__METHOD: External
+  READARR__AUTH__REQUIRED: DisabledForLocalAddresses
+  READARR__LOG__DBENABLED: "False"
+  READARR__LOG__LEVEL: info
+  READARR__POSTGRES__HOST: main.default.svc.cluster.local
+  READARR__POSTGRES__USER: readarr
+  READARR__SERVER__PORT: "80"
+  READARR__UPDATE__BRANCH: develop
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: readarr
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: readarr
+  name: readarr
+  namespace: dotfiles

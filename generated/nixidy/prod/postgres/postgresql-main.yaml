@@ -12,6 +12,10 @@ spec:
     lidarr-main: lidarr
     radarr-log: radarr
     radarr-main: radarr
+    readarr-cache: readarr
+    readarr-log: readarr
+    readarr-main: readarr
+    rreading-glasses: rreading-glasses
     sonarr-log: sonarr
     sonarr-main: sonarr
     vaultwarden: vaultwarden
@@ -25,6 +29,8 @@ spec:
     keycloak: createdb
     lidarr: createdb
     radarr: createdb
+    readarr: createdb
+    rreading-glasses: createdb
     sonarr: createdb
     superadmin: superuser
     vaultwarden: createdb

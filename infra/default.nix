@@ -117,6 +117,8 @@ in {
       radarr.enable = true;
       sonarr.enable = true;
       lidarr.enable = true;
+      readarr.enable = true;
+      readarr.rreading-glasses.enable = true;
 
       #   clickhouse.enable = true;
       #   windmill.enable = true;

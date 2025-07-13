@@ -61,6 +61,14 @@ data:
       - '[STATUS] == 200'
       group: external
       interval: 1m
+      name: readarr
+      url: https://readarr.trdos.me
+    - client:
+        dns-resolver: tcp://1.1.1.1:53
+      conditions:
+      - '[STATUS] == 200'
+      group: external
+      interval: 1m
       name: sonarr
       url: https://sonarr.trdos.me
     metrics: true

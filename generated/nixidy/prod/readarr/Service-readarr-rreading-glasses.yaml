@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/instance: readarr
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: readarr
+    app.kubernetes.io/service: readarr-rreading-glasses
+  name: readarr-rreading-glasses
+  namespace: dotfiles
+spec:
+  ports:
+    - name: http
+      port: 8788
+      protocol: TCP
+      targetPort: 8788
+  selector:
+    app.kubernetes.io/controller: rreading-glasses
+    app.kubernetes.io/instance: readarr
+    app.kubernetes.io/name: readarr
+  type: ClusterIP

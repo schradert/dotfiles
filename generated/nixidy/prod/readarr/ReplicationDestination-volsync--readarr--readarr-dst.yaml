@@ -1,0 +1,15 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: volsync--readarr--readarr-dst
+  namespace: dotfiles
+spec:
+  restic:
+    copyMethod: Direct
+    destinationPVC: readarr
+    moverSecurityContext:
+      runAsGroup: 101
+      runAsUser: 101
+    repository: volsync--readarr--readarr
+  trigger:
+    manual: "1"

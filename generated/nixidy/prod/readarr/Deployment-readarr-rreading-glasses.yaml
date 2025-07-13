@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    reloader.stakater.com/auto: "true"
+  labels:
+    app.kubernetes.io/controller: rreading-glasses
+    app.kubernetes.io/instance: readarr
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: readarr
+  name: readarr-rreading-glasses
+  namespace: dotfiles
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: rreading-glasses
+      app.kubernetes.io/instance: readarr
+      app.kubernetes.io/name: readarr
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        checksum/configMaps: 237b3fbf32f5a427acb2da94653fef6e7a2b6c59cee7fc4e639ef088fddb5cbb
+      labels:
+        app.kubernetes.io/controller: rreading-glasses
+        app.kubernetes.io/instance: readarr
+        app.kubernetes.io/name: readarr
+    spec:
+      automountServiceAccountToken: true
+      containers:
+        - envFrom:
+            - configMapRef:
+                name: rreading-glasses
+          image: blampe/rreading-glasses:hardcover
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 8788
+            timeoutSeconds: 1
+          name: rreading-glasses
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 8788
+            timeoutSeconds: 1
+          startupProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 8788
+            timeoutSeconds: 1
+          volumeMounts:
+            - mountPath: /config
+              name: config
+            - mountPath: /secrets
+              name: secrets
+              readOnly: true
+            - mountPath: /tmp
+              name: tmpfs
+              subPath: tmp
+      dnsPolicy: ClusterFirst
+      enableServiceLinks: false
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      serviceAccountName: default
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: readarr
+        - name: secrets
+          secret:
+            secretName: rreading-glasses
+        - emptyDir: {}
+          name: tmpfs
