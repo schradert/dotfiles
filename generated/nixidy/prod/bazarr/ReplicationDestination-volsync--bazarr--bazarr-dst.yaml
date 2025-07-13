@@ -1,0 +1,15 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: volsync--bazarr--bazarr-dst
+  namespace: media
+spec:
+  restic:
+    copyMethod: Direct
+    destinationPVC: bazarr
+    moverSecurityContext:
+      runAsGroup: 101
+      runAsUser: 101
+    repository: volsync--bazarr--bazarr
+  trigger:
+    manual: "1"

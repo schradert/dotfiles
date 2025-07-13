@@ -113,6 +113,7 @@ in {
 
       jellyfin.enable = true;
       autobrr.enable = true;
+      bazarr.enable = true;
 
       #   clickhouse.enable = true;
       #   windmill.enable = true;
