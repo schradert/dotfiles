@@ -1,0 +1,19 @@
+apiVersion: v1
+data:
+  RADARR__APP__INSTANCENAME: Radarr
+  RADARR__AUTH__METHOD: External
+  RADARR__AUTH__REQUIRED: DisabledForLocalAddresses
+  RADARR__LOG__DBENABLED: "False"
+  RADARR__LOG__LEVEL: info
+  RADARR__POSTGRES__HOST: main.default.svc.cluster.local
+  RADARR__POSTGRES__USER: radarr
+  RADARR__SERVER__PORT: "80"
+  RADARR__UPDATE__BRANCH: develop
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: radarr
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: radarr
+  name: radarr
+  namespace: dotfiles

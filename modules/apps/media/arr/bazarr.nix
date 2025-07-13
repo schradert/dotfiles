@@ -19,6 +19,7 @@
     config = mkIf services.bazarr.enable {
       nixos = {pkgs, ...}: {canivete.kubernetes.images.bazarr = pkgs.dockerTools.pullImage image;};
       nixidy = {charts, ...}: {
+        dotfiles.gatus.endpoints.bazarr.url = "https" + "://${hostname}";
         applications.bazarr = {
           namespace = "media";
           dotfiles.volsync.pvcs.bazarr.title = "bazarr";

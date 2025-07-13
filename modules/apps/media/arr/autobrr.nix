@@ -23,6 +23,7 @@
         dotfiles.secrets.autobrr.value = "\${ random_password.autobrr.result }";
       };
       nixidy = {charts, ...}: {
+        dotfiles.gatus.endpoints.autobrr.url = "https" + "://${hostname}";
         dotfiles.postgres.autobrr = {};
         applications.autobrr = {
           namespace = "media";

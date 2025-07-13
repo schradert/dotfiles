@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    reloader.stakater.com/auto: "true"
+  labels:
+    app.kubernetes.io/controller: radarr
+    app.kubernetes.io/instance: radarr
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: radarr
+  name: radarr
+  namespace: dotfiles
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: radarr
+      app.kubernetes.io/instance: radarr
+      app.kubernetes.io/name: radarr
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        checksum/configMaps: 57ca543f5edb5cac0664e158fe3d48eec754169ef2d9e7f0f08a8530a1f7865d
+      labels:
+        app.kubernetes.io/controller: radarr
+        app.kubernetes.io/instance: radarr
+        app.kubernetes.io/name: radarr
+    spec:
+      automountServiceAccountToken: true
+      containers:
+        - envFrom:
+            - secretRef:
+                name: radarr
+            - configMapRef:
+                name: radarr
+          image: ghcr.io/home-operations/radarr:5.27.0.10101
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 80
+            timeoutSeconds: 1
+          name: radarr
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 80
+            timeoutSeconds: 1
+          startupProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 80
+            timeoutSeconds: 1
+          volumeMounts:
+            - mountPath: /config
+              name: config
+            - mountPath: /tmp
+              name: tmpfs
+              subPath: tmp
+      dnsPolicy: ClusterFirst
+      enableServiceLinks: false
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      serviceAccountName: default
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: radarr
+        - emptyDir: {}
+          name: tmpfs

@@ -8,6 +8,8 @@ spec:
     autobrr: autobrr
     gatus: gatus
     keycloak: keycloak
+    radarr-log: radarr
+    radarr-main: radarr
     vaultwarden: vaultwarden
   numberOfInstances: 1
   postgresql:
@@ -17,6 +19,7 @@ spec:
     autobrr: createdb
     gatus: createdb
     keycloak: createdb
+    radarr: createdb
     superadmin: superuser
     vaultwarden: createdb
   volume:
