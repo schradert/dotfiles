@@ -45,6 +45,14 @@ data:
       - '[STATUS] == 200'
       group: external
       interval: 1m
+      name: lidarr
+      url: https://lidarr.trdos.me
+    - client:
+        dns-resolver: tcp://1.1.1.1:53
+      conditions:
+      - '[STATUS] == 200'
+      group: external
+      interval: 1m
       name: radarr
       url: https://radarr.trdos.me
     - client:

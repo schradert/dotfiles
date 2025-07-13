@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/instance: lidarr
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: lidarr
+    app.kubernetes.io/service: lidarr
+  name: lidarr
+  namespace: dotfiles
+spec:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    app.kubernetes.io/controller: lidarr
+    app.kubernetes.io/instance: lidarr
+    app.kubernetes.io/name: lidarr
+  type: ClusterIP

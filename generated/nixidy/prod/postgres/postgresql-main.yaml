@@ -8,6 +8,8 @@ spec:
     autobrr: autobrr
     gatus: gatus
     keycloak: keycloak
+    lidarr-log: lidarr
+    lidarr-main: lidarr
     radarr-log: radarr
     radarr-main: radarr
     sonarr-log: sonarr
@@ -21,6 +23,7 @@ spec:
     autobrr: createdb
     gatus: createdb
     keycloak: createdb
+    lidarr: createdb
     radarr: createdb
     sonarr: createdb
     superadmin: superuser

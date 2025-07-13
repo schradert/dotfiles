@@ -1,0 +1,19 @@
+apiVersion: v1
+data:
+  LIDARR__APP__INSTANCENAME: lidarr
+  LIDARR__AUTH__METHOD: External
+  LIDARR__AUTH__REQUIRED: DisabledForLocalAddresses
+  LIDARR__LOG__DBENABLED: "False"
+  LIDARR__LOG__LEVEL: info
+  LIDARR__POSTGRES__HOST: main.default.svc.cluster.local
+  LIDARR__POSTGRES__USER: lidarr
+  LIDARR__SERVER__PORT: "80"
+  LIDARR__UPDATE__BRANCH: develop
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: lidarr
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: lidarr
+  name: lidarr
+  namespace: dotfiles
