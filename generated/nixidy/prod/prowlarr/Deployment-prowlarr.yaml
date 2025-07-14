@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    reloader.stakater.com/auto: "true"
+  labels:
+    app.kubernetes.io/controller: prowlarr
+    app.kubernetes.io/instance: prowlarr
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: prowlarr
+  name: prowlarr
+  namespace: dotfiles
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: prowlarr
+      app.kubernetes.io/instance: prowlarr
+      app.kubernetes.io/name: prowlarr
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        checksum/configMaps: cf7b950cb9cb690440a3e5eba5169cee2fba5c261a8f7542aab66a376778caf8
+      labels:
+        app.kubernetes.io/controller: prowlarr
+        app.kubernetes.io/instance: prowlarr
+        app.kubernetes.io/name: prowlarr
+    spec:
+      automountServiceAccountToken: true
+      containers:
+        - envFrom:
+            - secretRef:
+                name: prowlarr
+            - configMapRef:
+                name: prowlarr
+          image: ghcr.io/home-operations/prowlarr:2.0.1.5101
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 80
+            timeoutSeconds: 1
+          name: prowlarr
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 80
+            timeoutSeconds: 1
+          startupProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 80
+            timeoutSeconds: 1
+          volumeMounts:
+            - mountPath: /config
+              name: config
+            - mountPath: /tmpfs
+              name: tmpfs
+      dnsPolicy: ClusterFirst
+      enableServiceLinks: false
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      serviceAccountName: default
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: prowlarr
+        - emptyDir: {}
+          name: tmpfs

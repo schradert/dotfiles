@@ -119,6 +119,7 @@ in {
       lidarr.enable = true;
       readarr.enable = true;
       readarr.rreading-glasses.enable = true;
+      prowlarr.enable = true;
 
       #   clickhouse.enable = true;
       #   windmill.enable = true;

@@ -10,6 +10,8 @@ spec:
     keycloak: keycloak
     lidarr-log: lidarr
     lidarr-main: lidarr
+    prowlarr-log: prowlarr
+    prowlarr-main: prowlarr
     radarr-log: radarr
     radarr-main: radarr
     readarr-cache: readarr
@@ -28,6 +30,7 @@ spec:
     gatus: createdb
     keycloak: createdb
     lidarr: createdb
+    prowlarr: createdb
     radarr: createdb
     readarr: createdb
     rreading-glasses: createdb

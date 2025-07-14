@@ -1,0 +1,19 @@
+apiVersion: v1
+data:
+  PROWLARR__APP__INSTANCENAME: prowlarr
+  PROWLARR__AUTH__METHOD: External
+  PROWLARR__AUTH__REQUIRED: DisabledForLocalAddresses
+  PROWLARR__LOG__DBENABLED: "False"
+  PROWLARR__LOG__LEVEL: info
+  PROWLARR__POSTGRES__HOST: main.default.svc.cluster.local
+  PROWLARR__POSTGRES__USER: prowlarr
+  PROWLARR__SERVER__PORT: "80"
+  PROWLARR__UPDATE__BRANCH: develop
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: prowlarr
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: prowlarr
+  name: prowlarr
+  namespace: dotfiles
