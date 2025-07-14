@@ -1,0 +1,26 @@
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: HTTPRoute
+metadata:
+  labels:
+    app.kubernetes.io/instance: maintainerr
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: maintainerr
+  name: maintainerr
+  namespace: dotfiles
+spec:
+  hostnames:
+    - maintainerr.trdos.me
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: internal
+      namespace: kube-system
+      sectionName: https
+  rules:
+    - backendRefs:
+        - group: ""
+          kind: Service
+          name: maintainerr
+          namespace: dotfiles
+          port: 80
+          weight: 1

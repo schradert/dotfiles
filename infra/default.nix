@@ -112,6 +112,7 @@ in {
       vaultwarden.enable = true;
 
       jellyfin.enable = true;
+      maintainerr.enable = true;
       autobrr.enable = true;
       bazarr.enable = true;
       radarr.enable = true;
