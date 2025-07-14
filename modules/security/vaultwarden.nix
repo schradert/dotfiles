@@ -82,6 +82,7 @@
         };
       };
       nixidy = {charts, ...}: {
+        dotfiles.gatus.endpoints.vaultwarden.url = "https" + "://${hostname}";
         dotfiles.postgres.vaultwarden = {};
         applications.vaultwarden = {
           namespace = "dotfiles";

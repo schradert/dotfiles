@@ -4,13 +4,13 @@
     lib,
     ...
   }: let
-    inherit (config) domain;
-    inherit (lib) mkEnableOption mkIf toList;
-    hostname = "jellyfin.${domain}";
+    inherit (config) services;
+    inherit (lib) mkEnableOption mkIf mkMerge toList;
+    hostname = "jellyfin.${config.domain}";
     image = {
       imageName = "ghcr.io/jellyfin/jellyfin";
       imageDigest = "sha256:e4d1dc5374344446a3a78e43dd211247f22afba84ea2e5a13cbe1a94e1ff2141";
-      hash = "";
+      hash = "sha256-i0m2B9AiixkPOpCC2PdTwUjwBfvCUDMapiTk7cdwutg=";
       finalImageTag = "10.10.7";
     };
   in {

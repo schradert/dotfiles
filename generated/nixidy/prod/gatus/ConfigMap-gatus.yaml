@@ -87,6 +87,14 @@ data:
       interval: 1m
       name: sonarr
       url: https://sonarr.trdos.me
+    - client:
+        dns-resolver: tcp://1.1.1.1:53
+      conditions:
+      - '[STATUS] == 200'
+      group: external
+      interval: 1m
+      name: vaultwarden
+      url: https://vaultwarden.trdos.me
     metrics: true
     storage:
       caching: true
