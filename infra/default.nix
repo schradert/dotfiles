@@ -120,6 +120,7 @@ in {
       readarr.enable = true;
       readarr.rreading-glasses.enable = true;
       prowlarr.enable = true;
+      recyclarr.enable = true;
 
       #   clickhouse.enable = true;
       #   windmill.enable = true;

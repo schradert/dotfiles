@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app.kubernetes.io/instance: recyclarr
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: recyclarr
+  name: recyclarr
+  namespace: media
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

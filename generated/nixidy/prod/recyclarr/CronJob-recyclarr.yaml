@@ -1,0 +1,70 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  labels:
+    app.kubernetes.io/controller: recyclarr
+    app.kubernetes.io/instance: recyclarr
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: recyclarr
+  name: recyclarr
+  namespace: media
+spec:
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 6
+      template:
+        metadata:
+          annotations:
+            checksum/configMaps: 341cd9e627c30dd984bdc5a95d6fe6ce0887ed685f4f3478825dbbf5a9d2fb12
+          labels:
+            app.kubernetes.io/controller: recyclarr
+            app.kubernetes.io/instance: recyclarr
+            app.kubernetes.io/name: recyclarr
+        spec:
+          automountServiceAccountToken: true
+          containers:
+            - args:
+                - sync
+              envFrom:
+                - secretRef:
+                    name: recyclarr
+              image: ghcr.io/recyclarr/recyclarr:7.4.1
+              name: recyclarr
+              volumeMounts:
+                - mountPath: /config
+                  name: config
+                - mountPath: /config/recyclarr.yml
+                  name: config-file
+                  readOnly: true
+                  subPath: recyclarr.yml
+                - mountPath: /config/logs
+                  name: tmpfs
+                  subPath: logs
+                - mountPath: /config/repositories
+                  name: tmpfs
+                  subPath: repositories
+                - mountPath: /tmp
+                  name: tmpfs
+                  subPath: tmp
+          dnsPolicy: ClusterFirst
+          enableServiceLinks: false
+          hostIPC: false
+          hostNetwork: false
+          hostPID: false
+          restartPolicy: Never
+          serviceAccountName: default
+          volumes:
+            - name: config
+              persistentVolumeClaim:
+                claimName: recyclarr
+            - configMap:
+                name: recyclarr
+              name: config-file
+            - emptyDir: {}
+              name: tmpfs
+  schedule: '@daily'
+  startingDeadlineSeconds: 30
+  successfulJobsHistoryLimit: 1
+  suspend: false
