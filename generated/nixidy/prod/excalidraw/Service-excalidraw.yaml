@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/instance: excalidraw
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: excalidraw
+    app.kubernetes.io/service: excalidraw
+  name: excalidraw
+  namespace: dotfiles
+spec:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    app.kubernetes.io/controller: excalidraw
+    app.kubernetes.io/instance: excalidraw
+    app.kubernetes.io/name: excalidraw
+  type: ClusterIP

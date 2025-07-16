@@ -153,18 +153,12 @@ in {
       prowlarr.enable = true;
       recyclarr.enable = true;
 
+      excalidraw.enable = true;
+
       #   clickhouse.enable = true;
       #   windmill.enable = true;
-
       #   jitsi.enable = true;
       #   immich.enable = true;
-      #   excalidraw.enable = true;
-      #   excalidraw.release.values.ingress = {
-      #     annotations = [];
-      #     className = "";
-      #   };
-      #   # TODO add all of the services
-      #   # TODO decouple services
     };
   };
 }

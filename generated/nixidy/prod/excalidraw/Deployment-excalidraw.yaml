@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/controller: excalidraw
+    app.kubernetes.io/instance: excalidraw
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: excalidraw
+  name: excalidraw
+  namespace: dotfiles
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: excalidraw
+      app.kubernetes.io/instance: excalidraw
+      app.kubernetes.io/name: excalidraw
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/controller: excalidraw
+        app.kubernetes.io/instance: excalidraw
+        app.kubernetes.io/name: excalidraw
+    spec:
+      automountServiceAccountToken: true
+      containers:
+        - image: excalidraw/excalidraw:latest
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 80
+            timeoutSeconds: 1
+          name: excalidraw
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 80
+            timeoutSeconds: 1
+          startupProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 80
+            timeoutSeconds: 1
+      dnsPolicy: ClusterFirst
+      enableServiceLinks: false
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      serviceAccountName: default

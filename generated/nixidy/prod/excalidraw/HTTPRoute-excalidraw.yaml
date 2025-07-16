@@ -1,0 +1,26 @@
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: HTTPRoute
+metadata:
+  labels:
+    app.kubernetes.io/instance: excalidraw
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: excalidraw
+  name: excalidraw
+  namespace: dotfiles
+spec:
+  hostnames:
+    - excalidraw.trdos.me
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: internal
+      namespace: kube-system
+      sectionName: https
+  rules:
+    - backendRefs:
+        - group: ""
+          kind: Service
+          name: excalidraw
+          namespace: dotfiles
+          port: 80
+          weight: 1
