@@ -121,15 +121,7 @@ in {
         boot.initrd.availableKernelModules = ["sr_mod"];
         boot.plymouth.enable = false;
         canivete.kubernetes.root = true;
-        disko = diskoZfs "/dev/disk/by-id/scsi-35000c50067faa64b" [
-          "/dev/disk/by-id/scsi-35000c50067fb404b"
-          "/dev/disk/by-id/scsi-35000c50067fc5df3"
-          "/dev/disk/by-id/scsi-35000c50067fc640b"
-          "/dev/disk/by-id/scsi-35000c50067fcc0d3"
-          "/dev/disk/by-id/scsi-35000c50067fcc2fb"
-          "/dev/disk/by-id/scsi-35000c50067fcd9af"
-          "/dev/disk/by-id/scsi-35000c50067fe560f"
-        ] {};
+        disko = diskoZfs "/dev/disk/by-id/scsi-35000c50067faa64b" [] {};
         dotfiles.profiles.server.enable = true;
         networking.hostId = "799f2113";
         # Mini switch on spare LAN to connect another system (dingo)
@@ -142,15 +134,7 @@ in {
       system = {
         boot.initrd.availableKernelModules = ["sr_mod"];
         boot.plymouth.enable = false;
-        disko = diskoZfs "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d2e2991b17e" [
-          "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d462aff700b"
-          "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d552bdede19"
-          "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d622ca764e8"
-          "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d6f2d66f068"
-          "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d7c2e2ed82e"
-          "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d8a2f011f94"
-          "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d962fc2bcad"
-        ] {};
+        disko = diskoZfs "/dev/disk/by-id/scsi-36b82a720cf60ce002fd94d2e2991b17e" [] {};
         dotfiles.profiles.server.enable = true;
         networking.hostId = "101915fa";
         services.k3s.role = "server";

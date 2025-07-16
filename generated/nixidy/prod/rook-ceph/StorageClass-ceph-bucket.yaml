@@ -1,0 +1,11 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: ceph-bucket
+parameters:
+  objectStoreName: ceph-objectstore
+  objectStoreNamespace: storage
+  region: us-west-1
+provisioner: storage.ceph.rook.io/bucket
+reclaimPolicy: Delete
+volumeBindingMode: Immediate

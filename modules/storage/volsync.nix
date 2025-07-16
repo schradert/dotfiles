@@ -136,6 +136,7 @@
                       };
                     }))
                     # TODO transfer all of these to respective modules
+                    # TODO do the same for rook-ceph
                     {
                       externalSecrets.${repository}.spec = {
                         secretStoreRef.name = "bitwarden";
