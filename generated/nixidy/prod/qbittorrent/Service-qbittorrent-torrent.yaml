@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    lbipam.cilium.io/ips: 192.168.50.253
+  labels:
+    app.kubernetes.io/instance: qbittorrent
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: qbittorrent
+    app.kubernetes.io/service: qbittorrent-torrent
+  name: qbittorrent-torrent
+  namespace: media
+spec:
+  ports:
+    - name: torrent
+      port: 6881
+      protocol: TCP
+      targetPort: 6881
+  selector:
+    app.kubernetes.io/controller: qbittorrent
+    app.kubernetes.io/instance: qbittorrent
+    app.kubernetes.io/name: qbittorrent
+  type: LoadBalancer

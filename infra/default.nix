@@ -113,6 +113,7 @@ in {
 
       jellyfin.enable = true;
       maintainerr.enable = true;
+      qbittorrent.enable = true;
       autobrr.enable = true;
       bazarr.enable = true;
       radarr.enable = true;
