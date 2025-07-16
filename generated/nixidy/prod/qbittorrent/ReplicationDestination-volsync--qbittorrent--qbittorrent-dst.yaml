@@ -1,0 +1,15 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: volsync--qbittorrent--qbittorrent-dst
+  namespace: media
+spec:
+  restic:
+    copyMethod: Direct
+    destinationPVC: qbittorrent
+    moverSecurityContext:
+      runAsGroup: 101
+      runAsUser: 101
+    repository: volsync--qbittorrent--qbittorrent
+  trigger:
+    manual: "1"

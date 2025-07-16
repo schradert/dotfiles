@@ -23,6 +23,7 @@
         dotfiles.gatus.endpoints.qbittorrent.url = "https" + "://${hostname}";
         applications.qbittorrent = {
           namespace = "media";
+          dotfiles.volsync.pvcs.qbittorrent.title = "qbittorrent";
           helm.releases.qbittorrent = {
             chart = charts.bjw-s-labs.app-template;
             values = mkMerge [

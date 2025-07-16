@@ -1,0 +1,15 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: volsync--recyclarr--recyclarr-dst
+  namespace: media
+spec:
+  restic:
+    copyMethod: Direct
+    destinationPVC: recyclarr
+    moverSecurityContext:
+      runAsGroup: 101
+      runAsUser: 101
+    repository: volsync--recyclarr--recyclarr
+  trigger:
+    manual: "1"

@@ -28,6 +28,7 @@
         dotfiles.gatus.endpoints.jellyfin.url = "https" + "://${hostname}";
         applications.jellyfin = {
           namespace = "media";
+          dotfiles.volsync.pvcs.jellyfin.title = "jellyfin";
           helm.releases.jellyfin = {
             chart = charts.bjw-s-labs.app-template;
             values = mkMerge [
@@ -45,13 +46,12 @@
                     type = "persistentVolumeClaim";
                     accessMode = "ReadWriteOnce";
                     size = "1Gi";
-                    globalMounts = [{path = "/config";}];
                   };
                   cache = {
                     type = "persistentVolumeClaim";
                     accessMode = "ReadWriteOnce";
                     size = "1Gi";
-                    globalMounts = [{path = "/config";}];
+                    globalMounts = [{path = "/config/metadata";}];
                   };
                   # TODO how should I actually store media?
                   # media = {

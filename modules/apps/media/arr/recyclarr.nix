@@ -120,6 +120,7 @@
           {
             applications.recyclarr = {
               namespace = "media";
+              dotfiles.volsync.pvcs.recyclarr.title = "recyclarr";
               helm.releases.recyclarr = {
                 chart = charts.bjw-s-labs.app-template;
                 values = mkMerge [

@@ -53,8 +53,10 @@ spec:
               port: 8096
             timeoutSeconds: 1
           volumeMounts:
-            - mountPath: /config
+            - mountPath: /config/metadata
               name: cache
+            - mountPath: /config
+              name: config
             - mountPath: /cache
               name: tmpfs
               subPath: cache
