@@ -21,6 +21,7 @@ spec:
     sonarr-log: sonarr
     sonarr-main: sonarr
     vaultwarden: vaultwarden
+    windmill: windmill
   numberOfInstances: 1
   postgresql:
     version: "16"
@@ -37,5 +38,8 @@ spec:
     sonarr: createdb
     superadmin: superuser
     vaultwarden: createdb
+    windmill: superuser
+    windmill_admin: createdb
+    windmill_user: createdb
   volume:
     size: 10Gi

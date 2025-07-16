@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: windmill-lsp
+    app.kubernetes.io/name: windmill-lsp
+    chart: windmill-2.0.447
+    heritage: Helm
+    release: windmill
+  name: windmill-lsp
+  namespace: dotfiles
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: windmill-lsp
+  strategy:
+    rollingUpdate:
+      maxSurge: 3
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: windmill-lsp
+        app.kubernetes.io/name: windmill-lsp
+        container: windmill-lsp
+    spec:
+      containers:
+        - image: ghcr.io/windmill-labs/windmill-lsp:1.507.0
+          imagePullPolicy: Never
+          name: windmill-lsp
+          ports:
+            - containerPort: 3001
+          resources:
+            limits:
+              memory: 1Gi
+      securityContext:
+        runAsNonRoot: false
+        runAsUser: 0

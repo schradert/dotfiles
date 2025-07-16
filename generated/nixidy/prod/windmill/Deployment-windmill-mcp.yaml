@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: windmill-mcp
+    app.kubernetes.io/name: windmill-mcp
+    chart: windmill-2.0.447
+    heritage: Helm
+    release: windmill
+  name: windmill-mcp
+  namespace: dotfiles
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: windmill-mcp
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        secret.reloader.stakater.com/auto: "true"
+      labels:
+        app: windmill-mcp
+        app.kubernetes.io/name: windmill-mcp
+        release: windmill
+    spec:
+      containers:
+        - env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  key: url
+                  name: windmill
+            - name: BASE_URL
+              value: https://windmill.trdos.me
+            - name: RUST_LOG
+              value: info
+            - name: MODE
+              value: mcp
+            - name: JSON_FMT
+              value: "true"
+            - name: COOKIE_DOMAIN
+              value: windmill.trdos.me
+          image: ghcr.io/windmill-labs/windmill:1.507.0
+          imagePullPolicy: Always
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - sleep 30
+          name: windmill-mcp
+          ports:
+            - containerPort: 8000
+            - containerPort: 8001
+          readinessProbe:
+            failureThreshold: 1
+            httpGet:
+              httpHeaders:
+                - name: Host
+                  value: localhost
+              path: /
+              port: 8000
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              memory: 2Gi
+      securityContext:
+        runAsNonRoot: false
+        runAsUser: 0
+      serviceAccountName: windmill
+      terminationGracePeriodSeconds: 40

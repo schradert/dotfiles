@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: windmill-lsp
+  namespace: dotfiles
+spec:
+  ports:
+    - port: 3001
+      protocol: TCP
+      targetPort: 3001
+  selector:
+    app.kubernetes.io/name: windmill-lsp
+  sessionAffinity: ClientIP
+  type: ClusterIP

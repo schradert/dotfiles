@@ -154,6 +154,7 @@ in {
       recyclarr.enable = true;
 
       excalidraw.enable = true;
+      windmill.enable = true;
 
       #   clickhouse.enable = true;
       #   windmill.enable = true;
