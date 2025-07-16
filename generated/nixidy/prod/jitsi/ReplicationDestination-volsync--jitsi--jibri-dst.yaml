@@ -1,0 +1,15 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: volsync--jitsi--jibri-dst
+  namespace: dotfiles
+spec:
+  restic:
+    copyMethod: Direct
+    destinationPVC: jitsi-jitsi-meet-jibri
+    moverSecurityContext:
+      runAsGroup: 101
+      runAsUser: 101
+    repository: volsync--jitsi--jibri
+  trigger:
+    manual: "1"

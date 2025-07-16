@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: web
+    app.kubernetes.io/instance: jitsi
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: jitsi-meet
+  name: jitsi-jitsi-meet-web
+  namespace: dotfiles
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: web
+      app.kubernetes.io/instance: jitsi
+      app.kubernetes.io/name: jitsi-meet
+  template:
+    metadata:
+      annotations:
+        checksum/config: e04eb8b8a4de18c218063e13683fa76d412862aecc45ec783ecc6cb148ea7e51
+      labels:
+        app.kubernetes.io/component: web
+        app.kubernetes.io/instance: jitsi
+        app.kubernetes.io/name: jitsi-meet
+    spec:
+      containers:
+        - envFrom:
+            - configMapRef:
+                name: jitsi-jitsi-meet-web
+            - configMapRef:
+                name: jitsi-prosody-common
+          image: jitsi/web:web-1.0.8725-1
+          imagePullPolicy: Never
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+          name: jitsi-meet
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP
+            - containerPort: 443
+              name: https
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+          resources: {}
+          securityContext: {}
+          volumeMounts:
+            - mountPath: /config
+              name: config
+      securityContext: {}
+      serviceAccountName: jitsi-jitsi-meet
+      volumes:
+        - emptyDir: {}
+          name: config
+        - configMap:
+            defaultMode: 493
+            items:
+              - key: 10-config
+                path: 10-config
+            name: jitsi-jitsi-meet-web-init
+          name: custom-init
+        - configMap:
+            items:
+              - key: custom-config.js
+                path: custom-config.js
+              - key: custom-interface_config.js
+                path: custom-interface_config.js
+              - key: default
+                path: default
+              - key: ffdhe2048.txt
+                path: ffdhe2048.txt
+              - key: interface_config.js
+                path: interface_config.js
+              - key: meet.conf
+                path: meet.conf
+              - key: nginx.conf
+                path: nginx.conf
+              - key: settings-config.js
+                path: settings-config.js
+              - key: ssl.conf
+                path: ssl.conf
+              - key: system-config.js
+                path: system-config.js
+            name: jitsi-jitsi-meet-web-conffiles
+          name: custom-conffiles

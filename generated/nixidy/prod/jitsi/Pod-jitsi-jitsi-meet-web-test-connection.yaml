@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    helm.sh/hook: test-success
+  labels:
+    app.kubernetes.io/component: web
+    app.kubernetes.io/instance: jitsi
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: jitsi-meet
+  name: jitsi-jitsi-meet-web-test-connection
+  namespace: dotfiles
+spec:
+  containers:
+    - args:
+        - jitsi-jitsi-meet-web:80
+      command:
+        - wget
+      image: busybox:1.37.0-glibc
+      name: wget
+  restartPolicy: Never

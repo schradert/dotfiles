@@ -1,0 +1,13 @@
+apiVersion: v1
+data:
+  10-config: |
+    # Using jicofo /etc/cont-init.d/10-config from container image
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/component: jicofo
+    app.kubernetes.io/instance: jitsi
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: jitsi-meet
+  name: jitsi-jitsi-meet-jicofo-cont-inits
+  namespace: dotfiles

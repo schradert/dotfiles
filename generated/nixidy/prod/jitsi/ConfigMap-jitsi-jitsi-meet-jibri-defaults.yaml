@@ -1,0 +1,19 @@
+apiVersion: v1
+data:
+  autoscaler-sidecar.config: |
+    # Using jibri /default/autoscaler-sidecar.config from container image
+  jibri.conf: |
+    # Using jibri /default/jibri.conf from container image
+  logging.properties: |
+    # Using jibri /default/logging.properties from container image
+  xorg-video-dummy.conf: |
+    # Using jibri /default/xorg-video-dummy.conf from container image
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/component: jibri
+    app.kubernetes.io/instance: jitsi
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: jitsi-meet
+  name: jitsi-jitsi-meet-jibri-defaults
+  namespace: dotfiles

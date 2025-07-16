@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    helm.sh/hook: test-success
+  labels:
+    app.kubernetes.io/instance: jitsi
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: prosody
+  name: jitsi-prosody-test-connection
+  namespace: dotfiles
+spec:
+  containers:
+    - args:
+        - jitsi-prosody:5280/http-bind
+      command:
+        - wget
+      image: busybox:1.37.0-glibc
+      name: wget
+  restartPolicy: Never

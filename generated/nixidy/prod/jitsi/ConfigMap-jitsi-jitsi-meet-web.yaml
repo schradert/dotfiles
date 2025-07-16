@@ -1,0 +1,15 @@
+apiVersion: v1
+data:
+  DISABLE_HTTPS: "1"
+  ENABLE_HTTP_REDIRECT: "0"
+  JICOFO_AUTH_USER: focus
+  XMPP_BOSH_URL_BASE: http://jitsi-prosody.dotfiles.svc.cluster.local:5280
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/component: web
+    app.kubernetes.io/instance: jitsi
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: jitsi-meet
+  name: jitsi-jitsi-meet-web
+  namespace: dotfiles

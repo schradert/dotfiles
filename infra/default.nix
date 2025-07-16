@@ -155,11 +155,7 @@ in {
 
       excalidraw.enable = true;
       windmill.enable = true;
-
-      #   clickhouse.enable = true;
-      #   windmill.enable = true;
-      #   jitsi.enable = true;
-      #   immich.enable = true;
+      jitsi.enable = true;
     };
   };
 }

@@ -1,0 +1,27 @@
+apiVersion: v1
+data:
+  ENABLE_AUTH: "1"
+  ENABLE_COLIBRI_WEBSOCKET: "false"
+  ENABLE_FILE_RECORDING_SERVICE_SHARING: "true"
+  ENABLE_GUESTS: "0"
+  ENABLE_LIVESTREAMING: "true"
+  ENABLE_RECORDING: "true"
+  ENABLE_SCTP: "true"
+  ENABLE_XMPP_WEBSOCKET: "true"
+  JVB_PREFER_SCTP: "true"
+  PUBLIC_URL: jitsi.trdos.me
+  TZ: Europe/Amsterdam
+  XMPP_AUTH_DOMAIN: auth.meet.jitsi
+  XMPP_DOMAIN: meet.jitsi
+  XMPP_GUEST_DOMAIN: guest.meet.jitsi
+  XMPP_HIDDEN_DOMAIN: hidden.meet.jitsi
+  XMPP_INTERNAL_MUC_DOMAIN: internal-muc.meet.jitsi
+  XMPP_MUC_DOMAIN: muc.meet.jitsi
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: jitsi
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: jitsi-meet
+  name: jitsi-prosody-common
+  namespace: dotfiles

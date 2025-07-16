@@ -1,0 +1,12 @@
+apiVersion: v1
+data:
+  10-config: ""
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/component: web
+    app.kubernetes.io/instance: jitsi
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: jitsi-meet
+  name: jitsi-jitsi-meet-web-init
+  namespace: dotfiles

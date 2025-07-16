@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: jicofo
+    app.kubernetes.io/instance: jitsi
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: jitsi-meet
+  name: jitsi-jitsi-meet-jicofo
+  namespace: dotfiles
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: jicofo
+      app.kubernetes.io/instance: jitsi
+      app.kubernetes.io/name: jitsi-meet
+  template:
+    metadata:
+      annotations:
+        checksum/config: 1810aac00a632b587f99617d59dc87a04740a2ab490abd79fb234bcc8775fccb
+        checksum/secret: 8709e13e514de33abc907672bd8ccbc48a138d35082d22d29e64209afefa349b
+      labels:
+        app.kubernetes.io/component: jicofo
+        app.kubernetes.io/instance: jitsi
+        app.kubernetes.io/name: jitsi-meet
+    spec:
+      containers:
+        - envFrom:
+            - secretRef:
+                name: jitsi-prosody-jicofo
+            - configMapRef:
+                name: jitsi-prosody-common
+            - configMapRef:
+                name: jitsi-jitsi-meet-jicofo
+          image: jitsi/jicofo:jicofo-1.0-1152-1
+          imagePullPolicy: Never
+          livenessProbe:
+            tcpSocket:
+              port: 8888
+          name: jitsi-meet
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 8888
+          resources: {}
+          securityContext: {}
+          volumeMounts:
+            - mountPath: /config
+              name: config
+        - image: prayagsingh/prometheus-jicofo-exporter:1.3.2
+          imagePullPolicy: Never
+          name: metrics
+          ports:
+            - containerPort: 9996
+              name: metrics
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 9996
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          resources: {}
+      securityContext: {}
+      serviceAccountName: jitsi-jitsi-meet
+      volumes:
+        - emptyDir: {}
+          name: config
+        - configMap:
+            defaultMode: 493
+            items:
+              - key: 10-config
+                path: 10-config
+            name: jitsi-jitsi-meet-jicofo-cont-inits
+          name: custom-cont-inits
+        - configMap:
+            items:
+              - key: jicofo.conf
+                path: jicofo.conf
+              - key: logging.properties
+                path: logging.properties
+            name: jitsi-jitsi-meet-jicofo-defaults
+          name: custom-defaults

@@ -1,0 +1,20 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: volsync--jitsi--jibri-src
+  namespace: dotfiles
+spec:
+  restic:
+    copyMethod: Direct
+    moverSecurityContext:
+      fsGroup: 101
+    pruneIntervalDays: 8
+    repository: volsync--jitsi--jibri
+    retain:
+      daily: 1
+      monthly: 1
+      weekly: 1
+      yearly: 1
+  sourcePVC: jitsi-jitsi-meet-jibri
+  trigger:
+    schedule: 0 4 * * *

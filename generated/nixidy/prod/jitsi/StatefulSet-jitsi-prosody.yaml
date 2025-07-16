@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app.kubernetes.io/instance: jitsi
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: prosody
+  name: jitsi-prosody
+  namespace: dotfiles
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: jitsi
+      app.kubernetes.io/name: prosody
+  serviceName: jitsi-prosody
+  template:
+    metadata:
+      annotations:
+        si.jit.meet/hash-configmap: 5ac44efd3cc505c600717260189a9530
+        si.jit.meet/hash-secret: 44136fa355b3678a1146ad16f7e8649e
+      labels:
+        app.kubernetes.io/instance: jitsi
+        app.kubernetes.io/name: prosody
+    spec:
+      containers:
+        - envFrom:
+            - configMapRef:
+                name: jitsi-prosody
+            - secretRef:
+                name: jitsi-prosody
+            - secretRef:
+                name: jitsi-prosody-jibri
+            - secretRef:
+                name: jitsi-prosody-jicofo
+            - secretRef:
+                name: jitsi-prosody-jigasi
+            - secretRef:
+                name: jitsi-prosody-jvb
+            - configMapRef:
+                name: jitsi-prosody-common
+          image: jitsi/prosody:prosody-13.0.2
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            httpGet:
+              path: /http-bind
+              port: bosh-insecure
+          name: prosody
+          ports:
+            - containerPort: 5222
+              name: xmpp-c2s
+              protocol: TCP
+            - containerPort: 5269
+              name: xmpp-s2s
+              protocol: TCP
+            - containerPort: 5347
+              name: xmpp-component
+              protocol: TCP
+            - containerPort: 5280
+              name: bosh-insecure
+              protocol: TCP
+            - containerPort: 5281
+              name: bosh-secure
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /http-bind
+              port: bosh-insecure
+          resources: {}
+          securityContext: {}
+          volumeMounts:
+            - mountPath: /config
+              name: config
+            - mountPath: /config/data
+              name: prosody-data
+      securityContext: {}
+      serviceAccountName: jitsi-prosody
+      volumes:
+        - emptyDir: {}
+          name: config
+        - configMap:
+            defaultMode: 493
+            items:
+              - key: 10-config
+                path: 10-config
+            name: jitsi-prosody-cont-inits
+          name: custom-cont-inits
+        - configMap:
+            items:
+              - key: prosody.cfg.lua
+                path: prosody.cfg.lua
+              - key: saslauthd.conf
+                path: saslauthd.conf
+              - key: jitsi-meet.cfg.lua
+                path: jitsi-meet.cfg.lua
+            name: jitsi-prosody-defaults
+          name: custom-defaults
+        - name: prosody-data
+          persistentVolumeClaim:
+            claimName: prosody-data
+  volumeClaimTemplates:
+    - metadata:
+        name: prosody-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 3G
+        volumeMode: Filesystem

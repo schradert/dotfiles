@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: jvb
+    app.kubernetes.io/instance: jitsi
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: jitsi-meet
+  name: jitsi-jitsi-meet-jvb
+  namespace: dotfiles
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: jvb
+      app.kubernetes.io/instance: jitsi
+      app.kubernetes.io/name: jitsi-meet
+  template:
+    metadata:
+      annotations:
+        checksum/config: da00cc429da6f092003b92f809eead9aa64faeaa10e288cf0d63d4b97960b976
+        checksum/secret: 6dc21f3b70aadd880896ec40a61a91ae92d9615b5f7ebf0a0ebe7941dc938912
+      labels:
+        app.kubernetes.io/component: jvb
+        app.kubernetes.io/instance: jitsi
+        app.kubernetes.io/name: jitsi-meet
+    spec:
+      containers:
+        - env:
+            - name: DOCKER_HOST_ADDRESS
+              value: 192.168.50.254
+            - name: JVB_ADVERTISE_IPS
+              value: 192.168.50.254
+          envFrom:
+            - secretRef:
+                name: jitsi-prosody-jvb
+            - configMapRef:
+                name: jitsi-prosody-common
+            - configMapRef:
+                name: jitsi-jitsi-meet-jvb
+          image: jitsi/jvb:jvb-2.3-247-g6fc76e46b-1
+          imagePullPolicy: Never
+          livenessProbe:
+            httpGet:
+              path: /about/health
+              port: 8080
+          name: jitsi-meet
+          ports:
+            - containerPort: 10000
+              name: rtp-udp
+              protocol: UDP
+          readinessProbe:
+            httpGet:
+              path: /about/health
+              port: 8080
+          resources: {}
+          securityContext: {}
+      securityContext: {}
+      serviceAccountName: jitsi-jitsi-meet

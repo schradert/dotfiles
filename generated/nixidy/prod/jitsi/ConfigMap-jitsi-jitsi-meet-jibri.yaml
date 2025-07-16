@@ -1,0 +1,18 @@
+apiVersion: v1
+data:
+  DISPLAY: :0
+  JIBRI_BREWERY_MUC: jibribrewery
+  JIBRI_FINALIZE_RECORDING_SCRIPT_PATH: /config/finalize.sh
+  JIBRI_RECORDING_DIR: /data/recordings
+  JIBRI_SINGLE_USE_MODE: "true"
+  JIBRI_STRIP_DOMAIN_JID: muc
+  XMPP_SERVER: jitsi-prosody.dotfiles.svc.cluster.local
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/component: jibri
+    app.kubernetes.io/instance: jitsi
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: jitsi-meet
+  name: jitsi-jitsi-meet-jibri
+  namespace: dotfiles

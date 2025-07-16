@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/instance: jitsi
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: prosody
+  name: jitsi-prosody
+  namespace: dotfiles
+spec:
+  ports:
+    - name: tcp-bosh-insecure
+      port: 5280
+      protocol: TCP
+    - name: tcp-bosh-secure
+      port: 5281
+      protocol: TCP
+    - name: tcp-xmpp-component
+      port: 5347
+      protocol: TCP
+    - name: tcp-xmpp-c2
+      port: 5222
+      protocol: TCP
+    - name: tcp-xmpp-s2
+      port: 5269
+      protocol: TCP
+  selector:
+    app.kubernetes.io/instance: jitsi
+    app.kubernetes.io/name: prosody
+  type: ClusterIP

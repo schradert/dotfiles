@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: jvb
+    app.kubernetes.io/instance: jitsi
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: jitsi-meet
+  name: jitsi-jitsi-meet-jvb
+  namespace: dotfiles
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+    - name: rtp-udp
+      port: 10000
+      protocol: UDP
+  selector:
+    app.kubernetes.io/component: jvb
+    app.kubernetes.io/instance: jitsi
+    app.kubernetes.io/name: jitsi-meet
+  type: ClusterIP

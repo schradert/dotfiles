@@ -1,0 +1,16 @@
+apiVersion: v1
+data:
+  jitsi-meet.cfg.lua: |
+    # Using prosody /default/conf.d/jitsi-meet.cfg.lua from container image
+  prosody.cfg.lua: |
+    # Using prosody /default/prosody.cfg.lua from container image
+  saslauthd.conf: |
+    # Using prosody /default/saslauthd.conf from container image
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: jitsi
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: prosody
+  name: jitsi-prosody-defaults
+  namespace: dotfiles
