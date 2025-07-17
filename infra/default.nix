@@ -155,6 +155,7 @@ in {
       excalidraw.enable = true;
       windmill.enable = true;
       jitsi.enable = true;
+      immich.enable = true;
     };
   };
 }

@@ -1,0 +1,11 @@
+apiVersion: v1
+data:
+  immich.json: '{}'
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: immich-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: immich-server
+  name: immich-server-immich-server-files
+  namespace: dotfiles

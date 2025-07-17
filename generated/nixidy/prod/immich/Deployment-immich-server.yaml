@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    reloader.stakater.com/auto: "true"
+  labels:
+    app.kubernetes.io/controller: immich-server
+    app.kubernetes.io/instance: immich-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: immich-server
+  name: immich-server
+  namespace: dotfiles
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: immich-server
+      app.kubernetes.io/instance: immich-server
+      app.kubernetes.io/name: immich-server
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        checksum/configMaps: f8d799f915ac27de8963c31ab565ac589786cbd02e02341d3f6739b9922e6d88
+      labels:
+        app.kubernetes.io/controller: immich-server
+        app.kubernetes.io/instance: immich-server
+        app.kubernetes.io/name: immich-server
+    spec:
+      automountServiceAccountToken: true
+      containers:
+        - envFrom:
+            - configMapRef:
+                name: immich-server
+          image: ghcr.io/immich-app/immich-server:v1.135.3
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /api/server/ping
+              port: http
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+          name: immich-server
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /api/server/ping
+              port: http
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+          startupProbe:
+            failureThreshold: 30
+            httpGet:
+              path: /api/server/ping
+              port: http
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+          volumeMounts:
+            - mountPath: /config
+              name: config
+            - mountPath: /usr/src/app/upload
+              name: library
+            - mountPath: /secrets
+              name: secrets
+      dnsPolicy: ClusterFirst
+      enableServiceLinks: false
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      serviceAccountName: default
+      volumes:
+        - configMap:
+            name: immich-server-files
+          name: config
+        - name: library
+          persistentVolumeClaim:
+            claimName: immich-server
+        - name: secrets
+          secret:
+            secretName: immich-server

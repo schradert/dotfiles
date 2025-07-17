@@ -7,6 +7,7 @@ spec:
   databases:
     autobrr: autobrr
     gatus: gatus
+    immich: immich
     keycloak: keycloak
     lidarr-log: lidarr
     lidarr-main: lidarr
@@ -25,10 +26,17 @@ spec:
   numberOfInstances: 1
   postgresql:
     version: "16"
+  preparedDatabases:
+    immich:
+      extensions:
+        cube: public
+        earthdistance: public
+        vectors: public
   teamId: acid
   users:
     autobrr: createdb
     gatus: createdb
+    immich: createdb
     keycloak: createdb
     lidarr: createdb
     prowlarr: createdb

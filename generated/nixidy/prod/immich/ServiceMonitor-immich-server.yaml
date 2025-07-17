@@ -1,0 +1,22 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app.kubernetes.io/instance: immich-server
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: immich-server
+  name: immich-server
+  namespace: dotfiles
+spec:
+  endpoints:
+    - port: metrics-api
+    - port: metrics-ms
+  jobLabel: immich-server
+  namespaceSelector:
+    matchNames:
+      - dotfiles
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: immich-server
+      app.kubernetes.io/name: immich-server
+      app.kubernetes.io/service: immich-server

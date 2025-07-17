@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app.kubernetes.io/instance: immich-machine-learning
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: immich-machine-learning
+  name: immich-machine-learning
+  namespace: dotfiles
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
