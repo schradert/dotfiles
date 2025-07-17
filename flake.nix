@@ -2,21 +2,6 @@
   description = "System configuration";
   outputs = inputs: inputs.canivete.lib.mkFlake {inherit inputs;} [./infra ./modules] {};
   inputs = {
-    ### Test Nixidy
-    # TODO track https://github.com/arnarg/nixidy/pull/43
-    # TODO track https://github.com/arnarg/nixidy/pull/44
-    # TODO track https://github.com/arnarg/nixidy/pull/45
-    # nixidy.url = "github:arnarg/nixidy";
-    nixidy.url = "github:schradert/nixidy/working";
-    nixidy.inputs.nixpkgs.follows = "nixpkgs";
-    nixidy.inputs.flake-utils.follows = "flake-utils";
-    nixidy.inputs.nix-kube-generators.follows = "nix-kube-generators";
-    nixhelm.url = "github:farcaller/nixhelm";
-    nixhelm.inputs.nixpkgs.follows = "nixpkgs";
-    nixhelm.inputs.nix-kube-generators.follows = "nix-kube-generators";
-    nixhelm.inputs.poetry2nix.follows = "poetry2nix";
-    nix-kube-generators.url = "github:farcaller/nix-kube-generators";
-
     ### REPOSITORY
 
     canivete.url = "github:schradert/canivete";
@@ -80,16 +65,19 @@
     opentofu-registry.flake = false;
 
     # Containers + Kubernetes
-    # TODO follow updates and revert on merge
-    # NOTE https://github.com/hall/kubenix/issues/52
-    # kubenix.url = "github:hall/kubenix";
-    kubenix.url = "github:schradert/kubenix/52-patch";
-    kubenix.inputs = {
-      nixpkgs.follows = "nixpkgs";
-      flake-compat.follows = "flake-compat";
-      systems.follows = "systems";
-      treefmt.follows = "treefmt";
-    };
+    # TODO track https://github.com/arnarg/nixidy/pull/43
+    # TODO track https://github.com/arnarg/nixidy/pull/44
+    # TODO track https://github.com/arnarg/nixidy/pull/45
+    # nixidy.url = "github:arnarg/nixidy";
+    nixidy.url = "github:schradert/nixidy/working";
+    nixidy.inputs.nixpkgs.follows = "nixpkgs";
+    nixidy.inputs.flake-utils.follows = "flake-utils";
+    nixidy.inputs.nix-kube-generators.follows = "nix-kube-generators";
+    nixhelm.url = "github:farcaller/nixhelm";
+    nixhelm.inputs.nixpkgs.follows = "nixpkgs";
+    nixhelm.inputs.nix-kube-generators.follows = "nix-kube-generators";
+    nixhelm.inputs.poetry2nix.follows = "poetry2nix";
+    nix-kube-generators.url = "github:farcaller/nix-kube-generators";
     nix2container.url = "github:nlewo/nix2container";
     nix2container.inputs.nixpkgs.follows = "nixpkgs";
     # NOTE Arion has no argument to prefer buildLayeredImage when streamLayeredImage doesn't work across systems

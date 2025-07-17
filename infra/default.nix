@@ -68,7 +68,6 @@ in {
         finalImageTag = "2.28.3";
       };
     };
-    kubenix.canivete.root = "sirver";
     nixidy = {
       nixidy.target = {
         repository = "https://github.com/schradert/dotfiles.git";

@@ -4,7 +4,7 @@
     lib,
     ...
   }: let
-    inherit (lib) generators hasSuffix mkEnableOption mkIf pipe;
+    inherit (lib) generators mkEnableOption mkIf;
     operatorVersion = "0.25.0";
     server.image = {
       name = "dotfiles/clickhouse-server-odbc";
@@ -105,61 +105,44 @@
           };
         };
       };
-      kubenix = {
-        canivete,
-        helm,
+      nixidy = {
+        lib,
         pkgs,
         ...
       }: {
-        canivete.ifd.crds = {
-          clickhouseinstallations = "clickhouse.altinity.com/v1/ClickHouseInstallation";
-          clickhouseinstallationtemplates = "clickhouse.altinity.com/v1/ClickHouseInstallationTemplate";
-        };
-        kubernetes.imports =
-          pipe {
+        dotfiles.crds.clickhouse = {
+          install = true;
+          prefix = "deploy/helm/clickhouse-operator/crds";
+          src = pkgs.fetchFromGitHub {
             owner = "Altinity";
             repo = "clickhouse-operator";
             rev = "release-0.24.3";
             hash = "sha256-8y5YVfrhtmP8Nti2HGPVG8t3RPgsUEyGEfTfbex84bI=";
-          } [
-            pkgs.fetchFromGitHub
-            (source: source + "/deploy/helm/clickhouse-operator/crds")
-            (canivete.filesets.files (name: _: hasSuffix ".yaml" name))
-          ];
-        kubernetes.helm.releases.clickhouse = {
-          chart = helm.fetch {
-            repo = "https://helm.altinity.com";
-            chart = "clickhouse";
-            version = "0.2.2";
-            sha256 = "sha256-ooNxXM6axFT8tVVtekHs83vQFl2i6FUe9cc0KeCxQTo=";
           };
-          dotfiles.volsync.pvcs.clickhouse = {
-            title = "clickhouse-data-chi-clickhouse-clickhouse-0-0-0";
-            # inject = false;
+        };
+        applications.clickhouse = {
+          namespace = "storage";
+          dotfiles.volsync.pvcs.clickhouse.title = "clickhouse-data-chi-clickhouse-clickhouse-0-0-0";
+          helm.releases.clickhouse = {
+            chart = lib.helm.downloadHelmChart {
+              chart = "clickhouse";
+              version = "0.2.2";
+              repo = "https://helm.altinity.com";
+              chartHash = "sha256-ooNxXM6axFT8tVVtekHs83vQFl2i6FUe9cc0KeCxQTo=";
+            };
+            values = {
+              clickhouse.defaultUser = {
+                # TODO default user secret password
+                # password = canivete.vals.sops.default "passwords/clickhouse";
+                hostIP = "10.0.0.0/24";
+              };
+              clickhouse.image = {
+                repository = server.image.name;
+                inherit (server.image) tag;
+              };
+              operator.operator.image.tag = operatorVersion;
+            };
           };
-          # TODO what happens as soon as I install multiple ClickhouseInstallation???
-          # TODO resurrect this override when StorageClass changes
-          # NOTE Must be explicit here since ClickhouseInstallationTemplate doesn't have merge keys
-          # extraResources.clickhouseinstallationtemplates.clickhouse-data.spec.templates.volumeClaimTemplates = mkForce (toList {
-          #   name = "clickhouse-data";
-          #   reclaimPolicy = "Retain";
-          #   spec.accessModes = ["ReadWriteOnce"];
-          #   spec.resources.requests.storage = "10Gi";
-          #   spec.dataSourceRef = {
-          #     kind = "ReplicationDestination";
-          #     apiGroup = "volsync.backube";
-          #     name = "volsync--clickhouse--clickhouse-data-chi-clickhouse-clickhouse-0-0-0";
-          #   };
-          # });
-          values.clickhouse.defaultUser = {
-            password = canivete.vals.sops.default "passwords/clickhouse";
-            hostIP = "10.0.0.0/24";
-          };
-          values.clickhouse.image = {
-            repository = server.image.name;
-            inherit (server.image) tag;
-          };
-          values.operator.operator.image.tag = operatorVersion;
         };
       };
     };

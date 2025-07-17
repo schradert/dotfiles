@@ -4,7 +4,6 @@
     lib,
     ...
   }: let
-    subdomain = "forgejo.${config.domain}";
     image = {
       imageName = "";
       imageDigest = "";
@@ -15,16 +14,15 @@
     options.services.forgejo.enable = lib.mkEnableOption "forgejo";
     config = lib.mkIf config.services.forgejo.enable {
       nixos = {pkgs, ...}: {canivete.kubernetes.images.forgejo = pkgs.dockerTools.pullImage image;};
-      kubenix = {helm, ...}: {
-        kubernetes.helm.releases.forgejo = {
-          namespace = "storage";
-          chart = helm.fetch {
-            chartUrl = "oci://code.forgejo.org/forgejo-helm/forgejo";
+      nixidy = {lib, ...}: {
+        applications.foregejo = {
+          namespace = "dotfiles";
+          helm.releases.forgejo.chart = lib.helm.downloadHelmChart {
             chart = "forgejo";
-            version = "8.1.2";
-            sha256 = "gpkBBdHtC5uaynOPRjgai5CTfZhOCeCCtsal9tJXgPY=";
+            version = "12.5.3";
+            repo = "oci://code.forgejo.org/forgejo-helm";
+            chartHash = "";
           };
-          values.gitea.config.server.DOMAIN = subdomain;
         };
       };
     };

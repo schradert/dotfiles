@@ -16,27 +16,29 @@
     options.services.k8tz.enable = mkEnableOption "k8tz";
     config = mkIf config.services.k8tz.enable {
       nixos = {pkgs, ...}: {canivete.kubernetes.images.k8tz = pkgs.dockerTools.pullImage image;};
-      kubenix = {helm, ...}: {
-        # The health-test pod runs before the service is ready, so we force it to retry
-        kubernetes.api.resources.core.v1.Pod.k8tz-health-test.spec.restartPolicy = mkForce "OnFailure";
-        kubernetes.helm.releases.k8tz = {
+      nixidy = {lib, ...}: {
+        applications.k8tz = {
           namespace = "kube-system";
-          chart = helm.fetch {
-            repo = "https://k8tz.github.io/k8tz";
-            chart = "k8tz";
-            version = "0.16.2";
-            sha256 = "sVdg7TG+6WB9+z+r2POJP9GrjIgTVgdj0omGAbqzMRU=";
-          };
-          values = {
-            namespace = null;
-            timezone = "America/Los_Angeles";
-            cronJobTimeZone = true;
-            affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution = toList {
-              weight = 1;
-              podAffinityTerm.labelSelector.matchLabels."app.kubernetes.io/name" = "k8tz";
-              podAffinityTerm.topologyKey = "kubernetes.io/hostname";
+          helm.releases.k8tz = {
+            chart = lib.helm.downloadHelmChart {
+              chart = "k8tz";
+              version = "0.18.0";
+              repo = "https://k8tz.github.io/k8tz";
+              chartHash = "";
+            };
+            values = {
+              namespace = null;
+              timezone = "America/Los_Angeles";
+              cronJobTimeZone = true;
+              affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution = toList {
+                weight = 1;
+                podAffinityTerm.labelSelector.matchLabels."app.kubernetes.io/name" = "k8tz";
+                podAffinityTerm.topologyKey = "kubernetes.io/hostname";
+              };
             };
           };
+          # The health-test pod runs before the service is ready, so we force it to retry
+          resources.pods.k8tz-health-test.spec.restartPolicy = mkForce "OnFailure";
         };
       };
     };

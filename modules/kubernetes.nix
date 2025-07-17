@@ -17,13 +17,10 @@ in {
     system,
     ...
   }: {
-    canivete.kubenix.clusters.deploy = config.dotfiles.kubenix;
-    canivete.opentofu.workspaces.bootstrap.encryptedState.enable = false;
     canivete.pre-commit.settings = {
       excludes = ["generated"];
       hooks.lychee.toml.exclude = ["https://192.168.50.*"];
     };
-    packages.nixidy = inputs'.nixidy.packages.default;
     legacyPackages.nixidyEnvs.${system} = inputs.nixidy.lib.mkEnvs {
       inherit pkgs;
       modules = [config.dotfiles.nixidy];
@@ -34,7 +31,6 @@ in {
   };
   dotfiles = _: {
     options.nixidy = canivete.mkModuleOption {description = "Common nixidy configuration";};
-    options.kubenix = canivete.mkModuleOption {description = "Common kubenix configuration";};
     config = {
       nixos = {
         config,
@@ -52,15 +48,12 @@ in {
           })
         ];
       };
-      opentofu.kubernetes.cluster = "deploy";
-      kubenix = {pkgs, ...}: {
-        # nothing currently defined upstream and I don't know what features I'm even using
-        options.kubernetes.api.resources."kapp.k14s.io".v1alpha1.Config = mkOption {
-          type = attrsOf (submodule {freeformType = (pkgs.formats.yaml {}).type;});
+      opentofu.modules = {perSystem, ...}: {
+        resource.null_resource.kubernetes = {
+          # TODO avoid hardcoding root and env names
+          depends_on = ["module.nixos_sirver_system_install"];
+          provisioner.local-exec.command = "nix run \${ var.GIT_DIR }#nixidyEnvs.${perSystem.system}.prod.config.build.scripts.bootstrap";
         };
-        # Cannot be split into multiple lines because it's injected into a script
-        # TODO fix these hardcoded values
-        config.canivete.deploy.fetchKubeconfig = "ssh 192.168.50.58 sudo k3s kubectl config view --raw | sed 's/127\.0\.0\.1/192.168.50.58/'";
       };
       nixidy = {
         env,
@@ -150,8 +143,17 @@ in {
             };
           }
           # Bootstrap
-          ({config, ...}: {
-            nixidy.applicationImports = [
+          ({
+            config,
+            pkgs,
+            ...
+          }: {
+            options.build.scripts.bootstrap = mkOption {
+              type = package;
+              internal = true;
+              description = "Command to bootstrap cluster";
+            };
+            config.nixidy.applicationImports = [
               (_: {
                 options.dotfiles.bootstrap = {
                   enable = mkEnableOption "importing resources into cluster bootstrap";
@@ -159,13 +161,61 @@ in {
                 };
               })
             ];
-            applications.__bootstrap.objects = pipe config.nixidy.publicApps [
+            config.applications.__bootstrap.objects = pipe config.nixidy.publicApps [
               (filter (name: name != config.nixidy.appOfApps.name))
               (map (name: config.applications.${name}))
               (filter (app: app.dotfiles.bootstrap.enable))
               (map (app: filter (obj: !(elem (getGVKN obj) app.dotfiles.bootstrap.exclude)) app.objects))
               flatten
             ];
+            config.build.scripts.bootstrap = pkgs.mkShellApplication {
+              # Vals needs to run in the project root to read SOPS
+              name = "nixidy-bootstrap-${env}";
+              runtimeInputs = [
+                pkgs.git
+                config.build.scripts.nixidy
+                pkgs.vals
+                config.build.scripts.kubeconfig
+                pkgs.kapp
+              ];
+              text = ''
+                cd "$(git rev-parse --show-toplevel)"
+                nixidy bootstrap .#${env} | \
+                  vals eval -s -decode-kubernetes-secrets -f - | \
+                  kubeconfig kapp deploy --yes --diff-changes --app bootstrap --file -
+              '';
+            };
+          })
+          # Kubeconfig
+          ({pkgs, ...}: {
+            options.build.scripts.kubeconfig = mkOption {
+              type = package;
+              internal = true;
+              description = "Command to connect cluster";
+            };
+            config.build.scripts.kubeconfig = pkgs.mkShellApplication {
+              name = "kubeconfig";
+              runtimeInputs = with pkgs; [openssh tinybox];
+              # TODO fix these hardcoded values
+              text = ''
+                KUBECONFIG="$(mktemp)"
+                export KUBECONFIG
+                trap 'rm -f "$KUBECONFIG"' EXIT
+                ssh 192.168.50.58 sudo k3s kubectl config view --raw | \
+                  sed 's/127\.0\.0\.1/192.168.50.58/' \
+                  >"$KUBECONFIG"
+                "''${@}"
+              '';
+            };
+          })
+          # Nixidy
+          ({inputs', ...}: {
+            options.build.scripts.nixidy = mkOption {
+              type = package;
+              internal = true;
+              description = "Nixidy executable";
+            };
+            config.build.scripts.nixidy = inputs'.nixidy.packages.default;
           })
         ];
         nixidy.target.rootPath = "./generated/nixidy/${env}";

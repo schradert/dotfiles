@@ -1,11 +1,7 @@
 {
-  # TODO fix backups
   # TODO AI features https://docs.mealie.io/documentation/getting-started/installation/open-ai/
-  # TODO export logs into Loki
-  # TODO home-assistant widget
   # TODO bulk import some recipes https://docs.mealie.io/documentation/community-guide/bulk-url-import/
   # TODO bookmarklet https://docs.mealie.io/documentation/community-guide/import-recipe-bookmarklet/
-  # TODO nix built image
   dotfiles = {
     config,
     lib,
@@ -14,7 +10,7 @@
     inherit (config) domain;
     inherit (config.services) external-secrets mealie postgres;
     inherit (lib) mkEnableOption mkIf toList;
-    subdomain = "mealie.${domain}";
+    hostname = "mealie.${domain}";
     image = {
       imageName = "ghcr.io/mealie-recipes/mealie";
       imageDigest = "";
@@ -25,59 +21,71 @@
     options.services.mealie.enable = mkEnableOption "mealie";
     config = mkIf mealie.enable {
       nixos = {pkgs, ...}: {canivete.kubernetes.images.mealie = pkgs.dockerTools.pullImage image;};
-      kubenix.dotfiles.postgres.mealie = {};
-      kubenix.kubernetes.helm.releases.mealie = {
-        namespace = "home";
-        extraResources = mkIf (external-secrets.enable && postgres.enable) {
-          externalsecrets.mealie.spec = {
-            secretStoreRef.name = "kubernetes-default";
-            secretStoreRef.kind = "ClusterSecretStore";
-            dataFrom = [{extract.key = "mealie.main.credentials.postgresql.acid.zalan.do";}];
-            target.template.data.POSTGRES_PASSWORD = "{{ .password }}";
-          };
-        };
-        values = {
-          controllers.mealie.annotations."reloader.stakater.com/auto" = "true";
-          controllers.mealie.containers.mealie = {
-            image.repository = image.imageName;
-            image.tag = image.finalImageTag;
-            envFrom = [
-              {configMapRef.name = "mealie";}
-              {secret = "mealie";}
+      nixidy = {charts, ...}: {
+        dotfiles.postgres.mealie = {};
+        applications.mealie = {
+          namespace = "dotfiles";
+          helm.releases.mealie = {
+            chart = charts.bjw-s-labs.app-template;
+            values = mkMerge [
+              {
+                controllers.mealie.containers.mealie = {
+                  image.repository = image.imageName;
+                  image.tag = image.finalImageTag;
+                  envFrom = [
+                    {configMapRef.name = "mealie";}
+                    {secret = "mealie";}
+                  ];
+                  probes.liveness.enabled = true;
+                  probes.readiness.enabled = true;
+                  probes.startup.enabled = true;
+                };
+                service.mealie.ports.http.port = 9000;
+                configMaps.mealie.data = {
+                  ALLOW_SIGNUP = "false";
+                  BASE_URL = "https" + "://${hostname}";
+                };
+              }
+              i
+              (mkIf services.reloader.enable {
+                controllers.mealie.annotations."reloader.stakater.com/auto" = "true";
+              })
+              (mkIf services.cilium.enable {
+                route.mealie = {
+                  hostnames = [hostname];
+                  parentRefs = toList {
+                    name = "internal";
+                    namespace = "kube-system";
+                    sectionName = "https";
+                  };
+                };
+              })
+              (mkIf services.postgres.enable {
+                configMaps.mealie.data = {
+                  DB_ENGINE = "postgres";
+                  POSTGRES_SERVER = "main.storage.svc.cluster.local";
+                };
+              })
+              (mkIf services.keycloak.enable {
+                configMaps.mealie.data = {
+                  OIDC_AUTH_ENABLED = "true";
+                  OIDC_CONFIGURATION_URL = "https" + "://keycloak.${domain}/realms/primary/.well-known/openid-configuration";
+                  OIDC_CLIENT_ID = "mealie";
+                  OIDC_USER_GROUP = "/family";
+                  OIDC_ADMIN_GROUP = "/admin";
+                  OIDC_AUTO_REDIRECT = "true";
+                  OIDC_REMEMBER_ME = "true";
+                };
+              })
             ];
-            probes.liveness.enabled = true;
-            probes.readiness.enabled = true;
-            probes.startup.enabled = true;
-            resources.requests.cpu = "5m";
-            resources.requests.memory = "256Mi";
-            resources.limits.memory = "512Mi";
           };
-          service.mealie.controller = "mealie";
-          service.mealie.ports.http.port = 9000;
-          ingress.mealie = {
-            annotations."external-dns.alpha.kubernetes.io/target" = "external.${domain}";
-            className = "external";
-            hosts = toList {
-              host = subdomain;
-              paths = toList {
-                path = "/";
-                service.identifier = "mealie";
-                service.port = "http";
-              };
+          resources = mkIf (services.external-secrets.enable && services.postgres.enable) {
+            externalSecrets.mealie.spec = {
+              secretStoreRef.name = "kubernetes-default";
+              secretStoreRef.kind = "ClusterSecretStore";
+              dataFrom = [{extract.key = "mealie.main.credentials.postgresql.acid.zalan.do";}];
+              target.template.data.POSTGRES_PASSWORD = "{{ .password }}";
             };
-          };
-          configMaps.mealie-configmap.data = {
-            ALLOW_SIGNUP = "false";
-            BASE_URL = "https://${subdomain}";
-            DB_ENGINE = "postgres";
-            OIDC_AUTH_ENABLED = "true";
-            OIDC_CONFIGURATION_URL = "https://${"keycloak." + domain}/realms/primary/.well-known/openid-configuration";
-            OIDC_CLIENT_ID = "mealie";
-            OIDC_USER_GROUP = "/family";
-            OIDC_ADMIN_GROUP = "/admin";
-            OIDC_AUTO_REDIRECT = "true";
-            OIDC_REMEMBER_ME = "true";
-            POSTGRES_SERVER = "main.storage.svc.cluster.local";
           };
         };
       };

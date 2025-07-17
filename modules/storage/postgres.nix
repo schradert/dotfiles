@@ -20,25 +20,6 @@ in {
     options.services.postgres.enable = mkEnableOption "Postgres";
     config = mkMerge [
       {
-        kubenix = {pkgs, ...}: {
-          options.dotfiles.postgres = mkOption {
-            default = {};
-            description = "Main postgres instance configuration";
-            type = attrsOf (submodule ({name, ...}: {
-              freeformType = (pkgs.formats.yaml {}).type;
-              options = {
-                inherit databases;
-                users = mkOption {
-                  default = {};
-                  type = attrsOf (listOf str);
-                  description = "Users to create in the database for this application";
-                };
-              };
-              config.databases.${name} = name;
-              config.users.${name} = ["createdb"];
-            }));
-          };
-        };
         nixidy = {pkgs, ...}: {
           options.dotfiles.postgres = mkOption {
             default = {};

@@ -250,11 +250,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1752007761,
-        "narHash": "sha256-J/vSM1FZDZn7PLnSHBWuAQWzJ3hIRhGzosw0pgqDMxs=",
+        "lastModified": 1752722936,
+        "narHash": "sha256-JRgm+uscGbOu15btES/uNkgbS8AoY2GL8pqdH1Gz6lg=",
         "owner": "schradert",
         "repo": "canivete",
-        "rev": "cc77483d90c567cde3ac57ef2e06a33be850cb3a",
+        "rev": "a733a078adc32b59032f201986c7b29a8025e51a",
         "type": "github"
       },
       "original": {
@@ -1767,36 +1767,6 @@
         "type": "github"
       }
     },
-    "kubenix": {
-      "inputs": {
-        "flake-compat": [
-          "flake-compat"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ],
-        "systems": [
-          "systems"
-        ],
-        "treefmt": [
-          "treefmt"
-        ]
-      },
-      "locked": {
-        "lastModified": 1740625118,
-        "narHash": "sha256-n8lCPSQMqxYQdA7XBmK6EsgS8dAJm8J/DkSxctfUgF0=",
-        "owner": "schradert",
-        "repo": "kubenix",
-        "rev": "1eefed2f1d5bdcb161f9379a4cfdb405e2fb2099",
-        "type": "github"
-      },
-      "original": {
-        "owner": "schradert",
-        "ref": "52-patch",
-        "repo": "kubenix",
-        "type": "github"
-      }
-    },
     "libpng": {
       "flake": false,
       "locked": {
@@ -2916,7 +2886,6 @@
         "hyprutils": "hyprutils",
         "hyprwayland-scanner": "hyprwayland-scanner",
         "jovian": "jovian",
-        "kubenix": "kubenix",
         "matugen": "matugen",
         "mynur": "mynur",
         "naersk": "naersk",

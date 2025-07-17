@@ -19,7 +19,8 @@
       };
     };
   };
-  perSystem.canivete.opentofu.workspaces.deploy = _: {
-    imports = [config.dotfiles.opentofu];
+  perSystem.canivete.opentofu.workspaces = {
+    bootstrap.encryptedState.enable = false;
+    deploy = _: {imports = [config.dotfiles.opentofu];};
   };
 }

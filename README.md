@@ -19,7 +19,7 @@ Fair warning this repository does not follow more traditional patterns for infra
 
 ## TODO
 
-- [ ] only evaluate packages for opentofu config (it's currently building kubenix config every time...)
+- [ ] external-secrets password generator
 - [ ] is input.self causing every node to redeploy even on unrelated changes? (sops-install-service has to be restarted EVERY time)
 - [ ] nix and cluster image garbage collector
 - [ ] why do I have to `rm -rf /var/lib/rancher/k3s/agent/images && systemd-tmpfiles --create --remove` when a new image with same name is pushed?! (only applies to `buildImage` because symlink name is the same) (could be with systemd-tmpfiles-resetup)
