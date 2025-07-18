@@ -160,6 +160,7 @@ in {
       windmill.enable = true;
       jitsi.enable = true;
       immich.enable = true;
+      atuin.enable = true;
     };
   };
 }

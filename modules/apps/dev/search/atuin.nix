@@ -11,9 +11,9 @@
     metricsPort = 8080;
     image = {
       imageName = "ghcr.io/atuinsh/atuin";
-      imageDigest = "sha256:869a85bcc169ae9a3ea65dcf32a99dae982d28d8562172e2712d3313d7349203";
-      hash = "";
-      finalImageTag = "v18.6.1";
+      imageDigest = "sha256:f096ee29583b53f8d9442b1bc2631b3a07e0e5887bac99a672406359147fec0f";
+      hash = "sha256-7A2+glmlJQiQwZZN0I9mVqHb4apWLlhvnLJtO9d7m5M=";
+      finalImageTag = "v18.7.1";
     };
   in {
     options.services.atuin.enable = mkEnableOption "Atuin";
@@ -31,11 +31,9 @@
                 controllers.atuin.containers.atuin = {
                   image.repository = image.imageName;
                   image.tag = image.finalImageTag;
+                  command = ["atuin"];
                   args = ["server" "start"];
-                  envFrom = [
-                    {secret = "atuin";}
-                    {configMapRef.name = "atuin";}
-                  ];
+                  envFrom = [{configMapRef.name = "atuin";} {secret = "atuin";}];
                   probes.liveness.enabled = true;
                   probes.readiness.enabled = true;
                   probes.startup.enabled = true;

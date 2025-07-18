@@ -1,0 +1,15 @@
+apiVersion: v1
+data:
+  ATUIN_HOST: 0.0.0.0
+  ATUIN_METRICS__ENABLE: "true"
+  ATUIN_METRICS__HOST: 0.0.0.0
+  ATUIN_METRICS__PORT: "8080"
+  ATUIN_PORT: "8888"
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: atuin
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: atuin
+  name: atuin
+  namespace: dotfiles

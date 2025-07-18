@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    reloader.stakater.com/auto: "true"
+  labels:
+    app.kubernetes.io/controller: atuin
+    app.kubernetes.io/instance: atuin
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: atuin
+  name: atuin
+  namespace: dotfiles
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: atuin
+      app.kubernetes.io/instance: atuin
+      app.kubernetes.io/name: atuin
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        checksum/configMaps: 765fb080e038ffec5394136e6dcf77b043e1b901d8bc93377dfa5490f1178faa
+      labels:
+        app.kubernetes.io/controller: atuin
+        app.kubernetes.io/instance: atuin
+        app.kubernetes.io/name: atuin
+    spec:
+      automountServiceAccountToken: true
+      containers:
+        - args:
+            - server
+            - start
+          command:
+            - atuin
+          envFrom:
+            - configMapRef:
+                name: atuin
+            - secretRef:
+                name: atuin
+          image: ghcr.io/atuinsh/atuin:v18.7.1
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 8888
+            timeoutSeconds: 1
+          name: atuin
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 8888
+            timeoutSeconds: 1
+          startupProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 8888
+            timeoutSeconds: 1
+          volumeMounts:
+            - mountPath: /config
+              name: config
+      dnsPolicy: ClusterFirst
+      enableServiceLinks: false
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      serviceAccountName: default
+      volumes:
+        - emptyDir: {}
+          name: config

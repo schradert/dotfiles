@@ -5,6 +5,7 @@ metadata:
   namespace: storage
 spec:
   databases:
+    atuin: atuin
     autobrr: autobrr
     gatus: gatus
     immich: immich
@@ -34,6 +35,7 @@ spec:
         vectors: public
   teamId: acid
   users:
+    atuin: createdb
     autobrr: createdb
     gatus: createdb
     immich: createdb

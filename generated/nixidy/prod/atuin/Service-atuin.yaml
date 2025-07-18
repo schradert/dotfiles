@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/instance: atuin
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: atuin
+    app.kubernetes.io/service: atuin
+  name: atuin
+  namespace: dotfiles
+spec:
+  ports:
+    - name: http
+      port: 8888
+      protocol: TCP
+      targetPort: 8888
+    - name: metrics
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app.kubernetes.io/controller: atuin
+    app.kubernetes.io/instance: atuin
+    app.kubernetes.io/name: atuin
+  type: ClusterIP
