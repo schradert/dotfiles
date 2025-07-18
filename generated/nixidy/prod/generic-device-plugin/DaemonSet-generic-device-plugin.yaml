@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  annotations:
+    reloader.stakater.com/auto: "true"
+  labels:
+    app.kubernetes.io/controller: generic-device-plugin
+    app.kubernetes.io/instance: generic-device-plugin
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: generic-device-plugin
+  name: generic-device-plugin
+  namespace: kube-system
+spec:
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: generic-device-plugin
+      app.kubernetes.io/instance: generic-device-plugin
+      app.kubernetes.io/name: generic-device-plugin
+  template:
+    metadata:
+      annotations:
+        checksum/configMaps: 20641d1056ee57fd19f27c58b6b926fc3f7cbcc1d9e1d92dc36f39509f87feed
+      labels:
+        app.kubernetes.io/controller: generic-device-plugin
+        app.kubernetes.io/instance: generic-device-plugin
+        app.kubernetes.io/name: generic-device-plugin
+    spec:
+      automountServiceAccountToken: true
+      containers:
+        - args:
+            - --config
+            - /config/config.yaml
+          image: ghcr.io/squat/generic-device-plugin:36bfc606bba2064de6ede0ff2764cbb52edff70d
+          name: generic-device-plugin
+          volumeMounts:
+            - mountPath: /config/config.yaml
+              name: config
+              readOnly: true
+              subPath: config.yaml
+            - mountPath: /dev
+              name: dev
+              readOnly: true
+            - mountPath: /sys
+              name: sys
+              readOnly: true
+            - mountPath: /var/lib/kubelet/device-plugins
+              name: var-lib-kubelet-device-plugins
+      dnsPolicy: ClusterFirst
+      enableServiceLinks: false
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      priorityClassName: system-node-critical
+      serviceAccountName: default
+      volumes:
+        - configMap:
+            name: generic-device-plugin
+          name: config
+        - hostPath:
+            path: /dev
+          name: dev
+        - hostPath:
+            path: /sys
+          name: sys
+        - hostPath:
+            path: /var/lib/kubelet/device-plugins
+          name: var-lib-kubelet-device-plugins

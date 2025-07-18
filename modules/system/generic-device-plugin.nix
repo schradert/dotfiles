@@ -7,9 +7,9 @@
     inherit (lib) mkEnableOption mkIf toList;
     image = {
       imageName = "ghcr.io/squat/generic-device-plugin";
-      imageDigest = "";
-      hash = "";
-      finalImageTag = "";
+      imageDigest = "sha256:ba6f0b4cf6c858d6ad29ba4d32e4da11638abbc7d96436bf04f582a97b2b8821";
+      hash = "sha256-Wyxgy5giKRdf1L6PVDTaiki+zWjhNS9oJeQ8lWK95pE=";
+      finalImageTag = "36bfc606bba2064de6ede0ff2764cbb52edff70d";
     };
   in {
     options.services.generic-device-plugin.enable = mkEnableOption "generic-device-plugin";
@@ -33,21 +33,29 @@
                 };
               };
               persistence = {
-                config.type = "configMap";
-                config.name = "generic-device-plugin";
-                config.globalMounts = toList {
-                  path = "/config/config.yaml";
-                  subPath = "config.yaml";
-                  readOnly = true;
+                config = {
+                  type = "configMap";
+                  name = "generic-device-plugin";
+                  globalMounts = toList {
+                    path = "/config/config.yaml";
+                    subPath = "config.yaml";
+                    readOnly = true;
+                  };
                 };
-                dev.type = "hostPath";
-                dev.hostPath = "/dev";
-                dev.globalMounts = [{readOnly = true;}];
-                sys.type = "hostPath";
-                sys.hostPath = "/sys";
-                sys.globalMounts = [{readOnly = true;}];
-                plugins.type = "hostPath";
-                plugins.hostPath = "/var/lib/kubelet/device-plugins";
+                dev = {
+                  type = "hostPath";
+                  hostPath = "/dev";
+                  globalMounts = [{readOnly = true;}];
+                };
+                sys = {
+                  type = "hostPath";
+                  hostPath = "/sys";
+                  globalMounts = [{readOnly = true;}];
+                };
+                var-lib-kubelet-device-plugins = {
+                  type = "hostPath";
+                  hostPath = "/var/lib/kubelet/device-plugins";
+                };
               };
               configMaps.generic-device-plugin.data."config.yaml" = builtins.toJSON {
                 devices = toList {
