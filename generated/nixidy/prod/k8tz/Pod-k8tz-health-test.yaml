@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    helm.sh/hook: test
+  labels:
+    app.kubernetes.io/instance: k8tz
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: k8tz
+  name: k8tz-health-test
+  namespace: kube-system
+spec:
+  containers:
+    - args:
+        - --insecure
+        - https://k8tz:443/health
+      image: curlimages/curl:7.78.0
+      name: curl
+  restartPolicy: OnFailure

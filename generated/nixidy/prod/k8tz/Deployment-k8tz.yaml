@@ -1,0 +1,119 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/instance: k8tz
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: k8tz
+  name: k8tz
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: k8tz
+      app.kubernetes.io/name: k8tz
+  template:
+    metadata:
+      annotations:
+        checksum/config: eec633cba826d39eb8c4e1037a709922428c9a2318586044bd4dd38432613147
+      labels:
+        app.kubernetes.io/instance: k8tz
+        app.kubernetes.io/name: k8tz
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: k8tz
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+      containers:
+        - args:
+            - webhook
+            - --timezone
+            - America/Los_Angeles
+            - --injection-strategy
+            - initContainer
+            - --inject=true
+            - --container-name=k8tz
+            - --bootstrap-image
+            - quay.io/k8tz/k8tz:0.18.0
+            - --tls-crt
+            - /run/secrets/shared-tls/tls.crt
+            - --tls-key
+            - /run/secrets/shared-tls/tls.key
+            - --cronJobTimeZone
+          image: quay.io/k8tz/k8tz:0.18.0
+          imagePullPolicy: Never
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: https
+              scheme: HTTPS
+          name: k8tz
+          ports:
+            - containerPort: 8443
+              name: https
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: https
+              scheme: HTTPS
+          resources: {}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          volumeMounts:
+            - mountPath: /run/secrets/tls
+              name: tls
+              readOnly: true
+            - mountPath: /run/secrets/shared-tls
+              name: shared-tls
+              readOnly: true
+        - args:
+            - cert-watcher
+            - --tls-crt
+            - /run/secrets/shared-tls/tls.crt
+            - --tls-key
+            - /run/secrets/shared-tls/tls.key
+            - --secret-name
+            - k8tz-tls
+            - --secret-namespace
+            - kube-system
+          image: quay.io/k8tz/k8tz:0.18.0
+          imagePullPolicy: Never
+          name: k8tz-cert-watcher
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          volumeMounts:
+            - mountPath: /run/secrets/tls
+              name: tls
+              readOnly: true
+            - mountPath: /run/secrets/shared-tls
+              name: shared-tls
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: k8tz
+      volumes:
+        - name: tls
+          secret:
+            secretName: k8tz-tls
+        - emptyDir: {}
+          name: shared-tls

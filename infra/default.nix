@@ -111,6 +111,7 @@ in {
       kubelet-csr-approver.enable = true;
       cert-manager.enable = true;
       cert-manager.provider.cloudflare.token = "cloudflare/account/token";
+      k8tz.enable = true;
 
       snapshot-controller.enable = true;
       openebs.enable = true;

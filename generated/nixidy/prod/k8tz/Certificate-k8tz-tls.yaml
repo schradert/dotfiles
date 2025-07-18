@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  labels:
+    app.kubernetes.io/instance: k8tz
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: k8tz
+  name: k8tz-tls
+  namespace: kube-system
+spec:
+  dnsNames:
+    - k8tz.kube-system.svc
+  duration: 2160h
+  issuerRef:
+    kind: Issuer
+    name: k8tz-webhook-issuer
+  renewBefore: 720h
+  secretName: k8tz-tls
