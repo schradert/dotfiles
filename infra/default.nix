@@ -161,6 +161,7 @@ in {
       jitsi.enable = true;
       immich.enable = true;
       atuin.enable = true;
+      actual.enable = true;
     };
   };
 }

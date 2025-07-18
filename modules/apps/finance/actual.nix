@@ -5,20 +5,19 @@
     lib,
     ...
   }: let
-    inherit (lib) mkEnableOption mkIf toList;
-    inherit (config) domain;
-    hostname  = "actual.${domain}";
-    port = 5006;
+    inherit (lib) mkEnableOption mkIf mkMerge toList;
+    inherit (config) services;
+    hostname = "actual.${config.domain}";
     image = {
       imageName = "ghcr.io/actualbudget/actual-server";
-      imageDigest = "";
-      hash = "";
-      finalImageTag = "";
+      imageDigest = "sha256:b6bb759f31d1c2c82a37d04f9d8930359ae8e3b3faa8eaa5338a0a2328702908";
+      hash = "sha256-ynjUL7aml5DGuZWHWb2dc77QlTkjPsoz0ilwTBJBXm4=";
+      finalImageTag = "25.7.1";
     };
   in {
-    options.services.actualbudget.enable = mkEnableOption "actualbudget";
-    config = mkIf config.services.actualbudget.enable {
-      nixos = {pkgs, ...}: {canivete.kubernetes.images.actualbudget = pkgs.dockerTools.pullImage image;};
+    options.services.actual.enable = mkEnableOption "actual";
+    config = mkIf config.services.actual.enable {
+      nixos = {pkgs, ...}: {canivete.kubernetes.images.actual = pkgs.dockerTools.pullImage image;};
       opentofu = {
         dotfiles.secrets.actual.value = "\${ random_password.actual.result }";
         passwords.actual = {
@@ -29,6 +28,7 @@
       nixidy = {charts, ...}: {
         applications.actual = {
           namespace = "dotfiles";
+          dotfiles.volsync.pvcs.actual = "actual";
           helm.releases.actual = {
             chart = charts.bjw-s-labs.app-template;
             values = mkMerge [
@@ -41,13 +41,14 @@
                   probes.readiness.enabled = true;
                   probes.startup.enabled = true;
                 };
-                service.actual.ports.http.port = port;
-                persistence.data.existingClaim = "actual";
-                persistence.data.globalMounts = [{path = "/data";}];
-                configMaps.actual.data = {
-                  ACTUAL_PORT = builtins.toString port;
-                  ACTUAL_LOGIN_METHOD = "header";
+                service.actual.ports.http.port = 5006;
+                persistence.data = {
+                  type = "persistentVolumeClaim";
+                  size = "1Gi";
+                  accessMode = "ReadWriteOnce";
                 };
+                # FIXME add proxy HTTP headers to authenticate safely
+                configMaps.actual.data.ACTUAL_LOGIN_METHOD = "header";
               }
               (mkIf services.reloader.enable {
                 controllers.actual.annotations."reloader.stakater.com/auto" = "true";
