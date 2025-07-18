@@ -1,0 +1,64 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    helm.sh/hook: post-delete
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+  labels:
+    app.kubernetes.io/instance: node-feature-discovery
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: node-feature-discovery
+  name: node-feature-discovery-prune
+  namespace: kube-system
+spec:
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: node-feature-discovery
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: node-feature-discovery
+        role: prune
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - preference:
+                matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: In
+                    values:
+                      - ""
+              weight: 1
+            - preference:
+                matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: In
+                    values:
+                      - ""
+              weight: 1
+      containers:
+        - args:
+            - -prune
+          command:
+            - nfd-master
+          image: registry.k8s.io/nfd/node-feature-discovery:v0.17.3
+          imagePullPolicy: Never
+          name: nfd-master
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+      restartPolicy: Never
+      serviceAccountName: node-feature-discovery-prune
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Equal
+          value: ""
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/control-plane
+          operator: Equal
+          value: ""

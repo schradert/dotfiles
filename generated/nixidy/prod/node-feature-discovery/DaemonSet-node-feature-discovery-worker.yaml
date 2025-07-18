@@ -1,0 +1,132 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app.kubernetes.io/instance: node-feature-discovery
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: node-feature-discovery
+    role: worker
+  name: node-feature-discovery-worker
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: node-feature-discovery
+      app.kubernetes.io/name: node-feature-discovery
+      role: worker
+  template:
+    metadata:
+      annotations:
+        checksum/config: e097c733065bf31d97816d94c02b9ceb122e324cbb0bb58ae8303c2af78b840c
+      labels:
+        app.kubernetes.io/instance: node-feature-discovery
+        app.kubernetes.io/name: node-feature-discovery
+        role: worker
+    spec:
+      containers:
+        - args:
+            - -feature-gates=NodeFeatureGroupAPI=false
+            - -metrics=8081
+            - -grpc-health=8082
+          command:
+            - nfd-worker
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_UID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.uid
+          image: registry.k8s.io/nfd/node-feature-discovery:v0.17.3
+          imagePullPolicy: Never
+          livenessProbe:
+            grpc:
+              port: 8082
+            initialDelaySeconds: 10
+          name: worker
+          ports:
+            - containerPort: 8081
+              name: metrics
+            - containerPort: 8082
+              name: health
+          readinessProbe:
+            failureThreshold: 10
+            grpc:
+              port: 8082
+            initialDelaySeconds: 5
+          resources:
+            limits:
+              memory: 512Mi
+            requests:
+              cpu: 5m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+          volumeMounts:
+            - mountPath: /host-boot
+              name: host-boot
+              readOnly: true
+            - mountPath: /host-etc/os-release
+              name: host-os-release
+              readOnly: true
+            - mountPath: /host-sys
+              name: host-sys
+              readOnly: true
+            - mountPath: /host-usr/lib
+              name: host-usr-lib
+              readOnly: true
+            - mountPath: /host-lib
+              name: host-lib
+              readOnly: true
+            - mountPath: /host-proc/swaps
+              name: host-proc-swaps
+              readOnly: true
+            - mountPath: /etc/kubernetes/node-feature-discovery/features.d/
+              name: features-d
+              readOnly: true
+            - mountPath: /etc/kubernetes/node-feature-discovery
+              name: nfd-worker-conf
+              readOnly: true
+      dnsPolicy: ClusterFirstWithHostNet
+      hostNetwork: false
+      securityContext: {}
+      serviceAccountName: node-feature-discovery-worker
+      volumes:
+        - hostPath:
+            path: /boot
+          name: host-boot
+        - hostPath:
+            path: /etc/os-release
+          name: host-os-release
+        - hostPath:
+            path: /sys
+          name: host-sys
+        - hostPath:
+            path: /usr/lib
+          name: host-usr-lib
+        - hostPath:
+            path: /lib
+          name: host-lib
+        - hostPath:
+            path: /proc/swaps
+          name: host-proc-swaps
+        - hostPath:
+            path: /etc/kubernetes/node-feature-discovery/features.d/
+          name: features-d
+        - configMap:
+            items:
+              - key: nfd-worker.conf
+                path: nfd-worker.conf
+            name: node-feature-discovery-worker-conf
+          name: nfd-worker-conf

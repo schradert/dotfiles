@@ -113,6 +113,7 @@ in {
       cert-manager.provider.cloudflare.token = "cloudflare/account/token";
       k8tz.enable = true;
       generic-device-plugin.enable = true;
+      node-feature-discovery.enable = true;
 
       snapshot-controller.enable = true;
       openebs.enable = true;
