@@ -7,6 +7,7 @@ spec:
   databases:
     atuin: atuin
     autobrr: autobrr
+    firefly: firefly
     gatus: gatus
     immich: immich
     keycloak: keycloak
@@ -37,6 +38,7 @@ spec:
   users:
     atuin: createdb
     autobrr: createdb
+    firefly: createdb
     gatus: createdb
     immich: createdb
     keycloak: createdb

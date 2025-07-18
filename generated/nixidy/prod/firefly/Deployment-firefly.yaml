@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    reloader.stakater.com/auto: "true"
+  labels:
+    app.kubernetes.io/controller: firefly
+    app.kubernetes.io/instance: firefly
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firefly
+  name: firefly
+  namespace: dotfiles
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: firefly
+      app.kubernetes.io/instance: firefly
+      app.kubernetes.io/name: firefly
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        checksum/configMaps: 76f182fb142be59665cc8d8f5791ba3a2e8936abedf8f57804d84b95b73acbc9
+      labels:
+        app.kubernetes.io/controller: firefly
+        app.kubernetes.io/instance: firefly
+        app.kubernetes.io/name: firefly
+    spec:
+      automountServiceAccountToken: true
+      containers:
+        - image: fireflyiii/core:version-6.2.21
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+          name: firefly
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+          startupProbe:
+            failureThreshold: 30
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+          volumeMounts:
+            - mountPath: /.env
+              name: config
+              readOnly: true
+            - mountPath: /secrets
+              name: secrets
+            - mountPath: /var/www/html/storage/upload
+              name: upload
+      dnsPolicy: ClusterFirst
+      enableServiceLinks: false
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      serviceAccountName: default
+      volumes:
+        - configMap:
+            name: firefly
+          name: config
+        - name: secrets
+          secret:
+            secretName: firefly
+        - name: upload
+          persistentVolumeClaim:
+            claimName: firefly

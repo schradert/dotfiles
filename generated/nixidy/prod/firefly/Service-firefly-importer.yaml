@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/instance: firefly-importer
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firefly-importer
+    app.kubernetes.io/service: firefly-importer
+  name: firefly-importer
+  namespace: dotfiles
+spec:
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app.kubernetes.io/controller: firefly-importer
+    app.kubernetes.io/instance: firefly-importer
+    app.kubernetes.io/name: firefly-importer
+  type: ClusterIP

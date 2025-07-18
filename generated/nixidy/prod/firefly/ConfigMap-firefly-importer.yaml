@@ -1,0 +1,13 @@
+apiVersion: v1
+data:
+  FIREFLY_III_URL: http://firefly.dotfiles.svc.cluster.local
+  IGNORE_DUPLICATE_ERRORS: "false"
+  VANITY_URL: https://firefly.trdos.me
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: firefly-importer
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firefly-importer
+  name: firefly-importer
+  namespace: dotfiles

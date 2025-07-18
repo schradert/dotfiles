@@ -1,0 +1,26 @@
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: HTTPRoute
+metadata:
+  labels:
+    app.kubernetes.io/instance: firefly-importer
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firefly-importer
+  name: firefly-importer
+  namespace: dotfiles
+spec:
+  hostnames:
+    - firefly-importer-tristan.trdos.me
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: internal
+      namespace: kube-system
+      sectionName: https
+  rules:
+    - backendRefs:
+        - group: ""
+          kind: Service
+          name: firefly-importer
+          namespace: dotfiles
+          port: 8080
+          weight: 1

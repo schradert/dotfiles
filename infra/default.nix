@@ -162,6 +162,7 @@ in {
       immich.enable = true;
       atuin.enable = true;
       actual.enable = true;
+      firefly.enable = true;
     };
   };
 }

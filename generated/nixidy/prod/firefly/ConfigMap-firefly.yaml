@@ -1,0 +1,16 @@
+apiVersion: v1
+data:
+  APP_KEY_FILE: /secrets/app_key.txt
+  AUTHENTICATION_GUARD: remote_user_guard
+  AUTHENTICATION_GUARD_EMAIL: HTTP_X_AUTH_REQUEST_EMAIL
+  AUTHENTICATION_GUARD_HEADER: HTTP_X_AUTH_REQUEST_PREFERRED_USERNAME
+  DB_HOST: main.storage.svc.cluster.local
+  DB_PASSWORD_FILE: /secrets/db_password.txt
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: firefly
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firefly
+  name: firefly
+  namespace: dotfiles

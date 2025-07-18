@@ -1,0 +1,15 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: volsync--firefly--firefly-dst
+  namespace: dotfiles
+spec:
+  restic:
+    copyMethod: Direct
+    destinationPVC: firefly
+    moverSecurityContext:
+      runAsGroup: 101
+      runAsUser: 101
+    repository: volsync--firefly--firefly
+  trigger:
+    manual: "1"
