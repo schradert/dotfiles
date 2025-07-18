@@ -65,9 +65,9 @@
     opentofu-registry.flake = false;
 
     # Containers + Kubernetes
-    # TODO track https://github.com/arnarg/nixidy/pull/43
     # TODO track https://github.com/arnarg/nixidy/pull/44
     # TODO track https://github.com/arnarg/nixidy/pull/45
+    # TODO track https://github.com/arnarg/nixidy/pull/46
     # nixidy.url = "github:arnarg/nixidy";
     nixidy.url = "github:schradert/nixidy/working";
     nixidy.inputs.nixpkgs.follows = "nixpkgs";

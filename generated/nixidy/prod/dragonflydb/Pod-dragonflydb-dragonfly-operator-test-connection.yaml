@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    helm.sh/hook: test
+  labels:
+    app.kubernetes.io/created-by: dragonfly-operator
+    app.kubernetes.io/instance: dragonflydb
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: dragonfly-operator
+    app.kubernetes.io/part-of: dragonfly-operator
+  name: dragonflydb-dragonfly-operator-test-connection
+  namespace: storage
+spec:
+  containers:
+    - args:
+        - dragonflydb-dragonfly-operator:8443
+      command:
+        - wget
+      image: busybox
+      name: wget
+  restartPolicy: Never

@@ -1,0 +1,25 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app.kubernetes.io/component: controller-manager-metrics
+    app.kubernetes.io/created-by: dragonfly-operator
+    app.kubernetes.io/instance: dragonflydb
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: dragonfly-operator
+    app.kubernetes.io/part-of: dragonfly-operator
+  name: dragonflydb-dragonfly-operator-controller-manager-metrics
+  namespace: storage
+spec:
+  endpoints:
+    - interval: 30s
+      scrapeTimeout: 10s
+      targetPort: 8080
+  jobLabel: dragonflydb-dragonfly-operator
+  namespaceSelector:
+    matchNames:
+      - storage
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: dragonflydb
+      app.kubernetes.io/name: dragonfly-operator

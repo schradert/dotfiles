@@ -45,19 +45,19 @@
         };
         applications.immich = {
           namespace = "dotfiles";
+          dotfiles.volsync.pvcs = {
+            immich-server = "immich-server";
+            immich-machine-learning = "immich-machine-learning";
+            # FIXME confirm this PVC title is correct
+            immich-server-dragonfly = "immich-server-dragonfly";
+          };
           helm.releases.immich-server = {
             chart = charts.bjw-s-labs.app-template;
             values = mkMerge [
               {
-                configMaps.immich-server.data = {
-                  IMMICH_CONFIG_FILE = "/config/immich.json";
-                  DB_HOSTNAME = "main.default.svc.cluster.local";
-                  DB_USERNAME = "immich";
-                  DB_PASSWORD_FILE = "/secrets/db_password.txt";
-                  # TODO redis configuration
-                };
                 # TODO configure UI
                 configMaps.immich-server-files.data."immich.json" = builtins.toJSON {};
+                configMaps.immich-server.data.IMMICH_CONFIG_FILE = "/config/immich.json";
                 controllers.immich-server.strategy = "RollingUpdate";
                 controllers.immich-server.containers.immich-server = {
                   image.repository = images.immich-server.imageName;
@@ -110,6 +110,20 @@
                   {port = "metrics-ms";}
                 ];
               })
+              (mkIf services.postgres.enable {
+                configMaps.immich-server.data = {
+                  DB_HOSTNAME = "main.default.svc.cluster.local";
+                  DB_USERNAME = "immich";
+                  DB_PASSWORD_FILE = "/secrets/db_password.txt";
+                };
+              })
+              (mkIf services.dragonflydb.enable {
+                configMaps.immich-serer.data = {
+                  REDIS_HOSTNAME = "immich-dragonfly.dotfiles.svc.cluster.local";
+                  REDIS_USERNAME = "dragonfly";
+                  REDIS_PASSWORD_FILE = "/secrets/cache_password.txt";
+                };
+              })
             ];
           };
           helm.releases.immich-machine-learning = {
@@ -138,6 +152,20 @@
             ];
           };
           resources = mkMerge [
+            (mkIf services.dragonflydb.enable {
+              dragonflies.immich.spec = {
+                authentication.passwordFromSecret = {
+                  name = "immich-server";
+                  key = "cache_password.txt";
+                };
+                replicas = 1;
+                snapshot.cron = "*/5 * * * *";
+                snapshot.persistentVolumeClaimSpec = {
+                  accessModes = ["ReadWriteOnce"];
+                  resources.requests.storage = "2Gi";
+                };
+              };
+            })
             (mkIf services.external-secrets.enable {
               externalSecrets.immich-server.spec.data = mkMerge [
                 (mkIf services.postgres.enable (toList {
@@ -145,6 +173,12 @@
                   remoteRef.key = "immich.main.credentials.postgresql.acid.zalan.do";
                   remoteRef.property = "password";
                   sourceRef.storeRef.name = "kubernetes-default";
+                  sourceRef.storeRef.kind = "ClusterSecretStore";
+                }))
+                (mkIf services.dragonflydb.enable (toList {
+                  secretKey = "cache_password.txt";
+                  remoteRef.key = "dragonflydb/immich";
+                  sourceRef.storeRef.name = "bitwarden";
                   sourceRef.storeRef.kind = "ClusterSecretStore";
                 }))
               ];

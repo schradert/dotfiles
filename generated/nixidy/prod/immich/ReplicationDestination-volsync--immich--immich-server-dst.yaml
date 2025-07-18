@@ -1,0 +1,15 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: volsync--immich--immich-server-dst
+  namespace: dotfiles
+spec:
+  restic:
+    copyMethod: Direct
+    destinationPVC: immich-server
+    moverSecurityContext:
+      runAsGroup: 101
+      runAsUser: 101
+    repository: volsync--immich--immich-server
+  trigger:
+    manual: "1"

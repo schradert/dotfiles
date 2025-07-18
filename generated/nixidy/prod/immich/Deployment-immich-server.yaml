@@ -23,7 +23,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/configMaps: f8d799f915ac27de8963c31ab565ac589786cbd02e02341d3f6739b9922e6d88
+        checksum/configMaps: 380b52d35d36552bfd9106ffaa19714327e2ab8fa036fda3be04a31edd09dde7
       labels:
         app.kubernetes.io/controller: immich-server
         app.kubernetes.io/instance: immich-server

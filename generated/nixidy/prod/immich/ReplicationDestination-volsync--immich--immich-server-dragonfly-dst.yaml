@@ -1,0 +1,15 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: volsync--immich--immich-server-dragonfly-dst
+  namespace: dotfiles
+spec:
+  restic:
+    copyMethod: Direct
+    destinationPVC: immich-server-dragonfly
+    moverSecurityContext:
+      runAsGroup: 101
+      runAsUser: 101
+    repository: volsync--immich--immich-server-dragonfly
+  trigger:
+    manual: "1"

@@ -117,6 +117,7 @@ in {
       volsync.enable = true;
       postgres.enable = true;
       rook-ceph.enable = true;
+      dragonflydb.enable = true;
 
       descheduler.enable = true;
       reloader.enable = true;
