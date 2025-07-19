@@ -164,6 +164,7 @@ in {
       atuin.enable = true;
       actual.enable = true;
       firefly.enable = true;
+      mealie.enable = true;
     };
   };
 }

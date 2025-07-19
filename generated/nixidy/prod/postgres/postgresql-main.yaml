@@ -13,6 +13,7 @@ spec:
     keycloak: keycloak
     lidarr-log: lidarr
     lidarr-main: lidarr
+    mealie: mealie
     prowlarr-log: prowlarr
     prowlarr-main: prowlarr
     radarr-log: radarr
@@ -43,6 +44,7 @@ spec:
     immich: createdb
     keycloak: createdb
     lidarr: createdb
+    mealie: createdb
     prowlarr: createdb
     radarr: createdb
     readarr: createdb

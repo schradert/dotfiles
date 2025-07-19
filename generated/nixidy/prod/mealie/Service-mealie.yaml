@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/instance: mealie
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mealie
+    app.kubernetes.io/service: mealie
+  name: mealie
+  namespace: dotfiles
+spec:
+  ports:
+    - name: http
+      port: 9000
+      protocol: TCP
+      targetPort: 9000
+  selector:
+    app.kubernetes.io/controller: mealie
+    app.kubernetes.io/instance: mealie
+    app.kubernetes.io/name: mealie
+  type: ClusterIP

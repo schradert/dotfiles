@@ -1,0 +1,23 @@
+apiVersion: v1
+data:
+  ALLOW_PASSWORD_LOGIN: "False"
+  ALLOW_SIGNUP: "False"
+  BASE_URL: https://mealie.trdos.me
+  DB_ENGINE: postgres
+  OIDC_ADMIN_GROUP: /admin
+  OIDC_AUTH_ENABLED: "True"
+  OIDC_AUTO_REDIRECT: "True"
+  OIDC_CLIENT_ID: mealie
+  OIDC_CONFIGURATION_URL: https://keycloak.trdos.me/realms/primary/.well-known/openid-configuration
+  OIDC_REMEMBER_ME: "True"
+  OIDC_USER_GROUP: /family
+  POSTGRES_PASSWORD_FILE: /secrets/db_password.txt
+  POSTGRES_SERVER: main.storage.svc.cluster.local
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/instance: mealie
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mealie
+  name: mealie
+  namespace: dotfiles

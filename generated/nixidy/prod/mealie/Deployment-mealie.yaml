@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    reloader.stakater.com/auto: "true"
+  labels:
+    app.kubernetes.io/controller: mealie
+    app.kubernetes.io/instance: mealie
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: mealie
+  name: mealie
+  namespace: dotfiles
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: mealie
+      app.kubernetes.io/instance: mealie
+      app.kubernetes.io/name: mealie
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        checksum/configMaps: ca24bddbb3ef25a81a0a911b8579eb2b058a63d46b1d40cd127738286a69a53e
+      labels:
+        app.kubernetes.io/controller: mealie
+        app.kubernetes.io/instance: mealie
+        app.kubernetes.io/name: mealie
+    spec:
+      automountServiceAccountToken: true
+      containers:
+        - envFrom:
+            - configMapRef:
+                name: mealie
+          image: ghcr.io/mealie-recipes/mealie:v3.0.1
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 9000
+            timeoutSeconds: 1
+          name: mealie
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 9000
+            timeoutSeconds: 1
+          startupProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            tcpSocket:
+              port: 9000
+            timeoutSeconds: 1
+          volumeMounts:
+            - mountPath: /secrets
+              name: secrets
+      dnsPolicy: ClusterFirst
+      enableServiceLinks: false
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      serviceAccountName: default
+      volumes:
+        - name: secrets
+          secret:
+            secretName: mealie
