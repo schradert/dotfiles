@@ -1,0 +1,32 @@
+apiVersion: clickhouse.altinity.com/v1
+kind: ClickHouseInstallationTemplate
+metadata:
+  labels:
+    app.kubernetes.io/instance: clickhouse
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: clickhouse
+  name: clickhouse-service
+  namespace: storage
+spec:
+  templates:
+    serviceTemplates:
+      - metadata:
+          labels:
+            app.kubernetes.io/instance: clickhouse
+            app.kubernetes.io/managed-by: Helm
+            app.kubernetes.io/name: clickhouse
+            app.kubernetes.io/version: 24.8.14.10459
+            helm.sh/chart: clickhouse-0.2.6
+        name: clickhouse-service
+        spec:
+          ports:
+            - name: http
+              port: 8123
+              targetPort: 8123
+            - name: tcp
+              port: 9000
+              targetPort: 9000
+          selector:
+            app.kubernetes.io/instance: clickhouse
+            app.kubernetes.io/name: clickhouse
+          type: ClusterIP

@@ -1,0 +1,45 @@
+apiVersion: clickhouse.altinity.com/v1
+kind: ClickHouseInstallation
+metadata:
+  labels:
+    app.kubernetes.io/instance: clickhouse
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: clickhouse
+  name: clickhouse
+  namespace: storage
+spec:
+  configuration:
+    clusters:
+      - layout:
+          replicasCount: 1
+          shardsCount: 1
+        name: clickhouse
+        secret:
+          auto: "true"
+        secure: "yes"
+    files:
+      config.d/extra_config.xml: |
+        <clickhouse>
+        </clickhouse>
+    users:
+      default/access_management: 1
+      default/named_collection_control: 1
+      default/networks/ip: 10.0.0.0/24
+      default/password:
+        valueFrom:
+          secretKeyRef:
+            key: password
+            name: clickhouse-credentials
+      default/show_named_collections: 1
+      default/show_named_collections_secrets: 1
+  defaults:
+    templates:
+      dataVolumeClaimTemplate: clickhouse-data
+      logVolumeClaimTemplate: clickhouse-logs
+      podTemplate: clickhouse-pod
+      serviceTemplate: clickhouse-service
+  useTemplates:
+    - name: clickhouse-service
+    - name: clickhouse-pod
+    - name: clickhouse-data
+    - name: clickhouse-logs

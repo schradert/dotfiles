@@ -1,0 +1,22 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  annotations:
+    meta.helm.sh/release-name: clickhouse
+    meta.helm.sh/release-namespace: storage
+  labels:
+    app.kubernetes.io/instance: clickhouse
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: operator
+  name: clickhouse-operator-clickhouse-metrics
+  namespace: storage
+spec:
+  endpoints:
+    - interval: 30s
+      port: clickhouse-metrics
+    - interval: 30s
+      port: operator-metrics
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: clickhouse
+      app.kubernetes.io/name: operator

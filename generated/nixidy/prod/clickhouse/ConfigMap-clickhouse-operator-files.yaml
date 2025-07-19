@@ -1,0 +1,169 @@
+apiVersion: v1
+data:
+  config.yaml: |-
+    annotation:
+      exclude: []
+      include: []
+    clickhouse:
+      access:
+        password: ""
+        port: 8123
+        rootCA: ""
+        scheme: auto
+        secret:
+          name: 'clickhouse-operator'
+          namespace: ""
+        timeouts:
+          connect: 1
+          query: 4
+        username: ""
+      addons:
+        rules:
+        - spec:
+            configuration:
+              files: null
+              profiles: null
+              quotas: null
+              settings: null
+              users: null
+          version: '*'
+        - spec:
+            configuration:
+              files: null
+              profiles: null
+              quotas: null
+              settings: null
+              users:
+                '{clickhouseOperatorUser}/access_management': 1
+                '{clickhouseOperatorUser}/named_collection_control': 1
+                '{clickhouseOperatorUser}/show_named_collections': 1
+                '{clickhouseOperatorUser}/show_named_collections_secrets': 1
+          version: '>= 23.3'
+        - spec:
+            configuration:
+              files: null
+              profiles:
+                clickhouse_operator/format_display_secrets_in_show_and_select: 1
+              quotas: null
+              settings:
+                display_secrets_in_show_and_select: 1
+              users: null
+          version: '>= 23.5'
+      configuration:
+        file:
+          path:
+            common: chi/config.d
+            host: chi/conf.d
+            user: chi/users.d
+        network:
+          hostRegexpTemplate: (chi-{chi}-[^.]+\d+-\d+|clickhouse\-{chi})\.{namespace}\.svc\.cluster\.local$
+        user:
+          default:
+            networksIP:
+            - ::1
+            - 127.0.0.1
+            password: default
+            profile: default
+            quota: default
+      configurationRestartPolicy:
+        rules:
+        - rules:
+          - settings/*: "yes"
+          - settings/access_control_path: "no"
+          - settings/dictionaries_config: "no"
+          - settings/max_server_memory_*: "no"
+          - settings/max_*_to_drop: "no"
+          - settings/max_concurrent_queries: "no"
+          - settings/models_config: "no"
+          - settings/user_defined_executable_functions_config: "no"
+          - settings/logger/*: "no"
+          - settings/macros/*: "no"
+          - settings/remote_servers/*: "no"
+          - settings/user_directories/*: "no"
+          - settings/display_secrets_in_show_and_select: "no"
+          - zookeeper/*: "yes"
+          - files/*.xml: "yes"
+          - files/config.d/*.xml: "yes"
+          - files/config.d/*dict*.xml: "no"
+          - files/config.d/*no_restart*: "no"
+          - profiles/default/background_*_pool_size: "yes"
+          - profiles/default/max_*_for_server: "yes"
+          version: '*'
+        - rules:
+          - settings/logger: "yes"
+          version: 21.*
+      metrics:
+        timeouts:
+          collect: 9
+    keeper:
+      configuration:
+        file:
+          path:
+            common: chk/keeper_config.d
+            host: chk/conf.d
+            user: chk/users.d
+    label:
+      appendScope: "no"
+      exclude: []
+      include: []
+    logger:
+      alsologtostderr: "false"
+      log_backtrace_at: ""
+      logtostderr: "true"
+      stderrthreshold: ""
+      v: "1"
+      vmodule: ""
+    metrics:
+      labels:
+        exclude: []
+    pod:
+      terminationGracePeriod: 30
+    reconcile:
+      host:
+        wait:
+          exclude: true
+          include: false
+          queries: true
+          replicas:
+            all: false
+            delay: 10
+            new: true
+      runtime:
+        reconcileCHIsThreadsNumber: 10
+        reconcileShardsMaxConcurrencyPercent: 50
+        reconcileShardsThreadsNumber: 5
+      statefulSet:
+        create:
+          onFailure: ignore
+        update:
+          onFailure: abort
+          pollInterval: 5
+          timeout: 300
+    statefulSet:
+      revisionHistoryLimit: 0
+    status:
+      fields:
+        action: false
+        actions: false
+        error: false
+        errors: false
+    template:
+      chi:
+        path: chi/templates.d
+        policy: ApplyOnNextReconcile
+      chk:
+        path: chk/templates.d
+        policy: ApplyOnNextReconcile
+    watch:
+      namespaces: []
+kind: ConfigMap
+metadata:
+  annotations:
+    meta.helm.sh/release-name: clickhouse
+    meta.helm.sh/release-namespace: storage
+  labels:
+    app.kubernetes.io/instance: clickhouse
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: operator
+  name: clickhouse-operator-files
+  namespace: storage

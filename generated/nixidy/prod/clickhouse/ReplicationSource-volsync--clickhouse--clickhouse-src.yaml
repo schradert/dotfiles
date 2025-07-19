@@ -1,0 +1,20 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: volsync--clickhouse--clickhouse-src
+  namespace: storage
+spec:
+  restic:
+    copyMethod: Direct
+    moverSecurityContext:
+      fsGroup: 101
+    pruneIntervalDays: 8
+    repository: volsync--clickhouse--clickhouse
+    retain:
+      daily: 1
+      monthly: 1
+      weekly: 1
+      yearly: 1
+  sourcePVC: clickhouse-data-chi-clickhouse-clickhouse-0-0-0
+  trigger:
+    schedule: 0 4 * * *

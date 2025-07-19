@@ -1,0 +1,28 @@
+apiVersion: clickhouse.altinity.com/v1
+kind: ClickHouseInstallationTemplate
+metadata:
+  labels:
+    app.kubernetes.io/instance: clickhouse
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: clickhouse
+  name: clickhouse-pod
+  namespace: storage
+spec:
+  templates:
+    podTemplates:
+      - metadata:
+          labels:
+            app.kubernetes.io/instance: clickhouse
+            app.kubernetes.io/managed-by: Helm
+            app.kubernetes.io/name: clickhouse
+            app.kubernetes.io/version: 24.8.14.10459
+            helm.sh/chart: clickhouse-0.2.6
+        name: clickhouse-pod
+        spec:
+          containers:
+            - image: altinity/clickhouse-server:24.8.14.10501.altinitystable
+              imagePullPolicy: Never
+              name: clickhouse
+              securityContext: {}
+          securityContext: {}
+          serviceAccountName: clickhouse

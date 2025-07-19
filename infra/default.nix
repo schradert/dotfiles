@@ -121,6 +121,7 @@ in {
       postgres.enable = true;
       rook-ceph.enable = true;
       dragonflydb.enable = true;
+      clickhouse.enable = true;
 
       descheduler.enable = true;
       reloader.enable = true;
