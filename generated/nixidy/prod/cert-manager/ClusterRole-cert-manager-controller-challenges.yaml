@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: cert-manager
-  name: cert-manager-http01-controller-challenges
+  name: cert-manager-controller-challenges
 rules:
   - apiGroups:
       - acme.cert-manager.io
@@ -50,12 +50,6 @@ rules:
       - create
       - patch
   - apiGroups:
-      - acme.cert-manager.io
-    resources:
-      - challenges/finalizers
-    verbs:
-      - update
-  - apiGroups:
       - ""
     resources:
       - pods
@@ -94,3 +88,17 @@ rules:
       - routes/custom-host
     verbs:
       - create
+  - apiGroups:
+      - acme.cert-manager.io
+    resources:
+      - challenges/finalizers
+    verbs:
+      - update
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+    verbs:
+      - get
+      - list
+      - watch

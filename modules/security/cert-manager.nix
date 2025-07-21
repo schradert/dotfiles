@@ -13,6 +13,39 @@ in {
     inherit (services.cert-manager) enable provider;
     inherit (lib) concatStringsSep replaceStrings toList mkIf mkEnableOption mkMerge mkOption types;
     inherit (types) attrTag str submodule;
+    finalImageTag = "v1.18.2";
+    images = {
+      cert-manager-cainjector = {
+        imageName = "quay.io/jetstack/cert-manager-cainjector";
+        imageDigest = "sha256:af59e01ad9756a1034fbf948330e75702e5d79b3577f323f6a9947707ba262fc";
+        hash = "sha256-djL8juN3DAWfGK7Xckzhi2lVOmjWsbI+ftdR9VDgU8M=";
+        inherit finalImageTag;
+      };
+      cert-manager-controller = {
+        imageName = "quay.io/jetstack/cert-manager-controller";
+        imageDigest = "sha256:81316365dc0b713eddddfbf9b8907b2939676e6c0e12beec0f9625f202a36d16";
+        hash = "sha256-wjkd5bxv8Wyc2XoAnyChGUpUh3HZ/0hTsmzQM9CFT6E=";
+        inherit finalImageTag;
+      };
+      cert-manager-startupapicheck = {
+        imageName = "quay.io/jetstack/cert-manager-startupapicheck";
+        imageDigest = "sha256:1075e097415167caa584b203292dfb57e46866df0adb76fe769ef5cb0297ccc4";
+        hash = "sha256-J2Jknmpiem4fAXot8SC18SNo1LxR6zZAQerSXjOCVXY=";
+        inherit finalImageTag;
+      };
+      cert-manager-webhook = {
+        imageName = "quay.io/jetstack/cert-manager-webhook";
+        imageDigest = "sha256:9431f0d8b5103b06cc6138564f471ac02c6b2638c2fa399d81e28a01d817ae73";
+        hash = "sha256-biaH9XrU5WLPDkBZ/QKTCBbEFLRHvhs5+KnBoquOhFQ=";
+        inherit finalImageTag;
+      };
+      cert-manager-acmesolver = {
+        imageName = "quay.io/jetstack/cert-manager-acmesolver";
+        imageDigest = "sha256:1c81a771e3e3a210466aa25f5fc05ce5c286e0eb90d96563cc0275aaa50788c2";
+        hash = "sha256-POf/KuSY6IQPtJwjpl/3sZaA48zRopc3aXJaCK5RXZQ=";
+        inherit finalImageTag;
+      };
+    };
   in {
     options.services.cert-manager = {
       enable = mkEnableOption "cert-manager";
@@ -36,6 +69,7 @@ in {
       };
     };
     config = mkIf enable {
+      nixos = {pkgs, ...}: {canivete.kubernetes.images = builtins.mapAttrs (_: pkgs.dockerTools.pullImage) images;};
       home-manager = {
         config,
         pkgs,
@@ -71,36 +105,6 @@ in {
           # };
         };
       };
-      nixos = {pkgs, ...}: let
-        inherit (pkgs.dockerTools) pullImage;
-      in {
-        canivete.kubernetes.images = {
-          cert-manager-cainjector = pullImage {
-            imageName = "quay.io/jetstack/cert-manager-cainjector";
-            imageDigest = "sha256:a8319ee78e94abb11c4fe0b35197a57848ae7eec6c526e369187dc57b2961116";
-            hash = "sha256-7/ZPslP/XiDUXGIAiWHrLs3hKuDNc5CaqiU8/HSPRu0=";
-            finalImageTag = "v1.17.1";
-          };
-          cert-manager-controller = pullImage {
-            imageName = "quay.io/jetstack/cert-manager-controller";
-            imageDigest = "sha256:9339837eaaa7852509fa4c89c12543721d79d7facf57f29adec7c96fffe408d6";
-            hash = "sha256-Ct7IYjFEzHAMxLTZ1Hso2qaaRlkrOWgxRIbyHZHNimo=";
-            finalImageTag = "v1.17.1";
-          };
-          cert-manager-startupapicheck = pullImage {
-            imageName = "quay.io/jetstack/cert-manager-startupapicheck";
-            imageDigest = "sha256:ac8ef0a934ae456d10d2ff5ee492b0a816bf55752f61354bde1739054c2c2c68";
-            hash = "sha256-lsEJK5uuTQadqqoEAMoDxDWMI4K9340XHxdIiUtWKPk=";
-            finalImageTag = "v1.17.1";
-          };
-          cert-manager-webhook = pullImage {
-            imageName = "quay.io/jetstack/cert-manager-webhook";
-            imageDigest = "sha256:2933ec670a99524a6860f641ef3720289d784b0bef35bd0b74fc3eb093e71596";
-            hash = "sha256-AmgOyAVwxmeODed5w1xlB8PMqpl2A3i1rL6H1fITZkE=";
-            finalImageTag = "v1.17.1";
-          };
-        };
-      };
       nixidy = {
         charts,
         pkgs,
@@ -111,8 +115,8 @@ in {
           src = pkgs.fetchFromGitHub {
             owner = "cert-manager";
             repo = "cert-manager";
-            rev = "v1.18.1";
-            hash = "sha256-X2FWGW3085KKzXOce8j46xiPBjfH+K4clqrpQFpfWPA=";
+            rev = finalImageTag;
+            hash = "sha256-BGUStT8rEgy/hBTgUAnifaq+Pa5T1VT63LNUaQySOQs=";
           };
         };
         applications.cert-manager = {
@@ -125,12 +129,37 @@ in {
               dns01RecursiveNameserversOnly = true;
               prometheus.enabled = true;
               prometheus.servicemonitor.enabled = services.prometheus.enable;
+
+              image = {
+                repository = images.cert-manager-controller.imageName;
+                tag = finalImageTag;
+                pullPolicy = "Never";
+              };
+              cainjector.image = {
+                repository = images.cert-manager-cainjector.imageName;
+                tag = finalImageTag;
+                pullPolicy = "Never";
+              };
+              startupapicheck.image = {
+                repository = images.cert-manager-startupapicheck.imageName;
+                tag = finalImageTag;
+                pullPolicy = "Never";
+              };
+              webhook.image = {
+                repository = images.cert-manager-webhook.imageName;
+                tag = finalImageTag;
+                pullPolicy = "Never";
+              };
+              acmesolver.image = {
+                repository = images.cert-manager-acmesolver.imageName;
+                tag = finalImageTag;
+                pullPolicy = "Never";
+              };
             };
           };
           resources = let
             domainName = replaceStrings ["."] ["-"] domain;
             mkClusterIssuer = name: server: {
-              metadata.annotations."chart.canivete.app/cert-manager" = "";
               spec.acme = {
                 inherit server email;
                 privateKeySecretRef = {inherit name;};
