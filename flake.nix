@@ -15,6 +15,7 @@
     # Essentials
     flake-parts.url = "github:hercules-ci/flake-parts";
     flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs-lib";
+    # TODO why are these two inputs the only ones that show up double in flake.lock?!
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     systems.url = "github:nix-systems/default";
 
@@ -65,7 +66,6 @@
     opentofu-registry.flake = false;
 
     # Containers + Kubernetes
-    # TODO track https://github.com/arnarg/nixidy/pull/44
     # TODO track https://github.com/arnarg/nixidy/pull/45
     # TODO track https://github.com/arnarg/nixidy/pull/46
     # nixidy.url = "github:arnarg/nixidy";
@@ -74,9 +74,12 @@
     nixidy.inputs.flake-utils.follows = "flake-utils";
     nixidy.inputs.nix-kube-generators.follows = "nix-kube-generators";
     nixhelm.url = "github:farcaller/nixhelm";
-    nixhelm.inputs.nixpkgs.follows = "nixpkgs";
-    nixhelm.inputs.nix-kube-generators.follows = "nix-kube-generators";
-    nixhelm.inputs.poetry2nix.follows = "poetry2nix";
+    nixhelm.inputs = {
+      nixpkgs.follows = "nixpkgs";
+      nix-kube-generators.follows = "nix-kube-generators";
+      poetry2nix.follows = "poetry2nix";
+      flake-utils.follows = "flake-utils";
+    };
     nix-kube-generators.url = "github:farcaller/nix-kube-generators";
     nix2container.url = "github:nlewo/nix2container";
     nix2container.inputs.nixpkgs.follows = "nixpkgs";
@@ -113,9 +116,11 @@
     nix-alien.inputs.flake-compat.follows = "flake-compat";
     nix-alien.inputs.nix-index-database.follows = "nix-index-database";
     stylix.url = "github:nix-community/stylix";
-    stylix.inputs.nixpkgs.follows = "nixpkgs";
-    stylix.inputs.flake-compat.follows = "flake-compat";
-    stylix.inputs.home-manager.follows = "home-manager";
+    stylix.inputs = {
+      nixpkgs.follows = "nixpkgs";
+      flake-parts.follows = "flake-parts";
+      nur.follows = "nur";
+    };
     nix-index.url = "github:nix-community/nix-index";
     nix-index.inputs.nixpkgs.follows = "nixpkgs";
     nix-index.inputs.flake-compat.follows = "flake-compat";
@@ -130,17 +135,15 @@
 
     # Collections
     nur.url = "github:nix-community/nur";
-    nur.inputs = {
-      flake-parts.follows = "flake-parts";
-      nixpkgs.follows = "nixpkgs";
-      treefmt-nix.follows = "treefmt";
-    };
+    nur.inputs.flake-parts.follows = "flake-parts";
+    nur.inputs.nixpkgs.follows = "nixpkgs";
     mynur.url = "github:schradert/nur";
     mynur.inputs = {
       nixpkgs.follows = "nixpkgs";
       flake-parts.follows = "flake-parts";
       systems.follows = "systems";
       gradle2nix.follows = "gradle2nix";
+      fenix.follows = "fenix";
     };
     gradle2nix.url = "github:tadfisher/gradle2nix";
     gradle2nix.inputs.flake-utils.follows = "flake-utils";
@@ -168,6 +171,8 @@
     treefmt.inputs.nixpkgs.follows = "nixpkgs";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
     systems-linux.url = "github:nix-systems/default-linux";
+    fenix.url = "github:nix-community/fenix";
+    fenix.inputs.nixpkgs.follows = "nixpkgs";
 
     # Network
     # NOTE https://github.com/awlsring/terraform-provider-headscale/issues/12
@@ -240,6 +245,7 @@
     };
     naersk.url = "github:nix-community/naersk";
     naersk.inputs.nixpkgs.follows = "nixpkgs";
+    naersk.inputs.fenix.follows = "fenix";
     television.url = "github:alexpasmantier/television";
     television.inputs = {
       nixpkgs.follows = "nixpkgs";
@@ -268,6 +274,7 @@
     # Browser
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
     zen-browser.inputs.nixpkgs.follows = "nixpkgs";
+    zen-browser.inputs.home-manager.follows = "home-manager";
 
     # Languages
     haskell-nix.url = "github:input-output-hk/haskell.nix";
