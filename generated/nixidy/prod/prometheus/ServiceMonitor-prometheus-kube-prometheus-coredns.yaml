@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/instance: prometheus
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: kube-prometheus-stack
-    chart: kube-prometheus-stack-75.6.1
+    chart: kube-prometheus-stack-75.12.0
     heritage: Helm
     release: prometheus
   name: prometheus-kube-prometheus-coredns
