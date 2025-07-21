@@ -19,9 +19,9 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/cm: beb85828f7d29341721e7a1c2767d48d743c2261e85d1236c21f9942497aafdb
-        checksum/cmd-params: 51ec3c29ecff65a88b3fca1406542a1d038ac94787dbc56abb58aaf3a2132bc8
-        checksum/cmp-cm: bbf79e12025f8f28507f654bb847bbfee7d24990ed0b948b49657218f7625ea7
+        checksum/cm: 60b89f4c6d7d5343c4f8a724aa167bf10bf5250a86cfef368903c43480e05918
+        checksum/cmd-params: 4b1170d7ff176df48c8968b2e8717444a02c27b0c74a013f0db76e7ffb4a713c
+        checksum/cmp-cm: 8ea0ffe4eb88dfc321444b12cf4c96298d643e6b6f99e98dff67beefaa3e4655
       labels:
         app.kubernetes.io/component: repo-server
         app.kubernetes.io/instance: argod
@@ -275,7 +275,7 @@ spec:
               value: /helm-working-dir
             - name: HELM_DATA_HOME
               value: /helm-working-dir
-          image: quay.io/argoproj/argocd:v3.0.6
+          image: quay.io/argoproj/argocd:v3.0.11
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 3
@@ -337,7 +337,7 @@ spec:
             - -n
             - /usr/local/bin/argocd
             - /var/run/argocd/argocd-cmp-server
-          image: quay.io/argoproj/argocd:v3.0.6
+          image: quay.io/argoproj/argocd:v3.0.11
           imagePullPolicy: IfNotPresent
           name: copyutil
           resources: {}
