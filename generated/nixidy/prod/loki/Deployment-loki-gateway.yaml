@@ -20,7 +20,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 8d90e5bda3814e122950efcea07ed299010471319c280cfc226718a4cc51219b
+        checksum/config: b2947dabf5598929ebdf27dcddbeab3ed42205ee1f70fe86382af503754f6bef
       labels:
         app.kubernetes.io/component: gateway
         app.kubernetes.io/instance: loki
@@ -34,7 +34,7 @@ spec:
                   app.kubernetes.io/component: gateway
               topologyKey: kubernetes.io/hostname
       containers:
-        - image: docker.io/nginxinc/nginx-unprivileged:1.28-alpine
+        - image: docker.io/nginxinc/nginx-unprivileged:1.29-alpine
           imagePullPolicy: IfNotPresent
           name: nginx
           ports:

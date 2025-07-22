@@ -1,6 +1,7 @@
 apiVersion: v1
 data:
   config.yaml: |2
+
     auth_enabled: true
     bloom_build:
       builder:
