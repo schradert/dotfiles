@@ -1,4 +1,5 @@
 {
+  # TODO dragonflydb
   dotfiles = {
     canivete,
     config,
@@ -12,9 +13,9 @@
     hostname = "oauth2-proxy.${domain}";
     image = {
       imageName = "quay.io/oauth2-proxy/oauth2-proxy";
-      imageDigest = "sha256:37c1570c0427e02fc7c947ef2c04e8995b8347b7abc9fcf1dbb4e376a4b221a7";
-      hash = "sha256-/e+MCwDAwCnxzaMUzz18sToZfo2rOoKd/DhT3OMlLYk=";
-      finalImageTag = "v7.9.0";
+      imageDigest = "sha256:2f1471fc735d50dfb0041aeae12967bae42a8387ce1660f0a76b175e3f9c195c";
+      hash = "sha256-efDQE58aGHM2s3yE+hyqNijeOCHhaBtr5I1/NwB9hj0=";
+      finalImageTag = "v7.10.0";
     };
     providers = flatten [
       (optional config.clouds.google.enable "google")
@@ -67,6 +68,11 @@
               config.existingConfig = "oauth2-proxy";
               deploymentAnnotations = mkIf services.reloader.enable {"reloader.stakater.com/auto" = "true";};
               metrics.serviceMonitor.enabled = services.prometheus.enable;
+              image = {
+                repository = image.imageName;
+                tag = image.finalImageTag;
+                pullPolicy = "Never";
+              };
             };
           };
           resources = mkMerge [

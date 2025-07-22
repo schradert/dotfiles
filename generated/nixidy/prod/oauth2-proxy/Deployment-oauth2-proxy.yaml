@@ -57,8 +57,8 @@ spec:
                 secretKeyRef:
                   key: cookie-secret
                   name: oauth2-proxy
-          image: quay.io/oauth2-proxy/oauth2-proxy:v7.9.0
-          imagePullPolicy: IfNotPresent
+          image: quay.io/oauth2-proxy/oauth2-proxy:v7.10.0
+          imagePullPolicy: Never
           livenessProbe:
             httpGet:
               path: /ping
