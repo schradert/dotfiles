@@ -148,6 +148,8 @@
                     relay.prometheus.enabled = true;
                     ui.enabled = true;
                     ui.rollOutPods = true;
+                    # Avoid Secrets in GitOps
+                    tls.auto.method = "cronJob";
                   };
                   # TODO why doesn't this actually change the Pod CIDRs on CiliumNode?
                   # ipam.operator.clusterPoolIPv4PodCIDRList = ["10.42.0.0/16"];
