@@ -15,7 +15,7 @@ spec:
         - /opt/bats/bin/bats
         - -t
         - /tests/run.sh
-      image: docker.io/bats/bats:v1.4.1
+      image: docker.io/docker.io/bats/bats:1.12.0
       imagePullPolicy: IfNotPresent
       name: grafana-test
       volumeMounts:

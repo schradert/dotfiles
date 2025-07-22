@@ -54,8 +54,8 @@ spec:
               value: http://localhost:3000/api/admin/provisioning/dashboards/reload
             - name: REQ_METHOD
               value: POST
-          image: quay.io/kiwigrid/k8s-sidecar:1.30.5
-          imagePullPolicy: IfNotPresent
+          image: quay.io/quay.io/kiwigrid/k8s-sidecar:1.30.7
+          imagePullPolicy: Never
           name: grafana-sc-dashboard
           securityContext:
             allowPrivilegeEscalation: false
@@ -92,8 +92,8 @@ spec:
               value: http://localhost:3000/api/admin/provisioning/datasources/reload
             - name: REQ_METHOD
               value: POST
-          image: quay.io/kiwigrid/k8s-sidecar:1.30.5
-          imagePullPolicy: IfNotPresent
+          image: quay.io/quay.io/kiwigrid/k8s-sidecar:1.30.7
+          imagePullPolicy: Never
           name: grafana-sc-datasources
           securityContext:
             allowPrivilegeEscalation: false
@@ -132,8 +132,8 @@ spec:
             - configMapRef:
                 name: grafana
                 optional: false
-          image: docker.io/grafana/grafana:12.0.2
-          imagePullPolicy: IfNotPresent
+          image: docker.io/docker.io/grafana/grafana:12.0.2
+          imagePullPolicy: Never
           livenessProbe:
             failureThreshold: 10
             httpGet:
@@ -186,8 +186,8 @@ spec:
             - -R
             - 472:472
             - /var/lib/grafana
-          image: docker.io/library/busybox:latest
-          imagePullPolicy: IfNotPresent
+          image: docker.io/busybox:1.37.0-glibc
+          imagePullPolicy: Never
           name: init-chown-data
           securityContext:
             capabilities:
