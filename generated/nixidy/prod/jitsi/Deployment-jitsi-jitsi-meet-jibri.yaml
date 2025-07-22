@@ -19,7 +19,7 @@ spec:
     metadata:
       annotations:
         checksum/config: 383f51c9fc5b49bffdd76e01f888784f552253901c2390c9f5f5c2905e00541c
-        checksum/secret: c466fc15d92172609f9b41c8f579cd1d689371e0c5dee12eba3479f53932a24d
+        checksum/secret: 1375d4a11ba32e53308f4629e9b7c334b68b3f7dc572f6e4c71cffae4c0c8c15
       labels:
         app.kubernetes.io/component: jibri
         app.kubernetes.io/instance: jitsi
@@ -33,7 +33,7 @@ spec:
                 name: jitsi-prosody-common
             - configMapRef:
                 name: jitsi-jitsi-meet-jibri
-          image: jitsi/jibri:jibri-8.0-183-g7b406bf-1
+          image: jitsi/jibri:jibri-8.0-183-g7b406bf-1@sha256:34c446ef243ec9aebd232471110d4b9b28ccceaeb9b78898362fe479e88863b8
           imagePullPolicy: Never
           livenessProbe:
             exec:

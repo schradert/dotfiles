@@ -39,7 +39,7 @@ spec:
                 name: jitsi-prosody-jvb
             - configMapRef:
                 name: jitsi-prosody-common
-          image: jitsi/prosody:prosody-13.0.2
+          image: jitsi/prosody:prosody-13.0.2@sha256:da3b66391e0475792ef409d81caf3e2f0d402cb6a537c5e5dca5de1f20903284
           imagePullPolicy: IfNotPresent
           livenessProbe:
             httpGet:

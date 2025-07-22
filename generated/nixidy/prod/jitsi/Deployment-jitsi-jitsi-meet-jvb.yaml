@@ -19,7 +19,7 @@ spec:
     metadata:
       annotations:
         checksum/config: da00cc429da6f092003b92f809eead9aa64faeaa10e288cf0d63d4b97960b976
-        checksum/secret: 6dc21f3b70aadd880896ec40a61a91ae92d9615b5f7ebf0a0ebe7941dc938912
+        checksum/secret: 54cbcf2869512c1af12080f20538357f4b99d196e3e7a8fdaa73901ce523eb9b
       labels:
         app.kubernetes.io/component: jvb
         app.kubernetes.io/instance: jitsi
@@ -38,7 +38,7 @@ spec:
                 name: jitsi-prosody-common
             - configMapRef:
                 name: jitsi-jitsi-meet-jvb
-          image: jitsi/jvb:jvb-2.3-247-g6fc76e46b-1
+          image: jitsi/jvb:jvb-2.3-249-g9a2123ad4-1@sha256:595d7620a9be0067b286e07557b57b6ec2d127a69c3e9616ff3d6d5fd1e8e4d9
           imagePullPolicy: Never
           livenessProbe:
             httpGet:

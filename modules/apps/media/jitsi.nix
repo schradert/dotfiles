@@ -11,42 +11,47 @@
     inherit (config) services;
     inherit (lib) mkEnableOption mkForce mkIf mkMerge toList;
     hostname = "jitsi.${config.domain}";
-    forceImage = image: mkForce "${image.imageName}:${image.finalImageTag}";
+    # Jitsi uses the same tag for updated digests...
+    pinImage = image: {
+      repository = image.imageName;
+      tag = "${image.finalImageTag}@${image.imageDigest}";
+    };
+    busybox = with images.jitsi-busybox; "${imageName}:${finalImageTag}";
     images = {
       jigasi = {
         imageName = "jitsi/jigasi";
-        imageDigest = "sha256:09cc2db72c7cbb42bbf83971557bbd2a05795786279e61f33846b5a122defe4b";
-        hash = "sha256-FnuhKLqmGAcJ7xtWA/BxNHF8WdI6F3dg1c4pHbeBoaY=";
+        imageDigest = "sha256:29623c814dcd4073d8920bd6f7248b2ac088bbab173799b096ad586eb245d2bc";
+        hash = "sha256-f7WAjuR+oMGKLzE5PEl9O8G46sHGAJYLMY+LQ8ZFu8I=";
         finalImageTag = "jigasi-1.1-392-g03d83b3-1";
       };
       jibri = {
         imageName = "jitsi/jibri";
-        imageDigest = "sha256:f88679156fed5b9d77fc3cfaf0e91da7e7924d58c778caa57762921b99751a4a";
-        hash = "sha256-/T2fsjvXJQL2fnl6DkWxR5Eur7l97QjZCoJOTEg+0K8=";
+        imageDigest = "sha256:34c446ef243ec9aebd232471110d4b9b28ccceaeb9b78898362fe479e88863b8";
+        hash = "sha256-QJBZLIsc3pH7g3CqS4Y+0eomy//yVNNhuPPNIjtW6xU=";
         finalImageTag = "jibri-8.0-183-g7b406bf-1";
       };
       jicofo = {
         imageName = "jitsi/jicofo";
-        imageDigest = "sha256:032f298a60cff6a9f5fb1b48e42f28e30d3d8622fc735c995c080a1d7393be22";
-        hash = "sha256-zTXc3bbzZ/0GOvbNHUQROuQDTwpCYL4h3oLZYCfkC7c=";
+        imageDigest = "sha256:3830c204714ecde016cb7beb96fb1297fd58d62d40738ba56b9458471241e805";
+        hash = "sha256-UqCkCpFbDalYffcwbMh1NG95HgaBDEa4mspxdwwZRNU=";
         finalImageTag = "jicofo-1.0-1152-1";
       };
       jvb = {
         imageName = "jitsi/jvb";
-        imageDigest = "sha256:364440dab80da7e2fbfe08b69fe4b9d822b9d331e1e91790242bbc014f3b980e";
-        hash = "sha256-pQE0Kd2pPfoJSwvsO8Ob3k8fMK+soGdeLUTJHJAu84A=";
-        finalImageTag = "jvb-2.3-247-g6fc76e46b-1";
+        imageDigest = "sha256:595d7620a9be0067b286e07557b57b6ec2d127a69c3e9616ff3d6d5fd1e8e4d9";
+        hash = "sha256-MVb+xhlt2r2ENNoDZxCu6hG793KoRwx+Dw1qapbQvmQ=";
+        finalImageTag = "jvb-2.3-249-g9a2123ad4-1";
       };
       jitsi-web = {
         imageName = "jitsi/web";
-        imageDigest = "sha256:73c48b1f36358f21aeb900cf50231b1e860f45e7c32d7931b92723324bedab37";
-        hash = "sha256-KjoK5UCORzIcyQuNH8KVNrFk5CRKW+cZihZ1W23wnLc=";
-        finalImageTag = "web-1.0.8725-1";
+        imageDigest = "sha256:8f9389696b1b1865bf460092da6fc6253618082f529d6357651f32d6119ddc0c";
+        hash = "sha256-iF86zCqyPiDO4VI7errQqATGLGn9LBS6ndCDRaDutE8=";
+        finalImageTag = "web-1.0.8730-1";
       };
       prosody = {
         imageName = "jitsi/prosody";
-        imageDigest = "sha256:f7a438d4a837e93c719411c5bb9f764895efa0f96354bb032a64f6b4a5669510";
-        hash = "sha256-5C3PIT4+Sye2EB53DkZSNXaLhQl3rr//P2mRIz6ZMOM=";
+        imageDigest = "sha256:da3b66391e0475792ef409d81caf3e2f0d402cb6a537c5e5dca5de1f20903284";
+        hash = "sha256-UhZ5SW5R0X6DiEFLob4DPjtAgnRVZaEnUri6RfyVKtE=";
         finalImageTag = "prosody-13.0.2";
       };
       jitsi-busybox = {
@@ -122,7 +127,6 @@
                 enableAuth = true;
                 enableGuests = false;
                 publicURL = hostname;
-                image.pullPolicy = "Never";
                 websockets.colibri.enablied = true;
                 websockets.xmpp.enabled = true;
                 jigasi.enabled = true;
@@ -142,29 +146,17 @@
               }
               {
                 # Pin images
-                web.image.repository = images.jitsi-web.imageName;
-                jicofo.image.repository = images.jicofo.imageName;
-                jicofo.metrics.image = with images.jicofo-prometheus-exporter; {
-                  repository = imageName;
-                  tag = finalImageTag;
-                };
-                jvb.image.repository = images.jvb.imageName;
-                jvb.metrics.image = with images.jvb-prometheus-exporter; {
-                  repository = imageName;
-                  tag = finalImageTag;
-                  pullPolicy = "Never";
-                };
-                jigasi.image.repository = images.jigasi.imageName;
-                jibri.image.repository = images.jibri.imageName;
-                prosody.image = with images.prosody; {
-                  repository = imageName;
-                  tag = finalImageTag;
-                };
-                prosody.metrics.image = with images.prosody-otel; {
-                  repository = imageName;
-                  tag = finalImageTag;
-                  pullPolicy = "Never";
-                };
+                image.pullPolicy = "Never";
+                jibri.image = pinImage images.jibri;
+                jicofo.image = pinImage images.jicofo;
+                jigasi.image = pinImage images.jigasi;
+                jvb.image = pinImage images.jvb;
+                web.image = pinImage images.jitsi-web;
+                prosody.image = pinImage images.prosody;
+
+                jicofo.metrics.image = pinImage images.jicofo-prometheus-exporter;
+                jvb.metrics.image = pinImage images.jvb-prometheus-exporter;
+                prosody.metrics.image = pinImage images.prosody-otel;
               }
               (mkIf services.prometheus.enable {
                 jicofo.metrics.enabled = true;
@@ -177,37 +169,8 @@
           };
           resources = mkMerge [
             {
-              # Pin images
-              deployments = {
-                jitsi-jitsi-meet-jibri.spec.template.spec.containers = toList {
-                  name = "jitsi-meet";
-                  image = forceImage images.jibri;
-                };
-                jitsi-jitsi-meet-jicofo.spec.template.spec.containers = toList {
-                  name = "jitsi-meet";
-                  image = forceImage images.jicofo;
-                };
-                jitsi-jitsi-meet-jigasi.spec.template.spec.containers = toList {
-                  name = "jitsi-meet";
-                  image = forceImage images.jigasi;
-                };
-                jitsi-jitsi-meet-jvb.spec.template.spec.containers = toList {
-                  name = "jitsi-meet";
-                  image = forceImage images.jvb;
-                };
-                jitsi-jitsi-meet-web.spec.template.spec.containers = toList {
-                  name = "jitsi-meet";
-                  image = forceImage images.jitsi-web;
-                };
-              };
-              pods.jitsi-jitsi-meet-web-test-connection.spec.containers = toList {
-                name = "wget";
-                image = forceImage images.jitsi-busybox;
-              };
-              pods.jitsi-prosody-test-connection.spec.containers = toList {
-                name = "wget";
-                image = forceImage images.jitsi-busybox;
-              };
+              pods.jitsi-jitsi-meet-web-test-connection.spec.containers.wget.image = mkForce busybox;
+              pods.jitsi-prosody-test-connection.spec.containers.wget.image = mkForce busybox;
             }
             (mkIf services.cilium.enable {
               # TODO HTTPRoute for JVB

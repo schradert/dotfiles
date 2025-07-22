@@ -30,7 +30,7 @@ spec:
                 name: jitsi-jitsi-meet-web
             - configMapRef:
                 name: jitsi-prosody-common
-          image: jitsi/web:web-1.0.8725-1
+          image: jitsi/web:web-1.0.8730-1@sha256:8f9389696b1b1865bf460092da6fc6253618082f529d6357651f32d6119ddc0c
           imagePullPolicy: Never
           livenessProbe:
             httpGet:

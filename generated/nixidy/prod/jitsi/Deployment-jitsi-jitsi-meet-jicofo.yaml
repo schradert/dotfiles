@@ -19,7 +19,7 @@ spec:
     metadata:
       annotations:
         checksum/config: 1810aac00a632b587f99617d59dc87a04740a2ab490abd79fb234bcc8775fccb
-        checksum/secret: 8709e13e514de33abc907672bd8ccbc48a138d35082d22d29e64209afefa349b
+        checksum/secret: 43e6228a082b495313f98c8f69ac58379a9ecf1c8c6b09199cff103fef258d1d
       labels:
         app.kubernetes.io/component: jicofo
         app.kubernetes.io/instance: jitsi
@@ -33,7 +33,7 @@ spec:
                 name: jitsi-prosody-common
             - configMapRef:
                 name: jitsi-jitsi-meet-jicofo
-          image: jitsi/jicofo:jicofo-1.0-1152-1
+          image: jitsi/jicofo:jicofo-1.0-1152-1@sha256:3830c204714ecde016cb7beb96fb1297fd58d62d40738ba56b9458471241e805
           imagePullPolicy: Never
           livenessProbe:
             tcpSocket:
@@ -51,7 +51,7 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: config
-        - image: prayagsingh/prometheus-jicofo-exporter:1.3.2
+        - image: prayagsingh/prometheus-jicofo-exporter:1.3.2@sha256:50d4ac714856924faed7ad426be796cb00261b277fe4f723b72f9e6b18011469
           imagePullPolicy: Never
           name: metrics
           ports:

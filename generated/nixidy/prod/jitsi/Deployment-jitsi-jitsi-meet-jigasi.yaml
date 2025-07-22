@@ -19,7 +19,7 @@ spec:
     metadata:
       annotations:
         checksum/config: 47740ec05f6efce41912cf4ce179bdb7ed53a9966b94b6f888bf2debf96e56cb
-        checksum/secret: 93d222add8b7002ad7c68ccd0e0b36f145a4598a999b9e2225e799877054ed92
+        checksum/secret: 4586ffe5f9f35b9d432afd1070d92e1de65372363e1b81b08a4802521c266c27
       labels:
         app.kubernetes.io/component: jigasi
         app.kubernetes.io/instance: jitsi
@@ -33,7 +33,7 @@ spec:
                 name: jitsi-prosody-common
             - configMapRef:
                 name: jitsi-jitsi-meet-jigasi
-          image: jitsi/jigasi:jigasi-1.1-392-g03d83b3-1
+          image: jitsi/jigasi:jigasi-1.1-392-g03d83b3-1@sha256:29623c814dcd4073d8920bd6f7248b2ac088bbab173799b096ad586eb245d2bc
           imagePullPolicy: Never
           livenessProbe:
             httpGet:
