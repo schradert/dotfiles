@@ -154,8 +154,8 @@
                   # ipv4NativeRoutingCIDR = "10.42.0.0/16";
                   ipv4NativeRoutingCIDR = "10.0.0.0/8";
                   kubeProxyReplacement = true;
-                  k8sServiceHost = "192.168.50.58";
-                  k8sServicePort = 6443;
+                  k8sServiceHost = "localhost";
+                  k8sServicePort = 6444;
                   operator = {
                     dashboards.enabled = true;
                     prometheus.enabled = true;

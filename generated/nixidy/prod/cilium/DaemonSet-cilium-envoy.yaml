@@ -64,9 +64,9 @@ spec:
                   apiVersion: v1
                   fieldPath: metadata.namespace
             - name: KUBERNETES_SERVICE_HOST
-              value: 192.168.50.58
+              value: localhost
             - name: KUBERNETES_SERVICE_PORT
-              value: "6443"
+              value: "6444"
           image: quay.io/cilium/cilium-envoy:v1.34.3-1753136543-8da82c827e7e5b2ad5f107f7f485073bcb7a797f
           imagePullPolicy: Never
           livenessProbe:
