@@ -8,17 +8,17 @@
     inherit (lib) mkEnableOption mkIf toList mapAttrs' nameValuePair;
     namespace = "security";
     name = "external-secrets-kubernetes";
+    appVersion = "v0.18.2";
+    image = {
+      imageName = "oci.external-secrets.io/external-secrets/external-secrets";
+      imageDigest = "sha256:87615c878c0528ea994538d2a6ed87931f8389b9e145f4422891b3ba06430cd7";
+      hash = "sha256-fALEY5ZA0oHRpX85GsFv1iq5rA0Z3P9cNiWRzxtKHd4=";
+      finalImageTag = appVersion;
+    };
   in {
     options.services.external-secrets.enable = mkEnableOption "external-secrets";
     config = mkIf services.external-secrets.enable {
-      nixos = {pkgs, ...}: {
-        canivete.kubernetes.images.external-secrets = pkgs.dockerTools.pullImage {
-          imageName = "oci.external-secrets.io/external-secrets/external-secrets";
-          imageDigest = "sha256:4dc2c0ab1382615adee23db464e6feb16d4e09efb70dbb4f1840f9dd3c3a8c2a";
-          hash = "sha256-vTW4WXbkih43x+/3QG+auxPgXz1WKivdpL5ed4hMWgs=";
-          finalImageTag = "v0.18.1";
-        };
-      };
+      nixos = {pkgs, ...}: {canivete.kubernetes.images.external-secrets = pkgs.dockerTools.pullImage image;};
       nixidy = {
         charts,
         pkgs,
@@ -30,15 +30,32 @@
           src = pkgs.fetchFromGitHub {
             owner = "external-secrets";
             repo = "external-secrets";
-            rev = "v0.18.1";
-            hash = "sha256-E14vCLLOV96BIzhjLLpMhHpNja0/HwQAwRjYPySZWCA=";
+            rev = appVersion;
+            hash = "sha256-ZOa6tEHltl14gSLlnmze0m9JVYaY47v7OI8M9B7CpyQ=";
           };
         };
         applications.external-secrets = {
           namespace = "security";
           helm.releases.external-secrets = {
             chart = charts.external-secrets.external-secrets;
-            values.serviceMonitor.enabled = services.prometheus.enable;
+            values = {
+              serviceMonitor.enabled = services.prometheus.enable;
+              image = {
+                repository = image.imageName;
+                pullPolicy = "Never";
+                tag = image.finalImageTag;
+              };
+              webhook.image = {
+                repository = image.imageName;
+                pullPolicy = "Never";
+                tag = image.finalImageTag;
+              };
+              certController.image = {
+                repository = image.imageName;
+                pullPolicy = "Never";
+                tag = image.finalImageTag;
+              };
+            };
           };
           resources = {
             clusterSecretStores =
