@@ -1,0 +1,21 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app.kubernetes.io/instance: forgejo
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: forgejo
+  name: forgejo
+  namespace: dotfiles
+spec:
+  endpoints:
+    - port: http
+  jobLabel: forgejo
+  namespaceSelector:
+    matchNames:
+      - dotfiles
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: forgejo
+      app.kubernetes.io/name: forgejo
+      app.kubernetes.io/service: forgejo

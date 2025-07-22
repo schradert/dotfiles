@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    reloader.stakater.com/auto: "true"
+  labels:
+    app.kubernetes.io/controller: forgejo
+    app.kubernetes.io/instance: forgejo
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: forgejo
+  name: forgejo
+  namespace: dotfiles
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/controller: forgejo
+      app.kubernetes.io/instance: forgejo
+      app.kubernetes.io/name: forgejo
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/controller: forgejo
+        app.kubernetes.io/instance: forgejo
+        app.kubernetes.io/name: forgejo
+    spec:
+      automountServiceAccountToken: true
+      containers:
+        - env:
+            - name: GITEA_ADMIN_PASSWORD_MODE
+              value: keepUpdated
+            - name: GITEA_ADMIN_USERNAME
+              value: superadmin
+            - name: GITEA_OAUTH_KEY_0
+              value: forgejo
+          envFrom:
+            - secretRef:
+                name: forgejo
+          image: code.forgejo.org/forgejo/forgejo:12.0.0
+          name: forgejo
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /api/healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          startupProbe:
+            failureThreshold: 10
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: http
+            timeoutSeconds: 1
+          volumeMounts:
+            - mountPath: /etc/forgejo/app.ini
+              name: app-ini
+              subPath: app.ini
+            - mountPath: /etc/forgejo
+              name: config
+            - mountPath: /data
+              name: data
+      dnsPolicy: ClusterFirst
+      enableServiceLinks: false
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      serviceAccountName: default
+      volumes:
+        - configMap:
+            name: forgejo
+          name: app-ini
+        - name: config
+          persistentVolumeClaim:
+            claimName: forgejo-config
+        - name: data
+          persistentVolumeClaim:
+            claimName: forgejo-data

@@ -1,0 +1,20 @@
+apiVersion: dragonflydb.io/v1alpha1
+kind: Dragonfly
+metadata:
+  name: forgejo
+  namespace: dotfiles
+spec:
+  authentication:
+    passwordFromSecret:
+      key: DRAGONFLY_PASSWORD
+      name: forgejo
+  image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.31.2
+  replicas: 1
+  snapshot:
+    cron: '*/5 * * * *'
+    persistentVolumeClaimSpec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 2Gi

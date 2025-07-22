@@ -165,6 +165,7 @@ in {
       actual.enable = true;
       firefly.enable = true;
       mealie.enable = true;
+      forgejo.enable = true;
     };
   };
 }

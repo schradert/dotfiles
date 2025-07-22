@@ -8,6 +8,7 @@ spec:
     atuin: atuin
     autobrr: autobrr
     firefly: firefly
+    forgejo: forgejo
     gatus: gatus
     immich: immich
     keycloak: keycloak
@@ -40,6 +41,7 @@ spec:
     atuin: createdb
     autobrr: createdb
     firefly: createdb
+    forgejo: createdb
     gatus: createdb
     immich: createdb
     keycloak: createdb
