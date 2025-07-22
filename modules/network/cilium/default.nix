@@ -8,24 +8,25 @@
     ...
   }: let
     inherit (lib) mapAttrs mkEnableOption mkIf mkForce mkMerge;
+    appVersion = "v1.17.6";
     images = {
       cilium = {
         imageName = "quay.io/cilium/cilium";
-        imageDigest = "sha256:baf8541723ee0b72d6c489c741c81a6fdc5228940d66cb76ef5ea2ce3c639ea6";
-        hash = "sha256-KdIHQGk2fqCOM35/WkMSA/AqBbrbji6rIoml0VBO4Ds=";
-        finalImageTag = "v1.17.5";
+        imageDigest = "sha256:544de3d4fed7acba72758413812780a4972d47c39035f2a06d6145d8644a3353";
+        hash = "sha256-lt9dAJ+tcnneMvekzQh6astsHxbgdmoLwwUH0iN28uA=";
+        finalImageTag = appVersion;
       };
       cilium-envoy = {
         imageName = "quay.io/cilium/cilium-envoy";
-        imageDigest = "sha256:9f69e290a7ea3d4edf9192acd81694089af048ae0d8a67fb63bd62dc1d72203e";
-        hash = "sha256-4hWULE6TYYxN/AvAlb8ritWfZ7YKmJLC4Ed8WUsD8hg=";
-        finalImageTag = "v1.32.6-1749271279-0864395884b263913eac200ee2048fd985f8e626";
+        imageDigest = "sha256:f26154a54c881c085b2a868f4719b31ae02e2be0bad001a67ac7462ba2e5b0e9";
+        hash = "sha256-Zs3ph9GXGTrima9gk15501jC6aJmgh2Zqveuc+D9zMM=";
+        finalImageTag = "v1.34.3-1753136543-8da82c827e7e5b2ad5f107f7f485073bcb7a797f";
       };
       cilium-hubble-relay = {
         imageName = "quay.io/cilium/hubble-relay";
-        imageDigest = "sha256:fbb8a6afa8718200fca9381ad274ed695792dbadd2417b0e99c36210ae4964ff";
-        hash = "sha256-KZxrU6X3o5mG7dogbhz49WRDa1srLQAwOPmqrLM5ONo=";
-        finalImageTag = "v1.17.5";
+        imageDigest = "sha256:7d17ec10b3d37341c18ca56165b2f29a715cb8ee81311fd07088d8bf68c01e60";
+        hash = "sha256-d6iOo/uZ8bFLq9Jxtypvc/P7lhuSVTdlV4f8dH541wc=";
+        finalImageTag = appVersion;
       };
       cilium-hubble-ui-backend = {
         imageName = "quay.io/cilium/hubble-ui-backend";
@@ -41,9 +42,9 @@
       };
       cilium-operator = {
         imageName = "quay.io/cilium/operator-generic";
-        imageDigest = "sha256:f954c97eeb1b47ed67d08cc8fb4108fb829f869373cbb3e698a7f8ef1085b09e";
-        hash = "sha256-dDP8xBSqHiW/4Wxc2YlGOkM81zlfIbx2YCsS0vo3lvE=";
-        finalImageTag = "v1.17.5";
+        imageDigest = "sha256:91ac3bf7be7bed30e90218f219d4f3062a63377689ee7246062fa0cc3839d096";
+        hash = "sha256-d6iOo/uZ8bFLq9Jxtypvc/P7lhuSVTdlV4f8dH541wc=";
+        finalImageTag = appVersion;
       };
     };
     pinImage = image: {
@@ -98,8 +99,8 @@
             src = pkgs.fetchFromGitHub {
               owner = "cilium";
               repo = "cilium";
-              rev = "v1.17.5";
-              hash = "sha256-frpu1kJICbZFwmH/KQ2pZHcS2M+XvLvxZpzVxok2eM8=";
+              rev = appVersion;
+              hash = "sha256-aqXQ9BzWGGtb7MtNhRgYBqNaz5kT2enykof5k3/oSZM=";
             };
           };
           applications.cilium = {

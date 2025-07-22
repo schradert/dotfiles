@@ -55,7 +55,7 @@ spec:
               value: 192.168.50.58
             - name: KUBERNETES_SERVICE_PORT
               value: "6443"
-          image: quay.io/cilium/cilium:v1.17.5
+          image: quay.io/cilium/cilium:v1.17.6
           imagePullPolicy: Never
           lifecycle:
             postStart:
@@ -210,7 +210,7 @@ spec:
               value: 192.168.50.58
             - name: KUBERNETES_SERVICE_PORT
               value: "6443"
-          image: quay.io/cilium/cilium:v1.17.5
+          image: quay.io/cilium/cilium:v1.17.6
           imagePullPolicy: Never
           name: config
           terminationMessagePolicy: FallbackToLogsOnError
@@ -229,7 +229,7 @@ spec:
               value: /run/cilium/cgroupv2
             - name: BIN_PATH
               value: /opt/cni/bin
-          image: quay.io/cilium/cilium:v1.17.5
+          image: quay.io/cilium/cilium:v1.17.6
           imagePullPolicy: Never
           name: mount-cgroup
           securityContext:
@@ -259,7 +259,7 @@ spec:
           env:
             - name: BIN_PATH
               value: /opt/cni/bin
-          image: quay.io/cilium/cilium:v1.17.5
+          image: quay.io/cilium/cilium:v1.17.6
           imagePullPolicy: Never
           name: apply-sysctl-overwrites
           securityContext:
@@ -285,7 +285,7 @@ spec:
             - /bin/bash
             - -c
             - --
-          image: quay.io/cilium/cilium:v1.17.5
+          image: quay.io/cilium/cilium:v1.17.6
           imagePullPolicy: Never
           name: mount-bpf-fs
           securityContext:
@@ -320,7 +320,7 @@ spec:
               value: 192.168.50.58
             - name: KUBERNETES_SERVICE_PORT
               value: "6443"
-          image: quay.io/cilium/cilium:v1.17.5
+          image: quay.io/cilium/cilium:v1.17.6
           imagePullPolicy: Never
           name: clean-cilium-state
           securityContext:
@@ -346,7 +346,7 @@ spec:
               name: cilium-run
         - command:
             - /install-plugin.sh
-          image: quay.io/cilium/cilium:v1.17.5
+          image: quay.io/cilium/cilium:v1.17.6
           imagePullPolicy: Never
           name: install-cni-binaries
           resources:

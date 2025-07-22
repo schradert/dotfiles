@@ -67,7 +67,7 @@ spec:
               value: 192.168.50.58
             - name: KUBERNETES_SERVICE_PORT
               value: "6443"
-          image: quay.io/cilium/cilium-envoy:v1.32.6-1749271279-0864395884b263913eac200ee2048fd985f8e626
+          image: quay.io/cilium/cilium-envoy:v1.34.3-1753136543-8da82c827e7e5b2ad5f107f7f485073bcb7a797f
           imagePullPolicy: Never
           livenessProbe:
             failureThreshold: 10
