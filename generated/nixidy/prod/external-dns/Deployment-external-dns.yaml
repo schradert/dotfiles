@@ -48,8 +48,8 @@ spec:
                 secretKeyRef:
                   key: token
                   name: external-dns
-          image: registry.k8s.io/external-dns/external-dns:v0.17.0
-          imagePullPolicy: IfNotPresent
+          image: registry.k8s.io/external-dns/external-dns:v0.18.0
+          imagePullPolicy: Never
           livenessProbe:
             failureThreshold: 2
             httpGet:

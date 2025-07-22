@@ -5,7 +5,13 @@
     ...
   }: let
     inherit (config) domain services;
-    inherit (lib) mkEnableOption mkIf mkMerge optional toList;
+    inherit (lib) mkEnableOption mkForce mkIf mkMerge optional toList;
+    image = {
+      imageName = "registry.k8s.io/external-dns/external-dns";
+      imageDigest = "sha256:f90738b35be265d50141d5c21e6f6049c3da7cd761682c40214117a2951b80bc";
+      hash = "sha256-Qmpl5jiDLx+6+vBN7CxcqWh4qvbHyIIKFrlg06rY3mE=";
+      finalImageTag = "v0.18.0";
+    };
   in {
     options.services.external-dns.enable = mkEnableOption "external-dns";
     config = mkIf services.external-dns.enable {
@@ -14,12 +20,7 @@
           assertion = services.external-secrets.enable && services.cilium.enable;
           message = "External DNS requires External Secrets and Cilium (Gateway)";
         };
-        canivete.kubernetes.images.external-dns = pkgs.dockerTools.pullImage {
-          imageName = "registry.k8s.io/external-dns/external-dns";
-          imageDigest = "sha256:85eba2727b410c8f8093d641a4b1a29671878db94d525a70a4108d10ba8eef5f";
-          hash = "sha256-Y1jNejGDtfPzgU87Hz+MXDruil7yPlbyoYTHA4OEO58=";
-          finalImageTag = "v0.17.0";
-        };
+        canivete.kubernetes.images.external-dns = pkgs.dockerTools.pullImage image;
       };
       nixidy = {charts, ...}: let
         chart = charts.external-dns.external-dns;
@@ -65,11 +66,15 @@
                 txtPrefix = "k8s.";
                 logFormat = "json";
                 domainFilters = [domain];
+                image.repository = image.imageName;
+                image.tag = image.finalImageTag;
               }
               (mkIf services.prometheus.enable {serviceMonitor.enabled = true;})
               (mkIf services.reloader.enable {podAnnotations."reloader.stakater.com/auto" = "true";})
             ];
           };
+          # Helm chart schema forbids setting this
+          resources.deployments.external-dns.spec.template.spec.containers.external-dns.imagePullPolicy = mkForce "Never";
         };
       };
     };
