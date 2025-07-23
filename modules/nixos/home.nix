@@ -5,13 +5,31 @@
     lib,
     options,
     ...
-  }: {
+  }: let
+    inherit (config.canivete.meta.people) users;
+    inherit (lib) mapAttrs' mkForce mkOption nameValuePair types;
+  in {
     home-manager.backupFileExtension = "bak";
     home-manager.sharedModules = [
       {
         options.dotfiles = options.dotfiles;
         config.dotfiles = config.dotfiles;
       }
+      ({config, ...}: let
+      in {
+        options.dotfiles.profile = mkOption {
+          type = types.enum (builtins.attrNames users.${config.home.username}.profiles);
+          example = "work";
+          description = "The dotfiles profile to use for this configuration";
+          default = "default";
+        };
+        options.dotfiles.editor = mkOption {
+          type = types.str;
+          default = "vim";
+          example = "emacs";
+          description = "Default editor to use for profile";
+        };
+      })
       ({
         config,
         pkgs,
@@ -51,8 +69,8 @@
     home-manager.useGlobalPkgs = true;
     # Can be quite large...
     systemd.services =
-      lib.mapAttrs'
-      (username: _: lib.nameValuePair "home-manager-${username}" {serviceConfig.TimeoutStartSec = lib.mkForce "10m";})
+      mapAttrs'
+      (username: _: nameValuePair "home-manager-${username}" {serviceConfig.TimeoutStartSec = mkForce "10m";})
       flake.config.canivete.meta.people.users;
   };
 }
