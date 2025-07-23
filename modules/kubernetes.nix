@@ -55,7 +55,11 @@ in {
           provisioner.local-exec.command = "nix run \${ var.GIT_DIR }#nixidyEnvs.${perSystem.system}.prod.config.build.scripts.bootstrap";
         };
       };
-      nixidy = {config, lib, ...}: {
+      nixidy = {
+        config,
+        lib,
+        ...
+      }: {
         imports = [
           # CRDs
           ({

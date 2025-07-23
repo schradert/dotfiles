@@ -9,7 +9,7 @@ in {
     ...
   }: let
     inherit (config) domain;
-    inherit (lib) attrValues concat mkEnableOption mkForce mkIf mkMerge mkOption pipe toList types;
+    inherit (lib) attrValues concat mergeAttrs mkEnableOption mkForce mkIf mkMerge mkOption pipe toList types;
     inherit (types) attrsOf nullOr submodule str;
     databases = mkOption {
       default = {};
@@ -85,34 +85,32 @@ in {
           # TODO follow https://github.com/NixOS/nixpkgs/pull/425707 (for harlequin)
           nixpkgs.overlays = [
             (final: prev: {
-              pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
-                (_: pyprev: {
-                  textual = pyprev.textual.overrideAttrs (old: {
-                    meta = old.meta // {
-                      broken = false;
-                    };
-                  });
-                  tree-sitter = pyprev.tree-sitter.overrideAttrs (old: rec {
-                    version = "0.24.0";
-                    src = final.fetchFromGitHub {
-                      inherit (old.src) owner repo;
-                      tag = "v${version}";
-                      hash = "sha256-ZDt/8suteaAjGdk71l8eej7jDkkVpVDBIZS63SA8tsU=";
-                    };
-                    meta = old.meta // {
-                      changelog = "https://github.com/tree-sitter/py-tree-sitter/releases/tag/${src.tag}";
-                    };
-                  });
-                  tree-sitter-rust = pyprev.tree-sitter-rust.overrideAttrs (old: rec {
-                    version = "0.23.2";
-                    src = final.fetchFromGitHub {
-                      inherit (old.src) owner repo;
-                      tag = "v${version}";
-                      hash = "sha256-aT+tlrEKMgWqTEq/NHh8Vj92h6i1aU6uPikDyaP2vfc=";
-                    };
-                  });
-                })
-              ];
+              pythonPackagesExtensions =
+                prev.pythonPackagesExtensions
+                ++ [
+                  (_: pyprev: {
+                    textual = pyprev.textual.overrideAttrs (old: {
+                      meta = mergeAttrs old.meta {broken = false;};
+                    });
+                    tree-sitter = pyprev.tree-sitter.overrideAttrs (old: rec {
+                      version = "0.24.0";
+                      src = final.fetchFromGitHub {
+                        inherit (old.src) owner repo;
+                        tag = "v${version}";
+                        hash = "sha256-ZDt/8suteaAjGdk71l8eej7jDkkVpVDBIZS63SA8tsU=";
+                      };
+                      meta = mergeAttrs old.meta {changelog = "https" + "://github.com/tree-sitter/py-tree-sitter/releases/tag/${src.tag}";};
+                    });
+                    tree-sitter-rust = pyprev.tree-sitter-rust.overrideAttrs (old: rec {
+                      version = "0.23.2";
+                      src = final.fetchFromGitHub {
+                        inherit (old.src) owner repo;
+                        tag = "v${version}";
+                        hash = "sha256-aT+tlrEKMgWqTEq/NHh8Vj92h6i1aU6uPikDyaP2vfc=";
+                      };
+                    });
+                  })
+                ];
             })
           ];
         };

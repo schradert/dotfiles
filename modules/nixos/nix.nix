@@ -1,5 +1,9 @@
 {inputs, ...}: {
-  dotfiles.nixos = {lib, pkgs, ...}: {
+  dotfiles.nixos = {
+    lib,
+    pkgs,
+    ...
+  }: {
     nix = {
       settings = {
         trusted-users = ["@wheel"];
