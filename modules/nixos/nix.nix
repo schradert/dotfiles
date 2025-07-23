@@ -1,7 +1,7 @@
 {inputs, ...}: {
   dotfiles.nixos = {
     home-manager.sharedModules = [
-      inputs.nix-index-database.hmModules.nix-index
+      inputs.nix-index-database.homeModules.nix-index
       ({
         config,
         pkgs,

@@ -21,7 +21,7 @@
         pkgs,
         ...
       }: {
-        home.packages = mkIf (config.dotfiles.workstation.enable && pkgs.stdenv.hostPlatform.isLinux) [pkgs.jftui];
+        home.packages = mkIf (config.dotfiles.profiles.client.workstation.enable && pkgs.stdenv.hostPlatform.isLinux) [pkgs.jftui];
       };
       nixos = {pkgs, ...}: {canivete.kubernetes.images.jellyfin = pkgs.dockerTools.pullImage image;};
       nixidy = {charts, ...}: {
