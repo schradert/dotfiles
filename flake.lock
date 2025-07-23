@@ -1749,6 +1749,22 @@
         "type": "github"
       }
     },
+    "mobile-nixos": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1752497937,
+        "narHash": "sha256-xBkxB3KGDUQRpd2nSqJvw6vJhse4Lee4OaeJH6WvNDM=",
+        "owner": "mobile-nixos",
+        "repo": "mobile-nixos",
+        "rev": "7a5fb89f4d2f08829f3fa1078108ceb40e8c8a67",
+        "type": "github"
+      },
+      "original": {
+        "owner": "mobile-nixos",
+        "repo": "mobile-nixos",
+        "type": "github"
+      }
+    },
     "mynur": {
       "inputs": {
         "fenix": [
@@ -2796,6 +2812,7 @@
         "hyprwayland-scanner": "hyprwayland-scanner",
         "jovian": "jovian",
         "matugen": "matugen",
+        "mobile-nixos": "mobile-nixos",
         "mynur": "mynur",
         "naersk": "naersk",
         "nci": "nci",

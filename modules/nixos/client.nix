@@ -3,19 +3,25 @@
     config,
     lib,
     ...
-  }: {
-    options.dotfiles.profiles.client.enable = lib.mkEnableOption "client";
-    config = lib.mkIf config.dotfiles.profiles.client.enable {
+  }: let
+    inherit (lib) mkDefault mkEnableOption mkIf mkMerge;
+  in {
+    options.dotfiles.profiles.client.enable = mkEnableOption "client";
+    config = mkIf config.dotfiles.profiles.client.enable {
       dotfiles.profiles.client = {
-        plasma.enable = lib.mkDefault true;
-        fhs.enable = lib.mkDefault true;
-        audio.enable = lib.mkDefault true;
-        video.enable = lib.mkDefault true;
+        plasma.enable = mkDefault true;
+        fhs.enable = mkDefault true;
+        audio.enable = mkDefault true;
+        video.enable = mkDefault true;
       };
       dotfiles.nixpkgs.config.allowUnfreePackages = ["beeper"];
       home-manager.sharedModules = [
         ({pkgs, ...}: {
-          home.packages = with pkgs; [brave beeper legcord k3d bitwarden];
+          home.packages = with pkgs;
+            mkMerge [
+              [brave legcord k3d bitwarden]
+              (mkIf (stdenv.hostPlatform.system == "x86_64-linux") [beeper])
+            ];
           programs.rbw.enable = true;
         })
       ];

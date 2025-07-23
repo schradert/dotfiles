@@ -53,6 +53,8 @@
     nixos-wsl.url = "github:nix-community/NixOS-WSL";
     nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
     nixos-wsl.inputs.flake-compat.follows = "flake-compat";
+    mobile-nixos.url = "github:mobile-nixos/mobile-nixos";
+    mobile-nixos.flake = false;
 
     # OpenTofu
     terranix.url = "github:terranix/terranix";

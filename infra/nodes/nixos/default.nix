@@ -113,6 +113,8 @@ in {
     axolotl.hostname = mkForce "192.168.50.250";
     falcon.hostname = mkForce "192.168.50.215";
     falcon.remoteBuild = true;
+    gargoyle.hostname = mkForce "192.168.50.192";
+    gargoyle.canivete.system = "aarch64-linux";
   };
   dotfiles.nodes = {
     sirver = {
@@ -247,6 +249,7 @@ in {
       platform.prem.install_host = "192.168.50.215";
       opentofu.module.nixos_falcon_system_install.build_on_remote = true;
       system = {
+        boot.binfmt.emulatedSystems = ["aarch64-linux"];
         boot.initrd.availableKernelModules = ["sr_mod"];
         boot.plymouth.enable = true;
         # Desktop keeps getting stuck in ULP mode..., breaking networking connection
@@ -316,6 +319,87 @@ in {
           "llama3.1:8b" # chat
           "qwen2.5-coder:1.5b-base" # autocomplete
           "nomic-embed-text:latest" # embeddings
+        ];
+      };
+    };
+    gargoyle = {
+      # It can't be installed with nixos-anywhere
+      platform.prem.install_host = "";
+      system = {pkgs, ...}: {
+        imports = [
+          {
+            # TODO why didn't this recent fix work https://github.com/mobile-nixos/mobile-nixos/issues/820
+            # NOTE avoiding module entirely for now
+            disabledModules = ["${inputs.mobile-nixos}/modules/system-target.nix"];
+            options.mobile = {
+              system.system = lib.mkOption {
+                # Known supported target types.
+                type = lib.types.enum [
+                  "aarch64-linux"
+                  "armv7l-linux"
+                  "x86_64-linux"
+                ];
+                description = ''
+                  Defines the host platform architecture the device is.
+
+                  This will automagically setup cross-compilation where possible.
+                '';
+              };
+            };
+          }
+          (import "${inputs.mobile-nixos}/lib/configuration.nix" {device = "oneplus-enchilada";})
+          {
+            # Fixes
+            disabledModules = ["${inputs.disko}/module.nix"];
+            # NOTE v4l2loopback build breaks with strange self.kernel.commonMakeFlags missing...
+            dotfiles.programs.obs-studio.enable = mkForce false;
+            facter.reportPath = mkForce null;
+            home-manager.sharedModules = [{home.stateVersion = mkForce "24.11";}];
+            system.stateVersion = mkForce "24.11";
+            # No stylix support for GNOME yet
+            stylix.enable = mkForce false;
+          }
+        ];
+        # TODO try out gaming mode!
+        # dotfiles.profiles.client.gaming.enable = true;
+        dotfiles.nixpkgs.config.allowUnfreePackages = [
+          "oneplus-sdm845-firmware"
+          "oneplus-sdm845-firmware-zstd"
+        ];
+        dotfiles.profiles.client.enable = true;
+        zramSwap.enable = true;
+        users.users.tristan.extraGroups = ["dialout" "feedbackd" "networkmanager"];
+        dotfiles.profiles.client.plasma.enable = false;
+        services.desktopManager.gnome.enable = true;
+        services.displayManager.gdm.enable = true;
+        services.gnome.gnome-keyring.enable = true;
+        programs.dconf.enable = true;
+        environment.gnome.excludePackages = with pkgs; [
+          baobab # disk usage analyzer
+          cheese # photo booth
+          eog # image viewer
+          epiphany # web browser
+          simple-scan # document scanner
+          totem # video player
+          yelp # help viewer
+          evince # document viewer
+          file-roller # archive manager
+          geary # email client
+          seahorse # password manager
+          gnome-calculator
+          gnome-calendar
+          gnome-characters
+          gnome-clocks
+          gnome-contacts
+          gnome-font-viewer
+          gnome-logs
+          gnome-maps
+          gnome-music
+          gnome-screenshot
+          gnome-system-monitor
+          gnome-weather
+          gnome-disk-utility
+          pkgs.gnome-connections
         ];
       };
     };

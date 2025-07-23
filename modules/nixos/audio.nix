@@ -7,22 +7,22 @@
       lib,
       perSystem,
       ...
-    }: {
-      options.dotfiles.profiles.client.audio.enable = lib.mkEnableOption "Audio processing";
-      config = lib.mkIf config.dotfiles.profiles.client.audio.enable {
-        assertions = lib.toList {
+    }: let
+      inherit (lib) mkEnableOption mkIf mkMerge toList;
+    in {
+      options.dotfiles.profiles.client.audio.enable = mkEnableOption "Audio processing";
+      config = mkIf config.dotfiles.profiles.client.audio.enable {
+        assertions = toList {
           assertion = config.dotfiles.profiles.client.enable;
           message = "Audio is for clients";
         };
         home-manager.sharedModules = [
           ({pkgs, ...}: {
-            home.packages = with pkgs; [
-              helvum
-              pavucontrol
-              qpwgraph
-              spotify
-              perSystem.inputs'.wiremix.packages.wiremix
-            ];
+            home.packages = with pkgs;
+              mkMerge [
+                [helvum pavucontrol qpwgraph perSystem.inputs'.wiremix.packages.wiremix]
+                (mkIf (stdenv.hostPlatform.system != "aarch64-linux") [spotify])
+              ];
           })
         ];
         dotfiles.nixpkgs.config.allowUnfreePackages = ["spotify"];
