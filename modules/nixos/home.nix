@@ -6,7 +6,7 @@
     options,
     ...
   }: let
-    inherit (config.canivete.meta.people) users;
+    inherit (flake.config.canivete.meta.people) users;
     inherit (lib) mapAttrs' mkForce mkOption nameValuePair types;
   in {
     home-manager.backupFileExtension = "bak";
@@ -15,8 +15,7 @@
         options.dotfiles = options.dotfiles;
         config.dotfiles = config.dotfiles;
       }
-      ({config, ...}: let
-      in {
+      ({config, ...}: {
         options.dotfiles.profile = mkOption {
           type = types.enum (builtins.attrNames users.${config.home.username}.profiles);
           example = "work";

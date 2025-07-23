@@ -72,10 +72,10 @@ in {
           };
           home-manager.sharedModules = mkIf config.dotfiles.profiles.client.workstation.enable [
             ({pkgs, ...}: {
+              programs.lazysql.enable = true;
               home.packages = with pkgs; [
                 dbeaver-bin
                 gobang
-                lazysql
                 rainfrog
                 harlequin
                 dblab

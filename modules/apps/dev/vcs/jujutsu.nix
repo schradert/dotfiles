@@ -1,25 +1,16 @@
 {
-  flake.overlays.jujutsu = _: prev: {
-    lazyjj = prev.lazyjj.overrideAttrs (_: {
-      checkFlags = [
-        # TODO follow https://github.com/NixOS/nixpkgs/issues/370890
-        "--skip=commander::bookmarks::tests::get_bookmark_show"
-        "--skip=commander::files::tests::get_file_diff"
-        "--skip=commander::log::tests::get_commit_show"
-      ];
-    });
-  };
   dotfiles.home-manager = {
     config,
+    lib,
     pkgs,
     ...
   }: let
     inherit (config.programs.git) extraConfig userEmail userName;
   in {
-    home.packages = with pkgs; [gg-jj jjui lazyjj watchman];
-    programs.jujutsu = {
-      ediff = true;
-      settings = {
+    config = lib.mkIf config.dotfiles.profiles.client.workstation.enable {
+      home.packages = with pkgs; [gg-jj jjui lazyjj watchman];
+      programs.jujutsu.enable = true;
+      programs.jujutsu.settings = {
         core.fsmonitor = "watchman";
         signing = {
           backend = "ssh";
