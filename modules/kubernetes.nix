@@ -55,11 +55,7 @@ in {
           provisioner.local-exec.command = "nix run \${ var.GIT_DIR }#nixidyEnvs.${perSystem.system}.prod.config.build.scripts.bootstrap";
         };
       };
-      nixidy = {
-        env,
-        lib,
-        ...
-      }: {
+      nixidy = {config, lib, ...}: {
         imports = [
           # CRDs
           ({
@@ -170,7 +166,7 @@ in {
             ];
             config.build.scripts.bootstrap = pkgs.mkShellApplication {
               # Vals needs to run in the project root to read SOPS
-              name = "nixidy-bootstrap-${env}";
+              name = "nixidy-bootstrap-${config.nixidy.env}";
               runtimeInputs = [
                 pkgs.git
                 config.build.scripts.nixidy
@@ -180,7 +176,7 @@ in {
               ];
               text = ''
                 cd "$(git rev-parse --show-toplevel)"
-                nixidy bootstrap .#${env} | \
+                nixidy bootstrap .#${config.nixidy.env} | \
                   vals eval -s -decode-kubernetes-secrets -f - | \
                   kubeconfig kapp deploy --yes --diff-changes --app bootstrap --file -
               '';
@@ -218,7 +214,7 @@ in {
             config.build.scripts.nixidy = inputs'.nixidy.packages.default;
           })
         ];
-        nixidy.target.rootPath = "./generated/nixidy/${env}";
+        nixidy.target.rootPath = "./generated/nixidy/${config.nixidy.env}";
         nixidy.defaults.helm.transformer = map (lib.kube.removeLabels [
           # Helm chart versions are just not necessary
           "app.kubernetes.io/version"
