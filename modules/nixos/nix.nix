@@ -1,5 +1,17 @@
 {inputs, ...}: {
-  dotfiles.nixos = {
+  dotfiles.nixos = {lib, pkgs, ...}: {
+    nix = {
+      settings = {
+        trusted-users = ["@wheel"];
+        experimental-features = ["nix-command" "flakes"];
+        builders-use-substitutes = true;
+        flake-registry = builtins.toFile "empty-flake-registry.json" ''{"flakes":[],"version":2}'';
+      };
+      package = pkgs.nixVersions.latest;
+      registry.nixpkgs.flake = lib.mkForce inputs.nixpkgs;
+      registry.nixpkgs.to.path = lib.mkForce inputs.nixpkgs;
+      nixPath = ["nixpkgs=${inputs.nixpkgs}"];
+    };
     home-manager.sharedModules = [
       inputs.nix-index-database.homeModules.nix-index
       ({
@@ -7,8 +19,7 @@
         pkgs,
         ...
       }: {
-        home.packages = with pkgs; [nix-inspect nix-fast-build];
-        nix.extraOptions = "experimental-features = nix-command flakes";
+        home.packages = with pkgs; [nix-inspect nix-fast-build nix-output-monitor];
         programs.nix-index.package = pkgs.nix-index-with-db;
         programs.nix-index-database.comma.enable = true;
         programs.nushell.extraConfig = "$env.config.hooks.command_not_found = source ${config.programs.nix-index.package}/etc/profile.d/command-not-found.nu";
