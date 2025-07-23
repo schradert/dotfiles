@@ -5,7 +5,6 @@
         trusted-users = ["@wheel"];
         experimental-features = ["nix-command" "flakes"];
         builders-use-substitutes = true;
-        flake-registry = builtins.toFile "empty-flake-registry.json" ''{"flakes":[],"version":2}'';
       };
       package = pkgs.nixVersions.latest;
       registry.nixpkgs.flake = lib.mkForce inputs.nixpkgs;
