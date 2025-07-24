@@ -304,38 +304,6 @@ in {
       };
     };
     gargoyle = {
-        dotfiles.profiles.client.plasma.enable = false;
-        services.desktopManager.gnome.enable = true;
-        services.displayManager.gdm.enable = true;
-        services.gnome.gnome-keyring.enable = true;
-        programs.dconf.enable = true;
-        environment.gnome.excludePackages = with pkgs; [
-          baobab # disk usage analyzer
-          cheese # photo booth
-          eog # image viewer
-          epiphany # web browser
-          simple-scan # document scanner
-          totem # video player
-          yelp # help viewer
-          evince # document viewer
-          file-roller # archive manager
-          geary # email client
-          seahorse # password manager
-          gnome-calculator
-          gnome-calendar
-          gnome-characters
-          gnome-clocks
-          gnome-contacts
-          gnome-font-viewer
-          gnome-logs
-          gnome-maps
-          gnome-music
-          gnome-screenshot
-          gnome-system-monitor
-          gnome-weather
-          gnome-disk-utility
-          pkgs.gnome-connections
-        ];
       platform.mobile.device = "oneplus-enchilada";
       system = {
         # TODO dotfiles.profiles.client.gaming.enable = true;
