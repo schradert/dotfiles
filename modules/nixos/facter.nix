@@ -5,7 +5,12 @@
   ...
 }: {
   dotfiles = _: {
-    options.nodes = canivete.mkNestedSubmodule ({config, lib, name, ...}: {
+    options.nodes = canivete.mkNestedSubmodule ({
+      config,
+      lib,
+      name,
+      ...
+    }: {
       config = lib.mkIf (config.platform ? prem) {
         system.imports = [inputs.nixos-facter-modules.nixosModules.facter];
         # Basically everything on-prem has this but facter misses it...

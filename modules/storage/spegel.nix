@@ -21,7 +21,11 @@
   in {
     options.services.spegel.enable = mkEnableOption "spegel";
     config = mkIf services.spegel.enable {
-      nixos = {config, pkgs, ...}: let
+      nixos = {
+        config,
+        pkgs,
+        ...
+      }: let
         toml = name: content: builtins.toString ((pkgs.formats.toml {}).generate name content);
       in {
         config = mkIf config.dotfiles.profiles.server.enable {

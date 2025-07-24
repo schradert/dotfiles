@@ -156,9 +156,13 @@ in {
               };
             };
             config = {
-              dotfiles.nixpkgs.config.allowUnfreePackages = {
-                oneplus-enchilada = ["oneplus-sdm845-firmware" "oneplus-sdm845-firmware-zstd"];
-              }.${platform.mobile.device} or [];
+              dotfiles.nixpkgs.config.allowUnfreePackages =
+                {
+                  oneplus-enchilada = ["oneplus-sdm845-firmware" "oneplus-sdm845-firmware-zstd"];
+                }.${
+                  platform.mobile.device
+                } or [
+                ];
               users.users.${me}.extraGroups = ["dialout" "feedbackd" "networkmanager"];
               # Ensures any rndis config from stage-1 is not clobbered by NetworkManager
               networking.networkmanager.unmanaged = ["rndis0" "usb0"];
