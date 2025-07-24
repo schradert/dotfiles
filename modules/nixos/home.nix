@@ -7,7 +7,7 @@
     ...
   }: let
     inherit (flake.config.canivete.meta.people) users;
-    inherit (lib) mapAttrs' mkForce mkOption nameValuePair types;
+    inherit (lib) mapAttrs' mkDefault mkForce mkOption nameValuePair types;
   in {
     home-manager.backupFileExtension = "bak";
     home-manager.sharedModules = [
@@ -48,7 +48,7 @@
           XDG_STATE_HOME = xdg.stateHome;
           XDG_RUNTIME_DIR = "/run/user/1000";
         };
-        home.stateVersion = "25.11";
+        home.stateVersion = mkDefault "25.11";
         programs = {
           bat.enable = true;
           dircolors.enable = true;

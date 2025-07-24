@@ -8,17 +8,21 @@
 in {
   dotfiles = {
     canivete,
+    config,
     lib,
     ...
   }: let
-    inherit (lib) fileContents genList mkForce mkIf mkMerge mkOption types;
+    inherit (config) me;
+    inherit (lib) fileContents genList mkDefault mkForce mkIf mkMerge mkOption types;
     inherit (types) attrTag enum str submodule;
   in {
     options.nodes = canivete.mkNestedSubmodule ({
       config,
       name,
       ...
-    }: {
+    }: let
+      inherit (config) platform;
+    in {
       options.platform = mkOption {
         default.prem = {};
         # TODO make this dynamic to activated clouds
@@ -41,17 +45,28 @@ in {
               };
             };
           };
+          mobile = mkOption {
+            type = submodule {
+              options.device = mkOption {
+                type = str;
+              };
+            };
+          };
+          wsl = mkOption {
+            type = submodule {};
+          };
         };
       };
       config = mkMerge [
-        (mkIf (config.platform ? prem) {
+        {system._module.args = {inherit platform;};}
+        (mkIf (platform ? prem) {
           system.boot.loader = {
             systemd-boot.enable = true;
             efi.canTouchEfiVariables = true;
           };
-          opentofu.module."nixos_${name}_system_install".target_host = mkForce config.platform.prem.install_host;
+          opentofu.module."nixos_${name}_system_install".target_host = mkForce platform.prem.install_host;
         })
-        (mkIf (config.platform ? google) {
+        (mkIf (platform ? google) {
           system = {modulesPath, ...}: {
             # FIXME why is it failing with these upstream modules?
             imports = [
@@ -96,14 +111,14 @@ in {
           ];
           opentofu.module."nixos_${name}_system_install".depends_on = ["google_compute_instance.${name}"];
         })
-        (mkIf (config.platform ? hetzner) {
+        (mkIf (platform ? hetzner) {
           system.imports = with inputs.srvos.nixosModules; [server hardware-hetzner-cloud];
           system.dotfiles.facter.reportName = "hetzner";
           opentofu.resource.hcloud_server.${name} = mkMerge [
             {
               depends_on = ["hcloud_ssh_key.me"];
               inherit name;
-              inherit (config.platform.hetzner) server_type;
+              inherit (platform.hetzner) server_type;
               location = "ash";
               image = "debian-12";
               keep_disk = true;
@@ -113,6 +128,63 @@ in {
             }
           ];
           opentofu.module."nixos_${name}_system_install".depends_on = ["hcloud_server.${name}"];
+        })
+        (mkIf (platform ? mobile) {
+          system = {
+            imports = [(import "${inputs.mobile-nixos}/lib/configuration.nix" {inherit (platform.mobile) device;})];
+            # TODO why didn't this recent fix work https://github.com/mobile-nixos/mobile-nixos/issues/820
+            disabledModules = [
+              # NOTE avoiding module entirely for now
+              "${inputs.mobile-nixos}/modules/system-target.nix"
+              # TODO consider not defaulting to disko upstream
+              "${inputs.disko}/module.nix"
+            ];
+            # Essential option in mobile-nixos
+            options.mobile = {
+              system.system = mkOption {
+                # Known supported target types.
+                type = enum [
+                  "aarch64-linux"
+                  "armv7l-linux"
+                  "x86_64-linux"
+                ];
+                description = ''
+                  Defines the host platform architecture the device is.
+
+                  This will automagically setup cross-compilation where possible.
+                '';
+              };
+            };
+            config = {
+              dotfiles.nixpkgs.config.allowUnfreePackages = {
+                oneplus-enchilada = ["oneplus-sdm845-firmware" "oneplus-sdm845-firmware-zstd"];
+              }.${platform.mobile.device} or [];
+              users.users.${me}.extraGroups = ["dialout" "feedbackd" "networkmanager"];
+
+              zramSwap.enable = mkDefault true;
+
+              dotfiles.profiles.client.enable = true;
+              # TODO v4l2loopback build breaks with strange self.kernel.commonMakeFlags missing...
+              dotfiles.programs.obs-studio.enable = mkForce false;
+            };
+          };
+        })
+        (mkIf (platform ? wsl) {
+          system = {
+            imports = [inputs.nixos-wsl.nixosModules.default];
+            wsl.enable = true;
+            wsl.defaultUser = me;
+            wsl.startMenuLaunchers = true;
+            # TODO figure out hardwired internet setup (switch + ethernet to usb adapters)
+            # TODO should I I use wsl-vpnkit?
+            # TODO value of OpenGL driver from Windows?
+            # TODO any settings I should configure for more resource usage or enable graphical applications?
+            # wsl.usbip.enable = true;
+            # wsl.usbip.autoAttach = [];
+            # wsl.usbip.snippetIpAddress = "127.0.0.1";
+            # wsl.useWindowsDriver = true;
+            # wsl.wslConf = {};
+          };
         })
       ];
     });

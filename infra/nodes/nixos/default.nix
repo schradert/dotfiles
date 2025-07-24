@@ -189,26 +189,7 @@ in {
       };
     };
     # TODO deploy
-    echidna = {
-      platform.prem.install_host = "192.168.50.xxx";
-      system = {
-        # TODO fix modules to beef up WSL
-        imports = [inputs.nixos-wsl.nixosModules.default];
-        facter.reportPath = mkForce null;
-        wsl.enable = true;
-        wsl.defaultUser = config.canivete.meta.people.me;
-        wsl.startMenuLaunchers = true;
-        # TODO figure out hardwired internet setup (switch + ethernet to usb adapters)
-        # TODO should I I use wsl-vpnkit?
-        # TODO value of OpenGL driver from Windows?
-        # TODO any settings I should configure for more resource usage or enable graphical applications?
-        # wsl.usbip.enable = true;
-        # wsl.usbip.autoAttach = [];
-        # wsl.usbip.snippetIpAddress = "127.0.0.1";
-        # wsl.useWindowsDriver = true;
-        # wsl.wslConf = {};
-      };
-    };
+    echidna.platform.wsl = {};
     # TODO deploy
     systeamadeck = {
       platform.prem.install_host = "192.168.50.155";
@@ -323,52 +304,6 @@ in {
       };
     };
     gargoyle = {
-      # It can't be installed with nixos-anywhere
-      platform.prem.install_host = "";
-      system = {pkgs, ...}: {
-        imports = [
-          {
-            # TODO why didn't this recent fix work https://github.com/mobile-nixos/mobile-nixos/issues/820
-            # NOTE avoiding module entirely for now
-            disabledModules = ["${inputs.mobile-nixos}/modules/system-target.nix"];
-            options.mobile = {
-              system.system = lib.mkOption {
-                # Known supported target types.
-                type = lib.types.enum [
-                  "aarch64-linux"
-                  "armv7l-linux"
-                  "x86_64-linux"
-                ];
-                description = ''
-                  Defines the host platform architecture the device is.
-
-                  This will automagically setup cross-compilation where possible.
-                '';
-              };
-            };
-          }
-          (import "${inputs.mobile-nixos}/lib/configuration.nix" {device = "oneplus-enchilada";})
-          {
-            # Fixes
-            disabledModules = ["${inputs.disko}/module.nix"];
-            # NOTE v4l2loopback build breaks with strange self.kernel.commonMakeFlags missing...
-            dotfiles.programs.obs-studio.enable = mkForce false;
-            facter.reportPath = mkForce null;
-            home-manager.sharedModules = [{home.stateVersion = mkForce "24.11";}];
-            system.stateVersion = mkForce "24.11";
-            # No stylix support for GNOME yet
-            stylix.enable = mkForce false;
-          }
-        ];
-        # TODO try out gaming mode!
-        # dotfiles.profiles.client.gaming.enable = true;
-        dotfiles.nixpkgs.config.allowUnfreePackages = [
-          "oneplus-sdm845-firmware"
-          "oneplus-sdm845-firmware-zstd"
-        ];
-        dotfiles.profiles.client.enable = true;
-        zramSwap.enable = true;
-        users.users.tristan.extraGroups = ["dialout" "feedbackd" "networkmanager"];
         dotfiles.profiles.client.plasma.enable = false;
         services.desktopManager.gnome.enable = true;
         services.displayManager.gdm.enable = true;
@@ -401,6 +336,13 @@ in {
           gnome-disk-utility
           pkgs.gnome-connections
         ];
+      platform.mobile.device = "oneplus-enchilada";
+      system = {
+        # TODO dotfiles.profiles.client.gaming.enable = true;
+        # TODO Accidentally initialized wrong...
+        system.stateVersion = "24.11";
+        home-manager.sharedModules = [{home.stateVersion = "24.11";}];
+        users.users.tristan.uid = 1000;
       };
     };
   };

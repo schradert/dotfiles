@@ -1,23 +1,18 @@
 {
+  canivete,
   config,
   inputs,
   ...
 }: {
-  dotfiles.nixos = {
-    config,
-    lib,
-    node,
-    ...
-  }: {
-    imports = [inputs.nixos-facter-modules.nixosModules.facter];
-    options.dotfiles.facter.reportName = lib.mkOption {
-      type = lib.types.str;
-      default = node.name;
-      description = "Name of JSON file with report";
-    };
-    # Basically everything on-prem has this but facter misses it...
-    config.boot.initrd.availableKernelModules = ["usbhid"];
-    config.facter.reportPath = lib.mkDefault (inputs.self + "/infra/nodes/nixos/${config.dotfiles.facter.reportName}.json");
+  dotfiles = _: {
+    options.nodes = canivete.mkNestedSubmodule ({config, lib, name, ...}: {
+      config = lib.mkIf (config.platform ? prem) {
+        system.imports = [inputs.nixos-facter-modules.nixosModules.facter];
+        # Basically everything on-prem has this but facter misses it...
+        system.boot.initrd.availableKernelModules = ["usbhid"];
+        system.facter.reportPath = inputs.self + "/infra/nodes/nixos/${name}.json";
+      };
+    });
   };
   perSystem = {pkgs, ...}: {
     # TODO make this a real thing (platforms, variables, ...)
