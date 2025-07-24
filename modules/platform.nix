@@ -160,8 +160,21 @@ in {
                 oneplus-enchilada = ["oneplus-sdm845-firmware" "oneplus-sdm845-firmware-zstd"];
               }.${platform.mobile.device} or [];
               users.users.${me}.extraGroups = ["dialout" "feedbackd" "networkmanager"];
+              # Ensures any rndis config from stage-1 is not clobbered by NetworkManager
+              networking.networkmanager.unmanaged = ["rndis0" "usb0"];
 
               zramSwap.enable = mkDefault true;
+              services.displayManager.autoLogin = {
+                enable = mkDefault true;
+                user = mkDefault me;
+              };
+              mobile = {
+                boot.stage-1.networking.enable = mkDefault true;
+                # Ensures all example systems float up normalization issues by default.
+                boot.stage-1.kernel.useStrictKernelConfig = mkDefault true;
+                beautification.silentBoot = mkDefault true;
+                beautification.splash = mkDefault true;
+              };
 
               dotfiles.profiles.client.enable = true;
               # TODO v4l2loopback build breaks with strange self.kernel.commonMakeFlags missing...
