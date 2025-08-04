@@ -34,7 +34,7 @@
                   [(":" + cat)]
                   ++ (mapAttrsToList (
                     mod: value:
-                      if value
+                      if value == true
                       then mod
                       else if builtins.isList value
                       then "(${mod} ${concatStringsSep " " value})"
