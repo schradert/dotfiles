@@ -60,7 +60,6 @@
           ssh.enable = true;
           vim.enable = true;
           yazi.enable = true;
-          zellij.enable = true;
           zoxide.enable = true;
         };
       })
