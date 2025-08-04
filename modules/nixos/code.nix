@@ -12,6 +12,7 @@
       };
       home-manager.sharedModules = [
         ({pkgs, ...}: {
+          home.packages = [pkgs.devenv];
           dotfiles.programs = {
             agda.enable = true;
             godot.enable = true;
