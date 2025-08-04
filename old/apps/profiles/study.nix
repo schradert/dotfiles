@@ -29,7 +29,16 @@
   in {
     config = mkIf config.dotfiles.profiles.workstation.enable (mkMerge [
       {
-        dotfiles.programs.emacs.orgFiles = [./languages.org];
+        programs.doom-emacs = {
+          # TODO when https://github.com/doomemacs/doomemacs/issues/8218 is fixed
+          # extraBinPackages = with pkgs; [cmigemo librime gnumake cmake gcc];
+          tangle.config = "(add-hook 'org-mode-hook #'+bidi-mode)";
+          tangle.init.input = {
+            bidi = true;
+            # chinese = ["+childframe" "+rime"];
+            # japanese = true;
+          };
+        };
         home.packages = with pkgs;
           mkMerge [
             (mkIf stdenv.hostPlatform.isLinux [anki])

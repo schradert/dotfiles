@@ -1,7 +1,0 @@
-#+begin_src emacs-lisp :noweb-ref init
-(doom! :lang (haskell +lsp +tree-sitter))
-#+end_src
-
-#+begin_src emacs-lisp :tangle config.el
-(after! lsp-haskell (setq lsp-haskell-formatting-provider "brittany"))
-#+end_src

@@ -1,0 +1,216 @@
+* Org
+#+begin_src emacs-lisp :tangle config.el
+;; NOTE apparently org-directory must be set before org is loaded
+(setq org-directory (concat (getenv "USERDIR") "/Projects/sabedoria")))
+(setq deft-directory (concat org-directory "/deft"))
+(after! org
+  (defun my/mark-as-project ()
+    "This function makes sure that the current heading has
+(1) the tag :project:
+(2) has property COOKIE_DATA set to \"todo recursive\"
+(3) has any TODO keyword and
+(4) a leading progress indicator"
+    (interactive)
+    (org-toggle-tag "project" 'on)
+    (org-set-property "COOKIE_DATA" "todo recursive")
+    (org-back-to-heading t)
+    (let*
+      ((title (nth 4 (org-heading-components)))
+       (keyword (nth 2 (org-heading-components))))
+      (when (and (bound-and-true-p keyword) (string-prefix-p "[" title))
+        (message "TODO keyword and progress indicator found"))
+      (when (and (not (bound-and-true-p keyword)) (string-prefix-p "[" title))
+        (message "no TODO keyword but progress indicator found")
+        (forward-whitespace 1)
+        (insert "PLANNED "))
+      (when (and (not (bound-and-true-p keyword)) (not (string-prefix-p "[" title)))
+        (message "no TODO keyword and no progress indicator found")
+        (forward-whitespace 1)
+        (insert "PLANNED [/] "))
+      (when (and (bound-and-true-p keyword) (not (string-prefix-p "[" title)))
+        (message "TODO keyword but no progress indicator found")
+        (forward-whitespace 2)
+        (insert "[/] "))))
+  (defun my/org-clock-todo-change ()
+    "Clock in on an in progress task and clock out of the other"
+    (if (equal org-state "IN-PROGRESS")
+        (org-clock-in)
+      (org-clock-out-if-current)))
+  (defun my/org-habit-is-habit-subheading ()
+    "Check if the current TODO is under an org-habit heading."
+    (save-excursion
+      (while (and (not (org-at-heading-p))
+                  (org-up-heading-safe))
+        (let ((style (org-entry-get (point) "STYLE")))
+          (when (and style (string= style "habit"))
+            (cl-return t))))
+      nil))
+
+  (setq
+    org-columns-default-format "%40ITEM(Task) %TODO %3PRIORITY %17Effort{:} %CLOCKSUM %CLOCKSUM_T %TAGS"
+    org-global-properties '(("Effort_ALL" . "0 0:15 0:30 1:00 2:00 3:00 4:00 5:00 6:00 7:00"))
+    org-log-into-drawer t
+    org-todo-keywords '((sequence "DRAFTING(d@)" "PLANNED(p!)" "IN-PROGRESS(i!/@)" "WAITING(w@)" "|" "COMPLETED(c@)" "REJECTED(r@)" "MISSED(m@)"))
+    org-todo-repeat-to-state "PLANNED")
+
+  (add-hook! 'org-after-todo-state-change-hook 'my/org-clock-todo-change))
+#+end_src
+
+** org-super-links
+#+begin_src emacs-lisp :tangle packages.el
+(package! org-super-links :recipe (:host github :repo "toshism/org-super-links") :pin "ce04bd04b20c498f6deb6338aff142f312144e3b")
+#+end_src
+#+begin_src emacs-lisp :tangle config.el
+(after! org-super-links
+  (setq org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id
+        org-super-links-related-into-drawer t
+        org-super-links-link-prefix 'org-super-links-link-prefix-timestamp)
+
+  (map! :map org-mode-map
+        :localleader
+        "ll" #'org-super-links-link
+        "li" #'org-super-links-insert-link
+        "lI" #'org-super-links-quick-insert-inline-link
+        "ls" #'org-super-links-store-link))
+#+end_src
+
+** org-agenda
+#+begin_src emacs-lisp :tangle config.el
+(after! org
+  (defun my/org-agenda-remove-schedule ()
+    "Remove SCHEDULED-cookie is switching state to WAITING."
+    (save-excursion
+      (and (equal org-state "COMPLETED")
+           ;; (my/org-habit-is-habit-subheading)
+           (org-get-scheduled-time (point))
+           (when (search-forward-regexp org-scheduled-time-regexp nil t)
+             (or (delete-region (match-beginning 0) (match-end 0)) t))
+           (get-buffer "*Org Agenda*")
+           (with-current-buffer "*Org Agenda*" (org-agenda-redo)))))
+
+  (setq org-agenda-skip-scheduled-if-done t
+        org-agenda-columns-add-appointments-to-effort-sum t
+        org-agenda-skip-deadline-if-done t
+        org-agenda-include-diary t
+        org-agenda-start-day nil
+        org-agenda-show-future-repeats nil
+        org-agenda-custom-commands '(("g" "Get Things Done (GTD)"
+                                      ((agenda "" ((org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline))
+                                                   (org-deadline-warning-days 0)))
+                                       (todo "PLANNED" ((org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline))
+                                                        (org-agenda-prefix-format "  %i %-12:c [%e] ")
+                                                        (org-agenda-overriding-header "\nTasks\n")))
+                                       (agenda nil ((org-agenda-entry-types '(:deadline))
+                                                    (org-agenda-format-date "")
+                                                    (org-deadline-warning-days 7)
+                                                    (org-agenda-skip-function '(org-agenda-skip-entry-if 'notregexp "\\* PLANNED"))
+                                                    (org-agenda-overriding-header "\nDeadlines\n")))
+                                       (tags-todo "inbox" ((org-agenda-prefix-format "  %?-12t% s")
+                                                           (org-agenda-overriding-header "\nInbox\n")))
+                                       (tags "COMPLETED>=\"<today>\"" ((org-agenda-overriding-header "\nCompleted today\n")))))))
+
+  (add-hook! 'org-after-todo-stage-change-hook 'my/org-agenda-remove-schedule)
+  (add-hook! 'org-agenda-finalize-hook 'org-timeline-insert-timeline :append))
+#+end_src
+
+** org-roam
+#+begin_src emacs-lisp :tangle config.el
+(after! org
+  (defun my/org-roam-update-agenda-files ()
+    "Set org-agenda-files to all org-roam files"
+    (setq org-agenda-files (directory-files-recursively org-roam-directory "\\.org$")))
+  (defun my/org-roam-node-insert-immediate (arg &rest args)
+    "Create link to node without opening a buffer to edit it"
+    (interactive "P")
+    (let ((args (cons arg args))
+          (org-roam-capture-templates (list (append (car org-roam-capture-templates)
+                                                    '(:immediate-finish t)))))
+      (apply #'org-roam-node-insert args)))
+  (defun my/org-roam-filter-by-tag (tag-name)
+    "Filter function for org-roam nodes by name of a tag"
+    (lambda (node) (member tag-name (org-roam-node-tags node))))
+  (defun my/org-roam-list-notes-by-tag (tag-name)
+    "List all org-roam notes by tag-name"
+    (mapcar #'org-roam-node-file
+            (seq-filter
+             (my/org-roam-filter-by-tag tag-name)
+             (org-roam-node-list))))
+  (defun my/org-roam-update-org-agenda-files ()
+    "Update org-agenda-files"
+    (interactive)
+    (setq org-agenda-files (my/org-roam-list-notes-by-tag "agenda")))
+
+  (setq org-roam-directory (concat org-directory "/roam")
+        org-roam-capture-templates `(
+          ("d" "default" plain
+           "%?"
+           :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+           :unnarrowed t)
+          ("l" "programming languages" plain
+           "* Characteristics\n\n- Family: %?\n- Inspired by: \n\n* Reference:\n\n"
+           :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+           :unnarrowed t)
+          ("b" "book notes" plain
+           (file ,(concat org-directory "/templates/book-notes.org"))
+           :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+           :unnarrowed t)
+          ("a" "agenda" plain
+           (file ,(concat org-directory "/templates/agenda.org"))
+           :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: project\n#+category: ${title}")
+           :unnarrowed t)
+          ("i" "inbox" entry
+           (file ,(concat org-directory "/templates/inbox.org"))
+           :target (file "inbox.org")
+           :unnarrowed t))
+        org-roam-dailies-capture-templates '(
+          ("d" "default" entry "* %<%I:%M %p>: %?"
+           :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%Y-%m-%d>\n"))))
+
+  (add-hook! 'org-roam-capture-new-node-hook 'my/org-roam-update-agenda-files)
+
+  (org-roam-db-autosync-mode)
+  (my/org-roam-update-agenda-files))
+#+end_src
+
+*** Advanced Features
+#+begin_src emacs-lisp :tangle config.el
+  ;; (defun my/org-roam-project-finalize-hook ()
+  ;;   ;; Remove temporary hook
+  ;;   (remove-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
+  ;;   ;; Add file to agenda list if capture confirmed
+  ;;   (unless org-note-abort
+  ;;     (with-current-buffer (org-capture-get :buffer)
+  ;;       (add-to-list 'org-agenda-files (buffer-file-name)))))
+  ;; (defun my/org-roam-find-project ()
+  ;;   (interactive)
+  ;;   (add-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
+  ;;   (org-roam-node-find
+  ;;    nil
+  ;;    nil
+  ;;    (my/org-roam-filter-by-tag "agenda")
+  ;;    :templates
+  ;;    '(("p" "project" plain
+  ;;       (file "templates/project.org")
+  ;;       :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: agenda\n#+category: ${title}")
+  ;;       :unnarrowed t))))
+  ;; (defun my/org-roam-capture-task ()
+  ;;   (interactive)
+  ;;   (add-hook 'org-capture-after-finalize-hook #'my/org-roam-project-finalize-hook)
+  ;;   (org-roam-capture-
+  ;;    :node (org-roam-node-read nil (my/org-roam-filter-by-tag "agenda"))
+  ;;    :templates
+  ;;    '(("p" "project" plain "* TODO %?"
+  ;;       :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+category: ${title}\n#+filetags: agenda project" ("Tasks"))))))
+#+end_src
+
+*** org-roam-ui
+#+begin_src emacs-lisp :tangle config.el
+(use-package! websocket :after org-roam)
+(use-package! org-roam-ui
+  :after org-roam
+  :config
+  (setq org-roam-ui-sync-theme t
+        org-roam-ui-follow t
+        org-roam-ui-update-on-save t
+        org-roam-ui-open-on-start t))
+#+end_src

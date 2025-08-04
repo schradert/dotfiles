@@ -12,9 +12,26 @@
       };
       home-manager.sharedModules = [
         ({pkgs, ...}: {
+          dotfiles.programs = {
+            agda.enable = true;
+            godot.enable = true;
+            go.enable = true;
+            graphql.enable = true;
+            graphviz.enable = true;
+            haskell.enable = true;
+            idris.enable = true;
+            java.enable = true;
+            javascript.enable = true;
+            julia.enable = true;
+            kotlin.enable = true;
+            latex.enable = true;
+            lua.enable = true;
+            pandoc.enable = true;
+            python.enable = true;
+            rust.enable = true;
+            zig.enable = true;
+          };
           programs = {
-            emacs.enable = true;
-            direnv.enable = true;
             gh.enable = true;
             git.enable = true;
             git.lfs.enable = true;

@@ -32,6 +32,19 @@ in {
   dotfiles = _: {
     options.nixidy = canivete.mkModuleOption {description = "Common nixidy configuration";};
     config = {
+      home-manager = {
+        config,
+        nixosConfig,
+        pkgs,
+        ...
+      }: {
+        config = mkIf (config.dotfiles.profiles.client.workstation.enable || nixosConfig.canivete.kubernetes.enable) {
+          home.packages = with pkgs; [kubectl kubernetes-helm kubetui kdash ktop];
+          programs.kubecolor.enable = true;
+          programs.doom-emacs.extraPackages = e: [e.kubernetes];
+          programs.k9s.enable = true;
+        };
+      };
       nixos = {
         config,
         pkgs,

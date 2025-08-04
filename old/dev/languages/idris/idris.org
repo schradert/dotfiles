@@ -1,7 +1,0 @@
-#+begin_src emacs-lisp :noweb-ref init
-(doom! :lang (idris +lsp))
-#+end_src
-
-#+begin_src emacs-lisp :tangle config.el
-(after! idris-mode (setq idris-interpreter-path "idris2"))
-#+end_src

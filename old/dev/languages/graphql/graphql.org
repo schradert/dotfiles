@@ -1,3 +1,0 @@
-#+begin_src emacs-lisp :noweb-ref init
-(doom! :lang (graphql +lsp))
-#+end_src

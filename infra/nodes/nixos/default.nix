@@ -295,12 +295,42 @@ in {
           })
         ];
         networking.hostId = "fa7c0969";
-        services.ollama.enable = true;
-        services.ollama.loadModels = [
-          "llama3.1:8b" # chat
-          "qwen2.5-coder:1.5b-base" # autocomplete
-          "nomic-embed-text:latest" # embeddings
-        ];
+        # services.ollama.enable = true;
+        # services.ollama.loadModels = [
+        #   "llama3.1:8b" # chat
+        #   "qwen2.5-coder:1.5b-base" # autocomplete
+        #   "nomic-embed-text:latest" # embeddings
+        # ];
+        # imports = [
+        #   {
+        #     # TODO host on cluster
+        #     services.open-webui.enable = true;
+        #     dotfiles.nixpkgs.config.allowUnfreePackages = [
+        #       "open-webui"
+        #       "cuda_cupti"
+        #       "cuda_nvml_dev"
+        #       "cuda_nvrtc"
+        #       "cuda_nvtx"
+        #       "libcusparse_lt"
+        #       "libcufft"
+        #       "libcufile"
+        #       "libcurand"
+        #       "libcusolver"
+        #       "libnvjitlink"
+        #       "libcusparse"
+        #       "cudnn"
+        #       "cuda_profiler_api"
+        #       "cuda_cuobjdump"
+        #       "cuda_nvdisasm"
+        #       "cuda-merged"
+        #       "cuda_gdb"
+        #       "cuda_nvprune"
+        #       "cuda_cuxxfilt"
+        #       "cuda_sanitizer_api"
+        #       "libnpp"
+        #     ];
+        #   }
+        # ];
       };
     };
     gargoyle = {

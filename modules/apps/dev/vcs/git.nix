@@ -15,6 +15,7 @@ in {
     inherit (lib) fileContents mkIf mkMerge setAttrByPath;
     inherit (config.home) username;
     my = users.${username};
+    inherit (my.profiles.${config.dotfiles.profile}) email;
     key = fileContents (inputs.self + "/.canivete/sops/${username}.pub");
   in {
     config = mkIf config.dotfiles.profiles.client.workstation.enable (mkMerge [
@@ -24,7 +25,7 @@ in {
           git = {
             enable = true;
             userName = my.name;
-            userEmail = my.profiles.${config.dotfiles.profile}.email;
+            userEmail = email;
             aliases.stash = "stash --all";
             delta.enable = true;
             delta.options = {
@@ -58,7 +59,7 @@ in {
           gitui.enable = true;
           lazygit.enable = true;
           lazygit.settings.git.paging.pager = "delta --paging=never --hyperlinks-file-link-format=\"lazygit-edit://{path}:{line}\"";
-          zsh.initExtra = ''
+          zsh.initContent = ''
             # disable sort when completing `git checkout`
             zstyle ':completion:*:git-checkout:*' sort false
           '';
@@ -145,6 +146,39 @@ in {
             untracked = "red";
             updated = "green bold";
           };
+        };
+      }
+      {
+        # Emacs
+        sops.secrets.github = {};
+        sops.secrets.gitlab = {};
+        sops.templates.authinfo.content = lib.mkMerge [
+          "machine api.github.com login ${email}^code-review password ${config.sops.placeholder.github}"
+          "machine api.gitlab.com login ${email}^code-review password ${config.sops.placeholder.gitlab}"
+        ];
+        programs.doom-emacs = {
+          extraPackages = e: [e.magit-todos];
+          tangle.init = {
+            tools.magit = ["+forge"];
+            ui.vc-gutter = ["+pretty"];
+          };
+          tangle.config = ''
+            (setq! user-full-name "${my.name}"
+                   user-mail-address "${email}")
+            (after! magit
+              (magit-todos-mode 1)
+              (setq! magit-revision-show-gravatars '("^Author:     " . "^Commit:     ")
+                     magit-diff-refine-hunk 'all))
+            (after! code-review
+              (setq! code-review-fill-column 80
+                     code-review-auth-login-marker 'forge)
+              (map! :after forge
+                    :map forge-topic-mode-map
+                    "rr" #'code-review-forge-pr-at-point)
+              ;; Show *Code Review* in current workspace (Doom bug)
+              (add-hook! code-review-mode (lambda () (persp-add-buffer (current-buffer))))
+              (add-hook! code-review-mode #'emojify-mode))
+          '';
         };
       }
     ]);

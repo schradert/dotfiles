@@ -3,18 +3,15 @@
     config,
     flake,
     lib,
-    options,
+    perSystem,
     ...
   }: let
     inherit (flake.config.canivete.meta.people) users;
     inherit (lib) mapAttrs' mkDefault mkForce mkOption nameValuePair types;
   in {
+    nixpkgs.overlays = [flake.inputs.nur.overlays.default];
     home-manager.backupFileExtension = "bak";
     home-manager.sharedModules = [
-      {
-        options.dotfiles = options.dotfiles;
-        config.dotfiles = config.dotfiles;
-      }
       ({config, ...}: {
         options.dotfiles.profile = mkOption {
           type = types.enum (builtins.attrNames users.${config.home.username}.profiles);
@@ -34,6 +31,7 @@
         pkgs,
         ...
       }: {
+        fonts.fontconfig.enable = true;
         home.homeDirectory = "/${
           if pkgs.stdenv.isDarwin
           then "Users"
@@ -53,10 +51,12 @@
           bat.enable = true;
           dircolors.enable = true;
           eza.enable = true;
+          fd.enable = true;
           fzf.enable = true;
+          helix.enable = true;
+          helix.package = perSystem.inputs'.helix.packages.default;
           home-manager.enable = true;
-          jq.enable = true;
-          jqp.enable = true;
+          ripgrep.enable = true;
           ssh.enable = true;
           vim.enable = true;
           yazi.enable = true;
@@ -64,6 +64,28 @@
           zoxide.enable = true;
         };
       })
+      {
+        # JQ
+        programs = {
+          jq.enable = true;
+          jqp.enable = true;
+          doom-emacs.extraPackages = e: [e.jq-mode];
+          doom-emacs.tangle.config = ''
+            (use-package! jq-mode
+              :init
+              (autoload 'jq-mode "jq-mode.el" "Major mode for editing jq files" t)
+              (add-to-list 'auto-mode-alist '("\\.jq$" . jq-mode))
+
+              :config
+              (after! json-mode
+                (map! :map json-mode-map
+                      "C-c C-j" #'jq-interactively))
+              (setq jq-interactive-command "yq"
+                    jq-interactive-font-lock-mode #'yaml-mode
+                    jq-interactive-default-options "--yaml-roundtrip"))
+          '';
+        };
+      }
     ];
     home-manager.useGlobalPkgs = true;
     # Can be quite large...

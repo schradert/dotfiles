@@ -43,6 +43,7 @@
             thokr
           ]
           (mkIf stdenv.hostPlatform.isLinux [
+            _4d-minesweeper
             arx-libertatis
             bastet
             flitter

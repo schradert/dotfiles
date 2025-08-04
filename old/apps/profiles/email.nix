@@ -13,7 +13,7 @@
   in {
     config = mkIf config.dotfiles.workstation.enable (mkMerge [
       {
-        home.packages = [mu mu.mu4e isync hydroxide];
+        home.packages = [isync hydroxide];
         accounts.email.accounts = flip mapAttrs user.profiles (name: cfg: {
           # TODO alot contact completion
           # TODO can I use a shared mbsync config?
@@ -38,7 +38,25 @@
         });
         programs.mbsync.enable = true;
         programs.mu.enable = true;
-        dotfiles.programs.emacs.orgFiles = [./email.org];
+        programs.doom-emacs = {
+          extraPackages = e: [e.mu4e];
+          tangle.init.email.mu4e = ["+mbsync" "+org"];
+          # TODO msmtp (sendmail-program, etc.)
+          tangle.config = ''
+            (after! org
+              (add-to-list 'org-capture-templates
+                           '("@" "inbox [mu4e]" entry (file "inbox.org")
+                             "* DRAFTING Process \"%a\" %?\nEntered on %U"
+                             :clock-in t :clock-resume t)))
+            (after! mu4e
+              (defun my/org-capture-mail ()
+                (interactive)
+                (call-interactively 'org-store-link)
+                (org-capture nil "@"))
+              (map! :map mu4e-headers-mode-map "X" #'my/org-capture-mail)
+              (map! :map mu4e-view-mode-map "X" #'my/org-capture-mail))
+          '';
+        };
       }
       (mkIf stdenv.isLinux {
         services.mbsync.enable = true;

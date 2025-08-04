@@ -23,9 +23,13 @@
         ...
       }: {
         home.packages = with pkgs; [nix-inspect nix-fast-build nix-output-monitor];
-        programs.nix-index.package = pkgs.nix-index-with-db;
-        programs.nix-index-database.comma.enable = true;
-        programs.nushell.extraConfig = "$env.config.hooks.command_not_found = source ${config.programs.nix-index.package}/etc/profile.d/command-not-found.nu";
+        programs = {
+          doom-emacs.extraBinPackages = with pkgs; [nil nixfmt-rfc-style];
+          doom-emacs.tangle.init.lang.nix = ["+lsp" "+tree-sitter"];
+          nix-index.package = pkgs.nix-index-with-db;
+          nix-index-database.comma.enable = true;
+          nushell.extraConfig = "$env.config.hooks.command_not_found = source ${config.programs.nix-index.package}/etc/profile.d/command-not-found.nu";
+        };
         # TODO elvish + xonsh adapters for command-not-found hook
       })
     ];
