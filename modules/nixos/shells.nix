@@ -1,5 +1,18 @@
 {
   dotfiles.home-manager = {
+    imports = [
+      ({
+        config,
+        lib,
+        ...
+      }: let
+        bin = lib.getExe config.programs.carapace.package;
+      in {
+        programs.carapace.enable = true;
+        dotfiles.programs.elvish.interactiveExtra = "eval (${bin} _carapace elvish | slurp)";
+        dotfiles.programs.xonsh.interactiveExtra = "exec($(${bin} _carapace xonsh))";
+      })
+    ];
     dotfiles.programs.elvish.enable = true;
     dotfiles.programs.xonsh.enable = true;
     programs = {
