@@ -19,12 +19,6 @@
           description = "The dotfiles profile to use for this configuration";
           default = "default";
         };
-        options.dotfiles.editor = mkOption {
-          type = types.str;
-          default = "vim";
-          example = "emacs";
-          description = "Default editor to use for profile";
-        };
       })
       ({
         config,
@@ -53,12 +47,9 @@
           eza.enable = true;
           fd.enable = true;
           fzf.enable = true;
-          helix.enable = true;
-          helix.package = perSystem.inputs'.helix.packages.default;
           home-manager.enable = true;
           ripgrep.enable = true;
           ssh.enable = true;
-          vim.enable = true;
           yazi.enable = true;
           zoxide.enable = true;
         };

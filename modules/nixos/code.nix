@@ -13,6 +13,7 @@
       home-manager.sharedModules = [
         ({pkgs, ...}: {
           home.packages = [pkgs.devenv];
+          dotfiles.editor = "emacs";
           dotfiles.programs = {
             agda.enable = true;
             godot.enable = true;

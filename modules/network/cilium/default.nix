@@ -43,7 +43,7 @@
       cilium-operator = {
         imageName = "quay.io/cilium/operator-generic";
         imageDigest = "sha256:91ac3bf7be7bed30e90218f219d4f3062a63377689ee7246062fa0cc3839d096";
-        hash = "sha256-d6iOo/uZ8bFLq9Jxtypvc/P7lhuSVTdlV4f8dH541wc=";
+        hash = "sha256-Yn+1FQLG1i/jsCBHH1HzfI/Dz3z0IBDMPJ1qNloQcQE=";
         finalImageTag = appVersion;
       };
     };

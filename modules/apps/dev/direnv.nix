@@ -7,7 +7,7 @@
   }: {
     config = lib.mkIf config.dotfiles.profiles.client.workstation.enable {
       dotfiles.programs = {
-        elvish.interactiveExtra = "eval (${lib.getExe config.programs.direnv.package} hook elvish)";
+        elvish.interactiveExtra = "eval (${lib.getExe config.programs.direnv.package} hook elvish | slurp)";
         xonsh.packages = ps: [ps.xonsh.xontribs.xonsh-direnv];
       };
       home.sessionVariables.DIRENV_WARN_TIMEOUT = "10s";

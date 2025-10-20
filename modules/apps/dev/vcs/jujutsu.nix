@@ -16,7 +16,7 @@
     jj = lib.getExe config.programs.jujutsu.package;
   in {
     config = lib.mkIf config.dotfiles.profiles.client.workstation.enable {
-      home.packages = with pkgs; [gg-jj jjui jj-fzf lazyjj watchman];
+      home.packages = with pkgs; [jjui jj-fzf watchman];
       dotfiles.programs.nushell.sources.jj = "${jj} util completion nushell";
       dotfiles.programs.xonsh.interactiveExtra = "source-bash $(${jj} util completion)";
       programs = {
@@ -27,6 +27,7 @@
         vim.plugins = [pkgs.vimPlugins.vim-jjdescription];
         vscode.profiles.default.extensions = [pkgs.vscode-extensions.visualjj.visualjj];
         jujutsu.enable = true;
+        jujutsu.ediff = config.dotfiles.editor == "emacs";
         jujutsu.settings = {
           core.fsmonitor = "watchman";
           signing = {

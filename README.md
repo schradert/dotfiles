@@ -19,7 +19,24 @@ Fair warning this repository does not follow more traditional patterns for infra
 
 ## TODO
 
-- [ ] external-secrets password generator
+3. [ ] doom emacs
+4. [ ] neovim
+5. [ ] carapace
+5. [ ] ollama + open-webui + lobe-chat
+5. [ ] multus
+6. [ ] nocker
+7. [ ] fix opentofu
+8. [ ] pulumix
+9. [ ] better cilium
+10. [ ] headscale/tailscale with cilium?
+11. [ ] gargoyle
+12. [ ] refactor modules
+13. [ ] reintegrate all old modules
+14. [ ] anki yomitan ebook setup
+15. [ ] fix rook-ceph on raw disks
+16. [ ] rke 2
+17. [ ] external-secrets generators
+
 - [ ] is input.self causing every node to redeploy even on unrelated changes? (sops-install-service has to be restarted EVERY time)
 - [ ] nix and cluster image garbage collector
 - [ ] why do I have to `rm -rf /var/lib/rancher/k3s/agent/images && systemd-tmpfiles --create --remove` when a new image with same name is pushed?! (only applies to `buildImage` because symlink name is the same) (could be with systemd-tmpfiles-resetup)
@@ -48,3 +65,7 @@ sudo rm -rf /var/lib/rancher /var/lib/kubelet /var/lib/cni /run/cilium /run/k3s 
 - [ ] avoid hardcoding IPs!
 - [ ] automatic `sudo chown -R tristan:users /home/tristan/.config`
 - [ ] automatic update host key in ~/.ssh/known_hosts when reinstalling a system
+
+## Inspiration
+
+https://github.com/martinbaillie/dotfiles

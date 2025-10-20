@@ -20,6 +20,7 @@
         surround = target: value: concatStringsSep "\n" ["#+begin_src emacs-lisp ${target}" value "#+end_src"];
 
         # NOTE borrowed upstream from nix-doom-emacs-unstraightened
+        # TODO improve the type matching (not just assumed true or list)
         # Convert a Nix expression to a `doom!` block suitable for init.el.
         #
         # Input: a nested attribute set.
@@ -34,7 +35,7 @@
                   [(":" + cat)]
                   ++ (mapAttrsToList (
                     mod: value:
-                      if value == true
+                      if builtins.isBool value
                       then mod
                       else if builtins.isList value
                       then "(${mod} ${concatStringsSep " " value})"
@@ -76,6 +77,7 @@
         };
         config = lib.mkMerge [
           {
+            programs.emacs.package = config.programs.doom-emacs.finalEmacsPackage;
             programs.doom-emacs.extraBinPackages = with config.programs; [
               ripgrep.package
               git.package
