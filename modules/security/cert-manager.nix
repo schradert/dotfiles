@@ -1,7 +1,7 @@
 {config, ...}: let
   inherit (config.canivete.meta.people.my.profiles.default) email;
 in {
-  perSystem.canivete.pre-commit.settings.hooks.lychee.toml.exclude = ["^.+/dns-query$"];
+  perSystem.canivete.devenv.shells.default.git-hooks.hooks.lychee.toml.exclude = ["^.+/dns-query$"];
   dotfiles = {
     canivete,
     config,

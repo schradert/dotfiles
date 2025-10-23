@@ -8,7 +8,7 @@
 in {
   perSystem = {pkgs, ...}: {
     config = lib.mkIf config.dotfiles.clouds.cloudflare.enable {
-      canivete.devShells.shells.default.packages = [pkgs.cloudflare-cli];
+      canivete.devenv.shells.default.packages = [pkgs.cloudflare-cli];
     };
   };
   dotfiles = {config, ...}: {

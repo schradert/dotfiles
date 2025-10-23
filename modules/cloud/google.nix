@@ -7,7 +7,7 @@ in {
     ...
   }: {
     config = lib.mkIf config.dotfiles.clouds.google.enable {
-      canivete.devShells.shells.default.packages = [pkgs.google-cloud-sdk];
+      canivete.devenv.shells.default.packages = [pkgs.google-cloud-sdk];
     };
   };
   dotfiles = {

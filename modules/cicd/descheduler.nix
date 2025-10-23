@@ -1,7 +1,7 @@
 let
   repo = "https://kubernetes-sigs.github.io/descheduler";
 in {
-  perSystem.canivete.pre-commit.settings.hooks.lychee.toml.exclude = [repo];
+  perSystem.canivete.devenv.shells.default.git-hooks.hooks.lychee.toml.exclude = [repo];
   dotfiles = {
     config,
     lib,

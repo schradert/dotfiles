@@ -1,5 +1,5 @@
 {
-  perSystem.canivete.pre-commit.settings.hooks.lychee.toml.exclude = ["https://charts.crossplane.io/master"];
+  perSystem.canivete.devenv.shells.default.git-hooks.hooks.lychee.toml.exclude = ["https://charts.crossplane.io/master"];
   dotfiles = {
     config,
     lib,

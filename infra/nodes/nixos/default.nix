@@ -98,7 +98,7 @@
     };
 in {
   # disabledModules = [./systeamdeck.nix];
-  perSystem.canivete.pre-commit.settings.excludes = ["infra/nodes/nixos/.+\\.json"];
+  perSystem.canivete.devenv.shells.default.git-hooks.excludes = ["infra/nodes/nixos/.+\\.json"];
   # FIXME don't override
   # NOTE current thought is to install servers and deploy k8s before doing server/client updates
   canivete.deploy.nodes = {

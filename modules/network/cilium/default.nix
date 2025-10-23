@@ -1,6 +1,6 @@
 {
   perSystem = {pkgs, ...}: {
-    canivete.devShells.shells.default.packages = [pkgs.cilium-cli];
+    canivete.devenv.shells.default.packages = [pkgs.cilium-cli];
   };
   dotfiles = {
     config,

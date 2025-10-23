@@ -9,7 +9,6 @@
       flake-parts.follows = "flake-parts";
       nixpkgs.follows = "nixpkgs";
       systems.follows = "systems";
-      pre-commit.follows = "pre-commit";
     };
 
     # Essentials
@@ -100,7 +99,6 @@
       gitignore.follows = "gitignore";
       flake-compat.follows = "flake-compat";
     };
-    # canivete.inputs.pre-commit.follows = "pre-commit";
     process-compose.url = "github:Platonic-Systems/process-compose-flake";
     services.url = "github:juspay/services-flake";
 

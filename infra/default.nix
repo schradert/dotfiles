@@ -22,9 +22,9 @@ in {
     ...
   }: {
     apps.deploy.program = pkgs.writeShellScriptBin "deploy" "nix run .#canivete.${system}.opentofu.script -- --workspace deploy \"$@\"";
-    canivete.pre-commit = {
+    canivete.devenv.shells.default = {
       languages.shell.enable = true;
-      settings.hooks = {
+      git-hooks.hooks = {
         # Currently I am only committing to trunk now
         no-commit-to-branch.settings.branch = mkForce [];
         # It's not really a shell script, so...
@@ -33,11 +33,11 @@ in {
         lychee.settings.flags = "--github-token \"$(${getExe pkgs.gh} auth token)\"";
         # Pretty much never will a hardcoded path be matched
         lychee.toml.exclude = ["file://*" "http://127.0.0.*"];
+        # URLs built with substitution
+        # TODO error: repetition quantifier expects a valid decimal: "^.+\${.+}.+$"
+        # lychee.settings.toml.exclude = [];
       };
     };
-    # URLs built with substitution
-    # TODO error: repetition quantifier expects a valid decimal: "^.+\${.+}.+$"
-    # canivete.pre-commit.settings.hooks.lychee.settings.toml.exclude = [];
   };
   canivete.meta.people.users.tristan = {
     name = "Tristan Schrader";

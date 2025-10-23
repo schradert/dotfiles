@@ -1,5 +1,5 @@
 {
-  perSystem.canivete.pre-commit.settings.hooks.typos.settings.ignored-words = ["ein"];
+  perSystem.canivete.devenv.shells.default.git-hooks.hooks.typos.settings.ignored-words = ["ein"];
   dotfiles.home-manager = {
     config,
     lib,

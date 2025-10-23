@@ -209,7 +209,7 @@ in {
       };
     };
   };
-  perSystem.canivete.pre-commit.settings.hooks.lychee.toml.exclude = ["https://myrient.erista.me/*"];
+  perSystem.canivete.devenv.shells.default.git-hooks.hooks.lychee.toml.exclude = ["https://myrient.erista.me/*"];
   dotfiles.home-manager = {
     config,
     pkgs,

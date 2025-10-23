@@ -2,7 +2,7 @@
   # TODO integrate with excalidraw https://github.com/jitsi/excalidraw-backend
   # TODO look through useful plugins https://github.com/jitsi-contrib/prosody-plugins
   # TODO should I deploy a STUN server?
-  perSystem.canivete.pre-commit.settings.hooks.lychee.toml.exclude = ["https://jitsi-contrib.github.io/jitsi-helm"];
+  perSystem.canivete.devenv.shells.default.git-hooks.hooks.lychee.toml.exclude = ["https://jitsi-contrib.github.io/jitsi-helm"];
   dotfiles = {
     config,
     lib,

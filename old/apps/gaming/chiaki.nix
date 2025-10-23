@@ -1,5 +1,5 @@
 {
-  perSystem.canivete.pre-commit.settings.hooks.typos.settings.ignored-words = ["regist"];
+  perSystem.canivete.devenv.shells.default.git-hooks.hooks.typos.settings.ignored-words = ["regist"];
   dotfiles.home-manager = {
     config,
     lib,

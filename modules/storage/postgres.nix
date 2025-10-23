@@ -2,7 +2,7 @@ let
   repo = "https://opensource.zalando.com/postgres-operator/charts/postgres-operator";
   repo-ui = "https://opensource.zalando.com/postgres-operator/charts/postgres-operator-ui";
 in {
-  perSystem.canivete.pre-commit.settings.hooks.lychee.toml.exclude = [repo];
+  perSystem.canivete.devenv.shells.default.git-hooks.hooks.lychee.toml.exclude = [repo];
   dotfiles = {
     config,
     lib,

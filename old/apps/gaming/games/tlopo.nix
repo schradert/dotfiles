@@ -331,7 +331,7 @@
     };
   };
 in {
-  perSystem.canivete.pre-commit.settings.hooks.lychee.toml.exclude = ["https://download.tlopo.com/*"];
+  perSystem.canivete.devenv.shells.default.git-hooks.hooks.lychee.toml.exclude = ["https://download.tlopo.com/*"];
   dotfiles.home-manager = {
     config,
     lib,

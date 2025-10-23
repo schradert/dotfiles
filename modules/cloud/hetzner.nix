@@ -9,9 +9,9 @@ in {
     ...
   }: {
     config = lib.mkIf enable {
-      canivete.devShells.shells.default = {
+      canivete.devenv.shells.default = {
         packages = [pkgs.hcloud];
-        shellHook = "export HCLOUD_TOKEN=$(${lib.getExe config.canivete.sops.package} --decrypt --extract '[\"hetzner\"][\"token\"]' \"${default}\")";
+        enterShell = "export HCLOUD_TOKEN=$(${lib.getExe config.canivete.sops.package} --decrypt --extract '[\"hetzner\"][\"token\"]' \"${default}\")";
       };
     };
   };

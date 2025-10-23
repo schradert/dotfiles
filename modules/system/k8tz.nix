@@ -1,5 +1,5 @@
 {
-  perSystem.canivete.pre-commit.settings.hooks.lychee.toml.exclude = ["https://k8tz.github.io/k8tz"];
+  perSystem.canivete.devenv.shells.default.git-hooks.hooks.lychee.toml.exclude = ["https://k8tz.github.io/k8tz"];
   dotfiles = {
     config,
     lib,

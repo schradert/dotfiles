@@ -786,7 +786,7 @@
     })
   ];
 in {
-  perSystem.canivete.pre-commit.settings.hooks.typos.settings.ignored-words = ["interruptable"];
+  perSystem.canivete.devenv.shells.default.git-hooks.hooks.typos.settings.ignored-words = ["interruptable"];
   flake.overlays.json2vdf = final: _: {
     json2vdf = final.writers.writePython3Bin "json2vdf" {libraries = [final.python3Packages.vdf];} ''
       from json import loads

@@ -5,7 +5,7 @@
 }: let
   inherit (config.canivete.meta.people) users;
 in {
-  perSystem.canivete.pre-commit.settings.hooks.typos.settings.ignored-words = ["serie"];
+  perSystem.canivete.devenv.shells.default.git-hooks.hooks.typos.settings.ignored-words = ["serie"];
   dotfiles.home-manager = {
     config,
     lib,

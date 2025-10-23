@@ -1,5 +1,5 @@
 {
-  perSystem.canivete.pre-commit.settings.hooks.lychee.toml.exclude = ["https://api.bitwarden.com" "https://identity.bitwarden.com"];
+  perSystem.canivete.devenv.shells.default.git-hooks.hooks.lychee.toml.exclude = ["https://api.bitwarden.com" "https://identity.bitwarden.com"];
   dotfiles = {
     canivete,
     config,
