@@ -217,13 +217,6 @@
       # NOTE WezTerm rust-overlay conflict (they did update it, but maybe it's a nixpkgs/nixos problem?)
       rust-overlay.follows = "rust-overlay";
     };
-    helix.url = "github:usagi-flow/evil-helix";
-    helix.inputs = {
-      nixpkgs.follows = "nixpkgs";
-      flake-utils.follows = "flake-utils";
-      rust-overlay.follows = "rust-overlay";
-      crane.follows = "crane";
-    };
     zjstatus.url = "github:dj95/zjstatus";
     zjstatus.inputs = {
       nixpkgs.follows = "nixpkgs";
