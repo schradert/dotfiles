@@ -12,13 +12,13 @@
   getGVKN = o: concatStringsSep "/" [o.apiVersion o.kind o.metadata.name];
 in {
   canivete.nixidy.shared = config.dotfiles.nixidy;
-  perSystem.devenv.shells.default.git-hooks = {
-    excludes = ["generated"];
-    hooks.lychee.toml.exclude = ["https://192.168.50.*"];
-  };
   dotfiles = _: {
     options.nixidy = canivete.mkModuleOption {description = "Common nixidy configuration";};
     config = {
+      devenv.git-hooks = {
+        excludes = ["generated"];
+        hooks.lychee.toml.exclude = ["https://192.168.50.*"];
+      };
       home-manager = {
         config,
         nixosConfig,

@@ -1,7 +1,6 @@
 {config, ...}: let
   inherit (config.canivete.meta.people.my.profiles.default) email;
 in {
-  perSystem.canivete.devenv.shells.default.git-hooks.hooks.lychee.toml.exclude = ["^.+/dns-query$"];
   dotfiles = {
     canivete,
     config,
@@ -69,6 +68,7 @@ in {
       };
     };
     config = mkIf enable {
+      devenv.git-hooks.hooks.lychee.toml.exclude = ["^.+/dns-query$"];
       nixos = {pkgs, ...}: {canivete.kubernetes.images = builtins.mapAttrs (_: pkgs.dockerTools.pullImage) images;};
       home-manager = {
         config,

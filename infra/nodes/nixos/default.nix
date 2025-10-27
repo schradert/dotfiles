@@ -98,7 +98,6 @@
     };
 in {
   # disabledModules = [./systeamdeck.nix];
-  perSystem.canivete.devenv.shells.default.git-hooks.excludes = ["infra/nodes/nixos/.+\\.json"];
   # FIXME don't override
   # NOTE current thought is to install servers and deploy k8s before doing server/client updates
   canivete.deploy.nodes = {
@@ -116,6 +115,7 @@ in {
     gargoyle.hostname = mkForce "192.168.50.192";
     gargoyle.canivete.system = "aarch64-linux";
   };
+  dotfiles.devenv.git-hooks.excludes = ["infra/nodes/nixos/.+\\.json"];
   dotfiles.nodes = {
     sirver = {
       platform.prem.install_host = "192.168.50.23";

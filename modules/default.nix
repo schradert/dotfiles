@@ -35,6 +35,7 @@ in {
           default = {};
           description = "Nodes the cluster runs on";
         };
+        devenv = mkModuleOption {description = "Common devenv configuration for main repository devshell";};
         nixos = mkModuleOption {description = "Common NixOS configuration for nodes";};
         shared = mkModuleOption {description = "Common profile configuration for nodes";};
         system = mkModuleOption {description = "Common system configuration for nodes";};

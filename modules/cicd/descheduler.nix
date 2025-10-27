@@ -1,14 +1,14 @@
-let
-  repo = "https://kubernetes-sigs.github.io/descheduler";
-in {
-  perSystem.canivete.devenv.shells.default.git-hooks.hooks.lychee.toml.exclude = [repo];
+{
   dotfiles = {
     config,
     lib,
     ...
-  }: {
+  }: let
+    repo = "https://kubernetes-sigs.github.io/descheduler";
+  in {
     options.services.descheduler.enable = lib.mkEnableOption "descheduler";
     config = lib.mkIf config.services.descheduler.enable {
+      devenv.git-hooks.hooks.lychee.toml.exclude = [repo];
       nixos = {pkgs, ...}: {
         canivete.kubernetes.images.descheduler = pkgs.dockerTools.pullImage {
           imageName = "registry.k8s.io/descheduler/descheduler";

@@ -1,19 +1,11 @@
 {config, ...}: let
   inherit (config.canivete.meta.people.my.profiles.default) email;
 in {
-  perSystem = {
-    lib,
-    pkgs,
-    ...
-  }: {
-    config = lib.mkIf config.dotfiles.clouds.google.enable {
-      canivete.devenv.shells.default.packages = [pkgs.google-cloud-sdk];
-    };
-  };
   dotfiles = {
     canivete,
     config,
     lib,
+    pkgs,
     ...
   }: let
     inherit (config) domain;
@@ -25,6 +17,7 @@ in {
       billing_project = canivete.mkNullableOption lib.types.str {description = "Billing infrastructure project";};
     };
     config = lib.mkIf enable {
+      devenv.packages = [pkgs.google-cloud-sdk];
       opentofu.plugins = ["opentofu/google"];
       opentofu.modules = {
         provider.google = {

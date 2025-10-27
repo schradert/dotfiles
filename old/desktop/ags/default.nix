@@ -1,5 +1,5 @@
 {
-  perSystem.canivete.devenv.shells.default.git-hooks.hooks.typos.settings.ignored-words = ["ags"];
+  dotfiles.devenv.git-hooks.hooks.typos.settings.ignored-words = ["ags"];
   dotfiles.home-manager = {
     config,
     lib,

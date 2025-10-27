@@ -2,7 +2,6 @@
   # TODO integrate with excalidraw https://github.com/jitsi/excalidraw-backend
   # TODO look through useful plugins https://github.com/jitsi-contrib/prosody-plugins
   # TODO should I deploy a STUN server?
-  perSystem.canivete.devenv.shells.default.git-hooks.hooks.lychee.toml.exclude = ["https://jitsi-contrib.github.io/jitsi-helm"];
   dotfiles = {
     config,
     lib,
@@ -83,6 +82,7 @@
   in {
     options.services.jitsi.enable = mkEnableOption "Jitsi";
     config = mkIf config.services.jitsi.enable {
+      devenv.git-hooks.hooks.lychee.toml.exclude = ["https://jitsi-contrib.github.io/jitsi-helm"];
       nixos = {pkgs, ...}: {canivete.kubernetes.images = builtins.mapAttrs (_: pkgs.dockerTools.pullImage) images;};
       opentofu = {
         passwords = {

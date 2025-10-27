@@ -1,5 +1,4 @@
 {
-  perSystem.canivete.devenv.shells.default.git-hooks.hooks.lychee.toml.exclude = ["https://k8tz.github.io/k8tz"];
   dotfiles = {
     config,
     lib,
@@ -14,6 +13,7 @@
       finalImageTag = "0.18.0";
     };
   in {
+    imports = [{devenv.git-hooks.hooks.lychee.toml.exclude = ["https://k8tz.github.io/k8tz"];}];
     options.services.k8tz.enable = mkEnableOption "k8tz";
     config = mkIf config.services.k8tz.enable {
       nixos = {pkgs, ...}: {canivete.kubernetes.images.k8tz = pkgs.dockerTools.pullImage image;};

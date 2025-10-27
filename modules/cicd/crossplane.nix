@@ -1,5 +1,4 @@
 {
-  perSystem.canivete.devenv.shells.default.git-hooks.hooks.lychee.toml.exclude = ["https://charts.crossplane.io/master"];
   dotfiles = {
     config,
     lib,
@@ -18,6 +17,7 @@
   in {
     options.services.crossplane.enable = mkEnableOption "crossplane";
     config = mkIf config.services.crossplane.enable {
+      devenv.git-hooks.hooks.lychee.toml.exclude = ["https://charts.crossplane.io/master"];
       nixos = {pkgs, ...}: {canivete.kubernetes.images = mapAttrs (_: pkgs.dockerTools.pullImage) images;};
       nixidy = {
         lib,

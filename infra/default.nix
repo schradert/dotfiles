@@ -22,22 +22,6 @@ in {
     ...
   }: {
     apps.deploy.program = pkgs.writeShellScriptBin "deploy" "nix run .#canivete.${system}.opentofu.script -- --workspace deploy \"$@\"";
-    canivete.devenv.shells.default = {
-      languages.shell.enable = true;
-      git-hooks.hooks = {
-        # Currently I am only committing to trunk now
-        no-commit-to-branch.settings.branch = mkForce [];
-        # It's not really a shell script, so...
-        shellcheck.excludes = [".envrc"];
-        # Authenticate with GitHub to avoid harsh rate-limiting on anonymous requests causing lychee to fail
-        lychee.settings.flags = "--github-token \"$(${getExe pkgs.gh} auth token)\"";
-        # Pretty much never will a hardcoded path be matched
-        lychee.toml.exclude = ["file://*" "http://127.0.0.*"];
-        # URLs built with substitution
-        # TODO error: repetition quantifier expects a valid decimal: "^.+\${.+}.+$"
-        # lychee.settings.toml.exclude = [];
-      };
-    };
   };
   canivete.meta.people.users.tristan = {
     name = "Tristan Schrader";
@@ -59,6 +43,22 @@ in {
       password = default "backblaze";
     };
 
+    devenv = {pkgs, ...}: {
+      languages.shell.enable = true;
+      git-hooks.hooks = {
+        # Currently I am only committing to trunk now
+        no-commit-to-branch.settings.branch = mkForce [];
+        # It's not really a shell script, so...
+        shellcheck.excludes = [".envrc"];
+        # Authenticate with GitHub to avoid harsh rate-limiting on anonymous requests causing lychee to fail
+        lychee.settings.flags = "--github-token \"$(${getExe pkgs.gh} auth token)\"";
+        # Pretty much never will a hardcoded path be matched
+        lychee.toml.exclude = ["file://*" "http://127.0.0.*"];
+        # URLs built with substitution
+        # TODO error: repetition quantifier expects a valid decimal: "^.+\${.+}.+$"
+        # lychee.settings.toml.exclude = [];
+      };
+    };
     nixos = {pkgs, ...}: {
       # Convenient debugging image to bypass airgap
       canivete.kubernetes.images.nix = pkgs.dockerTools.pullImage {

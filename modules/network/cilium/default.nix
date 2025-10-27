@@ -1,7 +1,4 @@
 {
-  perSystem = {pkgs, ...}: {
-    canivete.devenv.shells.default.packages = [pkgs.cilium-cli];
-  };
   dotfiles = {
     config,
     lib,
@@ -88,6 +85,9 @@
         };
       }
       (mkIf config.services.cilium.enable {
+        devenv = {pkgs, ...}: {
+          packages = [pkgs.cilium-cli];
+        };
         nixidy = {
           charts,
           pkgs,

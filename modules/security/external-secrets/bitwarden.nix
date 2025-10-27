@@ -1,5 +1,4 @@
 {
-  perSystem.canivete.devenv.shells.default.git-hooks.hooks.lychee.toml.exclude = ["https://api.bitwarden.com" "https://identity.bitwarden.com"];
   dotfiles = {
     canivete,
     config,
@@ -35,6 +34,7 @@
       project_id = mkStrOption {};
     };
     config = mkIf enable {
+      devenv.git-hooks.hooks.lychee.toml.exclude = ["https://api.bitwarden.com" "https://identity.bitwarden.com"];
       opentofu = {config, ...}: {
         options.dotfiles.secrets = mkOption {
           default = {};

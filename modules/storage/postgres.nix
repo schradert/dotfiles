@@ -1,8 +1,4 @@
-let
-  repo = "https://opensource.zalando.com/postgres-operator/charts/postgres-operator";
-  repo-ui = "https://opensource.zalando.com/postgres-operator/charts/postgres-operator-ui";
-in {
-  perSystem.canivete.devenv.shells.default.git-hooks.hooks.lychee.toml.exclude = [repo];
+{
   dotfiles = {
     config,
     lib,
@@ -11,6 +7,8 @@ in {
     inherit (config) domain;
     inherit (lib) attrValues concat mkEnableOption mkForce mkIf mkMerge mkOption pipe toList types;
     inherit (types) attrsOf nullOr submodule str;
+    repo = "https://opensource.zalando.com/postgres-operator/charts/postgres-operator";
+    repo-ui = "https://opensource.zalando.com/postgres-operator/charts/postgres-operator-ui";
     databases = mkOption {
       default = {};
       type = attrsOf str;
@@ -20,6 +18,7 @@ in {
     options.services.postgres.enable = mkEnableOption "Postgres";
     config = mkMerge [
       {
+        devenv.git-hooks.hooks.lychee.toml.exclude = [repo];
         nixidy = {pkgs, ...}: {
           options.dotfiles.postgres = mkOption {
             default = {};
