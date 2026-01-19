@@ -31,6 +31,8 @@
               loki = {
                 commonConfig.replication_factor = 1;
                 storage.type = "filesystem";
+                # FIXME why specify buckets when using filesystem?
+                storage.bucketNames.chunks = "loki-chunks";
                 image.repository = image.imageName;
                 image.tag = image.finalImageTag;
                 image.pullPolicy = "Never";

@@ -19,7 +19,7 @@ spec:
   template:
     metadata:
       annotations:
-        cilium.io/hubble-ui-nginx-configmap-checksum: de069d2597e16e4de004ce684b15d74b2ab6051c717ae073d86199a76d91fcf1
+        cilium.io/hubble-ui-nginx-configmap-checksum: 76283720d1bb70050debf51116121fa9a67ebc9d1cd9167c3dd9bdbfb613df37
       labels:
         app.kubernetes.io/name: hubble-ui
         app.kubernetes.io/part-of: cilium
@@ -41,6 +41,8 @@ spec:
             httpGet:
               path: /
               port: 8081
+          securityContext:
+            allowPrivilegeEscalation: false
           terminationMessagePolicy: FallbackToLogsOnError
           volumeMounts:
             - mountPath: /etc/nginx/conf.d/default.conf
@@ -59,6 +61,8 @@ spec:
           ports:
             - containerPort: 8090
               name: grpc
+          securityContext:
+            allowPrivilegeEscalation: false
           terminationMessagePolicy: FallbackToLogsOnError
       nodeSelector:
         kubernetes.io/os: linux

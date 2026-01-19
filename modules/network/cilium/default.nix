@@ -5,43 +5,44 @@
     ...
   }: let
     inherit (lib) mapAttrs mkEnableOption mkIf mkForce mkMerge;
+    registryUrl = "quay.io";
+    owner = "cilium";
     appVersion = "v1.17.6";
+    imageTag = appVersion;
+    cilium = image: "${owner}/${image}";
     images = {
-      cilium = {
-        imageName = "quay.io/cilium/cilium";
-        imageDigest = "sha256:544de3d4fed7acba72758413812780a4972d47c39035f2a06d6145d8644a3353";
-        hash = "sha256-lt9dAJ+tcnneMvekzQh6astsHxbgdmoLwwUH0iN28uA=";
-        finalImageTag = appVersion;
+      cilium-cilium = {
+        inherit registryUrl imageTag;
+        imageName = cilium "cilium";
+        imageManifest = ./manifests/cilium.json;
       };
-      cilium-envoy = {
-        imageName = "quay.io/cilium/cilium-envoy";
-        imageDigest = "sha256:f26154a54c881c085b2a868f4719b31ae02e2be0bad001a67ac7462ba2e5b0e9";
-        hash = "sha256-Zs3ph9GXGTrima9gk15501jC6aJmgh2Zqveuc+D9zMM=";
-        finalImageTag = "v1.34.3-1753136543-8da82c827e7e5b2ad5f107f7f485073bcb7a797f";
+      cilium-cilium-envoy = {
+        inherit registryUrl;
+        imageName = cilium "cilium-envoy";
+        imageTag = "v1.34.3-1753136543-8da82c827e7e5b2ad5f107f7f485073bcb7a797f";
+        imageManifest = ./manifests/cilium-envoy.json;
       };
       cilium-hubble-relay = {
-        imageName = "quay.io/cilium/hubble-relay";
-        imageDigest = "sha256:7d17ec10b3d37341c18ca56165b2f29a715cb8ee81311fd07088d8bf68c01e60";
-        hash = "sha256-d6iOo/uZ8bFLq9Jxtypvc/P7lhuSVTdlV4f8dH541wc=";
-        finalImageTag = appVersion;
+        inherit registryUrl imageTag;
+        imageName = cilium "hubble-relay";
+        imageManifest = ./manifests/cilium-hubble-relay.json;
       };
       cilium-hubble-ui-backend = {
-        imageName = "quay.io/cilium/hubble-ui-backend";
-        imageDigest = "sha256:a034b7e98e6ea796ed26df8f4e71f83fc16465a19d166eff67a03b822c0bfa15";
-        hash = "sha256-XUv3mLvCn26oEY9CR/twYKVzUrAkS3NkaaB0oxFkybQ=";
-        finalImageTag = "v0.13.2";
+        inherit registryUrl;
+        imageName = cilium "hubble-ui-backend";
+        imageTag = "v0.13.2";
+        imageManifest = ./manifests/cilium-hubble-ui-backend.json;
       };
       cilium-hubble-ui-frontend = {
-        imageName = "quay.io/cilium/hubble-ui";
-        imageDigest = "sha256:9e37c1296b802830834cc87342a9182ccbb71ffebb711971e849221bd9d59392";
-        hash = "sha256-KJ9c/QBibQXE0XCbg1zw5LxzqSKIS/x8MC7dY/5r8qY=";
-        finalImageTag = "v0.13.2";
+        inherit registryUrl;
+        imageName = cilium "hubble-ui";
+        imageTag = "v0.13.2";
+        imageManifest = ./manifests/cilium-hubble-ui-frontend.json;
       };
-      cilium-operator = {
-        imageName = "quay.io/cilium/operator-generic";
-        imageDigest = "sha256:91ac3bf7be7bed30e90218f219d4f3062a63377689ee7246062fa0cc3839d096";
-        hash = "sha256-Yn+1FQLG1i/jsCBHH1HzfI/Dz3z0IBDMPJ1qNloQcQE=";
-        finalImageTag = appVersion;
+      cilium-operator-generic = {
+        inherit registryUrl imageTag;
+        imageName = cilium "operator-generic";
+        imageManifest = ./manifests/cilium-operator.json;
       };
     };
     pinImage = image: {
@@ -65,9 +66,6 @@
           config = mkIf config.dotfiles.cilium.enable {
             boot.blacklistedKernelModules = ["netfilter"];
             boot.kernelModules = ["cls_bpf" "sch_ingress" "crypto_user" "iptable_raw" "xt_socket"];
-            canivete.kubernetes.images = mapAttrs (_: pkgs.dockerTools.pullImage) images;
-            # Need Cilium DaemonSet images on all nodes before Spegel deployment will work
-            services.k3s.images = lib.attrVals ["cilium" "cilium-envoy"] config.canivete.kubernetes.images;
             # TODO build https://github.com/hengyoush/kyanos
             environment.systemPackages = [pkgs.bpftop];
             networking.firewall.trustedInterfaces = ["cilium+" "lxc+"];
@@ -85,8 +83,25 @@
         };
       }
       (mkIf config.services.cilium.enable {
-        devenv = {pkgs, ...}: {
+        devenv = {
+          config,
+          pkgs,
+          ...
+        }: let
+          inherit
+            ((config.lib.getInput {
+                name = "nix2container";
+                url = "github:nlewo/nix2container";
+                attribute = "containers";
+                follows = ["nixpkgs"];
+              }).packages.${
+                pkgs.stdenv.system
+              }.nix2container)
+            pullImageFromManifest
+            ;
+        in {
           packages = [pkgs.cilium-cli];
+          containers = mapAttrs (_: args: {derivation = pullImageFromManifest args;}) images;
         };
         nixidy = {
           charts,
@@ -106,7 +121,7 @@
           applications.cilium = {
             imports = [
               (mkIf config.services.prometheus.enable {
-                dotfiles.bootstrap.exclude = builtins.map (name: "monitoring.coreos.com/v1/ServiceMonitor/${name}") [
+                canivete.bootstrap.exclude = builtins.map (name: "monitoring.coreos.com/v1/ServiceMonitor/${name}") [
                   "cilium-agent"
                   "cilium-envoy"
                   "cilium-operator"
@@ -122,8 +137,10 @@
                 };
               })
             ];
-            dotfiles.bootstrap.enable = true;
+            canivete.bootstrap.enable = true;
             namespace = "kube-system";
+            # FIXME why do I have to force override? "null and not null"
+            resources.namespaces.cilium-secrets.metadata.annotations = lib.mkForce {"argocd.argoproj.io/sync-options" = "Prune=confirm";};
             resources.ciliumLoadBalancerIPPools.home.spec = {
               allowFirstLastIPs = "Yes";
               blocks = [

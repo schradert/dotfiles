@@ -24,13 +24,6 @@ spec:
           preferredDuringSchedulingIgnoredDuringExecution:
             - preference:
                 matchExpressions:
-                  - key: node-role.kubernetes.io/master
-                    operator: In
-                    values:
-                      - ""
-              weight: 1
-            - preference:
-                matchExpressions:
                   - key: node-role.kubernetes.io/control-plane
                     operator: In
                     values:
@@ -51,13 +44,15 @@ spec:
                 - ALL
             readOnlyRootFilesystem: true
             runAsNonRoot: true
+      resources:
+        limits:
+          memory: 4Gi
+        requests:
+          cpu: 100m
+          memory: 128Mi
       restartPolicy: Never
       serviceAccountName: node-feature-discovery-prune
       tolerations:
-        - effect: NoSchedule
-          key: node-role.kubernetes.io/master
-          operator: Equal
-          value: ""
         - effect: NoSchedule
           key: node-role.kubernetes.io/control-plane
           operator: Equal

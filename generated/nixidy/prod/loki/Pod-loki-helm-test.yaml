@@ -20,6 +20,6 @@ spec:
           value: ""
         - name: CANARY_TEST_TIMEOUT
           value: 1m
-      image: docker.io/grafana/loki-helm-test:ewelch-distributed-helm-chart-17db5ee
+      image: docker.io/grafana/loki-helm-test:latest
       name: loki-helm-test
   restartPolicy: Never

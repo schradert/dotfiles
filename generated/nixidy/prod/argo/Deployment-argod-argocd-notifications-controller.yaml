@@ -20,6 +20,8 @@ spec:
     type: Recreate
   template:
     metadata:
+      annotations:
+        checksum/cmd-params: 333230c1a18637e47854445148cf2469d54f557d3b80f38911e394029ceb1029
       labels:
         app.kubernetes.io/component: notifications-controller
         app.kubernetes.io/instance: argod

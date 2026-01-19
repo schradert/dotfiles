@@ -16,7 +16,7 @@
       };
       nixidy = {lib, ...}: {
         applications.coredns = {
-          dotfiles.bootstrap.enable = true;
+          canivete.bootstrap.enable = true;
           namespace = "kube-system";
           helm.releases.coredns = {
             chart = lib.helm.downloadHelmChart {

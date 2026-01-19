@@ -230,6 +230,8 @@ in {
       platform.prem.install_host = "192.168.50.215";
       opentofu.module.nixos_falcon_system_install.build_on_remote = true;
       system = {
+        services.tailscale.enable = true;
+
         boot.binfmt.emulatedSystems = ["aarch64-linux"];
         boot.initrd.availableKernelModules = ["sr_mod"];
         boot.plymouth.enable = true;

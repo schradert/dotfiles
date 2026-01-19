@@ -27,7 +27,7 @@ data:
           max_idle_conns: 72
           timeout: 2000ms
     common:
-      compactor_address: 'http://loki:3100'
+      compactor_grpc_address: 'loki.monitoring.svc.cluster.local:9095'
       path_prefix: /var/loki
       replication_factor: 1
       storage:
@@ -106,6 +106,7 @@ data:
       tsdb_shipper:
         index_gateway_client:
           server_address: ""
+      use_thanos_objstore: false
     tracing:
       enabled: false
 kind: ConfigMap

@@ -59,12 +59,15 @@ spec:
               port: 4222
             timeoutSeconds: 3
           securityContext:
+            allowPrivilegeEscalation: false
             capabilities:
               drop:
                 - ALL
             runAsGroup: 65532
             runAsNonRoot: true
             runAsUser: 65532
+            seccompProfile:
+              type: RuntimeDefault
           startupProbe:
             failureThreshold: 20
             grpc:
@@ -84,6 +87,8 @@ spec:
       restartPolicy: Always
       securityContext:
         fsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
       serviceAccountName: hubble-relay
       terminationGracePeriodSeconds: 1
       volumes:

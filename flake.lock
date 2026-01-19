@@ -285,11 +285,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1761187260,
-        "narHash": "sha256-+Jvyu7v28mSw272LCij7mOqSHuUC48MZkdCGzBw5eVU=",
+        "lastModified": 1762119714,
+        "narHash": "sha256-Wx09Jk+Q4z4ORPZqzPug+KnygMg9Yj6l0HSz2fDQyoo=",
         "owner": "schradert",
         "repo": "canivete",
-        "rev": "365b5e6f2f4b0681125484ddd1f6ceafa1ff241a",
+        "rev": "1cb327170090dd54a09b6100c730d545a85ab470",
         "type": "github"
       },
       "original": {
@@ -2290,15 +2290,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1761442512,
-        "narHash": "sha256-m6ka8HLZGXeq3M40Wzkbc7vikGtQs/G7sXJhgU779+o=",
-        "owner": "farcaller",
+        "lastModified": 1761960992,
+        "narHash": "sha256-bUzF/B/OIiHmt8W1qnaiWVmkg6GriCz85BpQod3gLwo=",
+        "owner": "nix-community",
         "repo": "nixhelm",
-        "rev": "bb16d8e104cf1fb4939dcfccc048863532806d0d",
+        "rev": "23dbff688d65062df723a8a3af40ca8c5b680153",
         "type": "github"
       },
       "original": {
-        "owner": "farcaller",
+        "owner": "nix-community",
         "repo": "nixhelm",
         "type": "github"
       }
@@ -2316,16 +2316,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1754282468,
-        "narHash": "sha256-bSj3z//pYCY1ottGo2aqNpd/+BgtEYyEHN3/PJ8gG8A=",
-        "owner": "schradert",
+        "lastModified": 1760972376,
+        "narHash": "sha256-FBgZiOZTNk16YFf69L4xoQJQKO4nmB+j7YYXCiaK8co=",
+        "owner": "arnarg",
         "repo": "nixidy",
-        "rev": "c7bd73accbca4b79197d72ce818e77a929223171",
+        "rev": "a9712b8a76d48d8711e774dbc7d03a83436a297a",
         "type": "github"
       },
       "original": {
-        "owner": "schradert",
-        "ref": "working",
+        "owner": "arnarg",
         "repo": "nixidy",
         "type": "github"
       }

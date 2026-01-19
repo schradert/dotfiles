@@ -34,10 +34,20 @@ spec:
                   fieldPath: spec.nodeName
           image: registry.k8s.io/nfd/node-feature-discovery:v0.17.3
           imagePullPolicy: Never
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 10
           name: gc
           ports:
-            - containerPort: 8081
-              name: metrics
+            - containerPort: 8080
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
           resources:
             limits:
               memory: 1Gi

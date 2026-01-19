@@ -6,7 +6,7 @@
   }: let
     inherit (config) domain;
     inherit (lib) attrValues concat mkEnableOption mkForce mkIf mkMerge mkOption pipe toList types;
-    inherit (types) attrsOf nullOr submodule str;
+    inherit (types) attrsOf submodule str;
     repo = "https://opensource.zalando.com/postgres-operator/charts/postgres-operator";
     repo-ui = "https://opensource.zalando.com/postgres-operator/charts/postgres-operator-ui";
     databases = mkOption {
@@ -99,47 +99,44 @@
             prefix = "crds";
           };
           nixidy.applicationImports = [
-            ({
-              options,
-              config,
-              ...
-            }: {
+            {
               # TODO why is metadata not determined from the CRD?
               # NOTE this is how it is done in the generated kubernetes core modules
               options.resources."acid.zalan.do".v1 = {
-                OperatorConfiguration = mkOption {
-                  type = attrsOf (submodule {
-                    options.metadata = mkOption {
-                      type = nullOr (submodule {
-                        options = config.definitions."io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta".options or {};
-                        config = config.definitions."io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta".config or {};
-                      });
-                    };
-                  });
-                };
-                postgresql = mkOption {
-                  type = attrsOf (submodule {
-                    options.metadata = mkOption {
-                      type = nullOr (submodule {
-                        options = config.definitions."io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta".options or {};
-                        config = config.definitions."io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta".config or {};
-                      });
-                    };
-                    # TODO why is it not accepting lists of strings with loaOf str?
-                    # options.spec = mkOption {
-                    #   type = submodule {
-                    #     options.users = mkOption {
-                    #       type = attrsOf (listOf str);
-                    #       default = {};
-                    #     };
-                    #     # Doesn't seem to merge properly without this...
-                    #     # options = {inherit databases;};
-                    #   };
-                    # };
-                  });
-                };
+                # FIXME why isn't this needed anymore? duplicate metadata.annotations declaration
+                # OperatorConfiguration = mkOption {
+                #   type = attrsOf (submodule {
+                #     options.metadata = mkOption {
+                #       type = nullOr (submodule {
+                #         options = config.definitions."io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta".options or {};
+                #         config = config.definitions."io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta".config or {};
+                #       });
+                #     };
+                #   });
+                # };
+                # postgresql = mkOption {
+                #   type = attrsOf (submodule {
+                #     options.metadata = mkOption {
+                #       type = nullOr (submodule {
+                #         options = config.definitions."io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta".options or {};
+                #         config = config.definitions."io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta".config or {};
+                #       });
+                #     };
+                #     # TODO why is it not accepting lists of strings with loaOf str?
+                #     # options.spec = mkOption {
+                #     #   type = submodule {
+                #     #     options.users = mkOption {
+                #     #       type = attrsOf (listOf str);
+                #     #       default = {};
+                #     #     };
+                #     #     # Doesn't seem to merge properly without this...
+                #     #     # options = {inherit databases;};
+                #     #   };
+                #     # };
+                #   });
+                # };
               };
-            })
+            }
           ];
           applications.postgres = {
             namespace = "storage";

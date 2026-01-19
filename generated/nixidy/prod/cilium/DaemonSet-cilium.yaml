@@ -14,7 +14,8 @@ spec:
   template:
     metadata:
       annotations:
-        cilium.io/cilium-configmap-checksum: a601bd508eb507a97efe6dfd31cdd4ffc1047d1c484d6c49fce3308ba1255270
+        cilium.io/cilium-configmap-checksum: 5a3f73310ff8a62789db40016500a93e0b3f9afb9c0347b2220d2fe276cbee00
+        kubectl.kubernetes.io/default-container: cilium-agent
       labels:
         app.kubernetes.io/name: cilium-agent
         app.kubernetes.io/part-of: cilium
@@ -55,6 +56,10 @@ spec:
               value: localhost
             - name: KUBERNETES_SERVICE_PORT
               value: "6444"
+            - name: KUBE_CLIENT_BACKOFF_BASE
+              value: "1"
+            - name: KUBE_CLIENT_BACKOFF_DURATION
+              value: "120"
           image: quay.io/cilium/cilium:v1.17.6
           imagePullPolicy: Never
           lifecycle:
@@ -146,7 +151,7 @@ spec:
               level: s0
               type: spc_t
           startupProbe:
-            failureThreshold: 105
+            failureThreshold: 300
             httpGet:
               host: 127.0.0.1
               httpHeaders:
@@ -370,6 +375,8 @@ spec:
       restartPolicy: Always
       securityContext:
         appArmorProfile:
+          type: Unconfined
+        seccompProfile:
           type: Unconfined
       serviceAccountName: cilium
       terminationGracePeriodSeconds: 1

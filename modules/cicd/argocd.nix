@@ -30,7 +30,7 @@
       nixos = {pkgs, ...}: {canivete.kubernetes.images = builtins.mapAttrs (_: pkgs.dockerTools.pullImage) images;};
       nixidy = {charts, ...}: {
         applications.argo = {
-          dotfiles.bootstrap.enable = true;
+          canivete.bootstrap.enable = true;
           namespace = "cicd";
           helm.releases.argod = {
             chart = charts.argoproj.argo-cd;

@@ -20,7 +20,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: b2947dabf5598929ebdf27dcddbeab3ed42205ee1f70fe86382af503754f6bef
+        checksum/config: ff015bd125f529abec13dae9359150ba80dd9fa80ef5698465aceb2b78b27aed
       labels:
         app.kubernetes.io/component: gateway
         app.kubernetes.io/instance: loki
@@ -32,6 +32,8 @@ spec:
             - labelSelector:
                 matchLabels:
                   app.kubernetes.io/component: gateway
+                  app.kubernetes.io/instance: loki
+                  app.kubernetes.io/name: loki
               topologyKey: kubernetes.io/hostname
       containers:
         - image: docker.io/nginxinc/nginx-unprivileged:1.29-alpine

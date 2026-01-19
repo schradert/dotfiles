@@ -24,7 +24,9 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: b8eafa3ee204e71fd63c380de9c782291242b5e5e751a5035f583f2a379f4158
+        checksum/config: 23d18ee48a4a79e55cfb054aeb406fa2e509b86f360749315529053353b376a3
+        kubectl.kubernetes.io/default-container: loki
+        storage/size: 10Gi
       labels:
         app.kubernetes.io/component: single-binary
         app.kubernetes.io/instance: loki
@@ -37,36 +39,11 @@ spec:
             - labelSelector:
                 matchLabels:
                   app.kubernetes.io/component: single-binary
+                  app.kubernetes.io/instance: loki
+                  app.kubernetes.io/name: loki
               topologyKey: kubernetes.io/hostname
       automountServiceAccountToken: true
       containers:
-        - env:
-            - name: METHOD
-              value: WATCH
-            - name: LABEL
-              value: loki_rule
-            - name: FOLDER
-              value: /rules
-            - name: RESOURCE
-              value: both
-            - name: WATCH_SERVER_TIMEOUT
-              value: "60"
-            - name: WATCH_CLIENT_TIMEOUT
-              value: "60"
-            - name: LOG_LEVEL
-              value: INFO
-          image: kiwigrid/k8s-sidecar:1.30.7
-          imagePullPolicy: IfNotPresent
-          name: loki-sc-rules
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
-            readOnlyRootFilesystem: true
-          volumeMounts:
-            - mountPath: /rules
-              name: sc-rules-volume
         - args:
             - -config.file=/etc/loki/config/config.yaml
             - -target=all
@@ -84,10 +61,13 @@ spec:
               name: http-memberlist
               protocol: TCP
           readinessProbe:
+            failureThreshold: 3
             httpGet:
               path: /ready
               port: http-metrics
-            initialDelaySeconds: 30
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            successThreshold: 1
             timeoutSeconds: 1
           resources: {}
           securityContext:
@@ -105,6 +85,33 @@ spec:
               name: runtime-config
             - mountPath: /var/loki
               name: storage
+            - mountPath: /rules
+              name: sc-rules-volume
+        - env:
+            - name: METHOD
+              value: WATCH
+            - name: LABEL
+              value: loki_rule
+            - name: FOLDER
+              value: /rules
+            - name: RESOURCE
+              value: both
+            - name: WATCH_SERVER_TIMEOUT
+              value: "60"
+            - name: WATCH_CLIENT_TIMEOUT
+              value: "60"
+            - name: LOG_LEVEL
+              value: INFO
+          image: docker.io/kiwigrid/k8s-sidecar:1.30.10
+          imagePullPolicy: IfNotPresent
+          name: loki-sc-rules
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
             - mountPath: /rules
               name: sc-rules-volume
       enableServiceLinks: true

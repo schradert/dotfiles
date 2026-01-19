@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: cert-manager
-  name: cert-manager-cert-manager-tokenrequest
+  name: cert-manager-tokenrequest
   namespace: security
 roleRef:
   apiGroup: rbac.authorization.k8s.io

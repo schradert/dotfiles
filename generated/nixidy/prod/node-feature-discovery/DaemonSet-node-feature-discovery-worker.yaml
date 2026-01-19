@@ -17,7 +17,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: e097c733065bf31d97816d94c02b9ceb122e324cbb0bb58ae8303c2af78b840c
+        checksum/config: 7ae723f1b7e0ab7738ee034c5e098ec937129782076bad69df49e168c468db7c
       labels:
         app.kubernetes.io/instance: node-feature-discovery
         app.kubernetes.io/name: node-feature-discovery
@@ -26,8 +26,7 @@ spec:
       containers:
         - args:
             - -feature-gates=NodeFeatureGroupAPI=false
-            - -metrics=8081
-            - -grpc-health=8082
+            - -port=8080
           command:
             - nfd-worker
           env:
@@ -46,19 +45,19 @@ spec:
           image: registry.k8s.io/nfd/node-feature-discovery:v0.17.3
           imagePullPolicy: Never
           livenessProbe:
-            grpc:
-              port: 8082
+            httpGet:
+              path: /healthz
+              port: http
             initialDelaySeconds: 10
           name: worker
           ports:
-            - containerPort: 8081
-              name: metrics
-            - containerPort: 8082
-              name: health
+            - containerPort: 8080
+              name: http
           readinessProbe:
             failureThreshold: 10
-            grpc:
-              port: 8082
+            httpGet:
+              path: /healthz
+              port: http
             initialDelaySeconds: 5
           resources:
             limits:

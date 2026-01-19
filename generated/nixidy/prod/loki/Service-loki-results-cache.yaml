@@ -13,10 +13,10 @@ spec:
   ports:
     - name: memcached-client
       port: 11211
-      targetPort: 11211
+      targetPort: client
     - name: http-metrics
       port: 9150
-      targetPort: 9150
+      targetPort: http-metrics
   selector:
     app.kubernetes.io/component: memcached-results-cache
     app.kubernetes.io/instance: loki

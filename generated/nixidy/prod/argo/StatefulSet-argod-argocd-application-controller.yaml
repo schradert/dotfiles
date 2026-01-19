@@ -20,8 +20,8 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/cm: 60b89f4c6d7d5343c4f8a724aa167bf10bf5250a86cfef368903c43480e05918
-        checksum/cmd-params: 4b1170d7ff176df48c8968b2e8717444a02c27b0c74a013f0db76e7ffb4a713c
+        checksum/cm: d4061c0c41672a6faa3d6a4a0302721feb24f6a7599affcc360704142b0cd7d8
+        checksum/cmd-params: 333230c1a18637e47854445148cf2469d54f557d3b80f38911e394029ceb1029
       labels:
         app.kubernetes.io/component: application-controller
         app.kubernetes.io/instance: argod

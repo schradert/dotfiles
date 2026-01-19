@@ -5,14 +5,14 @@
   ...
 }: let
   inherit (canivete) mkModuleOption;
-  inherit (config.dotfiles) domain me nodes people nixos darwin droid home-manager shared system;
+  inherit (config.dotfiles) devenv domain me nodes people nixos darwin droid home-manager shared system;
   inherit (lib) flip mapAttrs mkDefault mkForce mkOption types;
   inherit (types) attrsOf str submodule;
 in {
   options.dotfiles = mkOption {
     default = {};
     description = "Project infrastructure";
-    type = submodule ({config, ...}: {
+    type = submodule {
       config._module.args = {inherit canivete;};
       options = {
         domain = mkOption {
@@ -43,7 +43,7 @@ in {
         droid = mkModuleOption {description = "Common nix-on-droid configuration for nodes";};
         home-manager = mkModuleOption {description = "Common home-manager configuration for nodes";};
       };
-    });
+    };
   };
   config = {
     canivete.deploy = {
@@ -74,5 +74,6 @@ in {
           people;
       };
     };
+    perSystem.canivete.devenv.shells.default = devenv;
   };
 }

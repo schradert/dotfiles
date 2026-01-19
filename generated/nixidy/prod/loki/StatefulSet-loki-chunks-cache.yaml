@@ -36,8 +36,15 @@ spec:
             - -c 16384
             - -v
             - -u 11211
-          image: memcached:1.6.38-alpine
+          image: memcached:1.6.39-alpine
           imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            tcpSocket:
+              port: client
+            timeoutSeconds: 5
           name: memcached
           ports:
             - containerPort: 11211
@@ -66,10 +73,26 @@ spec:
             - --web.listen-address=0.0.0.0:9150
           image: prom/memcached-exporter:v0.15.3
           imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /metrics
+              port: http-metrics
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
           name: exporter
           ports:
             - containerPort: 9150
               name: http-metrics
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /metrics
+              port: http-metrics
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
           resources:
             limits: {}
             requests: {}

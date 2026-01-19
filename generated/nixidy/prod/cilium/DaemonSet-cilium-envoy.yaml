@@ -15,7 +15,7 @@ spec:
   template:
     metadata:
       annotations:
-        cilium.io/cilium-envoy-configmap-checksum: 93ea335eabe243968f498f059c70367529a6a0153e78e4458c312c6304bde14c
+        cilium.io/cilium-envoy-configmap-checksum: efcd5d18b624444a6d334fcca1aef9c69f9b85247bfdb78c0f7c5bdf9c8e8a92
       labels:
         app.kubernetes.io/name: cilium-envoy
         app.kubernetes.io/part-of: cilium
